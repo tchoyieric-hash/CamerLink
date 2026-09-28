@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CamerLink - Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">Camer<span>Link</span></div>
+        <nav>
+            <a href="#categories">Catégories</a>
+            <a href="#annonces">Annonces</a>
+            <a href="#pro">Professionnels</a>
+        </nav>
+        <button class="btn outline" onclick="openModal()">Publier une annonce</button>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-copy">
+                <div class="badge">🇨🇲 La marketplace pensée pour le Cameroun</div>
+                <h1>Tout ce dont vous avez besoin, <span>au même endroit.</span></h1>
+                <p>Trouvez des produits, des professionnels, des véhicules et des services près de chez vous !</p>
+                
+                <div class="search">
+                    <input type="search" placeholder="Que recherchez-vous ? Ex: Toyota, dépannage, appartement...">
+                    <select id="city">
+                        <option>Yaoundé</option>
+                        <option>Douala</option>
+                        <option>Bafoussam</option>
+                        <option>Garoua</option>
+                        <option>Autre ville</option>
+                    </select>
+                    <button class="btn" onclick="searchItems()">Rechercher</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
