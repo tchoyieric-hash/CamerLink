@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f6f8;
+    color: #333;
+}
+
+header {
+    background-color: #ffffff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #111;
+}
+
+.logo span {
+    color: #007bff;
+}
+
+nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+}
+
+.hero {
+    padding: 60px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+}
+
+.hero h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.hero h1 span {
+    color: #ffc107;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.search {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search input, .search select {
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+}
+
+.search input {
+    flex: 2;
+}
+
+.search select {
+    flex: 1;
+}
+
+.btn {
+    background-color: #ffc107;
+    color: #333;
+    border: none;
+    padding: 12px 20px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
