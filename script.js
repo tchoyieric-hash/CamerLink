@@ -1,26 +1,28 @@
-// 1. Liste initiale des annonces (stockées en mémoire / localStorage)
-let listings = JSON.parse(localStorage.getItem('camerlink_listings')) || [
-    {
-        id: 1,
-        title: "Toyota Corolla Clean - Climatisée",
-        category: "vehicules",
-        city: "Yaoundé",
-        price: "3 500 000 FCFA",
-        description: "Véhicule en très bon état, papiers à jour.",
-        date: "2026-09-28"
-    },
-    {
-        id: 2,
-        title: "Appartement Meublé Moderne",
-        category: "immobilier",
-        city: "Douala",
-        price: "150 000 FCFA / mois",
-        description: "Situé dans un quartier calme et sécurisé.",
-        date: "2026-09-27"
-    }
-];
+// --- CONFIGURATION SUPABASE ---
+const SUPABASE_URL = 'VOTRE_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'VOTRE_SUPABASE_ANON_KEY';
 
-// 2. Fonction pour afficher les annonces sur la page
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let listings = [];
+
+// 1. Récupérer les annonces depuis Supabase
+async function fetchListings() {
+    const { data, error } = await supabaseClient
+        .from('listings')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Erreur lors du chargement des annonces:', error);
+        return;
+    }
+
+    listings = data || [];
+    displayListings(listings);
+}
+
+// 2. Afficher les annonces sur la page
 function displayListings(listingsToDisplay) {
     const container = document.getElementById('listings-container');
     if (!container) return;
@@ -35,19 +37,19 @@ function displayListings(listingsToDisplay) {
     listingsToDisplay.forEach(item => {
         const card = document.createElement('div');
         card.className = 'listing-card';
-        card.style.cssText = "background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);";
+        card.style.cssText = "background: #fff; border: 1px solid #eaeaea; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);";
         card.innerHTML = `
-            <span class="card-category" style="background: #e3f2fd; color: #1976d2; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase;">${item.category}</span>
-            <h3 style="margin: 10px 0 5px 0; font-size: 18px; color: #333;">${item.title}</h3>
-            <p class="card-price" style="font-weight: bold; color: #2e7d32; font-size: 16px; margin-bottom: 8px;">${item.price}</p>
-            <p class="card-city" style="color: #666; font-size: 14px; margin-bottom: 8px;">📍 ${item.city}</p>
-            <p class="card-desc" style="color: #444; font-size: 14px; line-height: 1.4;">${item.description}</p>
+            <span class="card-category" style="background: #e8f0fe; color: #1a73e8; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;">${item.category}</span>
+            <h3 style="margin: 10px 0 8px 0; font-size: 17px; color: #222;">${item.title}</h3>
+            <p class="card-price" style="font-weight: 800; color: #2e7d32; font-size: 18px; margin-bottom: 10px;">${item.price}</p>
+            <p class="card-city" style="color: #666; font-size: 13px; margin-bottom: 12px; font-weight: 500;">📍 ${item.city}</p>
+            <p class="card-desc" style="color: #555; font-size: 14px; line-height: 1.5; border-top: 1px solid #f1f3f4; padding-top: 10px;">${item.description}</p>
         `;
         container.appendChild(card);
     });
 }
 
-// 3. Fonction de recherche et filtrage par mot-clé et ville
+// 3. Fonction de recherche et filtrage
 function setupSearch() {
     const searchInput = document.getElementById('search-input');
     const citySelect = document.getElementById('city-select');
@@ -69,7 +71,7 @@ function setupSearch() {
     });
 }
 
-// 4. Gestion de l'ouverture/fermeture de la modale et de l'ajout d'annonces
+// 4. Gestion de la modale et enregistrement vers Supabase
 function setupModalAndPublish() {
     const openModalBtn = document.getElementById('open-modal-btn');
     const modal = document.getElementById('ad-modal');
@@ -89,33 +91,36 @@ function setupModalAndPublish() {
     }
 
     if (adForm) {
-        adForm.addEventListener('submit', (e) => {
+        adForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const newAd = {
-                id: Date.now(),
                 title: document.getElementById('ad-title').value,
                 category: document.getElementById('ad-category').value,
                 city: document.getElementById('ad-city').value,
                 price: document.getElementById('ad-price').value,
-                description: document.getElementById('ad-desc').value,
-                date: new Date().toISOString().split('T')[0]
+                description: document.getElementById('ad-desc').value
             };
 
-            listings.unshift(newAd);
-            localStorage.setItem('camerlink_listings', JSON.stringify(listings));
+            const { error } = await supabaseClient.from('listings').insert([newAd]);
 
-            displayListings(listings);
+            if (error) {
+                console.error('Erreur lors de l\'insertion:', error);
+                alert('Erreur lors de la publication de l\'annonce.');
+                return;
+            }
+
+            await fetchListings();
             modal.style.display = 'none';
             adForm.reset();
-            alert('Annonce publiée avec succès !');
+            alert('Annonce publiée avec succès sur Supabase !');
         });
     }
 }
 
 // Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
-    displayListings(listings);
+    fetchListings();
     setupSearch();
     setupModalAndPublish();
 });
