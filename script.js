@@ -27,7 +27,7 @@ async function handleFormSubmit(e) {
 
     try {
         const { error } = await supabaseClient
-            .from('listings')
+            .from('annonces')
             .insert([newAd]);
 
         if (error) throw error;
@@ -53,7 +53,7 @@ async function fetchListings() {
 
     try {
         const { data, error } = await supabaseClient
-            .from('listings')
+            .from('annonces')
             .select('*')
             .order('created_at', { ascending: false });
 
