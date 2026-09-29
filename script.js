@@ -1,168 +1,101 @@
-// --- CONFIGURATION DATABASE ---
-const SUPABASE_URL = 'https://zsviddljpkdumlxivyjhr.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpzdmlkZGxqcGtkdW1seGl2eWpocCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzI3Njc3NzQ2LCJleHAiOjIwNDMyNTM3NDZ9.eJnb6GDLIUiu2I96lS1SfRcC181kgXVCJYMyQjc3WIk';
+// Configuration Supabase (assurez-vous que vos clés correspondent bien à votre projet)
+const SUPABASE_URL = 'VOTRE_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'VOTRE_SUPABASE_ANON_KEY';
 
-// Initialisation du client Supabase
-const { createClient } = supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// --- GESTION DES ANNONCES ---
+// Gestion de la modale et du formulaire
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('adModal');
+    const openBtn = document.getElementById('openModalBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const form = document.getElementById('adForm');
 
-// Fonction pour récupérer et afficher les annonces
-async function loadListings(searchQuery = '', selectedCity = '') {
+    if (openBtn && modal) {
+        openBtn.addEventListener('click', () => modal.style.display = 'flex');
+    }
+    if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    }
+
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Récupération des valeurs du formulaire
+            const newAd = {
+                title: document.getElementById('adTitle').value,
+                category: document.getElementById('adCategory').value,
+                city: document.getElementById('adCity').value,
+                price: document.getElementById('adPrice').value,
+                description: document.getElementById('adDescription').value
+            };
+
+            try {
+                // Insertion dans la table Supabase 'listings'
+                const { data, error } = await supabaseClient
+                    .from('listings')
+                    .insert([newAd]);
+
+                if (error) throw error;
+
+                alert('Annonce publiée avec succès !');
+                form.reset();
+                if (modal) modal.style.display = 'none';
+                
+                // Recharge les annonces pour afficher la nouvelle
+                fetchListings();
+
+            } catch (err) {
+                console.error('Erreur détaillée :', err);
+                alert('Erreur lors de la publication : ' + (err.message || JSON.stringify(err)));
+            }
+        });
+    }
+
+    // Chargement initial des annonces
+    fetchListings();
+});
+
+// Fonction pour récupérer et afficher les annonces depuis Supabase
+async function fetchListings() {
     try {
-        let query = supabaseClient
+        const { data, error } = await supabaseClient
             .from('listings')
             .select('*')
             .order('created_at', { ascending: false });
 
-        // Filtrer par ville si sélectionnée
-        if (selectedCity && selectedCity !== '') {
-            query = query.eq('city', selectedCity);
-        }
-
-        const { data, error } = await query;
         if (error) throw error;
 
-        const container = document.getElementById('listings-container');
+        const container = document.getElementById('listingsContainer');
         if (!container) return;
 
-        container.innerHTML = '';
-
         if (!data || data.length === 0) {
-            container.innerHTML = '<p class="col-span-full text-center text-gray-400 py-8 text-xs">Aucune annonce trouvée.</p>';
+            container.innerHTML = '<p style="text-align: center; padding: 20px;">Aucune annonce pour le moment.</p>';
             return;
         }
 
-        // Filtrer localement par mot-clé si saisi
-        const filteredData = data.filter(item => {
-            const matchesKeyword = searchQuery === '' || 
-                item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                item.description.toLowerCase().includes(searchQuery.toLowerCase());
-            return matchesKeyword;
-        });
-
-        if (filteredData.length === 0) {
-            container.innerHTML = '<p class="col-span-full text-center text-gray-400 py-8 text-xs">Aucune annonce ne correspond à votre recherche.</p>';
-            return;
-        }
-
-        filteredData.forEach(listing => {
-            const card = document.createElement('div');
-            card.className = 'bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition';
-            card.innerHTML = `
-                <div>
-                    <span class="inline-block bg-blue-50 text-blue-700 text-[10px] font-bold px-2.5 py-1 rounded-full mb-2 uppercase tracking-wider">${escapeHtml(listing.category)}</span>
-                    <h3 class="font-bold text-gray-800 text-sm mb-1">${escapeHtml(listing.title)}</h3>
-                    <p class="text-xs text-gray-500 line-clamp-2 mb-3">${escapeHtml(listing.description)}</p>
+        container.innerHTML = data.map(ad => `
+            <div class="ad-card" style="background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <span class="category-badge" style="background: #eef2ff; color: #4f46e5; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">${escapeHtml(ad.category)}</span>
+                <h3 style="margin: 10px 0 5px 0; font-size: 18px;">${escapeHtml(ad.title)}</h3>
+                <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">${escapeHtml(ad.description)}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
+                    <span style="color: #059669;">${escapeHtml(ad.price)} FCFA</span>
+                    <span style="color: #9ca3af; font-size: 13px;">📍 ${escapeHtml(ad.city)}</span>
                 </div>
-                <div class="flex justify-between items-center pt-3 border-t border-gray-100">
-                    <span class="text-xs font-semibold text-gray-400">📍 ${escapeHtml(listing.city)}</span>
-                    <span class="text-sm font-extrabold text-blue-600">${escapeHtml(listing.price)}</span>
-                </div>
-            `;
-            container.appendChild(card);
-        });
+            </div>
+        `).join('');
+
     } catch (err) {
-        console.error('Erreur lors du chargement des annonces :', err.message);
+        console.error('Erreur lors du chargement des annonces :', err);
     }
 }
 
-// Fonction pour ajouter une nouvelle annonce
-async function handleFormSubmit(event) {
-    event.preventDefault();
-
-    const title = document.getElementById('ad-title').value;
-    const category = document.getElementById('ad-category').value;
-    const city = document.getElementById('ad-city').value;
-    const price = document.getElementById('ad-price').value;
-    const description = document.getElementById('ad-desc').value;
-
-    try {
-        const { error } = await supabaseClient
-            .from('listings')
-            .insert([{ title, category, city, price, description }]);
-
-        if (error) throw error;
-
-        alert('Annonce publiée avec succès !');
-        document.getElementById('ad-form').reset();
-        
-        // Fermer la modale après publication
-        document.getElementById('ad-modal').style.display = 'none';
-        
-        // Recharger la liste
-        loadListings();
-    } catch (err) {
-        console.error('Erreur lors de l\'ajout :', err.message);
-        alert('Erreur lors de la publication de l\'annonce.');
-    }
-}
-
-// Sécurité basique pour éviter les failles XSS
+// Petite fonction de sécurité pour éviter les failles XSS
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>'"]/g, 
         tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
     );
 }
-
-// --- INITIALISATION AU CHARGEMENT DE LA PAGE ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Charger les annonces au démarrage
-    loadListings();
-
-    // Gestion de la soumission du formulaire
-    const form = document.getElementById('ad-form');
-    if (form) {
-        form.addEventListener('submit', handleFormSubmit);
-    }
-
-    // Gestion de l'ouverture et de la fermeture de la modale de publication
-    const openBtn = document.getElementById('open-modal-btn');
-    const closeBtn = document.getElementById('close-modal-btn');
-    const modal = document.getElementById('ad-modal');
-
-    if (openBtn && modal) {
-        openBtn.addEventListener('click', () => {
-            modal.style.display = 'flex';
-        });
-    }
-
-    if (closeBtn && modal) {
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-    }
-
-    // Fermer la modale en cliquant en dehors du contenu
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-
-    // Gestion du bouton de recherche et des filtres
-    const searchBtn = document.getElementById('search-btn');
-    const searchInput = document.getElementById('search-input');
-    const citySelect = document.getElementById('city-select');
-
-    if (searchBtn) {
-        searchBtn.addEventListener('click', () => {
-            const keyword = searchInput ? searchInput.value : '';
-            const city = citySelect ? citySelect.value : '';
-            loadListings(keyword, city);
-        });
-    }
-
-    // Recherche automatique lors de la frappe ou du changement de ville (optionnel mais fluide)
-    if (searchInput) {
-        searchInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') {
-                const keyword = searchInput.value;
-                const city = citySelect ? citySelect.value : '';
-                loadListings(keyword, city);
-            }
-        });
-    }
-});
