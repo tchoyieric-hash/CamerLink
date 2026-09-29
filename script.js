@@ -1,10 +1,8 @@
-// Configuration Supabase
 const SUPABASE_URL = 'https://lviddptduhaalnxvsykt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Fonctions globales pour la modale
 function openModal() {
     const modal = document.getElementById('adModal');
     if (modal) modal.classList.remove('hidden');
@@ -15,21 +13,20 @@ function closeModal() {
     if (modal) modal.classList.add('hidden');
 }
 
-// Gestion de la soumission du formulaire
 async function handleFormSubmit(e) {
     e.preventDefault();
 
     const newAd = {
         title: document.getElementById('adTitle').value,
         description: document.getElementById('adDescription').value,
-        price: document.getElementById('adPrice').value,
+        price: parseFloat(document.getElementById('adPrice').value),
         image_url: document.getElementById('adImage').value || '',
         category: 'Général',
         city: 'Cameroun'
     };
 
     try {
-        const { data, error } = await supabaseClient
+        const { error } = await supabaseClient
             .from('listings')
             .insert([newAd]);
 
@@ -41,18 +38,19 @@ async function handleFormSubmit(e) {
         fetchListings();
 
     } catch (err) {
-        console.error('Erreur détaillée :', err);
+        console.error('Erreur :', err);
         alert('Erreur lors de la publication : ' + (err.message || JSON.stringify(err)));
     }
 }
 
-// Chargement initial des annonces au démarrage
 document.addEventListener('DOMContentLoaded', () => {
     fetchListings();
 });
 
-// Récupération et affichage des annonces
 async function fetchListings() {
+    const container = document.getElementById('listingsGrid');
+    if (!container) return;
+
     try {
         const { data, error } = await supabaseClient
             .from('listings')
@@ -60,9 +58,6 @@ async function fetchListings() {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-
-        const container = document.getElementById('listingsGrid');
-        if (!container) return;
 
         if (!data || data.length === 0) {
             container.innerHTML = '<p class="text-gray-500 col-span-full text-center py-10">Aucune annonce pour le moment.</p>';
@@ -88,15 +83,11 @@ async function fetchListings() {
         `).join('');
 
     } catch (err) {
-        console.error('Erreur lors du chargement des annonces :', err);
-        const container = document.getElementById('listingsGrid');
-        if (container) {
-            container.innerHTML = '<p class="text-red-500 col-span-full text-center py-10">Erreur de chargement des annonces.</p>';
-        }
+        console.error('Erreur chargement :', err);
+        container.innerHTML = '<p class="text-red-500 col-span-full text-center py-10">Erreur de chargement des annonces.</p>';
     }
 }
 
-// Sécurité anti-XSS
 function escapeHtml(str) {
     if (!str) return '';
     return String(str)
