@@ -4,56 +4,54 @@ const SUPABASE_ANON_KEY = 'sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Gestion de la modale et du formulaire
-document.addEventListener('DOMContentLoaded', () => {
+// Fonctions globales pour la modale (appelées depuis le HTML)
+function openModal() {
     const modal = document.getElementById('adModal');
-    const openBtn = document.getElementById('openModalBtn');
-    const closeBtn = document.getElementById('closeModalBtn');
-    const form = document.getElementById('adForm');
+    if (modal) modal.classList.remove('hidden');
+}
 
-    if (openBtn && modal) {
-        openBtn.addEventListener('click', () => modal.style.display = 'flex');
+function closeModal() {
+    const modal = document.getElementById('adModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+// Gestion de la soumission du formulaire
+async function handleFormSubmit(e) {
+    e.preventDefault();
+
+    // Récupération des valeurs du formulaire
+    const newAd = {
+        title: document.getElementById('adTitle').value,
+        description: document.getElementById('adDescription').value,
+        price: document.getElementById('adPrice').value,
+        image_url: document.getElementById('adImage').value || '',
+        category: 'Général', // Valeur par défaut
+        city: 'Cameroun'     // Valeur par défaut
+    };
+
+    try {
+        // Insertion dans la table Supabase 'listings'
+        const { data, error } = await supabaseClient
+            .from('listings')
+            .insert([newAd]);
+
+        if (error) throw error;
+
+        alert('Annonce publiée avec succès !');
+        document.getElementById('adForm').reset();
+        closeModal();
+
+        // Recharge les annonces pour afficher la nouvelle
+        fetchListings();
+
+    } catch (err) {
+        console.error('Erreur détaillée :', err);
+        alert('Erreur lors de la publication : ' + (err.message || JSON.stringify(err)));
     }
-    if (closeBtn && modal) {
-        closeBtn.addEventListener('click', () => modal.style.display = 'none');
-    }
+}
 
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            // Récupération des valeurs du formulaire
-            const newAd = {
-                title: document.getElementById('adTitle').value,
-                category: document.getElementById('adCategory').value,
-                city: document.getElementById('adCity').value,
-                price: document.getElementById('adPrice').value,
-                description: document.getElementById('adDescription').value
-            };
-
-            try {
-                // Insertion dans la table Supabase 'listings'
-                const { data, error } = await supabaseClient
-                    .from('listings')
-                    .insert([newAd]);
-
-                if (error) throw error;
-
-                alert('Annonce publiée avec succès !');
-                form.reset();
-                if (modal) modal.style.display = 'none';
-
-                // Recharge les annonces pour afficher la nouvelle
-                fetchListings();
-
-            } catch (err) {
-                console.error('Erreur détaillée :', err);
-                alert('Erreur lors de la publication : ' + (err.message || JSON.stringify(err)));
-            }
-        });
-    }
-
-    // Chargement initial des annonces
+// Chargement initial des annonces au démarrage
+document.addEventListener('DOMContentLoaded', () => {
     fetchListings();
 });
 
@@ -67,22 +65,28 @@ async function fetchListings() {
 
         if (error) throw error;
 
-        const container = document.getElementById('listingsContainer');
+        const container = document.getElementById('listingsGrid');
         if (!container) return;
 
         if (!data || data.length === 0) {
-            container.innerHTML = '<p style="text-align: center; padding: 20px;">Aucune annonce pour le moment.</p>';
+            container.innerHTML = '<p class="text-gray-500 col-span-full text-center py-10">Aucune annonce pour le moment.</p>';
             return;
         }
 
         container.innerHTML = data.map(ad => `
-            <div class="ad-card" style="background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                <span class="category-badge" style="background: #eef2ff; color: #4f46e5; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">${escapeHtml(ad.category)}</span>
-                <h3 style="margin: 10px 0 5px; font-size: 18px;">${escapeHtml(ad.title)}</h3>
-                <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">${escapeHtml(ad.description)}</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
-                    <span style="color: #059669;">${escapeHtml(String(ad.price))} FCFA</span>
-                    <span style="color: #6b7280; font-size: 13px;">📍 ${escapeHtml(ad.city)}</span>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                ${ad.image_url ? `<img src="${escapeHtml(ad.image_url)}" alt="${escapeHtml(ad.title)}" class="w-full h-48 object-cover" onerror="this.style.display='none'">` : '<div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">Aucune image</div>'}
+                <div class="p-4 flex flex-col flex-grow">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-blue-50 text-blue-600 text-xs font-semibold px-2.5 py-1 rounded-md">${escapeHtml(ad.category || 'Général')}</span>
+                        <span class="text-xs text-gray-500">📍 ${escapeHtml(ad.city || 'Cameroun')}</span>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-lg mb-1">${escapeHtml(ad.title)}</h3>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow">${escapeHtml(ad.description)}</p>
+                    <div class="mt-auto pt-3 border-t border-gray-50 flex justify-between items-center">
+                        <span class="text-green-600 font-bold text-base">${escapeHtml(String(ad.price))} FCFA</span>
+                        <span class="text-xs text-gray-400">CamerLink MVP</span>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -92,7 +96,7 @@ async function fetchListings() {
     }
 }
 
-// Fonction de sécurité basique pour éviter les failles XSS
+// Fonction de sécurité anti-XSS
 function escapeHtml(str) {
     if (!str) return '';
     return String(str)
