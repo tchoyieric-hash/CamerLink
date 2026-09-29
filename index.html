@@ -1,75 +1,92 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CamerLink - Marketplace Locale</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CamerLink - La marketplace pensée pour le Cameroun</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif}
+body{background:#f8fafc;color:#0f172a;line-height:1.5}
+.hidden{display:none!important}
+header{background:#fff;display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+.logo{font-size:1.9rem;font-weight:800;color:#2563eb}.logo span{color:#f59e0b}
+.btn-pub{border:1px solid #cbd5e1;background:#fff;border-radius:999px;padding:12px 20px;font-weight:700;font-size:1rem;cursor:pointer}
+.hero{background:#2563eb;color:#fff;text-align:center;padding:36px 18px 44px}
+.badge{display:inline-block;background:#1d4ed8;border-radius:999px;padding:8px 18px;font-weight:600;margin-bottom:22px}
+.hero h1{font-size:2.1rem;line-height:1.15;font-weight:800}.hero h1 span{color:#fbbf24}
+.hero p{opacity:.9;margin:16px auto 26px;max-width:520px}
+.box{background:#fff;border-radius:28px;padding:18px;max-width:520px;margin:0 auto;display:grid;gap:12px}
+input,select,textarea{width:100%;border:1px solid #cbd5e1;background:#f8fafc;border-radius:999px;padding:14px 18px;font-size:1rem;color:#0f172a}
+textarea{border-radius:18px;resize:vertical}
+.btn-search{background:#fbbf24;border:0;border-radius:999px;padding:15px;font-size:1.1rem;font-weight:700;cursor:pointer}
+main{max-width:1000px;margin:0 auto;padding:26px 16px 40px}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.head h2{font-size:1.5rem}.head a{color:#2563eb;font-weight:700;cursor:pointer}
+#listings{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.card{background:#fff;border-radius:24px;padding:22px;box-shadow:0 2px 12px rgba(15,23,42,.06);display:flex;flex-direction:column}
+.card img{width:100%;height:190px;object-fit:cover;border-radius:16px;margin-bottom:14px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cat{background:#eff6ff;color:#1d4ed8;border-radius:999px;padding:7px 16px;font-weight:700;font-size:.85rem;text-transform:uppercase}
+.ok{background:#f0fdf4;color:#16a34a;border-radius:8px;padding:5px 10px;font-weight:600;font-size:.85rem}
+.card h3{font-size:1.25rem;margin-bottom:6px}
+.desc{color:#64748b;flex-grow:1}
+.foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e2e8f0;margin-top:16px;padding-top:14px}
+.city{color:#64748b;font-weight:600}.price{color:#2563eb;font-weight:800;font-size:1.25rem}
+.contact{display:inline-block;margin-top:10px;color:#16a34a;font-weight:600;text-decoration:none}
+.msg{grid-column:1/-1;text-align:center;color:#64748b;padding:40px 0}
+#modal{position:fixed;inset:0;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;overflow:auto}
+.sheet{background:#fff;border-radius:28px;padding:24px;width:100%;max-width:460px}
+.sheet .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sheet h3{font-size:1.4rem}.x{background:#f1f5f9;border:0;border-radius:50%;width:42px;height:42px;font-size:1.4rem;cursor:pointer}
+form{display:grid;gap:12px}label{font-weight:700;font-size:.9rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-ok{background:#1e40af;color:#fff;border:0;border-radius:999px;padding:16px;font-size:1.05rem;font-weight:700;cursor:pointer}
+.btn-ok:disabled{opacity:.6}
+footer{text-align:center;color:#94a3b8;font-size:.85rem;padding:20px}
+</style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+<body>
+<header>
+  <div class="logo">Camer<span>Link</span></div>
+  <button class="btn-pub" onclick="openModal()">Publier une annonce</button>
+</header>
 
-    <header class="bg-blue-600 text-white shadow-md">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold tracking-wide">📦 CamerLink</h1>
-            <button onclick="openModal()" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm shadow">
-                + Publier une annonce
-            </button>
-        </div>
-    </header>
+<section class="hero">
+  <div class="badge">🇨🇲 La marketplace pensée pour le Cameroun</div>
+  <h1>Tout ce dont vous avez besoin, <span>au même endroit.</span></h1>
+  <p>Trouvez des produits, des professionnels, des véhicules et des services près de chez vous !</p>
+  <div class="box">
+    <input id="q" type="search" placeholder="Que recherchez-vous ? Ex: Toyota, dépannage...">
+    <select id="cityFilter"><option value="">Toutes les villes</option></select>
+    <button class="btn-search" onclick="applyFilters()">Rechercher</button>
+  </div>
+</section>
 
-    <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full">
-        <div class="mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Annonces récentes</h2>
-            <p class="text-sm text-gray-500">Trouvez les meilleures offres près de chez vous au Cameroun.</p>
-        </div>
+<main>
+  <div class="head"><h2>🔥 Annonces récentes</h2><a onclick="resetFilters()">Voir tout</a></div>
+  <div id="listings"><p class="msg">Chargement des annonces...</p></div>
+</main>
 
-        <div id="listingsgrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <p class="text-gray-500 col-span-full text-center py-10">Chargement des annonces...</p>
-        </div>
-    </main>
+<div id="modal" class="hidden">
+  <div class="sheet">
+    <div class="row"><h3>Publier une annonce</h3><button class="x" onclick="closeModal()" aria-label="Fermer">×</button></div>
+    <form id="adForm" onsubmit="handleFormSubmit(event)">
+      <label>Titre de l'annonce<input id="adTitle" required placeholder="Ex: iPhone 13 Pro Max"></label>
+      <label>Catégorie<select id="adCategory"><option>Véhicules</option><option>Immobilier</option><option>High-Tech</option><option>Services</option><option>Autres</option></select></label>
+      <div class="two">
+        <label>Ville<select id="adCity"></select></label>
+        <label>Prix (FCFA)<input id="adPrice" type="number" min="0" required placeholder="250000"></label>
+      </div>
+      <label>Description<textarea id="adDescription" rows="3" required placeholder="État, lieu de récupération..."></textarea></label>
+      <label>Contact (WhatsApp / téléphone)<input id="adContact" placeholder="6XXXXXXXX"></label>
+      <label>Lien de l'image (facultatif)<input id="adImage" type="url" placeholder="https://..."></label>
+      <button type="submit" id="submitBtn" class="btn-ok">Valider la publication</button>
+    </form>
+  </div>
+</div>
 
-    <div id="adModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl relative">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold">Publier une nouvelle annonce</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
-            </div>
-
-            <form id="adForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Titre de l'annonce</label>
-                    <input type="text" id="adTitle" required placeholder="Ex: iPhone 13 Pro Max" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <textarea id="adDescription" required rows="3" placeholder="État, lieu de récupération..." class="w-full px-3 py-2 border rounded-lg"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Prix (FCFA)</label>
-                    <input type="number" id="adPrice" required placeholder="Ex: 350000" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Lien de l'image (URL)</label>
-                    <input type="url" id="adImage" placeholder="https://exemple.com/image.jpg" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-gray-600">Annuler</button>
-                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">Publier</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <footer class="bg-white border-t py-4 text-center text-xs text-gray-500">
-        &copy; 2026 CamerLink - Conçu pour le Cameroun 🇨🇲
-    </footer>
-
-    <script src="script.js"></script>
+<footer>© 2026 CamerLink - Conçu pour le Cameroun 🇨🇲</footer>
+<script src="script.js"></script>
 </body>
 </html>
