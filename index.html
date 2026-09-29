@@ -13,7 +13,7 @@
     <header class="bg-blue-600 text-white shadow-md">
         <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-xl font-bold tracking-wide">📦 CamerLink</h1>
-            <button onclick="openModal()" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm shadow hover:bg-blue-50 transition">
+            <button onclick="openModal()" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm shadow">
                 + Publier une annonce
             </button>
         </div>
@@ -25,7 +25,7 @@
             <p class="text-sm text-gray-500">Trouvez les meilleures offres près de chez vous au Cameroun.</p>
         </div>
 
-        <div id="listingsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div id="listingsgrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <p class="text-gray-500 col-span-full text-center py-10">Chargement des annonces...</p>
         </div>
     </main>
@@ -40,27 +40,27 @@
             <form id="adForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Titre de l'annonce</label>
-                    <input type="text" id="adTitle" required placeholder="Ex: iPhone 13 Pro Max" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="text" id="adTitle" required placeholder="Ex: iPhone 13 Pro Max" class="w-full px-3 py-2 border rounded-lg">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <textarea id="adDescription" required rows="3" placeholder="État, lieu de récupération..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    <textarea id="adDescription" required rows="3" placeholder="État, lieu de récupération..." class="w-full px-3 py-2 border rounded-lg"></textarea>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Prix (FCFA)</label>
-                    <input type="number" id="adPrice" required placeholder="Ex: 350000" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="number" id="adPrice" required placeholder="Ex: 350000" class="w-full px-3 py-2 border rounded-lg">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Lien de l'image (URL)</label>
-                    <input type="url" id="adImage" placeholder="https://exemple.com/image.jpg" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="url" id="adImage" placeholder="https://exemple.com/image.jpg" class="w-full px-3 py-2 border rounded-lg">
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-100">Annuler</button>
-                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">Publier</button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-gray-600">Annuler</button>
+                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">Publier</button>
                 </div>
             </form>
         </div>
