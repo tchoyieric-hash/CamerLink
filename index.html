@@ -3,144 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CamerLink - Marketplace & Services au Cameroun</title>
-    <!-- Intégration de Tailwind CSS pour un design moderne et professionnel -->
+    <title>CamerLink - La marketplace pensée pour le Cameroun</title>
+    <!-- Tailwind CSS pour un design moderne et responsive -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
 
-    <!-- En-tête / Navigation -->
-    <header class="bg-blue-700 text-white px-4 py-3 flex justify-between items-center shadow-md sticky top-0 z-40">
-      <div class="flex items-center space-x-1">
-        <span class="text-xl font-extrabold tracking-tight">Camer<span class="text-yellow-400">Link</span></span>
-      </div>
-      
-      <!-- Bouton d'ouverture de la modale de publication -->
-      <button id="open-modal-btn" class="bg-yellow-400 hover:bg-yellow-300 text-blue-950 font-bold px-4 py-2 rounded-full text-xs shadow transition">
-        + Publier une annonce
-      </button>
-    </header>
-
-    <!-- Corps principal -->
-    <main>
-      <!-- Section Hero (Mise en avant et recherche) -->
-      <section class="bg-gradient-to-b from-blue-700 to-blue-600 text-white px-4 pt-5 pb-8">
-        
-        <!-- Badge de positionnement pays -->
-        <div class="flex justify-center mb-3">
-          <span class="inline-flex items-center gap-1.5 bg-blue-800/60 border border-blue-400/30 text-blue-100 text-xs px-3 py-1 rounded-full backdrop-blur-md">
-            🇨🇲 La marketplace de référence au Cameroun
-          </span>
-        </div>
-
-        <!-- Titre & Proposition de valeur -->
-        <div class="text-center mb-5">
-          <h1 class="text-xl font-bold leading-snug mb-1">
-            Tout ce dont vous avez besoin, <span class="text-yellow-400">au même endroit.</span>
-          </h1>
-          <p class="text-blue-100 text-xs px-2">
-            Trouvez des produits, des professionnels et des services vérifiés près de chez vous.
-          </p>
-        </div>
-
-        <!-- Boîte de recherche moderne et "Flottante" -->
-        <div class="bg-white rounded-2xl shadow-xl p-3 text-gray-800 max-w-md mx-auto">
-          
-          <!-- Champ de recherche textuel -->
-          <div class="relative mb-2">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 text-sm">🔍</span>
-            <input 
-              type="search" 
-              id="search-input" 
-              placeholder="Ex: Toyota, dépannage, immobilier..." 
-              class="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-          </div>
-
-          <!-- Sélecteur de ville -->
-          <div class="relative mb-3">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 text-sm">📍</span>
-            <select 
-              id="city-select" 
-              class="w-full pl-9 pr-8 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
-            >
-              <option value="">Toutes les villes</option>
-              <option value="Yaoundé">Yaoundé</option>
-              <option value="Douala">Douala</option>
-              <option value="Bafoussam">Bafoussam</option>
-              <option value="Garoua">Garoua</option>
-            </select>
-            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 text-xs">▼</span>
-          </div>
-
-          <!-- Bouton de recherche -->
-          <button 
-            id="search-btn" 
-            class="w-full bg-yellow-400 hover:bg-yellow-500 text-blue-950 font-bold py-2.5 rounded-xl shadow text-xs transition"
-          >
-            Rechercher
-          </button>
-        </div>
-
-      </section>
-
-      <!-- Section d'affichage dynamique des annonces -->
-      <section class="px-4 py-6 max-w-4xl mx-auto">
-        <h2 class="text-sm font-bold text-gray-700 mb-4">Annonces récentes</h2>
-        <div id="listings-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Les cartes d'annonces s'afficheront ici automatiquement via votre script -->
-        </div>
-      </section>
-    </main>
-
-    <!-- Modale de publication d'annonce -->
-    <div id="ad-modal" class="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50" style="display: none;">
-      <div class="bg-white rounded-2xl p-5 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-        <h2 class="text-base font-bold text-gray-800 mb-4">Publier une nouvelle annonce</h2>
-        
-        <form id="ad-form" class="space-y-3">
-          <div>
-            <input type="text" id="ad-title" placeholder="Titre de l'annonce" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
-          </div>
-
-          <div>
-            <select id="ad-category" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-              <option value="vehicules">Véhicules</option>
-              <option value="immobilier">Immobilier</option>
-              <option value="services">Services</option>
-            </select>
-          </div>
-
-          <div>
-            <select id="ad-city" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-              <option value="Yaoundé">Yaoundé</option>
-              <option value="Douala">Douala</option>
-              <option value="Bafoussam">Bafoussam</option>
-              <option value="Garoua">Garoua</option>
-            </select>
-          </div>
-
-          <div>
-            <input type="text" id="ad-price" placeholder="Prix (ex: 50 000 FCFA)" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
-          </div>
-
-          <div>
-            <textarea id="ad-desc" placeholder="Description de l'annonce..." rows="4" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-          </div>
-
-          <div class="flex justify-end space-x-2 pt-2">
-            <button type="button" id="close-modal-btn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl text-xs font-semibold transition">
-              Annuler
+    <div>
+        <!-- En-tête (Header) -->
+        <header class="bg-white border-b border-gray-100 py-3 px-4 flex justify-between items-center sticky top-0 z-40 shadow-xs">
+            <div class="flex items-center gap-2">
+                <span class="font-black text-lg text-blue-600 tracking-tight">Camer<span class="text-amber-500">Link</span></span>
+            </div>
+            <button id="open-modal-btn" class="bg-white border border-gray-200 text-gray-800 text-xs font-bold px-3.5 py-2 rounded-xl shadow-xs hover:bg-gray-50 transition active:scale-95">
+                Publier une annonce
             </button>
-            <button type="submit" class="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-blue-950 rounded-xl text-xs font-bold shadow transition">
-              Publier
-            </button>
-          </div>
-        </form>
-      </div>
+        </header>
+
+        <!-- Section Hero (Bannière bleue avec moteur de recherche) -->
+        <section class="bg-blue-600 px-4 pt-6 pb-10 text-white relative overflow-hidden">
+            <div class="max-w-xl mx-auto text-center">
+                <!-- Badge local -->
+                <div class="inline-flex items-center gap-1.5 bg-blue-700/80 border border-blue-500/50 text-xs font-medium px-3 py-1 rounded-full mb-4">
+                    <span>🇨🇲</span> La marketplace pensée pour le Cameroun
+                </div>
+
+                <h1 class="text-2xl sm:text-3xl font-black tracking-tight mb-2">
+                    Tout ce dont vous avez besoin, <span class="text-amber-400">au même endroit.</span>
+                </h1>
+                <p class="text-blue-100 text-xs sm:text-sm mb-6 max-w-md mx-auto">
+                    Trouvez des produits, des professionnels, des véhicules et des services près de chez vous !
+                </p>
+
+                <!-- Boîte de recherche interactive -->
+                <div class="bg-white p-3 rounded-2xl shadow-lg text-gray-800 flex flex-col gap-2.5">
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="Que recherchez-vous ? Ex: Toyota, dépannage..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="relative">
+                        <select id="city-select" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-800 focus:outline-none focus:border-blue-500">
+                            <option value="">Toutes les villes</option>
+                            <option value="Yaoundé">Yaoundé</option>
+                            <option value="Douala">Douala</option>
+                            <option value="Bafoussam">Bafoussam</option>
+                            <option value="Garoua">Garoua</option>
+                        </select>
+                    </div>
+                    <button id="search-btn" class="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold py-2.5 rounded-xl text-xs transition shadow-xs active:scale-98">
+                        Rechercher
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section des Annonces (Dynamique Supabase + Démo Investisseur) -->
+        <section class="px-4 py-6 max-w-4xl mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-sm font-bold text-gray-800 flex items-center gap-1.5">
+                    🔥 Annonces récentes
+                </h2>
+                <span class="text-[11px] text-blue-600 font-semibold cursor-pointer">Voir tout</span>
+            </div>
+
+            <!-- Conteneur d'annonces (Injecté par JS + Exemples riches pour la démo) -->
+            <div id="listings-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                <!-- Annonce Démo 1 : Véhicule -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="inline-block bg-blue-50 text-blue-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Véhicules</span>
+                            <span class="text-[10px] bg-green-50 text-green-600 font-medium px-2 py-0.5 rounded">Vérifié</span>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">Toyota RAV4 Automatique - Très propre</h3>
+                        <p class="text-xs text-gray-500 line-clamp-2 mb-3">Climatisation d'origine, année 2018, papiers à jour, visible sur Yaoundé Bastos.</p>
+                    </div>
+                    <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                        <span class="text-xs font-semibold text-gray-400">📍 Yaoundé</span>
+                        <span class="text-sm font-extrabold text-blue-600">12 500 000 FCFA</span>
+                    </div>
+                </div>
+
+                <!-- Annonce Démo 2 : Immobilier -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="inline-block bg-orange-50 text-orange-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Immobilier</span>
+                            <span class="text-[10px] bg-green-50 text-green-600 font-medium px-2 py-0.5 rounded">Vérifié</span>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">Appartement Meublé 2 Pièces</h3>
+                        <p class="text-xs text-gray-500 line-clamp-2 mb-3">Quartier calme et sécurisé, groupe électrogène, eau permanente, connexion Wi-Fi haut débit.</p>
+                    </div>
+                    <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                        <span class="text-xs font-semibold text-gray-400">📍 Douala (Bonapriso)</span>
+                        <span class="text-sm font-extrabold text-blue-600">250 000 FCFA / mois</span>
+                    </div>
+                </div>
+
+                <!-- Annonce Démo 3 : Services -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="inline-block bg-purple-50 text-purple-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Services</span>
+                            <span class="text-[10px] bg-blue-50 text-blue-600 font-medium px-2 py-0.5 rounded-full">Pro</span>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">Service de Dépannage Informatique & Réseau</h3>
+                        <p class="text-xs text-gray-500 line-clamp-2 mb-3">Réparation PC/Mac, installation de caméras de surveillance et configuration réseau à domicile.</p>
+                    </div>
+                    <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                        <span class="text-xs font-semibold text-gray-400">📍 Yaoundé</span>
+                        <span class="text-sm font-extrabold text-blue-600">Sur devis</span>
+                    </div>
+                </div>
+
+                <!-- Annonce Démo 4 : High-Tech -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="inline-block bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">High-Tech</span>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">iPhone 13 Pro Max - 256GB</h3>
+                        <p class="text-xs text-gray-500 line-clamp-2 mb-3">État neuf dans sa boîte d'origine, batterie 90%, vendu avec facture et garantie.</p>
+                    </div>
+                    <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                        <span class="text-xs font-semibold text-gray-400">📍 Douala</span>
+                        <span class="text-sm font-extrabold text-blue-600">450 000 FCFA</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
     </div>
 
-    <!-- Script JavaScript existant -->
+    <!-- Pied de page -->
+    <footer class="bg-white border-t border-gray-100 py-6 px-4 text-center text-gray-400 text-[11px]">
+        <p>© 2026 CamerLink. Tous droits réservés.</p>
+        <p class="mt-1">La solution e-commerce et services de référence au Cameroun.</p>
+    </footer>
+
+    <!-- MODALE DE PUBLICATION (Cachée par défaut) -->
+    <div id="ad-modal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4" style="display: none;">
+        <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-gray-900 text-base">Publier une annonce</h3>
+                <button id="close-modal-btn" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition font-bold">✕</button>
+            </div>
+
+            <!-- Formulaire de publication -->
+            <form id="ad-form" class="flex flex-col gap-3">
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Titre de l'annonce</label>
+                    <input type="text" id="ad-title" placeholder="Ex: iPhone 13, Appartement meublé..." required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Catégorie</label>
+                    <select id="ad-category" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                        <option value="Véhicules">Véhicules</option>
+                        <option value="Immobilier">Immobilier</option>
+                        <option value="Services">Services</option>
+                        <option value="High-Tech">High-Tech</option>
+                        <option value="Vente">Autre Vente</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 mb-1">Ville</label>
+                        <input type="text" id="ad-city" placeholder="Ex: Yaoundé" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 mb-1">Prix (en FCFA)</label>
+                        <input type="text" id="ad-price" placeholder="Ex: 50 000 FCFA" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Description</label>
+                    <textarea id="ad-desc" rows="3" placeholder="Décrivez votre produit ou service en détail..." required class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs focus:outline-none focus:border-blue-500 resize-none"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs transition mt-2 shadow-sm active:scale-98">
+                    Valider la publication
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <!-- SDK Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Script principal de l'application -->
     <script src="script.js"></script>
 </body>
 </html>
