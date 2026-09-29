@@ -46,7 +46,7 @@ async function handleFormSubmit(e) {
     }
 }
 
-// Chargement initial des annonces
+// Chargement initial des annonces au démarrage
 document.addEventListener('DOMContentLoaded', () => {
     fetchListings();
 });
@@ -89,6 +89,10 @@ async function fetchListings() {
 
     } catch (err) {
         console.error('Erreur lors du chargement des annonces :', err);
+        const container = document.getElementById('listingsGrid');
+        if (container) {
+            container.innerHTML = '<p class="text-red-500 col-span-full text-center py-10">Erreur de chargement des annonces.</p>';
+        }
     }
 }
 
