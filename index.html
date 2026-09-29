@@ -18,6 +18,7 @@ header{background:#fff;display:flex;justify-content:space-between;align-items:ce
 .hero p{opacity:.9;margin:16px auto 26px;max-width:520px}
 .box{background:#fff;border-radius:28px;padding:18px;max-width:520px;margin:0 auto;display:grid;gap:12px}
 input,select,textarea{width:100%;border:1px solid #cbd5e1;background:#f8fafc;border-radius:999px;padding:14px 18px;font-size:1rem;color:#0f172a}
+input[type=file]{border-radius:18px;padding:12px 14px;font-size:.95rem}
 textarea{border-radius:18px;resize:vertical}
 .btn-search{background:#fbbf24;border:0;border-radius:999px;padding:15px;font-size:1.1rem;font-weight:700;cursor:pointer}
 main{max-width:1000px;margin:0 auto;padding:26px 16px 40px}
@@ -80,7 +81,7 @@ footer{text-align:center;color:#94a3b8;font-size:.85rem;padding:20px}
       </div>
       <label>Description<textarea id="adDescription" rows="3" required placeholder="État, lieu de récupération..."></textarea></label>
       <label>Contact (WhatsApp / téléphone)<input id="adContact" placeholder="6XXXXXXXX"></label>
-      <label>Lien de l'image (facultatif)<input id="adImage" type="url" placeholder="https://..."></label>
+      <label>Photo (facultatif)<input id="adImage" type="file" accept="image/*"></label>
       <button type="submit" id="submitBtn" class="btn-ok">Valider la publication</button>
     </form>
   </div>
