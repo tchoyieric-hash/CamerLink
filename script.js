@@ -15,7 +15,7 @@ function closeModal() {
 
 async function handleFormSubmit(e) {
     e.preventDefault();
-
+    
     const newAd = {
         title: document.getElementById('adTitle').value,
         description: document.getElementById('adDescription').value,
@@ -26,14 +26,15 @@ async function handleFormSubmit(e) {
     };
 
     try {
+        // Correction : Utilisation de la table 'annonces' (à adapter si votre table s'appelle 'listings' dans Supabase)
         const { error } = await supabaseClient
-            .from('listings')
+            .from('annonces')
             .insert([newAd]);
 
         if (error) throw error;
 
         alert('Annonce publiée avec succès !');
-        document.getElementById('adForm'].reset();
+        document.getElementById('adForm').reset();
         closeModal();
         fetchListings();
 
@@ -48,12 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function fetchListings() {
-    const container = document.getElementById('listingsGrid');
+    const container = document.getElementById('listingsgrid');
     if (!container) return;
 
     try {
         const { data, error } = await supabaseClient
-            .from('listings')
+            .from('annonces')
             .select('*')
             .order('created_at', { ascending: false });
 
@@ -66,16 +67,16 @@ async function fetchListings() {
 
         container.innerHTML = data.map(ad => `
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-                ${ad.image_url ? `<img src="${escapeHtml(ad.image_url)}" alt="${escapeHtml(ad.title)}" class="w-full h-48 object-cover" onerror="this.style.display='none'">` : '<div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">Aucune image</div>'}
+                ${ad.image_url ? `<img src="${escapeHTML(ad.image_url)}" alt="${escapeHTML(ad.title)}" class="w-full h-48 object-cover">` : `<div class="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-400">Pas d'image</div>`}
                 <div class="p-4 flex flex-col flex-grow">
                     <div class="flex justify-between items-start mb-2">
-                        <span class="bg-blue-50 text-blue-600 text-xs font-semibold px-2.5 py-1 rounded-md">${escapeHtml(ad.category || 'Général')}</span>
-                        <span class="text-xs text-gray-500">📍 ${escapeHtml(ad.city || 'Cameroun')}</span>
+                        <span class="bg-blue-50 text-blue-600 text-xs font-semibold px-2.5 py-1 rounded-full">${escapeHTML(ad.category || 'Général')}</span>
+                        <span class="text-xs text-gray-500">${escapeHTML(ad.city || 'Cameroun')}</span>
                     </div>
-                    <h3 class="font-bold text-gray-900 text-lg mb-1">${escapeHtml(ad.title)}</h3>
-                    <p class="text-gray-600 text-sm mb-4 flex-grow">${escapeHtml(ad.description)}</p>
+                    <h3 class="font-bold text-gray-800 text-lg mb-1">${escapeHTML(ad.title)}</h3>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow">${escapeHTML(ad.description)}</p>
                     <div class="mt-auto pt-3 border-t border-gray-50 flex justify-between items-center">
-                        <span class="text-green-600 font-bold text-base">${escapeHtml(String(ad.price))} FCFA</span>
+                        <span class="text-green-600 font-bold text-base">${escapeHTML(String(ad.price))} FCFA</span>
                         <span class="text-xs text-gray-400">CamerLink</span>
                     </div>
                 </div>
@@ -84,11 +85,11 @@ async function fetchListings() {
 
     } catch (err) {
         console.error('Erreur chargement :', err);
-        container.innerHTML = `<p class="text-red-500 col-span-full text-center py-10 font-bold">Erreur de chargement : ${escapeHtml(err.message || JSON.stringify(err))}</p>`;
+        container.innerHTML = `<p class="text-red-500 col-span-full text-center py-10 font-bold">Erreur de chargement des annonces.</p>`;
     }
 }
 
-function escapeHtml(str) {
+function escapeHTML(str) {
     if (!str) return '';
     return String(str)
         .replace(/&/g, '&amp;')
