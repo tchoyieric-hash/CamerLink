@@ -4,7 +4,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Fonctions globales pour la modale (appelées depuis le HTML)
+// Fonctions globales pour la modale
 function openModal() {
     const modal = document.getElementById('adModal');
     if (modal) modal.classList.remove('hidden');
@@ -19,18 +19,16 @@ function closeModal() {
 async function handleFormSubmit(e) {
     e.preventDefault();
 
-    // Récupération des valeurs du formulaire
     const newAd = {
         title: document.getElementById('adTitle').value,
         description: document.getElementById('adDescription').value,
         price: document.getElementById('adPrice').value,
         image_url: document.getElementById('adImage').value || '',
-        category: 'Général', // Valeur par défaut
-        city: 'Cameroun'     // Valeur par défaut
+        category: 'Général',
+        city: 'Cameroun'
     };
 
     try {
-        // Insertion dans la table Supabase 'listings'
         const { data, error } = await supabaseClient
             .from('listings')
             .insert([newAd]);
@@ -40,8 +38,6 @@ async function handleFormSubmit(e) {
         alert('Annonce publiée avec succès !');
         document.getElementById('adForm').reset();
         closeModal();
-
-        // Recharge les annonces pour afficher la nouvelle
         fetchListings();
 
     } catch (err) {
@@ -50,12 +46,12 @@ async function handleFormSubmit(e) {
     }
 }
 
-// Chargement initial des annonces au démarrage
+// Chargement initial des annonces
 document.addEventListener('DOMContentLoaded', () => {
     fetchListings();
 });
 
-// Fonction pour récupérer et afficher les annonces depuis Supabase
+// Récupération et affichage des annonces
 async function fetchListings() {
     try {
         const { data, error } = await supabaseClient
@@ -85,7 +81,7 @@ async function fetchListings() {
                     <p class="text-gray-600 text-sm mb-4 flex-grow">${escapeHtml(ad.description)}</p>
                     <div class="mt-auto pt-3 border-t border-gray-50 flex justify-between items-center">
                         <span class="text-green-600 font-bold text-base">${escapeHtml(String(ad.price))} FCFA</span>
-                        <span class="text-xs text-gray-400">CamerLink MVP</span>
+                        <span class="text-xs text-gray-400">CamerLink</span>
                     </div>
                 </div>
             </div>
@@ -96,7 +92,7 @@ async function fetchListings() {
     }
 }
 
-// Fonction de sécurité anti-XSS
+// Sécurité anti-XSS
 function escapeHtml(str) {
     if (!str) return '';
     return String(str)
