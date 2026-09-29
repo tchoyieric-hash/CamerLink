@@ -27,7 +27,7 @@ async function handleFormSubmit(e) {
 
     try {
         const { error } = await supabaseClient
-            .from('annonces')
+            .from('listings')
             .insert([newAd]);
 
         if (error) throw error;
@@ -53,7 +53,7 @@ async function fetchListings() {
 
     try {
         const { data, error } = await supabaseClient
-            .from('annonces')
+            .from('listings')
             .select('*')
             .order('created_at', { ascending: false });
 
@@ -84,7 +84,8 @@ async function fetchListings() {
 
     } catch (err) {
         console.error('Erreur chargement :', err);
-        container.innerHTML = '<p class="text-red-500 col-span-full text-center py-10">Erreur de chargement des annonces.</p>';
+        // Affiche l'erreur exacte sur l'écran pour qu'on sache quoi corriger
+        container.innerHTML = `<p class="text-red-500 col-span-full text-center py-10 font-bold">Erreur Supabase : ${escapeHtml(err.message || JSON.stringify(err))}</p>`;
     }
 }
 
