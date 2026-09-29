@@ -1,6 +1,6 @@
-// Configuration Supabase (assurez-vous que vos clés correspondent bien à votre projet)
-const SUPABASE_URL = 'VOTRE_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'VOTRE_SUPABASE_ANON_KEY';
+// Configuration Supabase
+const SUPABASE_URL = 'https://lviddptduhaalnxvsykt.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Annonce publiée avec succès !');
                 form.reset();
                 if (modal) modal.style.display = 'none';
-                
+
                 // Recharge les annonces pour afficher la nouvelle
                 fetchListings();
 
@@ -78,11 +78,11 @@ async function fetchListings() {
         container.innerHTML = data.map(ad => `
             <div class="ad-card" style="background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <span class="category-badge" style="background: #eef2ff; color: #4f46e5; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">${escapeHtml(ad.category)}</span>
-                <h3 style="margin: 10px 0 5px 0; font-size: 18px;">${escapeHtml(ad.title)}</h3>
+                <h3 style="margin: 10px 0 5px; font-size: 18px;">${escapeHtml(ad.title)}</h3>
                 <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">${escapeHtml(ad.description)}</p>
                 <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
-                    <span style="color: #059669;">${escapeHtml(ad.price)} FCFA</span>
-                    <span style="color: #9ca3af; font-size: 13px;">📍 ${escapeHtml(ad.city)}</span>
+                    <span style="color: #059669;">${escapeHtml(String(ad.price))} FCFA</span>
+                    <span style="color: #6b7280; font-size: 13px;">📍 ${escapeHtml(ad.city)}</span>
                 </div>
             </div>
         `).join('');
@@ -92,10 +92,13 @@ async function fetchListings() {
     }
 }
 
-// Petite fonction de sécurité pour éviter les failles XSS
+// Fonction de sécurité basique pour éviter les failles XSS
 function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-    );
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
