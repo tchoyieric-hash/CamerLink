@@ -11,18 +11,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* --- Design System Luxueux --- */
       --color-bg: #050509;
       --color-surface: #0F0F16;
       --color-surface-glass: rgba(15, 15, 22, 0.85);
       --color-text-main: #FFFFFF;
       --color-text-muted: #9CA3AF;
-      --color-accent: #F59E0B; /* Or Premium */
-      --color-cta: #3B82F6; /* Bleu Confiance */
+      --color-accent: #F59E0B;
+      --color-cta: #3B82F6;
       --color-whatsapp: #22C55E;
       --color-border: #1F2937;
-      
-      /* --- Typographie & Espacement --- */
       --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --header-height: 70px;
       --container-padding: 16px;
@@ -30,7 +27,6 @@
       --radius-lg: 16px;
       --radius-md: 12px;
     }
-
     [data-theme="light"] {
       --color-bg: #F9FAFB;
       --color-surface: #FFFFFF;
@@ -39,17 +35,15 @@
       --color-text-muted: #6B7280;
       --color-border: #E5E7EB;
     }
-
-    /* --- Reset & Base --- */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--color-bg); color: var(--color-text-main); font-family: var(--font-family); font-size: 16px; line-height: 1.5; overflow-x: hidden; }
+    body { background: var(--color-bg); color: var(--color-text-main); font-family: var(--font-family); font-size: 16px; line-height: 1.5; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
     a { text-decoration: none; color: inherit; }
     ul { list-style: none; }
     button { border: none; background: none; cursor: pointer; font-family: inherit; }
     img { max-width: 100%; display: block; }
     .hidden { display: none !important; }
 
-    /* --- Header Professionnel --- */
+    /* --- Header --- */
     header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-height); background: var(--color-surface-glass); backdrop-filter: blur(12px); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; padding: 0 var(--container-padding); z-index: 1000; }
     .logo-brand { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
     .logo-brand span { color: var(--color-accent); }
@@ -60,17 +54,28 @@
     .btn-user { background: rgba(59, 130, 246, 0.1); color: var(--color-cta); }
     .btn-pub { background: var(--color-accent); color: #000; padding: 10px 20px; border-radius: 999px; font-weight: 700; font-size: 0.9rem; transition: transform 0.1s; }
     .btn-pub:active { transform: scale(0.97); }
-
-    /* --- Espacement pour le Header Fixe --- */
     .header-spacer { height: var(--header-height); }
 
-    /* --- Section Hero Séduisante --- */
+    /* --- Section Réels Dynamiques --- */
+    .reels-section { padding: 30px var(--container-padding) 20px; border-bottom: 1px solid var(--color-border); }
+    .reels-section h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .reels-container { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; }
+    .reels-container::-webkit-scrollbar { display: none; }
+    .reel-card { position: relative; min-width: 130px; height: 210px; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); border: 1px solid var(--color-border); cursor: pointer; flex-shrink: 0; transition: transform 0.2s; }
+    .reel-card:hover { transform: scale(1.03); }
+    .reel-card img { width: 100%; height: 100%; object-fit: cover; }
+    .reel-gradient { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%); }
+    .reel-info { position: absolute; bottom: 12px; left: 10px; right: 10px; z-index: 2; }
+    .reel-title { font-size: 0.85rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+    .reel-badge { position: absolute; top: 8px; left: 8px; background: rgba(239, 68, 68, 0.9); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; z-index: 2; }
+
+    /* --- Section Hero --- */
     .hero { padding: 40px var(--container-padding) 30px; text-align: center; border-bottom: 1px solid var(--color-border); }
     .hero h1 { font-size: 2.5rem; font-weight: 900; line-height: 1.1; letter-spacing: -1px; margin-bottom: 12px; }
     .hero h1 span { background: linear-gradient(90deg, var(--color-accent), #FBBF24); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .hero p { font-size: 1.1rem; color: var(--color-text-muted); max-width: 500px; margin: 0 auto 24px; }
 
-    /* --- Barre de Recherche & Filtres Moderne --- */
+    /* --- Barre de Recherche --- */
     .search-filter-bar { max-width: 700px; margin: 0 auto; padding: 0 var(--container-padding); display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
     .search-input, .city-select { flex: 1; min-width: 150px; }
     .form-el { padding: 12px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 999px; color: var(--color-text-main); font-size: 0.95rem; outline: none; appearance: none; }
@@ -82,10 +87,10 @@
     /* --- Catégories --- */
     .categories-scroll { padding: 20px var(--container-padding); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
     .categories-scroll::-webkit-scrollbar { display: none; }
-    .cat-chip { padding: 8px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); white-space: nowrap; }
+    .cat-chip { padding: 8px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); white-space: nowrap; cursor: pointer; }
     .cat-chip.active { background: var(--color-accent); color: #000; border-color: var(--color-accent); }
 
-    /* --- Grille d'Annonces Premium --- */
+    /* --- Grille d'Annonces --- */
     main { padding: 10px var(--container-padding) 80px; }
     #listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto; }
     .ad-card { background: var(--color-surface); border-radius: var(--radius-xl); overflow: hidden; border: 1px solid var(--color-border); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
@@ -102,7 +107,7 @@
     .whatsapp-link-card { display: block; width: 100%; margin-top: 16px; padding: 12px; text-align: center; background: var(--color-whatsapp); color: white; border-radius: var(--radius-md); font-weight: 700; font-size: 0.95rem; transition: background 0.2s; }
     .whatsapp-link-card:hover { background: #1da152; }
 
-    /* --- Modals Propres --- */
+    /* --- Modals --- */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: var(--container-padding); z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
     .modal-overlay.active { opacity: 1; visibility: visible; }
     .modal-sheet { background: var(--color-surface); width: 100%; max-width: 450px; border-radius: var(--radius-xl); padding: 24px; border: 1px solid var(--color-border); max-height: 90vh; overflow-y: auto; transform: scale(0.95); transition: transform 0.3s ease; }
@@ -120,7 +125,7 @@
     footer .logo-brand { font-size: 1.2rem; margin-bottom: 10px; }
     footer p { font-size: 0.85rem; color: var(--color-text-muted); }
 
-    /* --- Responsive Optimisé --- */
+    /* --- Responsive --- */
     @media (max-width: 768px) {
       .hero h1 { font-size: 2rem; }
       .hero p { font-size: 1rem; }
@@ -129,17 +134,11 @@
       #listings-grid { grid-template-columns: 1fr; gap: 20px; }
       .card-img-container { height: 200px; }
     }
-    
-    @media (max-width: 380px) {
-      .header-brand { font-size: 1.1rem; }
-      .header-actions button { padding: 6px 12px; font-size: 0.8rem; }
-      .btn-pub { padding: 8px 15px; }
-    }
   </style>
 </head>
 <body>
 
-<!-- Header --- Professionnel & Fluide --- -->
+<!-- Header --- Professionnel --- -->
 <header>
   <a href="#" class="logo-brand">Camer<span>Link</span></a>
   <div class="header-actions">
@@ -151,6 +150,15 @@
 </header>
 
 <div class="header-spacer"></div>
+
+<!-- SECTION RÉELS DYNAMIQUES --- NOUVEAU --- -->
+<section class="reels-section">
+  <h2>⚡ Tendances & Réels</h2>
+  <div id="reels-container" class="reels-container">
+    <!-- Les cartes seront injectées ici par le script -->
+    <div style="color:var(--color-text-muted); font-size:0.9rem; padding:10px;">Chargement des réels...</div>
+  </div>
+</section>
 
 <!-- Section Hero --- Incitation à l'action --- -->
 <section class="hero">
@@ -175,11 +183,9 @@
   <div class="cat-chip" onclick="filterByCategory('High-Tech & Services', this)">💻 Services</div>
 </div>
 
-<!-- Grille d'Annonces --- Grille parfaite --- -->
+<!-- Grille d'Annonces --- Premium --- -->
 <main>
-  <div id="listings-grid">
-    <!-- Les cartes seront injectées ici par le script -->
-  </div>
+  <div id="listings-grid"></div>
 </main>
 
 <!-- Footer --- Marque --- -->
@@ -208,8 +214,8 @@
         </select>
       </div>
       <div class="form-group">
-        <label>Titre de l'offre (ex: Appartement Bonapriso) *</label>
-        <input class="form-sheet-el" id="adTitle" type="text" required maxlength="80">
+        <label>Titre de l'offre *</label>
+        <input class="form-sheet-el" id="adTitle" type="text" required maxlength="80" placeholder="Ex: Appartement Bonapriso">
       </div>
       <div class="form-group">
         <label>Ville *</label>
@@ -217,7 +223,7 @@
       </div>
       <div class="form-group">
         <label>Prix (FCFA) *</label>
-        <input class="form-sheet-el" id="adPrice" type="number" required min="100">
+        <input class="form-sheet-el" id="adPrice" type="number" required min="100" placeholder="15000">
       </div>
       <div class="form-group">
         <label>Photo principale *</label>
@@ -225,10 +231,10 @@
       </div>
       <div class="form-group">
         <label>Description détaillée *</label>
-        <textarea class="form-sheet-el" id="adDescription" rows="4" required maxlength="500"></textarea>
+        <textarea class="form-sheet-el" id="adDescription" rows="4" required maxlength="500" placeholder="Décrivez votre offre..."></textarea>
       </div>
       <div class="form-group">
-        <label>Votre numéro WhatsApp (pour être contacté) *</label>
+        <label>Votre numéro WhatsApp *</label>
         <input class="form-sheet-el" id="adContact" type="tel" placeholder="699000000" required pattern="6[0-9]{8}" maxlength="9">
       </div>
       <button class="btn-submit-modal" type="submit" id="submitBtn">Publier l'annonce</button>
@@ -244,7 +250,7 @@
       <button onclick="closeAuthModal()" class="close-modal" aria-label="Fermer">×</button>
     </div>
     <form onsubmit="handleAuthSubmit(event)">
-      <p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:15px; line-height:1.4;">Utilisez votre numéro de téléphone pour vous connecter ou créer un compte automatiquement.</p>
+      <p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:15px; line-height:1.4;">Utilisez votre numéro de téléphone pour vous connecter ou créer un compte.</p>
       <div class="form-group">
         <label>Numéro de téléphone *</label>
         <input class="form-sheet-el" id="authPhone" type="tel" placeholder="699000000" required pattern="6[0-9]{8}" maxlength="9">
@@ -296,7 +302,7 @@
   }
   if(localStorage.getItem('camerlink_theme')) document.documentElement.setAttribute('data-theme', localStorage.getItem('camerlink_theme'));
 
-  // --- Modals Logique ---
+  // --- Modals ---
   const openPublishModal = () => { if (!currentUser) { openAuthModal(); return; } $('publishModal').classList.add('active'); };
   const closePublishModal = () => $('publishModal').classList.remove('active');
   const openAuthModal = () => $('authModal').classList.add('active');
@@ -304,37 +310,25 @@
   const openUserModal = () => { if(currentUser) { $('userPhoneDisplay').textContent = currentUser.email.replace('237','').replace('@camerlink.app','');$('userModal').classList.add('active'); } };
   const closeUserModal = () => $('userModal').classList.remove('active');
 
-  // --- Auth Logique ---
+  // --- Auth ---
   async function handleAuthSubmit(e) {
     e.preventDefault();
     const phone = $('authPhone').value.trim();
     const password = $('authPassword').value;
     const email = `237${phone}@camerlink.app`;
-    
     let res = await supabaseClient.auth.signInWithPassword({ email, password });
     if (res.error) res = await supabaseClient.auth.signUp({ email, password });
-    
-    if (res.error) {
-      $('authErrorMsg').textContent = "Identifiants incorrects ou problème réseau.";
-    } else {
-      closeAuthModal();
-      checkSession();
-    }
+    if (res.error) $('authErrorMsg').textContent = "Erreur d'authentification.";
+    else { closeAuthModal(); checkSession(); }
   }
-
   async function checkSession() {
     const { data } = await supabaseClient.auth.getSession();
     currentUser = data?.session?.user || null;
     $('loginBtn').classList.toggle('hidden', !!currentUser);$('userBtn').classList.toggle('hidden', !currentUser);
   }
+  async function handleLogout() { await supabaseClient.auth.signOut(); closeUserModal(); checkSession(); }
 
-  async function handleLogout() {
-    await supabaseClient.auth.signOut();
-    closeUserModal();
-    checkSession();
-  }
-
-  // --- Publication Logique ---
+  // --- Publication ---
   async function handlePublishSubmit(e) {
     e.preventDefault();
     if (!currentUser) return;
@@ -342,11 +336,9 @@
     const originalText = btn.textContent;
     btn.textContent = "Publication en cours...";
     btn.disabled = true;
-
     let imageUrl = '';
     const fileInput = $('adImageFile');
     const cat = $('adCategory').value;
-
     try {
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
@@ -358,108 +350,7 @@
         }
       }
     } catch(err) { console.error("Erreur upload:", err); }
-
     if (!imageUrl) {
       if (cat === 'Restaurants & Gastronomie') imageUrl = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=500';
       else if (cat === 'Immobilier') imageUrl = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=500';
-      else if (cat === 'Véhicules') imageUrl = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=500';
-      else imageUrl = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=500';
-    }
-
-    const newAd = {
-      title: $('adTitle').value.trim(),
-      category: cat,
-      city: $('adCity').value,
-      price: parseFloat($('adPrice').value),
-      description: $('adDescription').value.trim(),
-      contact: $('adContact').value.trim(),
-      image_url: imageUrl,
-      user_id: currentUser.id
-    };
-
-    const { error: insertError } = await supabaseClient.from('annonces').insert([newAd]);
-
-    if (insertError) {
-      console.error("Erreur DB:", insertError);
-      alert("Erreur lors de la publication.");
-    } else {
-      $('adForm').reset();
-      closePublishModal();
-      loadListings();
-    }
-    btn.textContent = originalText;
-    btn.disabled = false;
-  }
-
-  // --- Chargement & Affichage ---
-  async function loadListings() {
-    const container = $('listings-grid');
-    const query = $('searchInput').value.trim().toLowerCase();
-    const city = $('cityFilter').value;
-
-    let queryBuilder = supabaseClient.from('annonces').select('*').order('created_at', { ascending: false });
-    if (currentCategory) queryBuilder = queryBuilder.eq('category', currentCategory);
-    if (city) queryBuilder = queryBuilder.eq('city', city);
-
-    const { data: ads, error } = await queryBuilder;
-
-    let filteredAds = ads || [];
-    if (query) {
-      filteredAds = filteredAds.filter(ad => 
-        ad.title.toLowerCase().includes(query) || 
-        ad.description.toLowerCase().includes(query) ||
-        ad.city.toLowerCase().includes(query)
-      );
-    }
-
-    if (filteredAds.length === 0) {
-      container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 60px 20px; color: var(--color-text-muted); border: 2px dashed var(--color-border); border-radius: var(--radius-xl);">
-        <div style="font-size:3rem; margin-bottom:15px;">🔍</div>
-        <h3>Aucune offre ne correspond à vos critères pour l'instant.</h3>
-        <p>Soyez le premier à publier dans cette catégorie !</p>
-      </div>`;
-      return;
-    }
-
-    container.innerHTML = filteredAds.map(ad => {
-      const whatsappNum = ad.contact.replace(/\D/g, '');
-      return `
-        <article class="ad-card">
-          <div class="card-img-container">
-            <img src="${ad.image_url}" alt="${ad.title}" loading="lazy">
-            <span class="card-badge-top">${ad.category}</span>
-          </div>
-          <div class="card-body">
-            <h3 class="ad-title">${ad.title}</h3>
-            <p class="ad-desc">${ad.description}</p>
-            <div class="card-meta">
-              <span class="ad-city">📍 ${ad.city}</span>
-              <span class="ad-price">${Number(ad.price).toLocaleString('fr-FR')} FCFA</span>
-            </div>
-            <a href="https://wa.me/237${whatsappNum}" target="_blank" class="whatsapp-link-card">💬 Contacter via WhatsApp</a>
-          </div>
-        </article>
-      `;
-    }).join('');
-  }
-
-  // --- Filtres ---
-  function filterByCategory(cat, el) {
-    currentCategory = cat;
-    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    loadListings();
-  }
-
-  // --- Initialisation ---
-  document.addEventListener('DOMContentLoaded', () => {
-    const cityOptions = CITIES.map(c => `<option>${c}</option>`).join('');
-    $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + cityOptions;
-    $('adCity').innerHTML = cityOptions;
-    checkSession();
-    loadListings();
-  });
-</script>
-
-</body>
-</html>
+      else if (cat === 'Véhicules')
