@@ -164,4 +164,200 @@
   <p>La marketplace de référence pour des offres premium vérifiées. Vendez, achetez, soyez servis.</p>
   
   <div class="search-filter-bar">
-    <input id="searchInput" type="search" placeholder="Que recherchez-vous ?" class="search-input
+    <input id="searchInput" type="search" placeholder="Que recherchez-vous ?" class="search-input form-el">
+    <select id="cityFilter" class="city-select form-el">
+      <option value="">Toutes les villes</option>
+      <option value="Yaoundé">Yaoundé</option>
+      <option value="Douala">Douala</option>
+    </select>
+    <button class="btn-search form-el" onclick="loadListings()">Rechercher</button>
+  </div>
+</section>
+
+<!-- Catégories -->
+<div class="categories-scroll">
+  <div class="cat-chip active" onclick="filterByCategory('', this)">✨ Tout voir</div>
+  <div class="cat-chip" onclick="filterByCategory('Restaurants & Gastronomie', this)">🍽 Gastronomie</div>
+  <div class="cat-chip" onclick="filterByCategory('Immobilier', this)">🏠 Immobilier</div>
+  <div class="cat-chip" onclick="filterByCategory('Véhicules', this)">🚗 Véhicules</div>
+  <div class="cat-chip" onclick="filterByCategory('High-Tech & Services', this)">💻 Services</div>
+</div>
+
+<!-- Grille d'Annonces -->
+<main>
+  <div id="listings-grid"></div>
+</main>
+
+<!-- Footer -->
+<footer>
+  <a href="#" class="logo-brand">Camer<span>Link</span></a>
+  <p>© 2026 CamerLink · L'élite du service digital.</p>
+</footer>
+
+<!-- Modals de Publication -->
+<div id="publishModal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3 class="modal-title">Publier une offre</h3>
+      <button onclick="closePublishModal()" class="close-modal" aria-label="Fermer">×</button>
+    </div>
+    <form id="adForm" onsubmit="handlePublishSubmit(event)">
+      <div class="form-group">
+        <label>Catégorie *</label>
+        <select class="form-sheet-el" id="adCategory" required>
+          <option value="Restaurants & Gastronomie">Restaurants & Gastronomie</option>
+          <option value="Immobilier">Immobilier</option>
+          <option value="Véhicules">Véhicules</option>
+          <option value="High-Tech & Services">High-Tech & Services</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Titre de l'offre *</label>
+        <input class="form-sheet-el" id="adTitle" type="text" required maxlength="80" placeholder="Ex: Artisan qualifié / Menuisier">
+      </div>
+      <div class="form-group">
+        <label>Ville *</label>
+        <select class="form-sheet-el" id="adCity" required>
+          <option value="Yaoundé">Yaoundé</option>
+          <option value="Douala">Douala</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Prix (FCFA) *</label>
+        <input class="form-sheet-el" id="adPrice" type="number" required min="100" placeholder="25000">
+      </div>
+      <div class="form-group">
+        <label>URL de l'image (ou lien direct) *</label>
+        <input class="form-sheet-el" id="adImageFile" type="url" required placeholder="https://images.unsplash.com/...">
+      </div>
+      <div class="form-group">
+        <label>Description détaillée *</label>
+        <textarea class="form-sheet-el" id="adDesc" rows="3" required placeholder="Décrivez votre offre en quelques mots..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Numéro WhatsApp (avec indicatif) *</label>
+        <input class="form-sheet-el" id="adWhatsapp" type="tel" required placeholder="+2376XXXXXXXX">
+      </div>
+      <button type="submit" class="btn-submit-modal">Publier l'annonce</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Configuration Supabase
+  const SUPABASE_URL = 'VOTRE_SUPABASE_URL';
+  const SUPABASE_KEY = 'VOTRE_SUPABASE_ANON_KEY';
+  const supabaseClient = window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+  let currentCategory = '';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadListings();
+  });
+
+  async function loadListings(category = currentCategory) {
+    currentCategory = category;
+    const grid = document.getElementById('listings-grid');
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const cityFilter = document.getElementById('cityFilter').value;
+
+    grid.innerHTML = '<div style="color:var(--color-text-muted); text-align:center; grid-column: 1/-1; padding:30px;">Chargement des offres en cours...</div>';
+
+    if (!supabaseClient) {
+      grid.innerHTML = '<div style="color:red; text-align:center; grid-column: 1/-1; padding:30px;">Erreur d\'initialisation Supabase.</div>';
+      return;
+    }
+
+    let query = supabaseClient.from('listings').select('*');
+    if (category) {
+      query = query.eq('category', category);
+    }
+    if (cityFilter) {
+      query = query.eq('city', cityFilter);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      grid.innerHTML = '<div style="color:red; text-align:center; grid-column: 1/-1; padding:30px;">Erreur de chargement des annonces.</div>';
+      return;
+    }
+
+    let filteredData = data || [];
+    if (searchTerm) {
+      filteredData = filteredData.filter(ad => 
+        (ad.title && ad.title.toLowerCase().includes(searchTerm)) || 
+        (ad.description && ad.description.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    if (filteredData.length === 0) {
+      grid.innerHTML = '<div style="color:var(--color-text-muted); text-align:center; grid-column: 1/-1; padding:30px;">Aucune annonce disponible pour le moment.</div>';
+      return;
+    }
+
+    grid.innerHTML = filteredData.map(ad => `
+      <div class="ad-card">
+        <div class="card-img-container">
+          <span class="card-badge-top">${ad.category || 'Service'}</span>
+          <img src="${ad.image_url || ad.image || 'https://images.unsplash.com/photo-1557804506-669a67965ba0'}" alt="${ad.title}">
+        </div>
+        <div class="card-body">
+          <h3 class="ad-title">${ad.title}</h3>
+          <p class="ad-desc">${ad.description}</p>
+          <div class="card-meta">
+            <span class="ad-city">📍 ${ad.city || 'Cameroun'}</span>
+            <span class="ad-price">${Number(ad.price || 0).toLocaleString()} FCFA</span>
+          </div>
+          <a href="https://wa.me/${ad.whatsapp || ''}?text=Bonjour,%20je%20suis%20intéressé%20par%20votre%20offre%20${encodeURIComponent(ad.title)}%20sur%20CamerLink" target="_blank" class="whatsapp-link-card">Contacter sur WhatsApp</a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterByCategory(category, element) {
+    document.querySelectorAll('.cat-chip').forEach(chip => chip.classList.remove('active'));
+    element.classList.add('active');
+    loadListings(category);
+  }
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  }
+
+  function openPublishModal() { document.getElementById('publishModal').classList.add('active'); }
+  function closePublishModal() { document.getElementById('publishModal').classList.remove('active'); }
+  function openAuthModal() { alert("Espace de connexion bientot disponible."); }
+  function openUserModal() { alert("Gestion du compte utilisateur."); }
+
+  async function handlePublishSubmit(event) {
+    event.preventDefault();
+    const newAd = {
+      category: document.getElementById('adCategory').value,
+      title: document.getElementById('adTitle').value,
+      city: document.getElementById('adCity').value,
+      price: parseFloat(document.getElementById('adPrice').value),
+      image_url: document.getElementById('adImageFile').value,
+      description: document.getElementById('adDesc').value,
+      whatsapp: document.getElementById('adWhatsapp').value
+    };
+
+    if (!supabaseClient) {
+      alert("Erreur de connexion base de données.");
+      return;
+    }
+
+    const { error } = await supabaseClient.from('listings').insert([newAd]);
+    if (error) {
+      alert("Erreur lors de la publication : " + error.message);
+    } else {
+      alert("Offre publiée avec succès !");
+      closePublishModal();
+      document.getElementById('adForm').reset();
+      loadListings();
+    }
+  }
+</script>
+</body>
+</html>
