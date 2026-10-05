@@ -320,3 +320,51 @@ document.addEventListener('DOMContentLoaded', () => {
     verifierSession();
     fetchListings();
 });
+/* ===== LOOK PROFESSIONNEL ===== */
+(function () {
+    const font = document.createElement('link');
+    font.rel = 'stylesheet';
+    font.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap';
+    document.head.appendChild(font);
+
+    const css = document.createElement('style');
+    css.textContent = `
+      * { font-family: 'Inter','Segoe UI',Roboto,Arial,sans-serif !important; }
+      body { background: #f4f6fb; }
+
+      header { box-shadow: 0 2px 12px rgba(15,23,42,.06); border-bottom: none; }
+      .logo { letter-spacing: -.5px; }
+
+      .hero { background: linear-gradient(135deg,#1d4ed8 0%,#2563eb 55%,#3b82f6 100%); padding: 48px 18px 44px; }
+      .hero h1 { font-weight: 800; letter-spacing: -.5px; line-height: 1.2; }
+      .badge { border: 1px solid rgba(255,255,255,.25); }
+      .search-box { box-shadow: 0 20px 40px rgba(15,23,42,.25); }
+
+      #trustBar { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; max-width: 1100px; margin: -22px auto 0; padding: 0 16px; position: relative; z-index: 5; }
+      #trustBar div { background: #fff; border-radius: 14px; padding: 12px 10px; text-align: center; font-size: .78rem; color: #475569; box-shadow: 0 6px 18px rgba(15,23,42,.08); }
+      #trustBar b { display: block; color: #0f172a; font-size: .85rem; margin-bottom: 2px; }
+
+      .card { border: 1px solid #eef1f6; box-shadow: 0 2px 10px rgba(15,23,42,.05); transition: transform .2s, box-shadow .2s; }
+      .card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(15,23,42,.12); }
+      .card img { height: 200px; }
+      .card h3 { font-size: 1.05rem; font-weight: 700; }
+      .price { font-size: 1.1rem; font-weight: 800; }
+      .contact { display: block; text-align: center; background: #16a34a; color: #fff !important; padding: 11px; border-radius: 12px; text-decoration: none; margin-top: 12px; }
+      .contact:hover { background: #15803d; }
+
+      footer { background: #0f172a; color: #94a3b8; margin-top: 30px; }
+    `;
+    document.head.appendChild(css);
+
+    // Bandeau de confiance sous l'en-tête bleu
+    const hero = document.querySelector('.hero');
+    if (hero && !document.getElementById('trustBar')) {
+        const bar = document.createElement('section');
+        bar.id = 'trustBar';
+        bar.innerHTML = `
+          <div><b>✔ Profils vérifiés</b>Professionnels contrôlés</div>
+          <div><b>💬 WhatsApp direct</b>Sans intermédiaire</div>
+          <div><b>🇨🇲 Partout au Cameroun</b>Toutes les grandes villes</div>`;
+        hero.insertAdjacentElement('afterend', bar);
+    }
+})();
