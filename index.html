@@ -138,7 +138,7 @@
 </head>
 <body>
 
-<!-- Header --- Professionnel --- -->
+<!-- Header -->
 <header>
   <a href="#" class="logo-brand">Camer<span>Link</span></a>
   <div class="header-actions">
@@ -151,16 +151,15 @@
 
 <div class="header-spacer"></div>
 
-<!-- SECTION RÉELS DYNAMIQUES --- NOUVEAU --- -->
+<!-- Section Réels Dynamiques -->
 <section class="reels-section">
   <h2>⚡ Tendances & Réels</h2>
   <div id="reels-container" class="reels-container">
-    <!-- Les cartes seront injectées ici par le script -->
     <div style="color:var(--color-text-muted); font-size:0.9rem; padding:10px;">Chargement des réels...</div>
   </div>
 </section>
 
-<!-- Section Hero --- Incitation à l'action --- -->
+<!-- Section Hero -->
 <section class="hero">
   <h1>L'Excellence au Cameroun <br><span>à portée de clic.</span></h1>
   <p>La marketplace de référence pour des offres premium vérifiées. Vendez, achetez, soyez servis.</p>
@@ -174,29 +173,27 @@
   </div>
 </section>
 
-<!-- Catégories --- Ergonomique --- -->
+<!-- Catégories -->
 <div class="categories-scroll">
   <div class="cat-chip active" onclick="filterByCategory('', this)">✨ Tout voir</div>
-  <div class="cat-chip" onclick="filterByCategory('Restaurants & Gastronomie', this)">🍽️ Gastronomie</div>
+  <div class="cat-chip" onclick="filterByCategory('Restaurants & Gastronomie', this)">🍽️️ Gastronomie</div>
   <div class="cat-chip" onclick="filterByCategory('Immobilier', this)">🏠 Immobilier</div>
   <div class="cat-chip" onclick="filterByCategory('Véhicules', this)">🚗 Véhicules</div>
   <div class="cat-chip" onclick="filterByCategory('High-Tech & Services', this)">💻 Services</div>
 </div>
 
-<!-- Grille d'Annonces --- Premium --- -->
+<!-- Grille d'Annonces -->
 <main>
   <div id="listings-grid"></div>
 </main>
 
-<!-- Footer --- Marque --- -->
+<!-- Footer -->
 <footer>
   <a href="#" class="logo-brand">Camer<span>Link</span></a>
   <p>© 2026 CamerLink · L'élite du service digital.</p>
 </footer>
 
-<!-- --- MODALS --- Système d'overlay --- -->
-
-<!-- MODAL PUBLICATION --- Conçue pour mobile --- -->
+<!-- Modals -->
 <div id="publishModal" class="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-header">
@@ -231,126 +228,4 @@
       </div>
       <div class="form-group">
         <label>Description détaillée *</label>
-        <textarea class="form-sheet-el" id="adDescription" rows="4" required maxlength="500" placeholder="Décrivez votre offre..."></textarea>
-      </div>
-      <div class="form-group">
-        <label>Votre numéro WhatsApp *</label>
-        <input class="form-sheet-el" id="adContact" type="tel" placeholder="699000000" required pattern="6[0-9]{8}" maxlength="9">
-      </div>
-      <button class="btn-submit-modal" type="submit" id="submitBtn">Publier l'annonce</button>
-    </form>
-  </div>
-</div>
-
-<!-- MODAL AUTH --- Sécurisée --- -->
-<div id="authModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header">
-      <h3 class="modal-title">Espace Membre</h3>
-      <button onclick="closeAuthModal()" class="close-modal" aria-label="Fermer">×</button>
-    </div>
-    <form onsubmit="handleAuthSubmit(event)">
-      <p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:15px; line-height:1.4;">Utilisez votre numéro de téléphone pour vous connecter ou créer un compte.</p>
-      <div class="form-group">
-        <label>Numéro de téléphone *</label>
-        <input class="form-sheet-el" id="authPhone" type="tel" placeholder="699000000" required pattern="6[0-9]{8}" maxlength="9">
-      </div>
-      <div class="form-group">
-        <label>Mot de passe *</label>
-        <input class="form-sheet-el" id="authPassword" type="password" required placeholder="••••••••">
-      </div>
-      <button class="btn-submit-modal" type="submit">Connexion / Inscription</button>
-      <p id="authErrorMsg" style="color:#ef4444; text-align:center; margin-top:12px; font-size:0.85rem;"></p>
-    </form>
-  </div>
-</div>
-
-<!-- MODAL USER --- Profil --- -->
-<div id="userModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header">
-      <h3 class="modal-title">Votre Compte</h3>
-      <button onclick="closeUserModal()" class="close-modal" aria-label="Fermer">×</button>
-    </div>
-    <div style="text-align:center; padding: 20px 0;">
-      <div style="width:80px; height:80px; background:var(--color-surface); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--color-accent); margin: 0 auto 15px;">👤</div>
-      <p id="userPhoneDisplay" style="font-weight:700; font-size:1.1rem; margin-bottom:20px;"></p>
-      <button onclick="handleLogout()" style="padding: 10px 20px; background:var(--color-border); color:var(--color-text-main); border-radius:999px; font-size:0.9rem; font-weight:600;">Se déconnecter</button>
-    </div>
-  </div>
-</div>
-
-<!-- --- JAVASCRIPT --- Supabase & Logique --- -->
-<script>
-  // --- CONFIGURATION SUPABASE ---
-  const SUPABASE_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  const CITIES = ['Douala', 'Yaoundé', 'Bafoussam', 'Garoua', 'Bamenda', 'Kribi', 'Buea'];
-  let currentCategory = '';
-  let currentUser = null;
-
-  const $ = id => document.getElementById(id);
-
-  // --- Thème ---
-  function toggleTheme() {
-    const html = document.documentElement;
-    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', next);
-    localStorage.setItem('camerlink_theme', next);
-  }
-  if(localStorage.getItem('camerlink_theme')) document.documentElement.setAttribute('data-theme', localStorage.getItem('camerlink_theme'));
-
-  // --- Modals ---
-  const openPublishModal = () => { if (!currentUser) { openAuthModal(); return; } $('publishModal').classList.add('active'); };
-  const closePublishModal = () => $('publishModal').classList.remove('active');
-  const openAuthModal = () => $('authModal').classList.add('active');
-  const closeAuthModal = () => $('authModal').classList.remove('active');
-  const openUserModal = () => { if(currentUser) { $('userPhoneDisplay').textContent = currentUser.email.replace('237','').replace('@camerlink.app','');$('userModal').classList.add('active'); } };
-  const closeUserModal = () => $('userModal').classList.remove('active');
-
-  // --- Auth ---
-  async function handleAuthSubmit(e) {
-    e.preventDefault();
-    const phone = $('authPhone').value.trim();
-    const password = $('authPassword').value;
-    const email = `237${phone}@camerlink.app`;
-    let res = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (res.error) res = await supabaseClient.auth.signUp({ email, password });
-    if (res.error) $('authErrorMsg').textContent = "Erreur d'authentification.";
-    else { closeAuthModal(); checkSession(); }
-  }
-  async function checkSession() {
-    const { data } = await supabaseClient.auth.getSession();
-    currentUser = data?.session?.user || null;
-    $('loginBtn').classList.toggle('hidden', !!currentUser);$('userBtn').classList.toggle('hidden', !currentUser);
-  }
-  async function handleLogout() { await supabaseClient.auth.signOut(); closeUserModal(); checkSession(); }
-
-  // --- Publication ---
-  async function handlePublishSubmit(e) {
-    e.preventDefault();
-    if (!currentUser) return;
-    const btn = $('submitBtn');
-    const originalText = btn.textContent;
-    btn.textContent = "Publication en cours...";
-    btn.disabled = true;
-    let imageUrl = '';
-    const fileInput = $('adImageFile');
-    const cat = $('adCategory').value;
-    try {
-      if (fileInput.files && fileInput.files[0]) {
-        const file = fileInput.files[0];
-        const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
-        const { error: uploadError } = await supabaseClient.storage.from('images-annonces').upload(fileName, file);
-        if (!uploadError) {
-          const { data: publicUrlData } = supabaseClient.storage.from('images-annonces').getPublicUrl(fileName);
-          imageUrl = publicUrlData.publicUrl;
-        }
-      }
-    } catch(err) { console.error("Erreur upload:", err); }
-    if (!imageUrl) {
-      if (cat === 'Restaurants & Gastronomie') imageUrl = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=500';
-      else if (cat === 'Immobilier') imageUrl = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=500';
-      else if (cat === 'Véhicules')
+        <textarea class="form-
