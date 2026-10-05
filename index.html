@@ -3,11 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>CamerLink - Marketplace du Cameroun</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+  
   <style>
     * {
       margin: 0;
@@ -18,7 +15,7 @@
 
     body {
       background: #f5f7fb;
-      color: #172033;
+      color: #172631;
       line-height: 1.5;
     }
 
@@ -28,24 +25,24 @@
 
     header {
       background: white;
-      padding: 14px 20px;
+      padding: 12px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid #d4d7db;
       position: sticky;
       top: 0;
       z-index: 100;
     }
 
     .logo {
-      font-size: 1.45rem;
+      font-size: 1.3rem;
       font-weight: 800;
       color: #2563eb;
     }
 
     .logo span {
-      color: #111827;
+      color: #f59e0b;
     }
 
     .header-actions {
@@ -60,104 +57,87 @@
       font-weight: 700;
     }
 
-    .btn-login {
-      background: #2563eb;
-      color: white;
-      padding: 11px 18px;
-      border-radius: 999px;
-    }
-
-    .btn-user {
-      background: #eef4ff;
-      color: #2563eb;
-      padding: 10px 15px;
-      border-radius: 999px;
-    }
-
     .btn-pub {
-      background: #fbbf24;
-      color: #111827;
-      padding: 12px 20px;
-      border-radius: 999px;
+      background: #f59e0b;
+      color: #172631;
+      padding: 10px 16px;
+      border-radius: 99px;
+      font-size: 0.9rem;
     }
 
     .hero {
       background: #2563eb;
       color: white;
       text-align: center;
-      padding: 35px 18px 30px;
+      padding: 35px 15px;
     }
 
     .badge {
       display: inline-block;
-      background: rgba(255,255,255,.12);
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: .9rem;
+      background: rgba(255,255,255,0.15);
+      padding: 6px 15px;
+      border-radius: 50px;
+      font-size: 0.9rem;
       margin-bottom: 15px;
     }
 
     .hero h1 {
-      font-size: 2rem;
+      font-size: 1.8rem;
       margin-bottom: 10px;
     }
 
     .hero h1 span {
-      color: #fbbf24;
+      color: #f59e0b;
     }
 
     .hero p {
       max-width: 600px;
       margin: auto;
-      opacity: .95;
+      opacity: 0.9;
     }
 
     .search-box {
       background: white;
       max-width: 600px;
-      margin: 22px auto 0;
+      margin: 20px auto 0;
       padding: 12px;
-      border-radius: 24px;
+      border-radius: 20px;
       display: grid;
       gap: 10px;
     }
 
-    input,
-    select,
-    textarea {
+    input, select, textarea {
       width: 100%;
-      border: 1px solid #dbe1ea;
+      border: 1px solid #d4d7db;
       border-radius: 12px;
-      padding: 13px;
+      padding: 12px;
       font-size: 1rem;
       outline: none;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
+    input:focus, select:focus, textarea:focus {
       border-color: #2563eb;
     }
 
     .btn-search {
-      background: #fbbf24;
-      color: #111827;
-      padding: 14px;
-      border-radius: 999px;
+      background: #f59e0b;
+      color: #172631;
+      padding: 12px;
+      border-radius: 99px;
       font-size: 1rem;
     }
 
     main {
       max-width: 1100px;
       margin: auto;
-      padding: 25px 16px 50px;
+      padding: 25px 15px 50px;
     }
 
     .head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
     .head h2 {
@@ -168,24 +148,25 @@
       color: #2563eb;
       font-weight: 700;
       cursor: pointer;
+      text-decoration: none;
     }
 
     #listings {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
     }
 
     .card {
       background: white;
-      border-radius: 18px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 8px 25px rgba(15,23,42,.08);
+      box-shadow: 0 4px 20px rgba(15,23,42,0.08);
     }
 
     .card img {
       width: 100%;
-      height: 190px;
+      height: 180px;
       object-fit: cover;
       display: block;
     }
@@ -202,71 +183,71 @@
     }
 
     .cat {
-      background: #eef4ff;
+      background: #f5f7fb;
       color: #2563eb;
-      padding: 5px 9px;
-      border-radius: 999px;
-      font-size: .75rem;
+      padding: 3px 8px;
+      border-radius: 50px;
+      font-size: 0.75rem;
       font-weight: 700;
     }
 
     .status {
-      background: #ecfdf3;
+      background: #f5f7fb;
       color: #16a34a;
-      padding: 5px 9px;
-      border-radius: 999px;
-      font-size: .75rem;
+      padding: 3px 8px;
+      border-radius: 50px;
+      font-size: 0.75rem;
       font-weight: 700;
     }
 
     .card h3 {
-      margin: 8px 0;
+      font-size: 1rem;
+      margin-bottom: 6px;
     }
 
     .desc {
       color: #64748b;
-      font-size: .9rem;
-      min-height: 42px;
+      font-size: 0.85rem;
+      min-height: 40px;
     }
 
     .contact {
       color: #16a34a;
       font-weight: 700;
-      font-size: .9rem;
+      font-size: 0.9rem;
       margin-top: 10px;
+      display: block;
     }
 
     .foot {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid #edf0f4;
+      border-top: 1px solid #e2e8f0;
       margin-top: 12px;
       padding-top: 12px;
     }
 
     .city {
       color: #64748b;
-      font-size: .85rem;
+      font-size: 0.85rem;
     }
 
     .price {
       color: #2563eb;
-      font-weight: 800;
+      font-size: 1.1rem;
+      font-weight: 900;
     }
 
-    /* MODALES */
-
-    #modal,
-    #authModal,
-    #userModal {
+    /* MODALE DE PUBLICATION */
+    #modal {
       position: fixed;
       inset: 0;
-      background: rgba(15,23,42,.65);
+      background: rgba(15,23,42,0.6);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 15px;
       z-index: 1000;
     }
 
@@ -274,25 +255,28 @@
       background: white;
       width: 100%;
       max-width: 470px;
-      max-height: 92vh;
+      max-height: 90vh;
       overflow-y: auto;
-      border-radius: 24px;
-      padding: 24px;
+      border-radius: 20px;
+      padding: 20px;
     }
 
     .sheet-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 18px;
+      margin-bottom: 15px;
     }
 
     .close {
-      width: 38px;
-      height: 38px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       background: #f1f5f9;
       font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .form-group {
@@ -301,9 +285,9 @@
 
     .form-group label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       font-weight: 700;
-      font-size: .9rem;
+      font-size: 0.9rem;
     }
 
     .btn-ok {
@@ -311,78 +295,8 @@
       background: #2563eb;
       color: white;
       padding: 14px;
-      border-radius: 999px;
+      border-radius: 12px;
       font-size: 1rem;
-      margin-top: 5px;
-    }
-
-    .auth-logo {
-      text-align: center;
-      font-size: 2rem;
-      font-weight: 800;
-      color: #2563eb;
-      margin-bottom: 5px;
-    }
-
-    .auth-subtitle {
-      text-align: center;
-      color: #64748b;
-      margin-bottom: 20px;
-    }
-
-    .phone-prefix {
-      display: flex;
-      gap: 8px;
-    }
-
-    .phone-prefix span {
-      background: #f1f5f9;
-      border: 1px solid #dbe1ea;
-      border-radius: 12px;
-      padding: 13px;
-      font-weight: 700;
-    }
-
-    .security {
-      background: #f0fdf4;
-      color: #166534;
-      padding: 12px;
-      border-radius: 12px;
-      margin-top: 15px;
-      font-size: .85rem;
-    }
-
-    .account-box {
-      text-align: center;
-    }
-
-    .account-icon {
-      width: 65px;
-      height: 65px;
-      margin: 0 auto 12px;
-      background: #eef4ff;
-      color: #2563eb;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      font-weight: 800;
-    }
-
-    .logout {
-      width: 100%;
-      background: #fee2e2;
-      color: #dc2626;
-      padding: 14px;
-      border-radius: 999px;
-      margin-top: 15px;
-    }
-
-    .msg {
-      text-align: center;
-      color: #dc2626;
-      font-size: .9rem;
       margin-top: 10px;
     }
 
@@ -390,370 +304,146 @@
       text-align: center;
       padding: 25px;
       color: #64748b;
-      font-size: .85rem;
+      font-size: 0.85rem;
     }
 
-    @media(max-width:600px) {
+    @media (min-width: 600px) {
       .hero h1 {
-        font-size: 1.6rem;
+        font-size: 2.2rem;
       }
-
       header {
-        padding: 12px;
-      }
-
-      .btn-pub {
-        padding: 10px 13px;
-        font-size: .85rem;
+        padding: 15px 30px;
       }
     }
   </style>
 </head>
-
 <body>
 
-<header>
-  <div class="logo">
-    Camer<span>Link</span>
-  </div>
+  <header>
+    <div class="logo">Camer<span>Link</span></div>
+    <div class="header-actions">
+      <button class="btn-pub" onclick="openPublish()">Publier une annonce</button>
+    </div>
+  </header>
 
-  <div class="header-actions">
-    <button id="loginBtn" class="btn-login" onclick="openAuthModal()">
-      Se connecter
-    </button>
+  <section class="hero">
+    <div class="badge">🇨🇲 La marketplace pensée pour le Cameroun</div>
+    <h1>Tout ce dont vous avez besoin, <span>au même endroit.</span></h1>
+    <p>Trouvez des produits, des professionnels, des véhicules et des services près de chez vous !</p>
+    
+    <div class="search-box">
+      <input id="q" type="search" placeholder="Que recherchez-vous ? Ex: Toyota, dépannage...">
+      <select id="cityFilter">
+        <option value="">Toutes les villes</option>
+        <option value="Yaoundé">Yaoundé</option>
+        <option value="Douala">Douala</option>
+        <option value="Bafoussam">Bafoussam</option>
+      </select>
+      <button class="btn-search" onclick="applyFilters()">Rechercher</button>
+    </div>
+  </section>
 
-    <button id="userBtn" class="btn-user hidden" onclick="openUserModal()">
-      Mon compte
-    </button>
-
-    <button class="btn-pub" onclick="openPublish()">
-      Publier une annonce
-    </button>
-  </div>
-</header>
-
-<section class="hero">
-
-  <div class="badge">
-    🇨🇲 La marketplace pensée pour le Cameroun
-  </div>
-
-  <h1>
-    Tout ce dont vous avez besoin,
-    <span>au même endroit.</span>
-  </h1>
-
-  <p>
-    Trouvez des produits, des professionnels, des véhicules
-    et des services près de chez vous !
-  </p>
-
-  <div class="search-box">
-
-    <input
-      id="q"
-      type="search"
-      placeholder="Que recherchez-vous ? Ex: Toyota, dépannage..."
-    >
-
-    <select id="cityFilter">
-      <option value="">Toutes les villes</option>
-    </select>
-
-    <button class="btn-search" onclick="applyFilters()">
-      Rechercher
-    </button>
-
-  </div>
-
-</section>
-
-<main>
-
-  <div class="head">
-    <h2>🔥 Annonces récentes</h2>
-    <a onclick="resetFilters()">Voir tout</a>
-  </div>
-
-  <div id="listings">
-    <p>Chargement des annonces...</p>
-  </div>
-
-</main>
-
-
-<!-- MODAL CONNEXION -->
-
-<div id="authModal" class="hidden">
-
-  <div class="sheet">
-
-    <div class="sheet-header">
-      <div></div>
-
-      <button class="close" onclick="closeAuthModal()">
-        ×
-      </button>
+  <main>
+    <div class="head">
+      <h2>🔥 Annonces récentes</h2>
+      <a onclick="resetFilters()">Voir tout</a>
     </div>
 
-    <div class="auth-logo">
-      CamerLink
+    <div id="listings">
+      <p>Chargement des annonces...</p>
     </div>
+  </main>
 
-    <p class="auth-subtitle">
-      Connectez-vous avec votre numéro de téléphone
-    </p>
-
-    <!-- TELEPHONE -->
-
-    <div id="phoneStep">
-
-      <div class="form-group">
-
-        <label>
-          Numéro de téléphone
-        </label>
-
-        <div class="phone-prefix">
-
-          <span>🇨🇲 +237</span>
-
-          <input
-            id="phoneNumber"
-            type="tel"
-            inputmode="numeric"
-            maxlength="9"
-            placeholder="6XXXXXXXX"
-          >
-
+  <!-- MODALE DE PUBLICATION -->
+  <div id="modal" class="hidden">
+    <div class="sheet">
+      <div class="sheet-header">
+        <h3>Publier une annonce</h3>
+        <button class="close" onclick="closePublish()">×</button>
+      </div>
+      
+      <form id="adForm" onsubmit="handleFormSubmit(event)">
+        <div class="form-group">
+          <label>Titre de l'annonce</label>
+          <input id="adTitle" required placeholder="Ex : iPhone 13 Pro Max">
         </div>
-
-      </div>
-
-      <button
-        id="sendOtpBtn"
-        class="btn-ok"
-        onclick="sendOTP()"
-      >
-        Recevoir le code SMS
-      </button>
-
-      <div class="security">
-        🔐 Votre numéro est utilisé uniquement
-        pour sécuriser votre compte CamerLink.
-      </div>
-
-      <p id="authMessage" class="msg"></p>
-
+        
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select id="adCategory">
+            <option value="Véhicules">Véhicules</option>
+            <option value="Immobilier">Immobilier</option>
+            <option value="High-Tech">High-Tech</option>
+            <option value="Services">Services</option>
+            <option value="Mode">Mode</option>
+            <option value="Maison">Maison</option>
+            <option value="Emploi">Emploi</option>
+            <option value="Autres">Autres</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Ville</label>
+          <select id="adCity">
+            <option value="Yaoundé">Yaoundé</option>
+            <option value="Douala">Douala</option>
+            <option value="Bafoussam">Bafoussam</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Prix (FCFA)</label>
+          <input id="adPrice" type="number" min="0" required placeholder="150000">
+        </div>
+        
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="adDescription" rows="4" required placeholder="État, lieu de récupération..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Contact WhatsApp / Téléphone</label>
+          <input id="adContact" type="tel" placeholder="6XXXXXXXX">
+        </div>
+        
+        <div class="form-group">
+          <label>Photo (Lien ou image)</label>
+          <input id="adImage" type="text" placeholder="https://... (URL de l'image)">
+        </div>
+        
+        <button type="submit" class="btn-ok">Valider la publication</button>
+      </form>
     </div>
-
-
-    <!-- CODE OTP -->
-
-    <div id="otpStep" class="hidden">
-
-      <div class="form-group">
-
-        <label>
-          Code de validation
-        </label>
-
-        <input
-          id="otpCode"
-          type="text"
-          inputmode="numeric"
-          maxlength="6"
-          placeholder="Entrez le code reçu par SMS"
-        >
-
-      </div>
-
-      <button
-        class="btn-ok"
-        onclick="verifyOTP()"
-      >
-        Vérifier et se connecter
-      </button>
-
-      <p id="otpMessage" class="msg"></p>
-
-      <button
-        style="background:none;color:#2563eb;margin-top:15px"
-        onclick="backToPhone()"
-      >
-        ← Modifier le numéro
-      </button>
-
-    </div>
-
   </div>
 
-</div>
+  <footer>
+    © 2026 CamerLink - La marketplace pensée pour le Cameroun 🇨🇲
+  </footer>
 
+  <script>
+    // Fonctions basiques pour ouvrir/fermer le formulaire de publication
+    function openPublish() {
+      document.getElementById('modal').classList.remove('hidden');
+    }
 
-<!-- MODAL COMPTE -->
+    function closePublish() {
+      document.getElementById('modal').classList.add('hidden');
+    }
 
-<div id="userModal" class="hidden">
+    function applyFilters() {
+      // Logique de recherche à adapter selon tes besoins
+    }
 
-  <div class="sheet">
+    function resetFilters() {
+      document.getElementById('q').value = '';
+      document.getElementById('cityFilter').value = '';
+    }
 
-    <div class="sheet-header">
-
-      <h2>Mon compte</h2>
-
-      <button class="close" onclick="closeUserModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="account-box">
-
-      <div class="account-icon">
-        👤
-      </div>
-
-      <h3 id="accountPhone">
-        Utilisateur CamerLink
-      </h3>
-
-      <p style="color:#64748b;margin-top:5px">
-        Compte vérifié par SMS
-      </p>
-
-      <button
-        class="logout"
-        onclick="logout()"
-      >
-        Se déconnecter
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- MODAL PUBLICATION -->
-
-<div id="modal" class="hidden">
-
-  <div class="sheet">
-
-    <div class="sheet-header">
-
-      <h3>Publier une annonce</h3>
-
-      <button
-        class="close"
-        onclick="closeModal()"
-      >
-        ×
-      </button>
-
-    </div>
-
-    <form
-      id="adForm"
-      onsubmit="handleFormSubmit(event)"
-    >
-
-      <div class="form-group">
-        <label>Titre de l'annonce</label>
-
-        <input
-          id="adTitle"
-          required
-          placeholder="Ex : iPhone 13 Pro Max"
-        >
-      </div>
-
-      <div class="form-group">
-        <label>Catégorie</label>
-
-        <select id="adCategory">
-          <option>Véhicules</option>
-          <option>Immobilier</option>
-          <option>High-Tech</option>
-          <option>Services</option>
-          <option>Mode</option>
-          <option>Maison</option>
-          <option>Emploi</option>
-          <option>Autres</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Ville</label>
-
-        <select id="adCity"></select>
-      </div>
-
-      <div class="form-group">
-        <label>Prix (FCFA)</label>
-
-        <input
-          id="adPrice"
-          type="number"
-          min="0"
-          required
-          placeholder="250000"
-        >
-      </div>
-
-      <div class="form-group">
-        <label>Description</label>
-
-        <textarea
-          id="adDescription"
-          rows="4"
-          required
-          placeholder="État, lieu de récupération..."
-        ></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Contact WhatsApp / téléphone</label>
-
-        <input
-          id="adContact"
-          type="tel"
-          placeholder="6XXXXXXXX"
-        >
-      </div>
-
-      <div class="form-group">
-        <label>Photo</label>
-
-        <input
-          id="adImage"
-          type="file"
-          accept="image/*"
-        >
-      </div>
-
-      <button
-        id="submitBtn"
-        class="btn-ok"
-        type="submit"
-      >
-        Valider la publication
-      </button>
-
-    </form>
-
-  </div>
-
-</div>
-
-
-<footer>
-  © 2026 CamerLink · La marketplace pensée pour le Cameroun 🇨🇲
-</footer>
-
-
-<script src="script.js"></script>
-
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      alert('Annonce enregistrée avec succès !');
+      closePublish();
+    }
+  </script>
 </body>
 </html>
