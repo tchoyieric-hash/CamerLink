@@ -368,3 +368,10 @@ document.addEventListener('DOMContentLoaded', () => {
         hero.insertAdjacentElement('afterend', bar);
     }
 })();
+(function () {
+    const f = document.querySelector('footer');
+    if (f) {
+        f.insertAdjacentHTML('beforeend',
+          '<br><a href="modele.html" style="color:#93c5fd;font-weight:600">Comment CamerLink rapporte · Investisseurs</a>');
+    }
+})();
