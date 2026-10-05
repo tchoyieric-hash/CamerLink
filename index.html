@@ -2,8 +2,8 @@
 <html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="CamerLink · La plateforme d'annonces premium au Cameroun. Services, Immobilier, Véhicules, Restaurants.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CamerLink · La plateforme d'annonces au Cameroun. Services, Immobilier, Véhicules, Restaurants.">
   <title>CamerLink · L'Excellence Numérique</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +19,7 @@
       --color-accent: #F59E0B;
       --color-cta: #3B82F6;
       --color-whatsapp: #22C55E;
+      --color-danger: #EF4444;
       --color-border: #1F2937;
       --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --header-height: 70px;
@@ -38,74 +39,89 @@
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
     body { background: var(--color-bg); color: var(--color-text-main); font-family: var(--font-family); font-size: 16px; line-height: 1.5; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
     a { text-decoration: none; color: inherit; }
-    ul { list-style: none; }
-    button { border: none; background: none; cursor: pointer; font-family: inherit; }
+    button { border: none; background: none; cursor: pointer; font-family: inherit; color: inherit; }
     img { max-width: 100%; display: block; }
+    :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
     /* --- Header --- */
     header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-height); background: var(--color-surface-glass); backdrop-filter: blur(12px); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; padding: 0 var(--container-padding); z-index: 1000; }
     .logo-brand { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
     .logo-brand span { color: var(--color-accent); }
-    .header-actions { display: flex; align-items: center; gap: 8px; }
-    .btn-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--color-surface); color: var(--color-text-main); border: 1px solid var(--color-border); }
-    .btn-login { color: var(--color-text-muted); padding: 8px 14px; font-size: 0.85rem; font-weight: 600; }
+    .header-actions { display: flex; align-items: center; gap: 6px; }
+    .btn-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--color-surface); border: 1px solid var(--color-border); }
+    .btn-login { color: var(--color-text-muted); padding: 8px 10px; font-size: 0.85rem; font-weight: 600; }
     .btn-pub { background: var(--color-accent); color: #000; padding: 9px 16px; border-radius: 999px; font-weight: 700; font-size: 0.85rem; }
     .header-spacer { height: var(--header-height); }
 
-    /* --- Section Réels --- */
+    /* --- Réels --- */
     .reels-section { padding: 20px var(--container-padding) 12px; border-bottom: 1px solid var(--color-border); }
-    .reels-section h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .reels-section h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; }
     .reels-container { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
     .reels-container::-webkit-scrollbar { display: none; }
-    .reel-card { position: relative; min-width: 110px; height: 175px; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); border: 1px solid var(--color-border); cursor: pointer; flex-shrink: 0; }
+    .reel-card { position: relative; min-width: 110px; height: 175px; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); border: 1px solid var(--color-border); flex-shrink: 0; display: block; }
     .reel-card img { width: 100%; height: 100%; object-fit: cover; }
     .reel-gradient { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%); }
+    .reel-badge { position: absolute; top: 8px; left: 8px; padding: 2px 8px; background: var(--color-accent); color: #000; border-radius: 999px; font-size: 0.62rem; font-weight: 800; text-transform: uppercase; }
     .reel-info { position: absolute; bottom: 8px; left: 8px; right: 8px; z-index: 2; }
     .reel-title { font-size: 0.75rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* --- Hero & Recherche --- */
+    /* --- Hero --- */
     .hero { padding: 30px var(--container-padding) 24px; text-align: center; border-bottom: 1px solid var(--color-border); }
     .hero h1 { font-size: 2rem; font-weight: 900; line-height: 1.2; margin-bottom: 10px; }
     .hero h1 span { color: var(--color-accent); }
     .hero p { font-size: 0.95rem; color: var(--color-text-muted); max-width: 480px; margin: 0 auto 20px; }
     .search-filter-bar { max-width: 700px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    .form-el { padding: 12px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 999px; color: var(--color-text-main); font-size: 0.93rem; outline: none; }
+    .form-el { padding: 12px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 999px; color: var(--color-text-main); font-size: 0.93rem; outline: none; font-family: inherit; }
     .search-input { flex: 2; min-width: 190px; }
     .city-select { flex: 1; min-width: 140px; }
-    .btn-search { padding: 12px 28px; background: var(--color-cta); color: white; border-radius: 999px; font-weight: 700; cursor: pointer; }
 
     /* --- Catégories --- */
     .categories-scroll { padding: 16px var(--container-padding); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
     .categories-scroll::-webkit-scrollbar { display: none; }
-    .cat-chip { padding: 8px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); white-space: nowrap; cursor: pointer; }
+    .cat-chip { padding: 8px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); white-space: nowrap; }
     .cat-chip.active { background: var(--color-accent); color: #000; border-color: var(--color-accent); }
 
-    /* --- Grille d'Annonces --- */
+    /* --- Annonces --- */
     main { padding: 16px var(--container-padding) 80px; flex-grow: 1; }
     #listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; max-width: 1200px; margin: 0 auto; }
     .ad-card { background: var(--color-surface); border-radius: var(--radius-xl); overflow: hidden; border: 1px solid var(--color-border); display: flex; flex-direction: column; }
-    .card-img-container { position: relative; width: 100%; height: 165px; }
+    .card-img-container { position: relative; width: 100%; height: 165px; background: var(--color-bg); }
     .card-img-container img { width: 100%; height: 100%; object-fit: cover; }
     .card-badge-top { position: absolute; top: 10px; left: 10px; padding: 3px 8px; background: rgba(0,0,0,0.7); border-radius: 999px; font-size: 0.68rem; font-weight: 600; color: white; text-transform: uppercase; }
+    .card-badge-verified { position: absolute; top: 10px; right: 10px; padding: 3px 8px; background: var(--color-cta); border-radius: 999px; font-size: 0.68rem; font-weight: 700; color: white; }
     .card-body { padding: 14px; display: flex; flex-direction: column; flex-grow: 1; }
-    .ad-title { font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
-    .ad-desc { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 10px; flex-grow: 1; }
+    .ad-title { font-size: 1rem; font-weight: 800; margin-bottom: 4px; overflow-wrap: anywhere; }
+    .ad-desc { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 10px; flex-grow: 1; overflow-wrap: anywhere; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
     .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px; border-top: 1px solid var(--color-border); }
     .ad-city { font-size: 0.8rem; color: var(--color-text-muted); }
     .ad-price { font-size: 1.1rem; font-weight: 900; color: var(--color-accent); }
     .whatsapp-link-card { display: block; width: 100%; margin-top: 12px; padding: 10px; text-align: center; background: var(--color-whatsapp); color: white; border-radius: var(--radius-md); font-weight: 700; font-size: 0.85rem; }
+    .btn-delete { width: 100%; margin-top: 8px; padding: 9px; border: 1px solid var(--color-danger); color: var(--color-danger); border-radius: var(--radius-md); font-weight: 700; font-size: 0.82rem; }
+    .state-msg { color: var(--color-text-muted); text-align: center; grid-column: 1/-1; padding: 30px; }
+    .state-msg button { margin-top: 12px; padding: 9px 20px; background: var(--color-cta); color: #fff; border-radius: 999px; font-weight: 700; }
 
-    /* --- Modal --- */
+    /* --- Modales --- */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; padding: var(--container-padding); z-index: 2000; opacity: 0; visibility: hidden; transition: 0.2s; }
     .modal-overlay.active { opacity: 1; visibility: visible; }
     .modal-sheet { background: var(--color-surface); width: 100%; max-width: 450px; border-radius: var(--radius-xl); padding: 22px; border: 1px solid var(--color-border); max-height: 90vh; overflow-y: auto; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .modal-header h3 { font-size: 1.2rem; font-weight: 800; }
+    .modal-close { font-size: 1.6rem; color: var(--color-text-muted); line-height: 1; padding: 0 6px; }
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; color: var(--color-text-muted); }
-    .form-sheet-el { width: 100%; padding: 12px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text-main); font-size: 0.95rem; }
-    .btn-submit-modal { width: 100%; padding: 13px; background: var(--color-cta); color: white; border-radius: var(--radius-md); font-weight: 700; margin-top: 8px; cursor: pointer; }
+    .form-sheet-el { width: 100%; padding: 12px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text-main); font-size: 0.95rem; font-family: inherit; }
+    .btn-submit-modal { width: 100%; padding: 13px; background: var(--color-cta); color: white; border-radius: var(--radius-md); font-weight: 700; margin-top: 8px; }
+    .btn-submit-modal:disabled { opacity: 0.6; cursor: wait; }
+    .auth-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .auth-tab { flex: 1; padding: 9px; border-radius: 999px; border: 1px solid var(--color-border); font-weight: 700; font-size: 0.85rem; color: var(--color-text-muted); }
+    .auth-tab.active { background: var(--color-accent); border-color: var(--color-accent); color: #000; }
+    .form-error { color: var(--color-danger); font-size: 0.82rem; margin-top: 10px; min-height: 1em; }
+    .img-preview { margin-top: 8px; width: 100%; max-height: 160px; object-fit: cover; border-radius: var(--radius-md); display: none; }
 
-    /* --- Footer --- */
+    /* --- Toast --- */
+    #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--color-text-main); color: var(--color-bg); padding: 11px 20px; border-radius: 999px; font-weight: 600; font-size: 0.88rem; z-index: 3000; opacity: 0; pointer-events: none; transition: 0.25s; max-width: 90vw; text-align: center; }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
     footer { padding: 24px var(--container-padding); text-align: center; border-top: 1px solid var(--color-border); background: var(--color-surface); margin-top: auto; }
     footer p { font-size: 0.8rem; color: var(--color-text-muted); }
   </style>
@@ -115,41 +131,29 @@
 <header>
   <a href="#" class="logo-brand">Camer<span>Link</span></a>
   <div class="header-actions">
-    <button class="btn-icon" onclick="toggleTheme()">🌓</button>
-    <button class="btn-login" onclick="alert('Connexion bientôt dispo')">Connexion</button>
-    <button class="btn-pub" onclick="openPublishModal()">+ Publier</button>
+    <button class="btn-icon" id="themeBtn" aria-label="Changer le thème">🌓</button>
+    <button class="btn-login" id="authBtn">Connexion</button>
+    <button class="btn-pub" id="pubBtn">+ Publier</button>
   </div>
 </header>
 
 <div class="header-spacer"></div>
 
-<section class="reels-section">
-  <h2>⚡ Tendances & Réels</h2>
+<section class="reels-section" id="reelsSection" hidden>
+  <h2>⚡ Tendances &amp; Réels</h2>
   <div id="reels-container" class="reels-container"></div>
 </section>
 
 <section class="hero">
   <h1>L'Excellence au Cameroun<br><span>à portée de clic.</span></h1>
-  <p>La marketplace de référence pour des offres premium vérifiées.</p>
-  
+  <p>La marketplace de référence pour des offres vérifiées.</p>
   <div class="search-filter-bar">
-    <input id="searchInput" type="search" placeholder="Que recherchez-vous (ex: artisan...) ?" class="search-input form-el" oninput="renderApp()">
-    <select id="cityFilter" class="city-select form-el" onchange="renderApp()">
-      <option value="">Toutes les villes</option>
-      <option value="Yaoundé">Yaoundé</option>
-      <option value="Douala">Douala</option>
-    </select>
-    <button class="btn-search form-el" onclick="renderApp()">Filtrer</button>
+    <input id="searchInput" type="search" placeholder="Que recherchez-vous (ex: artisan...) ?" class="search-input form-el" aria-label="Rechercher">
+    <select id="cityFilter" class="city-select form-el" aria-label="Ville"></select>
   </div>
 </section>
 
-<div class="categories-scroll">
-  <div class="cat-chip active" onclick="filterByCategory('', this)">✨ Tout voir</div>
-  <div class="cat-chip" onclick="filterByCategory('Artisans & Services', this)">🛠 Artisans & Services</div>
-  <div class="cat-chip" onclick="filterByCategory('Restaurants & Gastronomie', this)">🍽 Gastronomie</div>
-  <div class="cat-chip" onclick="filterByCategory('Immobilier', this)">🏠 Immobilier</div>
-  <div class="cat-chip" onclick="filterByCategory('Véhicules', this)">🚗 Véhicules</div>
-</div>
+<div class="categories-scroll" id="categoryChips"></div>
 
 <main>
   <div id="listings-grid"></div>
@@ -160,228 +164,437 @@
   <p>© 2026 CamerLink · L'élite du service digital.</p>
 </footer>
 
-<div id="publishModal" class="modal-overlay">
+<!-- Modale connexion -->
+<div id="authModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
   <div class="modal-sheet">
     <div class="modal-header">
-      <h3 style="font-size: 1.2rem; font-weight: 800;">Publier une offre</h3>
-      <button onclick="closePublishModal()" style="font-size: 1.4rem; color:var(--color-text-muted);">×</button>
+      <h3 id="authTitle">Connexion</h3>
+      <button class="modal-close" data-close="authModal" aria-label="Fermer">×</button>
     </div>
-    <form id="adForm" onsubmit="handlePublishSubmit(event)">
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab active" data-mode="login">Se connecter</button>
+      <button type="button" class="auth-tab" data-mode="signup">Créer un compte</button>
+    </div>
+    <form id="authForm">
       <div class="form-group">
-        <label>Catégorie</label>
-        <select class="form-sheet-el" id="adCategory">
-          <option value="Artisans & Services">Artisans & Services</option>
-          <option value="Restaurants & Gastronomie">Restaurants & Gastronomie</option>
-          <option value="Immobilier">Immobilier</option>
-          <option value="Véhicules">Véhicules</option>
-        </select>
+        <label for="authEmail">E-mail</label>
+        <input class="form-sheet-el" id="authEmail" type="email" required autocomplete="email">
       </div>
       <div class="form-group">
-        <label>Titre</label>
-        <input class="form-sheet-el" id="adTitle" type="text" required placeholder="Ex: Menuisier qualifié">
+        <label for="authPassword">Mot de passe (8 caractères minimum)</label>
+        <input class="form-sheet-el" id="authPassword" type="password" required minlength="8" autocomplete="current-password">
       </div>
-      <div class="form-group">
-        <label>Ville</label>
-        <select class="form-sheet-el" id="adCity">
-          <option value="Yaoundé">Yaoundé</option>
-          <option value="Douala">Douala</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Prix (FCFA)</label>
-        <input class="form-sheet-el" id="adPrice" type="number" required placeholder="15000">
-      </div>
-      <div class="form-group">
-        <label>URL Image</label>
-        <input class="form-sheet-el" id="adImage" type="url" required placeholder="https://images.unsplash.com/...">
-      </div>
-      <div class="form-group">
-        <label>Description</label>
-        <textarea class="form-sheet-el" id="adDesc" rows="3" required placeholder="Détails..."></textarea>
-      </div>
-      <div class="form-group">
-        <label>WhatsApp</label>
-        <input class="form-sheet-el" id="adWhatsapp" type="tel" required placeholder="+2376XXXXXXXX">
-      </div>
-      <button type="submit" class="btn-submit-modal">Publier</button>
+      <button type="submit" class="btn-submit-modal" id="authSubmit">Se connecter</button>
+      <p class="form-error" id="authError" role="alert"></p>
     </form>
   </div>
 </div>
 
+<!-- Modale publication -->
+<div id="publishModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="pubTitle">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3 id="pubTitle">Publier une offre</h3>
+      <button class="modal-close" data-close="publishModal" aria-label="Fermer">×</button>
+    </div>
+    <form id="adForm">
+      <div class="form-group">
+        <label for="adCategory">Catégorie</label>
+        <select class="form-sheet-el" id="adCategory"></select>
+      </div>
+      <div class="form-group">
+        <label for="adTitle">Titre</label>
+        <input class="form-sheet-el" id="adTitle" type="text" required minlength="3" maxlength="120" placeholder="Ex: Menuisier qualifié">
+      </div>
+      <div class="form-group">
+        <label for="adCity">Ville</label>
+        <select class="form-sheet-el" id="adCity"></select>
+      </div>
+      <div class="form-group">
+        <label for="adPrice">Prix (FCFA)</label>
+        <input class="form-sheet-el" id="adPrice" type="number" min="0" step="1" required placeholder="15000">
+      </div>
+      <div class="form-group">
+        <label for="adImage">Photo</label>
+        <input class="form-sheet-el" id="adImage" type="file" accept="image/jpeg,image/png,image/webp" required>
+        <img id="imgPreview" class="img-preview" alt="Aperçu de la photo">
+      </div>
+      <div class="form-group">
+        <label for="adDesc">Description</label>
+        <textarea class="form-sheet-el" id="adDesc" rows="3" required maxlength="2000" placeholder="Détails..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="adContact">Numéro WhatsApp</label>
+        <input class="form-sheet-el" id="adContact" type="tel" required pattern="\+?[0-9 ]{8,15}" placeholder="6XXXXXXXX ou +2376XXXXXXXX">
+      </div>
+      <button type="submit" class="btn-submit-modal" id="pubSubmit">Publier</button>
+      <p class="form-error" id="pubError" role="alert"></p>
+    </form>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
 <script>
-  // Données locales de secours (mock data) garantissant l'affichage immédiat
-  const fallbackListings = [
-    {
-      id: 1,
-      category: 'Artisans & Services',
-      title: 'Menuisier Ebéniste Professionnel',
-      description: 'Confection de meubles sur mesure, placards, lits et dressings de haute qualité à Yaoundé.',
-      city: 'Yaoundé',
-      price: 25000,
-      image_url: 'https://images.unsplash.com/photo-1541888946425-d0fbb18f5332?auto=format&fit=crop&w=600&q=80',
-      whatsapp: '+237600000001'
-    },
-    {
-      id: 2,
-      category: 'Artisans & Services',
-      title: 'Électricien Bâtiment & Dépannage',
-      description: 'Installation électrique complète, mise aux normes et dépannage rapide 7j/7.',
-      city: 'Douala',
-      price: 15000,
-      image_url: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80',
-      whatsapp: '+237600000002'
-    },
-    {
-      id: 3,
-      category: 'Restaurants & Gastronomie',
-      title: 'Poulet DG Traditionnel & Plantains',
-      description: 'Le meilleur plat de Poulet DG bien épicé livré chaud chez vous.',
-      city: 'Yaoundé',
-      price: 5000,
-      image_url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80',
-      whatsapp: '+237600000003'
-    },
-    {
-      id: 4,
-      category: 'Immobilier',
-      title: 'Studio Moderne Meublé à Bastos',
-      description: 'Studio propre, eau et électricité permanentes, quartier résidentiel sécurisé.',
-      city: 'Yaoundé',
-      price: 120000,
-      image_url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80',
-      whatsapp: '+237600000004'
-    }
+(() => {
+  'use strict';
+
+  // --- Configuration Supabase (la clé "anon" est publique par conception ;
+  //     la sécurité repose sur les règles RLS de la base) ---
+  const SUPABASE_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2aWRkaXBkdWhhZWx4Y3Z5eWtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1ODExMzcsImV4cCI6MjEwNjE1NzEzN30.L5iaUIW0IQ0hX5uOiOuK-lo_zkf926Xs6CDjCjrpffk';
+  const BUCKET = 'annonces-images';
+
+  const CATEGORIES = [
+    { value: 'Services', chip: '🛠 Services' },
+    { value: 'Restaurants', chip: '🍽 Gastronomie' },
+    { value: 'Immobilier', chip: '🏠 Immobilier' },
+    { value: 'Véhicules', chip: '🚗 Véhicules' }
   ];
+  const CITIES = ['Yaoundé', 'Douala', 'Kribi', 'Bafoussam', 'Garoua', 'Bamenda', 'Limbe', 'Autre'];
 
+  const $ = (id) => document.getElementById(id);
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let allListings = [];
   let currentCategory = '';
-  let allListings = [...fallbackListings];
+  let currentUser = null;
+  let authMode = 'login';
 
-  // Tentative de chargement Supabase en arrière-plan
-  const SUPABASE_URL = 'https://ykcfqggpfdkblqjebfiy.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; 
-  let supabaseClient = null;
+  // --- Utilitaires de sécurité ---
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+  const safeImg = (url) => {
+    const u = String(url || '');
+    return (/^https:\/\//i.test(u) || /^data:image\/(jpeg|png|webp);base64,/i.test(u)) ? u : '';
+  };
+  const waNumber = (contact) => {
+    const d = String(contact || '').replace(/\D/g, '');
+    return d.length === 9 ? '237' + d : d;
+  };
 
-  try {
-    if (window.supabase) {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    }
-  } catch(e) {
-    console.warn("Mode hors-ligne / secours activé");
+  function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => t.classList.remove('show'), 3200);
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
-    if (supabaseClient) {
-      try {
-        const { data, error } = await supabaseClient.from('listings').select('*');
-        if (!error && data && data.length > 0) {
-          allListings = data;
-        }
-      } catch(err) {
-        console.log("Utilisation des données locales par défaut");
-      }
-    }
-    renderApp();
+  const openModal = (id) => $(id).classList.add('active');
+  const closeModal = (id) => $(id).classList.remove('active');
+
+  // --- Thème ---
+  try {
+    const saved = localStorage.getItem('cl-theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  } catch (e) {}
+  $('themeBtn').addEventListener('click', () => {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    try { localStorage.setItem('cl-theme', next); } catch (e) {}
   });
 
-  function renderApp() {
-    renderReels();
+  // --- Filtres (construction) ---
+  $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' +
+    CITIES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  $('adCity').innerHTML = CITIES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  $('adCategory').innerHTML = CATEGORIES.map((c) => `<option value="${esc(c.value)}">${esc(c.value)}</option>`).join('');
+  $('categoryChips').innerHTML =
+    '<button class="cat-chip active" data-cat="">✨ Tout voir</button>' +
+    CATEGORIES.map((c) => `<button class="cat-chip" data-cat="${esc(c.value)}">${esc(c.chip)}</button>`).join('');
+
+  $('categoryChips').addEventListener('click', (e) => {
+    const chip = e.target.closest('.cat-chip');
+    if (!chip) return;
+    document.querySelectorAll('.cat-chip').forEach((c) => c.classList.remove('active'));
+    chip.classList.add('active');
+    currentCategory = chip.dataset.cat;
+    renderListings();
+  });
+
+  let searchTimer;
+  $('searchInput').addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(renderListings, 200);
+  });
+  $('cityFilter').addEventListener('change', renderListings);
+
+  // --- Chargement des données ---
+  async function loadListings() {
+    $('listings-grid').innerHTML = '<div class="state-msg">Chargement des annonces…</div>';
+    const { data, error } = await sb
+      .from('annonces')
+      .select('id, created_at, title, category, price, city, description, contact, image_url, verified, user_id')
+      .order('verified', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(60);
+    if (error) {
+      console.error(error);
+      $('listings-grid').innerHTML =
+        '<div class="state-msg">Impossible de charger les annonces.<br><button id="retryBtn">Réessayer</button></div>';
+      $('retryBtn').addEventListener('click', loadListings);
+      return;
+    }
+    allListings = data || [];
     renderListings();
   }
 
-  function renderReels() {
-    const container = document.getElementById('reels-container');
-    container.innerHTML = allListings.map(item => `
-      <div class="reel-card" onclick="window.open('https://wa.me/${item.whatsapp}?text=Bonjour,%20je%20vois%20votre%20offre%20${encodeURIComponent(item.title)}', '_blank')">
-        <img src="${item.image_url || item.image}" alt="${item.title}">
-        <div class="reel-gradient"></div>
-        <div class="reel-info">
-          <div class="reel-title">${item.title}</div>
-        </div>
-      </div>
-    `).join('');
+  async function loadReels() {
+    const { data, error } = await sb
+      .from('reels')
+      .select('id, title, media_url, badge, link_url')
+      .order('created_at', { ascending: false })
+      .limit(12);
+    if (error || !data || data.length === 0) return;
+    $('reels-container').innerHTML = data.map((r) => {
+      const href = /^https:\/\//i.test(r.link_url || '') ? r.link_url : '#listings-grid';
+      const ext = href.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : '';
+      return `
+        <a class="reel-card" href="${esc(href)}"${ext}>
+          <img src="${esc(safeImg(r.media_url))}" alt="${esc(r.title)}" loading="lazy">
+          <div class="reel-gradient"></div>
+          ${r.badge ? `<span class="reel-badge">${esc(r.badge)}</span>` : ''}
+          <div class="reel-info"><div class="reel-title">${esc(r.title)}</div></div>
+        </a>`;
+    }).join('');
+    $('reelsSection').hidden = false;
   }
 
+  // --- Rendu des annonces ---
   function renderListings() {
-    const grid = document.getElementById('listings-grid');
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const cityFilter = document.getElementById('cityFilter').value;
+    const grid = $('listings-grid');
+    const term = $('searchInput').value.trim().toLowerCase();
+    const city = $('cityFilter').value;
 
-    let filtered = allListings.filter(ad => {
-      const matchCat = !currentCategory || ad.category === currentCategory;
-      const matchCity = !cityFilter || ad.city === cityFilter;
-      const matchSearch = !searchTerm || 
-        (ad.title && ad.title.toLowerCase().includes(searchTerm)) || 
-        (ad.description && ad.description.toLowerCase().includes(searchTerm));
-      return matchCat && matchCity && matchSearch;
+    const filtered = allListings.filter((ad) => {
+      const okCat = !currentCategory || ad.category === currentCategory;
+      const okCity = !city || ad.city === city;
+      const okSearch = !term ||
+        (ad.title || '').toLowerCase().includes(term) ||
+        (ad.description || '').toLowerCase().includes(term);
+      return okCat && okCity && okSearch;
     });
 
     if (filtered.length === 0) {
-      grid.innerHTML = '<div style="color:var(--color-text-muted); text-align:center; grid-column: 1/-1; padding:30px;">Aucune annonce trouvée.</div>';
+      grid.innerHTML = '<div class="state-msg">Aucune annonce trouvée.</div>';
       return;
     }
 
-    grid.innerHTML = filtered.map(ad => `
-      <div class="ad-card">
+    grid.innerHTML = filtered.map((ad) => {
+      const img = safeImg(ad.image_url);
+      const wa = waNumber(ad.contact);
+      const msg = encodeURIComponent(`Bonjour, je suis intéressé par votre offre « ${ad.title} » sur CamerLink`);
+      const mine = currentUser && ad.user_id === currentUser.id;
+      return `
+      <article class="ad-card">
         <div class="card-img-container">
-          <span class="card-badge-top">${ad.category || 'Service'}</span>
-          <img src="${ad.image_url || ad.image}" alt="${ad.title}">
+          <span class="card-badge-top">${esc(ad.category || 'Service')}</span>
+          ${ad.verified ? '<span class="card-badge-verified">✔ Vérifié</span>' : ''}
+          ${img ? `<img src="${esc(img)}" alt="${esc(ad.title)}" loading="lazy">` : ''}
         </div>
         <div class="card-body">
-          <h3 class="ad-title">${ad.title}</h3>
-          <p class="ad-desc">${ad.description}</p>
+          <h3 class="ad-title">${esc(ad.title)}</h3>
+          <p class="ad-desc">${esc(ad.description)}</p>
           <div class="card-meta">
-            <span class="ad-city">📍 ${ad.city || 'Cameroun'}</span>
-            <span class="ad-price">${Number(ad.price || 0).toLocaleString()} FCFA</span>
+            <span class="ad-city">📍 ${esc(ad.city || 'Cameroun')}</span>
+            <span class="ad-price">${esc(Number(ad.price || 0).toLocaleString('fr-FR'))} FCFA</span>
           </div>
-          <a href="https://wa.me/${ad.whatsapp}?text=Bonjour,%20je%20suis%20intéressé%20par%20votre%20offre%20${encodeURIComponent(ad.title)}%20sur%20CamerLink" target="_blank" class="whatsapp-link-card">Contacter sur WhatsApp</a>
+          ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${esc(wa)}?text=${msg}" target="_blank" rel="noopener noreferrer">Contacter sur WhatsApp</a>` : ''}
+          ${mine ? `<button class="btn-delete" data-delete="${esc(ad.id)}">Supprimer mon annonce</button>` : ''}
         </div>
-      </div>
-    `).join('');
+      </article>`;
+    }).join('');
   }
 
-  function filterByCategory(category, element) {
-    document.querySelectorAll('.cat-chip').forEach(chip => chip.classList.remove('active'));
-    element.classList.add('active');
-    currentCategory = category;
+  $('listings-grid').addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-delete]');
+    if (!btn) return;
+    if (!confirm('Supprimer définitivement cette annonce ?')) return;
+    btn.disabled = true;
+    const { error } = await sb.from('annonces').delete().eq('id', btn.dataset.delete);
+    if (error) { btn.disabled = false; toast('Suppression impossible.'); return; }
+    toast('Annonce supprimée.');
+    loadListings();
+  });
+
+  // --- Authentification ---
+  function updateAuthUI() {
+    $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
+  }
+
+  sb.auth.onAuthStateChange((_event, session) => {
+    currentUser = session ? session.user : null;
+    updateAuthUI();
     renderListings();
-  }
+  });
 
-  function toggleTheme() {
-    const html = document.documentElement;
-    html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-  }
-
-  function openPublishModal() { document.getElementById('publishModal').classList.add('active'); }
-  function closePublishModal() { document.getElementById('publishModal').classList.remove('active'); }
-
-  async function handlePublishSubmit(event) {
-    event.preventDefault();
-    const newAd = {
-      id: Date.now(),
-      category: document.getElementById('adCategory').value,
-      title: document.getElementById('adTitle').value,
-      city: document.getElementById('adCity').value,
-      price: parseFloat(document.getElementById('adPrice').value),
-      image_url: document.getElementById('adImage').value,
-      description: document.getElementById('adDesc').value,
-      whatsapp: document.getElementById('adWhatsapp').value
-    };
-
-    allListings.unshift(newAd);
-    
-    if (supabaseClient) {
-      try {
-        await supabaseClient.from('listings').insert([newAd]);
-      } catch(e) {
-        console.log("Enregistré localement uniquement");
-      }
+  $('authBtn').addEventListener('click', async () => {
+    if (currentUser) {
+      await sb.auth.signOut();
+      toast('Vous êtes déconnecté.');
+    } else {
+      openAuth('login');
     }
+  });
 
-    alert("Offre publiée avec succès !");
-    closePublishModal();
-    document.getElementById('adForm').reset();
-    renderApp();
+  function openAuth(mode) {
+    setAuthMode(mode);
+    $('authError').textContent = '';
+    openModal('authModal');
   }
+
+  function setAuthMode(mode) {
+    authMode = mode;
+    document.querySelectorAll('.auth-tab').forEach((t) => t.classList.toggle('active', t.dataset.mode === mode));
+    const isLogin = mode === 'login';
+    $('authTitle').textContent = isLogin ? 'Connexion' : 'Créer un compte';
+    $('authSubmit').textContent = isLogin ? 'Se connecter' : 'Créer mon compte';
+    $('authPassword').autocomplete = isLogin ? 'current-password' : 'new-password';
+  }
+
+  document.querySelectorAll('.auth-tab').forEach((t) =>
+    t.addEventListener('click', () => setAuthMode(t.dataset.mode)));
+
+  $('authForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = $('authEmail').value.trim();
+    const password = $('authPassword').value;
+    const btn = $('authSubmit');
+    btn.disabled = true;
+    $('authError').textContent = '';
+
+    try {
+      if (authMode === 'login') {
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        closeModal('authModal');
+        $('authForm').reset();
+        toast('Connexion réussie.');
+      } else {
+        const { data, error } = await sb.auth.signUp({ email, password });
+        if (error) throw error;
+        if (data.session) {
+          closeModal('authModal');
+          $('authForm').reset();
+          toast('Compte créé, bienvenue !');
+        } else {
+          $('authError').style.color = 'var(--color-whatsapp)';
+          $('authError').textContent = 'Compte créé. Vérifiez votre e-mail pour confirmer, puis connectez-vous.';
+        }
+      }
+    } catch (err) {
+      $('authError').style.color = '';
+      const m = String(err.message || '');
+      $('authError').textContent =
+        /invalid login/i.test(m) ? 'E-mail ou mot de passe incorrect.' :
+        /already registered/i.test(m) ? 'Cet e-mail a déjà un compte. Connectez-vous.' :
+        /password/i.test(m) ? 'Mot de passe trop faible ou trop court.' :
+        'Une erreur est survenue. Réessayez.';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // --- Publication ---
+  $('pubBtn').addEventListener('click', () => {
+    if (!currentUser) {
+      toast('Connectez-vous pour publier.');
+      openAuth('login');
+      return;
+    }
+    $('pubError').textContent = '';
+    openModal('publishModal');
+  });
+
+  $('adImage').addEventListener('change', () => {
+    const f = $('adImage').files[0];
+    const prev = $('imgPreview');
+    if (!f) { prev.style.display = 'none'; return; }
+    prev.src = URL.createObjectURL(f);
+    prev.style.display = 'block';
+  });
+
+  // Redimensionne et compresse la photo (max 1200 px, JPEG) avant l'envoi
+  function compressImage(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const max = 1200;
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        canvas.toBlob((b) => b ? resolve(b) : reject(new Error('compress')), 'image/jpeg', 0.8);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('image')); };
+      img.src = url;
+    });
+  }
+
+  $('adForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!currentUser) { openAuth('login'); return; }
+
+    const btn = $('pubSubmit');
+    const err = $('pubError');
+    btn.disabled = true;
+    btn.textContent = 'Publication…';
+    err.textContent = '';
+
+    try {
+      const file = $('adImage').files[0];
+      if (!file) throw new Error('photo');
+
+      const blob = await compressImage(file);
+      const path = `${currentUser.id}/${Date.now()}.jpg`;
+      const up = await sb.storage.from(BUCKET).upload(path, blob, { contentType: 'image/jpeg' });
+      if (up.error) throw up.error;
+      const { data: pub } = sb.storage.from(BUCKET).getPublicUrl(path);
+
+      const { error } = await sb.from('annonces').insert({
+        category: $('adCategory').value,
+        title: $('adTitle').value.trim(),
+        city: $('adCity').value,
+        price: Math.max(0, Math.round(Number($('adPrice').value))),
+        description: $('adDesc').value.trim(),
+        contact: $('adContact').value.trim(),
+        image_url: pub.publicUrl
+      });
+      if (error) throw error;
+
+      toast('Offre publiée avec succès !');
+      closeModal('publishModal');
+      $('adForm').reset();
+      $('imgPreview').style.display = 'none';
+      loadListings();
+    } catch (ex) {
+      console.error(ex);
+      err.textContent = 'Publication impossible. Vérifiez les champs (photo de moins de 2 Mo) et réessayez.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Publier';
+    }
+  });
+
+  // --- Fermeture des modales ---
+  document.querySelectorAll('[data-close]').forEach((b) =>
+    b.addEventListener('click', () => closeModal(b.dataset.close)));
+  document.querySelectorAll('.modal-overlay').forEach((o) =>
+    o.addEventListener('click', (e) => { if (e.target === o) o.classList.remove('active'); }));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.active').forEach((o) => o.classList.remove('active'));
+  });
+
+  // --- Démarrage ---
+  loadReels();
+  loadListings();
+})();
 </script>
 </body>
 </html>
