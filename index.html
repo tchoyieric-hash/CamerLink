@@ -116,6 +116,10 @@
     .auth-tab { flex: 1; padding: 9px; border-radius: 999px; border: 1px solid var(--color-border); font-weight: 700; font-size: 0.85rem; color: var(--color-text-muted); }
     .auth-tab.active { background: var(--color-accent); border-color: var(--color-accent); color: #000; }
     .form-error { color: var(--color-danger); font-size: 0.82rem; margin-top: 10px; min-height: 1em; }
+    .form-hint { font-size: 0.78rem; color: var(--color-text-muted); margin-top: 6px; }
+    .link-row { display: flex; justify-content: space-between; gap: 8px; margin-top: -4px; margin-bottom: 6px; }
+    .btn-link { color: var(--color-cta); font-size: 0.82rem; font-weight: 600; padding: 4px 0; }
+    .btn-link:disabled { color: var(--color-text-muted); cursor: default; }
     .img-preview { margin-top: 8px; width: 100%; max-height: 160px; object-fit: cover; border-radius: var(--radius-md); display: none; }
 
     /* --- Toast --- */
@@ -172,10 +176,33 @@
       <button class="modal-close" data-close="authModal" aria-label="Fermer">×</button>
     </div>
     <div class="auth-tabs">
-      <button type="button" class="auth-tab active" data-mode="login">Se connecter</button>
-      <button type="button" class="auth-tab" data-mode="signup">Créer un compte</button>
+      <button type="button" class="auth-tab active" data-method="phone">📱 Téléphone</button>
+      <button type="button" class="auth-tab" data-method="email">✉️ E-mail</button>
     </div>
-    <form id="authForm">
+
+    <form id="phoneForm">
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-pmode="login">Se connecter</button>
+        <button type="button" class="auth-tab" data-pmode="signup">Créer un compte</button>
+      </div>
+      <div class="form-group">
+        <label for="authPhone">Numéro de téléphone</label>
+        <input class="form-sheet-el" id="authPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="6 91 23 45 67">
+        <p class="form-hint">Cameroun (+237) par défaut.</p>
+      </div>
+      <div class="form-group">
+        <label for="phonePassword">Mot de passe (6 caractères minimum)</label>
+        <input class="form-sheet-el" id="phonePassword" type="password" required minlength="6" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-submit-modal" id="phoneSubmit">Se connecter</button>
+      <p class="form-error" id="phoneError" role="alert"></p>
+    </form>
+
+    <form id="emailForm" hidden>
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-mode="login">Se connecter</button>
+        <button type="button" class="auth-tab" data-mode="signup">Créer un compte</button>
+      </div>
       <div class="form-group">
         <label for="authEmail">E-mail</label>
         <input class="form-sheet-el" id="authEmail" type="email" required autocomplete="email">
@@ -259,7 +286,6 @@
   let allListings = [];
   let currentCategory = '';
   let currentUser = null;
-  let authMode = 'login';
 
   // --- Utilitaires de sécurité ---
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
@@ -421,6 +447,18 @@
   });
 
   // --- Authentification ---
+  let authMethod = 'phone';
+  let authMode = 'login';
+
+  // Transforme "691 23 45 67" ou "237691234567" en "+237691234567"
+  function normalizePhone(raw) {
+    let d = String(raw || '').replace(/[^\d+]/g, '');
+    if (d.startsWith('+')) d = d.slice(1);
+    else if (d.startsWith('00')) d = d.slice(2);
+    if (d.length === 9 && d[0] === '6') d = '237' + d;
+    return /^\d{10,15}$/.test(d) ? '+' + d : null;
+  }
+
   function updateAuthUI() {
     $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
   }
@@ -428,6 +466,10 @@
   sb.auth.onAuthStateChange((_event, session) => {
     currentUser = session ? session.user : null;
     updateAuthUI();
+    const knownPhone = currentUser && (currentUser.phone || (currentUser.user_metadata && currentUser.user_metadata.phone));
+    if (knownPhone && !$('adContact').value) {
+      $('adContact').value = '+' + String(knownPhone).replace(/^\+/, '');
+    }
     renderListings();
   });
 
@@ -441,24 +483,100 @@
   });
 
   function openAuth(mode) {
-    setAuthMode(mode);
+    setAuthMethod('phone');
+    setPhoneMode('login');
+    setAuthMode(mode || 'login');
     $('authError').textContent = '';
     openModal('authModal');
   }
 
+  function setAuthMethod(method) {
+    authMethod = method;
+    document.querySelectorAll('[data-method]').forEach((t) =>
+      t.classList.toggle('active', t.dataset.method === method));
+    $('phoneForm').hidden = method !== 'phone';
+    $('emailForm').hidden = method !== 'email';
+  }
+
   function setAuthMode(mode) {
     authMode = mode;
-    document.querySelectorAll('.auth-tab').forEach((t) => t.classList.toggle('active', t.dataset.mode === mode));
+    document.querySelectorAll('[data-mode]').forEach((t) =>
+      t.classList.toggle('active', t.dataset.mode === mode));
     const isLogin = mode === 'login';
-    $('authTitle').textContent = isLogin ? 'Connexion' : 'Créer un compte';
     $('authSubmit').textContent = isLogin ? 'Se connecter' : 'Créer mon compte';
     $('authPassword').autocomplete = isLogin ? 'current-password' : 'new-password';
   }
 
-  document.querySelectorAll('.auth-tab').forEach((t) =>
+  document.querySelectorAll('[data-method]').forEach((t) =>
+    t.addEventListener('click', () => setAuthMethod(t.dataset.method)));
+  document.querySelectorAll('[data-mode]').forEach((t) =>
     t.addEventListener('click', () => setAuthMode(t.dataset.mode)));
 
-  $('authForm').addEventListener('submit', async (e) => {
+  // --- Connexion par téléphone + mot de passe (gratuit, sans SMS) ---
+  // Le numéro sert d'identifiant : il est converti en e-mail interne (aucun e-mail n'est envoyé).
+  const PHONE_EMAIL_DOMAIN = 'phone.camerlink.app';
+  let phoneMode = 'login';
+
+  const phoneToEmail = (phone) => phone.replace('+', '') + '@' + PHONE_EMAIL_DOMAIN;
+
+  function setPhoneMode(mode) {
+    phoneMode = mode;
+    document.querySelectorAll('[data-pmode]').forEach((t) =>
+      t.classList.toggle('active', t.dataset.pmode === mode));
+    const isLogin = mode === 'login';
+    $('phoneSubmit').textContent = isLogin ? 'Se connecter' : 'Créer mon compte';
+    $('phonePassword').autocomplete = isLogin ? 'current-password' : 'new-password';
+    $('phoneError').textContent = '';
+  }
+  document.querySelectorAll('[data-pmode]').forEach((t) =>
+    t.addEventListener('click', () => setPhoneMode(t.dataset.pmode)));
+
+  function phoneErrorText(err) {
+    const m = String((err && err.message) || '');
+    if (/invalid login/i.test(m)) return 'Numéro ou mot de passe incorrect.';
+    if (/already registered|already exists/i.test(m)) return 'Ce numéro a déjà un compte. Connectez-vous.';
+    if (/rate limit|too many/i.test(m)) return 'Trop de tentatives. Patientez une minute.';
+    if (/password/i.test(m)) return 'Mot de passe trop court ou trop faible.';
+    return 'Une erreur est survenue. Réessayez.';
+  }
+
+  $('phoneForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const phone = normalizePhone($('authPhone').value);
+    const password = $('phonePassword').value;
+    const btn = $('phoneSubmit');
+    $('phoneError').textContent = '';
+    if (!phone) {
+      $('phoneError').textContent = 'Numéro invalide. Exemple : 6 91 23 45 67';
+      return;
+    }
+    btn.disabled = true;
+    try {
+      const email = phoneToEmail(phone);
+      if (phoneMode === 'login') {
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      } else {
+        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { phone } } });
+        if (error) throw error;
+        if (!data.session) {
+          $('phoneError').textContent = "Compte créé mais non activé. Contactez l'administrateur du site.";
+          return;
+        }
+      }
+      closeModal('authModal');
+      $('phoneForm').reset();
+      toast(phoneMode === 'login' ? 'Connexion réussie.' : 'Compte créé, bienvenue !');
+    } catch (err) {
+      console.error(err);
+      $('phoneError').textContent = phoneErrorText(err);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // --- Connexion par e-mail (secours) ---
+  $('emailForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = $('authEmail').value.trim();
     const password = $('authPassword').value;
@@ -471,14 +589,14 @@
         const { error } = await sb.auth.signInWithPassword({ email, password });
         if (error) throw error;
         closeModal('authModal');
-        $('authForm').reset();
+        $('emailForm').reset();
         toast('Connexion réussie.');
       } else {
         const { data, error } = await sb.auth.signUp({ email, password });
         if (error) throw error;
         if (data.session) {
           closeModal('authModal');
-          $('authForm').reset();
+          $('emailForm').reset();
           toast('Compte créé, bienvenue !');
         } else {
           $('authError').style.color = 'var(--color-whatsapp)';
