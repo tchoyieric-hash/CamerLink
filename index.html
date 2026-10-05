@@ -14,362 +14,188 @@
       --success: #10b981;
       --bg: #030712;
       --surface: #0f172a;
-      --surface-glass: rgba(15, 23, 42, 0.7);
+      --surface-glass: rgba(15, 23, 42, 0.85);
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --border: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.1);
       --radius-sm: 16px;
       --radius-md: 24px;
       --radius-lg: 36px;
       --shadow-sm: 0 10px 30px rgba(0, 0, 0, 0.5);
-      --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
     }
 
     [data-theme="light"] {
       --bg: #f8fafc;
       --surface: #ffffff;
-      --surface-glass: rgba(255, 255, 255, 0.85);
+      --surface-glass: rgba(255, 255, 255, 0.9);
       --text: #0f172a;
       --text-muted: #64748b;
       --border: rgba(0, 0, 0, 0.08);
-      --shadow-sm: 0 10px 30px rgba(15, 23, 42, 0.06);
-      --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.1);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg); color: var(--text); line-height: 1.6; transition: background 0.4s ease, color 0.4s ease; overflow-x: hidden; }
+    body { background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
     .hidden { display: none !important; }
 
-    /* HEADER FUTURISTE */
-    header { background: var(--surface-glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-    .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-    .logo-pulse { width: 12px; height: 12px; background: var(--success); border-radius: 50%; box-shadow: 0 0 15px var(--success); animation: neonPulse 2s infinite; }
-    @keyframes neonPulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8); } 70% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
-    .logo { font-size: 1.6rem; font-weight: 900; color: var(--text); letter-spacing: -1px; }
-    .logo span { background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    header { background: var(--surface-glass); backdrop-filter: blur(20px); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+    .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo { font-size: 1.5rem; font-weight: 900; color: var(--text); }
+    .logo span { color: var(--primary); }
     
-    .header-actions { display: flex; align-items: center; gap: 12px; }
-    .btn-icon { background: var(--surface); border: 1px solid var(--border); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; color: var(--text); transition: all 0.3s; }
-    .btn-icon:hover { transform: scale(1.1); border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
-    .btn-login { background: transparent; color: var(--text); padding: 10px 20px; border-radius: 999px; border: 1px solid var(--border); font-weight: 700; cursor: pointer; transition: all 0.3s; }
-    .btn-login:hover { border-color: var(--primary); color: var(--primary); }
-    .btn-user { background: rgba(59, 130, 246, 0.15); color: var(--primary); padding: 10px 20px; border-radius: 999px; font-weight: 700; cursor: pointer; border: 1px solid rgba(59,130,246,0.3); }
-    .btn-pub { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; padding: 12px 24px; border-radius: 999px; font-weight: 800; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4); border: none; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
-    .btn-pub:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(59, 130, 246, 0.6); }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .btn-icon, .btn-login, .btn-user, .btn-pub { padding: 10px 18px; border-radius: 999px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); font-size: 0.9rem; }
+    .btn-icon { background: var(--surface); color: var(--text); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .btn-login { background: transparent; color: var(--text); }
+    .btn-user { background: rgba(59, 130, 246, 0.15); color: var(--primary); }
+    .btn-pub { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; border: none; font-weight: 800; }
 
-    /* HERO IMMERSIF */
-    .hero { background: radial-gradient(circle at 50% -20%, rgba(59, 130, 246, 0.25), transparent 60%), var(--bg); text-align: center; padding: 75px 20px 60px; position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
-    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(59, 130, 246, 0.1); backdrop-filter: blur(12px); padding: 8px 20px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; margin-bottom: 24px; border: 1px solid rgba(59, 130, 246, 0.3); color: var(--primary); box-shadow: 0 0 20px rgba(59,130,246,0.15); }
-    .hero h1 { font-size: 3rem; font-weight: 900; margin-bottom: 16px; letter-spacing: -1.5px; line-height: 1.1; }
-    .hero h1 span { background: linear-gradient(135deg, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero p { max-width: 700px; margin: 0 auto 36px; color: var(--text-muted); font-size: 1.15rem; font-weight: 500; }
+    .hero { text-align: center; padding: 60px 20px 40px; border-bottom: 1px solid var(--border); }
+    .hero h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 12px; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { max-width: 600px; margin: 0 auto 24px; color: var(--text-muted); font-size: 1.1rem; }
 
-    /* BARRE DE RECHERCHE FUTURISTE */
-    .search-box-container { max-width: 840px; margin: 0 auto; background: var(--surface-glass); backdrop-filter: blur(30px); padding: 12px; border-radius: 40px; border: 1px solid var(--border); box-shadow: var(--shadow-sm), var(--shadow-glow); display: grid; grid-template-columns: 1fr auto; gap: 10px; }
-    .search-inputs { display: grid; grid-template-columns: 1.6fr 1.2fr; gap: 10px; }
-    .search-input-wrap, .search-select-wrap { position: relative; display: flex; align-items: center; }
-    .search-input-wrap input, .search-select-wrap select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 30px; padding: 16px 20px 16px 50px; font-size: 1rem; color: var(--text); outline: none; font-weight: 600; transition: border-color 0.3s; }
-    .search-input-wrap input:focus, .search-select-wrap select:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
-    .search-input-wrap::before { content: '🔍'; position: absolute; left: 20px; font-size: 1.1rem; }
-    .search-select-wrap::before { content: '📍'; position: absolute; left: 20px; font-size: 1.1rem; }
-    .search-select-wrap select { padding-left: 50px; cursor: pointer; appearance: none; }
-    .btn-search { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 16px 36px; border-radius: 30px; font-weight: 800; border: none; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 8px 25px rgba(59,130,246,0.4); }
-    .btn-search:hover { transform: scale(1.03); }
+    .search-box-container { max-width: 750px; margin: 0 auto; background: var(--surface); padding: 10px; border-radius: 30px; border: 1px solid var(--border); display: flex; gap: 10px; }
+    .search-box-container input, .search-box-container select { flex: 1; background: transparent; border: none; padding: 12px 16px; color: var(--text); font-size: 1rem; outline: none; }
+    .btn-search { background: var(--primary); color: white; border: none; padding: 12px 28px; border-radius: 20px; font-weight: 800; cursor: pointer; }
 
-    /* FILTRES CATÉGORIES */
-    .categories-bar { max-width: 1250px; margin: 30px auto 10px; padding: 0 24px; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
-    .categories-bar::-webkit-scrollbar { display: none; }
-    .cat-chip { background: var(--surface); border: 1px solid var(--border); padding: 12px 22px; border-radius: 999px; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.3s; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 8px; }
-    .cat-chip.active, .cat-chip:hover { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); transform: translateY(-2px); }
+    .categories-bar { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+    .cat-chip { background: var(--surface); border: 1px solid var(--border); padding: 10px 20px; border-radius: 999px; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+    .cat-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-    main { max-width: 1250px; margin: auto; padding: 20px 24px 100px; }
-
-    /* SECTION REELS VIDÉO IMMERSIFS */
-    .reels-section { margin: 40px 0 50px; }
-    .reels-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .reels-header h2 { font-size: 1.5rem; font-weight: 900; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
-    .reels-container { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
-    .reels-container::-webkit-scrollbar { display: none; }
+    main { max-width: 1200px; margin: auto; padding: 20px 20px 80px; }
     
-    .reel-card { min-width: 220px; height: 360px; background: #000; border-radius: var(--radius-md); overflow: hidden; position: relative; cursor: pointer; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s; flex-shrink: 0; }
-    .reel-card:hover { transform: scale(1.05) translateY(-5px); box-shadow: 0 20px 40px rgba(59,130,246,0.3); border-color: var(--primary); }
-    .reel-card video, .reel-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: transform 0.5s; }
-    .reel-card:hover img { transform: scale(1.1); }
-    .reel-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.2) 30%, rgba(3,7,18,0.95) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; color: white; }
-    .reel-author { font-size: 0.8rem; font-weight: 700; color: #60a5fa; margin-bottom: 4px; }
-    .reel-title { font-size: 0.95rem; font-weight: 800; line-height: 1.35; }
-    .live-badge-tag { position: absolute; top: 14px; left: 14px; background: rgba(220, 38, 38, 0.9); backdrop-filter: blur(8px); color: white; padding: 5px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.5px; box-shadow: 0 0 15px rgba(220,38,38,0.5); animation: neonPulse 1.5s infinite; }
+    #listings { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .card { background: var(--surface); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
+    .card-img-wrapper { position: relative; width: 100%; height: 180px; background: #1e293b; }
+    .card img { width: 100%; height: 100%; object-fit: cover; }
+    .card-badge { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
+    .card-body { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+    .card h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+    .card-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; flex-grow: 1; }
+    .whatsapp-btn { display: block; text-align: center; background: #10b981; color: white; padding: 12px; border-radius: 12px; font-weight: 800; text-decoration: none; margin-bottom: 12px; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; }
+    .card-price { color: var(--primary); font-weight: 900; font-size: 1.1rem; }
 
-    /* MODALE LECTEUR VIDÉO PLEIN ÉCRAN (REELS) */
-    #reelPlayerModal { position: fixed; inset: 0; background: rgba(3,7,18,0.95); backdrop-filter: blur(30px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .reel-player-content { width: 100%; max-width: 420px; height: 80vh; background: #000; border-radius: var(--radius-lg); overflow: hidden; position: relative; box-shadow: 0 0 60px rgba(59,130,246,0.3); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: flex-end; }
-    .reel-player-content img, .reel-player-content video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .reel-player-overlay { position: relative; z-index: 2; padding: 30px; background: linear-gradient(180deg, transparent 40%, rgba(3,7,18,0.95) 100%); color: white; }
-    .close-reel-btn { position: absolute; top: 20px; right: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: white; width: 45px; height: 45px; border-radius: 50%; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 2000; }
+    .modal-sheet { background: var(--surface); width: 100%; max-width: 500px; border-radius: var(--radius-lg); padding: 30px; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.9rem; }
+    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); font-size: 1rem; outline: none; }
+    .btn-submit { width: 100%; background: var(--primary); color: white; padding: 14px; border-radius: 12px; font-weight: 900; border: none; cursor: pointer; margin-top: 10px; }
 
-    /* GRILLE DE CARTES SPECTACULAIRE */
-    .section-header { display: flex; justify-content: space-between; align-items: center; margin: 40px 0 24px; }
-    .section-header h2 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; }
-    .section-header a { color: var(--primary); font-weight: 800; text-decoration: none; cursor: pointer; font-size: 1rem; transition: opacity 0.2s; }
-    .section-header a:hover { opacity: 0.8; }
-
-    #listings { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 28px; }
-    
-    .card { background: var(--surface); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s, border-color 0.4s; display: flex; flex-direction: column; position: relative; }
-    .card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px rgba(0,0,0,0.4), 0 0 30px rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4); }
-    
-    .card-img-wrapper { position: relative; width: 100%; height: 210px; background: var(--bg); overflow: hidden; }
-    .card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-    .card:hover img { transform: scale(1.08); }
-    
-    .card-badge-floating { position: absolute; top: 14px; left: 14px; background: rgba(3,7,18,0.75); backdrop-filter: blur(10px); color: white; padding: 6px 14px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.15); z-index: 2; }
-    .card-verified-badge { position: absolute; top: 14px; right: 14px; background: rgba(16, 185, 129, 0.15); backdrop-filter: blur(10px); color: #34d399; padding: 6px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 900; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(16,185,129,0.3); box-shadow: 0 4px 15px rgba(16,185,129,0.2); z-index: 2; }
-
-    .card-body { padding: 24px; display: flex; flex-direction: column; flex-grow: 1; }
-    .card h3 { font-size: 1.25rem; font-weight: 900; margin-bottom: 8px; color: var(--text); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-    .card-desc { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1; line-height: 1.6; }
-    
-    .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 14px; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 800; text-decoration: none; margin-bottom: 14px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); }
-    .whatsapp-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
-
-    .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px; margin-top: auto; }
-    .card-city { color: var(--text-muted); font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-    .card-price { background: linear-gradient(135deg, #3b82f6, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; font-size: 1.25rem; letter-spacing: -0.5px; }
-
-    .btn-delete { width: 100%; background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 12px; border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 800; margin-top: 12px; border: 1px solid rgba(239,68,68,0.3); cursor: pointer; transition: background 0.2s; }
-    .btn-delete:hover { background: rgba(239, 68, 68, 0.2); }
-
-    /* MODALES FUTURISTES */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(3,7,18,0.8); backdrop-filter: blur(25px); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 2000; animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-    .modal-sheet { background: var(--surface); width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; border-radius: var(--radius-lg); padding: 36px; box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(59,130,246,0.2); border: 1px solid var(--border); position: relative; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .modal-header h3 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; }
-    .modal-close { width: 44px; height: 44px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--text); cursor: pointer; border: 1px solid var(--border); transition: border-color 0.2s; }
-    .modal-close:hover { border-color: var(--primary); }
-
-    .form-group { margin-bottom: 18px; }
-    .form-group label { display: block; margin-bottom: 8px; font-weight: 800; font-size: 0.92rem; color: var(--text); }
-    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 15px 18px; font-size: 1rem; color: var(--text); outline: none; font-weight: 600; transition: border-color 0.3s, box-shadow 0.3s; }
-    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
-
-    .btn-submit { width: 100%; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 18px; border-radius: var(--radius-sm); font-size: 1.05rem; font-weight: 900; margin-top: 12px; border: none; cursor: pointer; box-shadow: 0 10px 30px rgba(59,130,246,0.4); transition: transform 0.2s; }
-    .btn-submit:hover { transform: translateY(-2px); }
-    
-    .auth-logo { text-align: center; font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
-    .auth-subtitle { text-align: center; color: var(--text-muted); margin-bottom: 24px; font-size: 1rem; font-weight: 600; }
-    .phone-input-group { display: flex; gap: 10px; }
-    .phone-prefix { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 15px 18px; font-weight: 900; display: flex; align-items: center; }
-    .error-msg { text-align: center; color: #ef4444; font-size: 0.92rem; margin-top: 12px; font-weight: 700; }
-
-    footer { text-align: center; padding: 50px 24px; color: var(--text-muted); font-size: 0.95rem; border-top: 1px solid var(--border); background: var(--surface); margin-top: 60px; font-weight: 600; }
-    footer a { color: var(--primary); font-weight: 800; text-decoration: none; }
-
-    @media (max-width: 640px) {
-      .hero { padding: 50px 16px 40px; }
-      .hero h1 { font-size: 2.2rem; }
-      .search-box-container { grid-template-columns: 1fr; background: transparent; box-shadow: none; padding: 0; border: none; gap: 12px; }
-      .search-inputs { grid-template-columns: 1fr; gap: 12px; }
-      .search-input-wrap input, .search-select-wrap select { background: var(--surface); box-shadow: var(--shadow-sm); }
-      .btn-search { width: 100%; padding: 16px; }
-    }
+    footer { text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 40px; font-size: 0.9rem; }
   </style>
 </head>
-
 <body>
 
 <header>
   <a class="logo-container" href="index.html">
-    <div class="logo-pulse" title="Système Opérationnel 2026"></div>
     <span class="logo">Camer<span>Link</span></span>
   </a>
   <div class="header-actions">
-    <button class="btn-icon" onclick="toggleTheme()" title="Basculer le thème">🌓</button>
+    <button class="btn-icon" onclick="toggleTheme()">🌓</button>
     <button id="loginBtn" class="btn-login" onclick="openAuthModal()">Connexion</button>
-    <button id="userBtn" class="btn-user hidden" onclick="openUserModal()">Mon Compte</button>
-    <button class="btn-pub" onclick="openPublishModal()">+ Publier (Smart & Trust)</button>
+    <button id="userBtn" class="btn-user hidden" onclick="openUserModal()">Compte</button>
+    <button class="btn-pub" onclick="openPublishModal()">+ Publier</button>
   </div>
 </header>
 
 <section class="hero">
-  <div class="hero-badge">⚡ Expérience Next-Gen 2026 · Restaurants, Écoles & Services</div>
-  <h1>Le Futur du Cameroun <span>en direct & vidéo.</span></h1>
-  <p>Découvrez les meilleurs établissements, commandez vos plats et explorez les campus universitaires en un clin d'œil.</p>
+  <h1>Le Futur du Cameroun <span>en direct.</span></h1>
+  <p>Découvrez et publiez les meilleurs services, restaurants et articles du moment.</p>
 
   <div class="search-box-container">
-    <div class="search-inputs">
-      <div class="search-input-wrap">
-        <input id="searchInput" type="search" placeholder="Ex : Restaurant, Université, Plombier, iPhone...">
-      </div>
-      <div class="search-select-wrap">
-        <select id="cityFilter">
-          <option value="">Toutes les villes</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn-search" onclick="applyFilters()">Explorer</button>
+    <input id="searchInput" type="search" placeholder="Rechercher une offre...">
+    <select id="cityFilter">
+      <option value="">Toutes les villes</option>
+    </select>
+    <button class="btn-search" onclick="loadListings()">Filtrer</button>
   </div>
 </section>
 
-<!-- FILTRES PAR CATÉGORIE -->
-<div class="categories-bar" id="categoriesBar">
+<div class="categories-bar">
   <div class="cat-chip active" onclick="filterByCategory('', this)">✨ Tout voir</div>
-  <div class="cat-chip" onclick="filterByCategory('Restaurants & Gastronomie', this)">🍽️ Restaurants & EAT</div>
-  <div class="cat-chip" onclick="filterByCategory('Écoles & Formations', this)">🎓 Écoles & Instituts</div>
-  <div class="cat-chip" onclick="filterByCategory('Services & Artisans', this)">🛠️ Services & Pros</div>
+  <div class="cat-chip" onclick="filterByCategory('Restaurants & Gastronomie', this)">🍽️ Restaurants</div>
+  <div class="cat-chip" onclick="filterByCategory('Écoles & Formations', this)">🎓 Écoles</div>
+  <div class="cat-chip" onclick="filterByCategory('Services & Artisans', this)">🛠️ Services</div>
   <div class="cat-chip" onclick="filterByCategory('Véhicules', this)">🚗 Véhicules</div>
-  <div class="cat-chip" onclick="filterByCategory('Immobilier', this)">🏠 Immobilier</div>
-  <div class="cat-chip" onclick="filterByCategory('High-Tech', this)">💻 High-Tech</div>
 </div>
 
 <main>
-
-  <!-- SECTION REELS VIDÉO IMMERSIFS -->
-  <section class="reels-section">
-    <div class="reels-header">
-      <h2>🎥 Flash Reels & Vues en Action</h2>
-      <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 700;">Immersion totale en vidéo</span>
-    </div>
-    <div class="reels-container" id="reelsContainer">
-      <div class="reel-card" onclick="openReelPlayer('https://images.unsplash.com/photo-1555396273-367ea4eb4db5', '@LeBistrotDouala', 'Nouveau menu braisé & ambiance live ce soir à Douala !')">
-        <span class="live-badge-tag">🔴 LIVE / REEL</span>
-        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80" alt="Restaurant Douala">
-        <div class="reel-overlay">
-          <span class="reel-author">@LeBistrotDouala</span>
-          <span class="reel-title">Nouveau menu braisé & ambiance live ce soir !</span>
-        </div>
-      </div>
-      <div class="reel-card" onclick="openReelPlayer('https://images.unsplash.com/photo-1523240795612-9a054b0db644', '@InstitutPolytechnique', 'Visite guidée des laboratoires informatiques 2026')">
-        <span class="live-badge-tag">🎓 CAMPUS</span>
-        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80" alt="École Yaoundé">
-        <div class="reel-overlay">
-          <span class="reel-author">@InstitutPolytechnique</span>
-          <span class="reel-title">Visite guidée des laboratoires informatiques 2026</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-header">
-    <h2>🔥 Annonces, Restos & Écoles Actifs</h2>
-    <a onclick="resetAllFilters()">Réinitialiser</a>
-  </div>
-
   <div id="listings">
-    <div style="grid-column: 1/-1; text-align:center; padding: 60px; color: var(--text-muted);">
-      <p style="font-weight: 700; font-size: 1.1rem;">Chargement des données géo-localisées du réseau...</p>
+    <div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">
+      <p>Chargement des offres en cours...</p>
     </div>
   </div>
 </main>
 
-<!-- MODALE LECTEUR REELS PLEIN ÉCRAN -->
-<div id="reelPlayerModal" class="hidden">
-  <div class="reel-player-content">
-    <button class="close-reel-btn" onclick="closeReelPlayer()">×</button>
-    <img id="reelPlayerImg" src="" alt="Reel Vidéo">
-    <div class="reel-player-overlay">
-      <span id="reelPlayerAuthor" class="reel-author">@Auteur</span>
-      <h3 id="reelPlayerTitle" class="reel-title">Titre de la vidéo</h3>
-      <button class="whatsapp-btn" style="margin-top: 16px;" onclick="alert('Redirection vers la discussion directe...')">💬 Contacter l'auteur</button>
+<!-- MODAL PUBLICATION -->
+<div id="publishModal" class="modal-overlay hidden">
+  <div class="modal-sheet">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h3>Publier une annonce</h3>
+      <button onclick="closePublishModal()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">×</button>
     </div>
+    <form id="adForm" onsubmit="handlePublishSubmit(event)">
+      <div class="form-group">
+        <label>Catégorie</label>
+        <select class="form-control" id="adCategory">
+          <option value="Restaurants & Gastronomie">Restaurants & Gastronomie</option>
+          <option value="Écoles & Formations">Écoles & Formations</option>
+          <option value="Services & Artisans">Services & Artisans</option>
+          <option value="Véhicules">Véhicules</option>
+          <option value="Autres">Autres</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Titre</label>
+        <input class="form-control" id="adTitle" required placeholder="Ex: Restaurant Le Gourmet">
+      </div>
+      <div class="form-group">
+        <label>Ville</label>
+        <select class="form-control" id="adCity"></select>
+      </div>
+      <div class="form-group">
+        <label>Prix (FCFA)</label>
+        <input class="form-control" id="adPrice" type="number" required placeholder="15000">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea class="form-control" id="adDescription" rows="3" required placeholder="Détails de l'offre..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>WhatsApp</label>
+        <input class="form-control" id="adContact" type="tel" required placeholder="6XXXXXXXX">
+      </div>
+      <button class="btn-submit" type="submit">Valider la publication</button>
+    </form>
   </div>
 </div>
 
 <!-- MODAL AUTH -->
 <div id="authModal" class="modal-overlay hidden">
-  <div class="modal-sheet"></div>
-</div>
-
-<!-- MODAL COMPTE -->
-<div id="userModal" class="modal-overlay hidden">
-  <div class="modal-sheet" style="text-align: center;">
-    <div class="modal-header">
-      <h3>Espace Partenaire Pro</h3>
-      <button class="modal-close" onclick="closeUserModal()">×</button>
-    </div>
-    <div style="font-size: 3.5rem; margin-bottom: 12px;">🛡️</div>
-    <h3 id="accountPhoneDisplay" style="font-size: 1.3rem; font-weight: 900; margin-bottom: 6px;">+237 6XXXXXXXX</h3>
-    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 30px; font-weight: 600;">Compte Membre & Établissement Vérifié</p>
-    <button class="btn-delete" onclick="logout()">Se déconnecter</button>
-  </div>
-</div>
-
-<!-- MODAL PUBLICATION INTELLIGENTE "SMART & TRUST" (IA + ESCROW) -->
-<div id="publishModal" class="modal-overlay hidden">
   <div class="modal-sheet">
-    <div class="modal-header">
-      <h3>CamerLink · Smart & Trust (IA)</h3>
-      <button class="modal-close" onclick="closePublishModal()">×</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h3>Connexion Pro</h3>
+      <button onclick="closeAuthModal()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">×</button>
     </div>
-
-    <!-- Bloc IA Snap & Post -->
-    <div class="mb-5 p-4 bg-slate-900 rounded-xl border border-cyan-500/30" style="margin-bottom: 20px; background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.3);">
-      <div class="flex items-center justify-between mb-3" style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-        <span style="font-size: 0.8rem; font-weight: bold; color: #22d3ee;">✨ Assistant IA Snap & Post</span>
-        <span style="font-size: 0.7rem; background: rgba(6, 182, 212, 0.2); color: #67e8f9; padding: 2px 8px; border-radius: 999px;">Prêt</span>
-      </div>
-      <div style="border: 2px dashed rgba(100, 116, 139, 0.5); border-radius: 8px; padding: 16px; text-align: center; cursor: pointer;" onclick="document.getElementById('aiPhotoInput').click()">
-        <input type="file" id="aiPhotoInput" accept="image/*" capture="environment" class="hidden" onchange="simulateAIAnalysis(this)">
-        <div id="uploadPrompt">
-          <p style="font-size: 0.9rem; font-weight: 600; color: #e2e8f0;">📷 Prendre une photo du produit/service</p>
-          <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">L'IA remplit le formulaire automatiquement</p>
-        </div>
-        <div id="aiLoading" class="hidden">
-          <p style="font-size: 0.8rem; color: #22d3ee;">Analyse de l'image & détection du marché local...</p>
-        </div>
-      </div>
-    </div>
-
-    <form id="adForm" onsubmit="handlePublishSubmit(event)">
+    <form onsubmit="handleAuthSubmit(event)">
       <div class="form-group">
-        <label>Secteur d'activité</label>
-        <select class="form-control" id="adCategory">
-          <option value="Restaurants & Gastronomie">🍽️ Restaurant / Bar / Espace Gourmand</option>
-          <option value="Écoles & Formations">🎓 École / Institut / Centre de Formation</option>
-          <option value="Services & Artisans">🛠️ Service / Professionnel / Artisan</option>
-          <option value="Véhicules">🚗 Véhicule / Transport</option>
-          <option value="Immobilier">🏠 Immobilier / Logement</option>
-          <option value="High-Tech">💻 High-Tech & Électronique</option>
-          <option value="Autres">📦 Autre produit ou annonce</option>
-        </select>
+        <label>Téléphone (9 chiffres)</label>
+        <input class="form-control" id="authPhone" type="tel" maxlength="9" required placeholder="6XXXXXXXX">
       </div>
-
       <div class="form-group">
-        <label>Titre de l'annonce</label>
-        <input class="form-control" id="adTitle" required placeholder="Ex : Le Gourmet Yaoundé ou iPhone 13 Pro">
+        <label>Mot de passe</label>
+        <input class="form-control" id="authPassword" type="password" required placeholder="Mot de passe">
       </div>
-
-      <div class="form-group">
-        <label>Ville & Quartier</label>
-        <select class="form-control" id="adCity"></select>
-      </div>
-
-      <div class="form-group">
-        <label>Prix ou Tarif (FCFA)</label>
-        <input class="form-control" id="adPrice" type="number" min="0" required placeholder="25000">
-      </div>
-
-      <div class="form-group">
-        <label>Description immersive</label>
-        <textarea class="form-control" id="adDescription" rows="3" required placeholder="Décrivez votre offre..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Numéro WhatsApp direct</label>
-        <input class="form-control" id="adContact" type="tel" placeholder="6XXXXXXXX">
-      </div>
-
-      <button id="publishSubmitBtn" class="btn-submit" type="submit">Publier & Activer le Séquestre MoMo</button>
+      <button class="btn-submit" type="submit">Se connecter / S'inscrire</button>
     </form>
+    <p id="authErrorMsg" style="color:#ef4444; text-align:center; margin-top:10px; font-size:0.9rem;"></p>
   </div>
 </div>
 
 <footer>
-  <p>© 2026 CamerLink · La Super-App Multiservices & Éducation 🇨🇲</p>
-  <div style="margin-top: 12px;">
-    <a href="modele.html">Modèle Économique & Partenaires Stratégiques</a>
-  </div>
+  <p>© 2026 CamerLink · Tous droits réservés</p>
 </footer>
 
 <script>
@@ -377,13 +203,11 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const CITIES = ['Douala', 'Yaoundé', 'Bafoussam', 'Garoua', 'Bamenda', 'Bertoua', 'Limbé', 'Kribi', 'Maroua', 'Ebolowa'];
+  const CITIES = ['Douala', 'Yaoundé', 'Bafoussam', 'Garoua', 'Bamenda', 'Kribi'];
   let currentCategory = '';
   let currentUser = null;
-  let searchTimer = null;
 
   const $ = id => document.getElementById(id);
-  const escapeHTML = str => String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 
   function toggleTheme() {
     const html = document.documentElement;
@@ -391,145 +215,61 @@
     html.setAttribute('data-theme', next);
     localStorage.setItem('camerlink_theme', next);
   }
-  const savedTheme = localStorage.getItem('camerlink_theme');
-  if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+  if(localStorage.getItem('camerlink_theme')) document.documentElement.setAttribute('data-theme', localStorage.getItem('camerlink_theme'));
 
   const openPublishModal = () => {
-    if (!currentUser) { openAuthModal('Connectez-vous pour publier avec l\'IA Smart & Trust.'); return; }
+    if (!currentUser) { openAuthModal(); return; }
     $('publishModal').classList.remove('hidden');
   };
   const closePublishModal = () => $('publishModal').classList.add('hidden');
-  const openAuthModal = (msg) => { renderAuthForm(msg); $('authModal').classList.remove('hidden'); };
+  const openAuthModal = () => $('authModal').classList.remove('hidden');
   const closeAuthModal = () => $('authModal').classList.add('hidden');
-  const openUserModal = () => $('userModal').classList.remove('hidden');
-  const closeUserModal = () => $('userModal').classList.add('hidden');
-
-  function openReelPlayer(imgSrc, author, title) {
-    $('reelPlayerImg').src = imgSrc;
-    $('reelPlayerAuthor').textContent = author;
-    $('reelPlayerTitle').textContent = title;
-    $('reelPlayerModal').classList.remove('hidden');
-  }
-  function closeReelPlayer() { $('reelPlayerModal').classList.add('hidden'); }
-
-  function simulateAIAnalysis(input) {
-    if (input.files && input.files[0]) {
-      $('uploadPrompt').classList.add('hidden');
-      $('aiLoading').classList.remove('hidden');
-
-      setTimeout(() => {
-        $('aiLoading').classList.add('hidden');
-        $('uploadPrompt').classList.remove('hidden');
-
-        const samples = [
-          { title: "Basket Nike Air Max Pro", cat: "Mode", price: "25000", desc: "Chaussures importées haut de gamme, confort optimal pour le sport et la ville." },
-          { title: "Smartphone 4G Android", cat: "High-Tech", price: "45000", desc: "Téléphone en excellent état, testé et validé pour le réseau au Cameroun." },
-          { title: "Batterie Solaire Externe 20000mAh", cat: "High-Tech", price: "18000", desc: "Parfait pour parer aux coupures d'électricité, charge rapide." }
-        ];
-        const res = samples[Math.floor(Math.random() * samples.length)];
-
-        $('adTitle').value = res.title;
-        $('adCategory').value = res.cat;
-        $('adPrice').value = res.price;
-        $('adDescription').value = res.desc;
-      }, 1200);
-    }
-  }
-
-  let authMode = 'login';
-  function renderAuthForm(customMsg = '') {
-    const isLogin = authMode === 'login';
-    $('authModal').querySelector('.modal-sheet').innerHTML = `
-      <div class="modal-header">
-        <h3>${isLogin ? 'Connexion Espace Pro' : 'Création de Compte'}</h3>
-        <button class="modal-close" onclick="closeAuthModal()">×</button>
-      </div>
-      <div class="auth-logo">CamerLink</div>
-      <p class="auth-subtitle">${isLogin ? 'Accédez à votre tableau de bord' : 'Rejoignez le réseau professionnel 2026'}</p>
-      ${customMsg ? `<p class="error-msg" style="color:var(--primary);margin-bottom:12px">${escapeHTML(customMsg)}</p>` : ''}
-      <form onsubmit="handleAuthSubmit(event)">
-        <div class="form-group">
-          <label>Numéro de téléphone</label>
-          <div class="phone-input-group">
-            <span class="phone-prefix">🇨🇲 +237</span>
-            <input class="form-control" id="authPhone" type="tel" maxlength="9" placeholder="6XXXXXXXX" required>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Mot de passe</label>
-          <input class="form-control" id="authPassword" type="password" minlength="8" placeholder="Au moins 8 caractères" required>
-        </div>
-        <button class="btn-submit" type="submit">${isLogin ? 'Se connecter' : "S'inscrire"}</button>
-      </form>
-      <p id="authErrorMsg" class="error-msg"></p>
-      <button type="button" style="background:none; border:none; color:var(--primary); width:100%; margin-top:18px; font-weight:800; cursor:pointer;" onclick="toggleAuthMode()">
-        ${isLogin ? "Pas de compte ? S'inscrire" : "Déjà un compte ? Se connecter"}
-      </button>
-    `;
-  }
-
-  function toggleAuthMode() { authMode = authMode === 'login' ? 'signup' : 'login'; renderAuthForm(); }
 
   async function handleAuthSubmit(e) {
     e.preventDefault();
-    const phoneVal = $('authPhone').value.trim();
-    const passVal = $('authPassword').value;
-    const errBox = $('authErrorMsg');
-    errBox.textContent = '';
-
-    if (!/^6\d{8}$/.test(phoneVal)) { errBox.textContent = 'Numéro invalide (9 chiffres commençant par 6).'; return; }
+    const phone = $('authPhone').value.trim();
+    const password = $('authPassword').value;
+    const email = `237${phone}@camerlink.app`;
     
-    const email = `237${phoneVal}@camerlink.app`;
-    try {
-      const res = authMode === 'signup' 
-        ? await supabaseClient.auth.signUp({ email, password: passVal })
-        : await supabaseClient.auth.signInWithPassword({ email, password: passVal });
-      
-      if (res.error) throw res.error;
+    let res = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (res.error) {
+      res = await supabaseClient.auth.signUp({ email, password });
+    }
+    if (res.error) {
+      $('authErrorMsg').textContent = "Erreur d'authentification.";
+    } else {
       closeAuthModal();
-      checkUserSession();
+      checkSession();
       loadListings();
-    } catch (err) {
-      errBox.textContent = "Erreur d'authentification. Vérifiez vos identifiants.";
     }
   }
 
-  async function checkUserSession() {
+  async function checkSession() {
     const { data } = await supabaseClient.auth.getSession();
     currentUser = data?.session?.user || null;
     $('loginBtn').classList.toggle('hidden', !!currentUser);$('userBtn').classList.toggle('hidden', !currentUser);
   }
 
-  async function logout() {
-    await supabaseClient.auth.signOut();
-    closeUserModal();
-    checkUserSession();
-    loadListings();
-  }
-
   async function handlePublishSubmit(e) {
     e.preventDefault();
     if (!currentUser) return;
-    
-    alert("🔒 Séquestre Mobile Money initialisé avec succès !\n\nL'annonce a été publiée et sécurisée pour la démo.");
 
-    try {
-      const { error } = await supabaseClient.from('annonces').insert([{
-        title: $('adTitle').value.trim(),
-        category: $('adCategory').value,
-        city: $('adCity').value,
-        price: parseFloat($('adPrice').value),
-        description: $('adDescription').value.trim(),
-        contact: $('adContact').value.trim(),
-        user_id: currentUser.id
-      }]);
+    const { error } = await supabaseClient.from('annonces').insert([{
+      title: $('adTitle').value.trim(),
+      category: $('adCategory').value,
+      city: $('adCity').value,
+      price: parseFloat($('adPrice').value),
+      description: $('adDescription').value.trim(),
+      contact: $('adContact').value.trim(),
+      user_id: currentUser.id
+    }]);
 
-      if (error) throw error;
+    if (!error) {
       $('adForm').reset();
       closePublishModal();
       loadListings();
-    } catch (err) {
-      alert("Erreur lors de l'enregistrement en base.");
+    } else {
+      alert("Erreur lors de la publication.");
     }
   }
 
@@ -538,95 +278,18 @@
     const query = $('searchInput').value.trim();
     const city = $('cityFilter').value;
 
-    try {
-      let req = supabaseClient.from('annonces').select('*').order('created_at', { ascending: false }).limit(35);
-      if (city) req = req.eq('city', city);
-      if (currentCategory) req = req.eq('category', currentCategory);
-      if (query) req = req.or(`title.ilike.%${query}%,description.ilike.%${query}%`);
+    let req = supabaseClient.from('annonces').select('*').order('created_at', { ascending: false });
+    if (city) req = req.eq('city', city);
+    if (currentCategory) req = req.eq('category', currentCategory);
+    if (query) req = req.or(`title.ilike.%${query}%,description.ilike.%${query}%`);
 
-      const { data, error } = await req;
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        container.innerHTML = `
-          <div style="grid-column: 1/-1; text-align:center; padding: 70px 20px;">
-            <h3 style="font-size: 1.3rem; font-weight: 900; margin-bottom: 8px;">Aucune offre correspondante</h3>
-            <p style="color: var(--text-muted); margin-bottom: 24px; font-weight: 600;">Soyez le premier à publier !</p>
-            <button class="btn-pub" onclick="openPublishModal()">Publier maintenant</button>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = data.map(item => {
-        let wa = (item.contact || '').replace(/\D/g, '');
-        if (wa.length === 9) wa = '237' + wa;
-        const isMienne = currentUser && currentUser.id === item.user_id;
-
-        let imageUrl = item.image_url;
-        if (!imageUrl) {
-          if (item.category === 'Restaurants & Gastronomie') imageUrl = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80';
-          else if (item.category === 'Écoles & Formations') imageUrl = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80';
-          else if (item.category === 'Véhicules') imageUrl = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=500&q=80';
-          else imageUrl = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80';
-        }
-
-        return `
-          <article class="card">
-            <div class="card-img-wrapper">
-              <img src="${imageUrl}" alt="${escapeHTML(item.title)}">
-              <span class="card-badge-floating">${escapeHTML(item.category)}</span>
-              <span class="card-verified-badge">🛡️ Séquestre OK</span>
-            </div>
-            <div class="card-body">
-              <h3>${escapeHTML(item.title)}</h3>
-              <p class="card-desc">${escapeHTML(item.description)}</p>
-              ${wa ? `<a class="whatsapp-btn" href="https://wa.me/${wa}" target="_blank">💬 Commander via WhatsApp</a>` : ''}
-              <div class="card-footer">
-                <span class="card-city">📍 ${escapeHTML(item.city || 'Cameroun')}</span>
-                <span class="card-price">${Number(item.price || 0).toLocaleString('fr-FR')} FCFA</span>
-              </div>
-              ${isMienne ? `<button class="btn-delete" onclick="deleteListing(${item.id})">Supprimer</button>` : ''}
-            </div>
-          </article>
-        `;
-      }).join('');
-    } catch (err) {
-      container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:#ef4444; padding: 40px;">Erreur de chargement.</p>`;
+    const { data, error } = await req;
+    if (error || !data || data.length === 0) {
+      container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);"><p>Aucune annonce trouvée.</p></div>`;
+      return;
     }
-  }
 
-  function filterByCategory(cat, element) {
-    currentCategory = cat;
-    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-    element.classList.add('active');
-    loadListings();
-  }
-
-  function applyFilters() { loadListings(); }
-  function resetAllFilters() {
-    $('searchInput').value = '';$('cityFilter').value = '';
-    currentCategory = '';
-    document.querySelectorAll('.cat-chip').forEach((c, idx) => c.classList.toggle('active', idx === 0));
-    loadListings();
-  }
-
-  async function deleteListing(id) {
-    if (!confirm('Supprimer ?')) return;
-    await supabaseClient.from('annonces').delete().eq('id', id);
-    loadListings();
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + CITIES.map(c => `<option>${c}</option>`).join('');
-    $('adCity').innerHTML = CITIES.map(c => `<option>${c}</option>`).join('');
-
-    $('searchInput').addEventListener('input', () => {       clearTimeout(searchTimer);       searchTimer = setTimeout(loadListings, 300);     });$('cityFilter').addEventListener('change', loadListings);
-
-    checkUserSession();
-    loadListings();
-  });
-</script>
-
-</body>
-</html>
+    container.innerHTML = data.map(item => {
+      let img = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80';
+      if (item.category === 'Restaurants & Gastronomie') img = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80';
+      else if (item.category === 'Véhicules') img = '
