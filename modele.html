@@ -3,41 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Comment CamerLink rapporte · Modèle économique</title>
+<title>Modèle économique · CamerLink</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter','Segoe UI',Arial,sans-serif; }
-  body { background:#f4f6fb; color:#0f172a; line-height:1.6; }
-  header { background:#fff; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 12px rgba(15,23,42,.06); position:sticky; top:0; }
-  .logo { font-size:1.4rem; font-weight:800; color:#2563eb; text-decoration:none; }
-  .logo span { color:#111827; }
-  .back { color:#2563eb; font-weight:700; text-decoration:none; font-size:.9rem; }
-  .hero { background:linear-gradient(135deg,#1d4ed8,#3b82f6); color:#fff; text-align:center; padding:48px 18px; }
-  .hero h1 { font-size:1.8rem; font-weight:800; line-height:1.25; margin-bottom:10px; }
-  .hero h1 span { color:#fbbf24; }
-  .hero p { max-width:620px; margin:auto; opacity:.95; }
-  main { max-width:900px; margin:auto; padding:30px 16px 50px; }
-  h2 { font-size:1.35rem; margin:34px 0 14px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px; }
-  .box { background:#fff; border-radius:16px; padding:18px; box-shadow:0 4px 16px rgba(15,23,42,.06); border:1px solid #eef1f6; }
-  .box .ico { font-size:1.6rem; }
-  .box h3 { margin:6px 0; font-size:1.05rem; }
-  .box p { color:#475569; font-size:.92rem; }
-  .tag { display:inline-block; background:#eef4ff; color:#2563eb; padding:4px 10px; border-radius:999px; font-size:.78rem; font-weight:700; margin-top:8px; }
-  .note { background:#fffbeb; border:1px solid #fde68a; color:#92400e; padding:12px 14px; border-radius:12px; font-size:.85rem; margin-top:12px; }
-  table { width:100%; border-collapse:collapse; background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 4px 16px rgba(15,23,42,.06); font-size:.92rem; }
-  th, td { padding:12px 14px; text-align:left; border-bottom:1px solid #eef1f6; }
-  th { background:#f8fafc; font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; color:#64748b; }
-  tr.total td { font-weight:800; color:#2563eb; border-bottom:none; }
-  ol.steps { margin-left:20px; color:#334155; }
-  ol.steps li { margin-bottom:8px; }
-  .cta { background:#0f172a; color:#fff; border-radius:20px; padding:26px 20px; text-align:center; margin-top:34px; }
-  .cta h2 { margin:0 0 8px; }
-  .cta p { color:#cbd5e1; margin-bottom:14px; }
-  .cta a { display:inline-block; background:#fbbf24; color:#111827; font-weight:800; padding:12px 22px; border-radius:999px; text-decoration:none; margin:4px; }
-  .cta a.alt { background:#25d366; color:#fff; }
-  footer { text-align:center; color:#64748b; font-size:.85rem; padding:24px; }
-  @media(min-width:600px){ .hero h1{font-size:2.3rem;} }
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --accent: #fbbf24;
+    --bg: #f4f6fb;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+  body { background: var(--bg); color: var(--text); line-height: 1.6; }
+  
+  header { background: var(--surface); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+  .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); text-decoration: none; }
+  .logo span { color: var(--text); }
+  .back { color: var(--primary); font-weight: 700; text-decoration: none; font-size: .9rem; }
+  .back:hover { text-decoration: underline; }
+
+  .hero { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #fff; text-align: center; padding: 50px 20px; }
+  .hero h1 { font-size: 2.1rem; font-weight: 800; line-height: 1.25; margin-bottom: 12px; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { max-width: 650px; margin: auto; opacity: .95; font-size: 1.05rem; }
+
+  main { max-width: 950px; margin: auto; padding: 35px 20px 60px; }
+  h2 { font-size: 1.4rem; font-weight: 800; margin: 38px 0 16px; letter-spacing: -0.3px; }
+  
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .box { background: var(--surface); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .box .ico { font-size: 1.8rem; margin-bottom: 8px; }
+  .box h3 { margin: 6px 0 8px; font-size: 1.1rem; font-weight: 700; }
+  .box p { color: var(--text-light); font-size: 0.92rem; }
+  .tag { display: inline-block; background: #eef2ff; color: var(--primary); padding: 5px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; margin-top: 12px; }
+
+  .note { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 14px 16px; border-radius: 12px; font-size: 0.88rem; margin-top: 14px; font-weight: 500; }
+  
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); font-size: 0.92rem; border: 1px solid var(--border); }
+  th, td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: #f8fafc; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-light); font-weight: 700; }
+  tr.total td { font-weight: 800; color: var(--primary); border-bottom: none; background: #f8fafc; }
+
+  ol.steps { margin-left: 20px; color: var(--text); }
+  ol.steps li { margin-bottom: 10px; font-weight: 500; }
+  ol.steps li b { color: var(--primary); }
+
+  .cta { background: #0f172a; color: #fff; border-radius: 24px; padding: 35px 24px; text-align: center; margin-top: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+  .cta h2 { color: white; margin: 0 0 10px; }
+  .cta p { color: #cbd5e1; margin-bottom: 20px; font-size: 1rem; }
+  .cta-buttons { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .cta a { display: inline-block; background: var(--accent); color: #111827; font-weight: 800; padding: 14px 26px; border-radius: 999px; text-decoration: none; transition: transform 0.2s; }
+  .cta a:hover { transform: translateY(-2px); }
+  .cta a.alt { background: #25d366; color: #fff; }
+
+  footer { text-align: center; color: var(--text-light); font-size: 0.88rem; padding: 30px; border-top: 1px solid var(--border); margin-top: 40px; background: white; }
 </style>
 </head>
 <body>
@@ -49,14 +74,14 @@
 
 <section class="hero">
   <h1>Comment <span>CamerLink</span> gagne de l'argent</h1>
-  <p>Une marketplace gratuite pour les utilisateurs, financée par des services payants destinés aux vendeurs et aux professionnels.</p>
+  <p>Une marketplace gratuite pour les utilisateurs, financée par des services à forte valeur ajoutée pour les vendeurs et les professionnels.</p>
 </section>
 
 <main>
 
-  <h2>Le problème</h2>
+  <h2>Le problème actuel</h2>
   <div class="box">
-    <p>Au Cameroun, une grande partie des ventes et des services passe par des groupes WhatsApp et Facebook : les annonces se perdent, il est difficile de savoir qui est fiable, et les artisans manquent de visibilité. CamerLink centralise les annonces et les rend faciles à trouver, par ville et par catégorie.</p>
+    <p>Au Cameroun, une grande partie des ventes et des services passe par des groupes WhatsApp et Facebook éparpillés : les annonces se perdent rapidement, il est difficile d'identifier des prestataires de confiance, et les artisans manquent de visibilité professionnelle. CamerLink centralise tout cela sur une plateforme fluide, rapide et classée par ville.</p>
   </div>
 
   <h2>Nos sources de revenus</h2>
@@ -64,49 +89,63 @@
     <div class="box">
       <div class="ico">⭐</div>
       <h3>Annonces mises en avant</h3>
-      <p>Le vendeur paie pour que son annonce apparaisse en haut de la liste pendant quelques jours.</p>
+      <p>Le vendeur paie pour épingler son annonce en tête de liste et booster sa visibilité.</p>
       <span class="tag">Prévu : 1 000 FCFA / 7 jours</span>
     </div>
     <div class="box">
       <div class="ico">✔</div>
       <h3>Abonnement « Pro vérifié »</h3>
-      <p>Les artisans et boutiques obtiennent le badge Vérifié, un profil complet et plus de visibilité.</p>
+      <p>Les artisans et boutiques obtiennent un badge officiel, un profil enrichi et la confiance des clients.</p>
       <span class="tag">Prévu : 3 000 FCFA / mois</span>
     </div>
     <div class="box">
       <div class="ico">📣</div>
-      <h3>Publicité locale</h3>
-      <p>Les entreprises (garages, magasins, services) achètent un emplacement visible dans leur ville.</p>
+      <h3>Publicité locale ciblée</h3>
+      <p>Les entreprises partenaires achètent des bannières bmr et emplacements publicitaires par ville.</p>
       <span class="tag">Prévu : dès 10 000 FCFA / mois</span>
     </div>
     <div class="box">
       <div class="ico">🤝</div>
-      <h3>Aide à publier</h3>
-      <p>Aide à la création d'annonces, photos et rédaction pour les professionnels.</p>
+      <h3>Assistance à la publication</h3>
+      <p>Service d'accompagnement (shooting photo pro, rédaction d'annonces) pour les prestataires non-technophiles.</p>
       <span class="tag">Prévu : 500 à 2 000 FCFA</span>
     </div>
   </div>
-  <div class="note">Les tarifs ci-dessus sont des projections à valider avec les premiers utilisateurs. CamerLink reste gratuit pour les acheteurs.</div>
+  <div class="note">💡 Les tarifs ci-dessus sont des projections testées auprès de la communauté. L'accès reste 100% gratuit pour les acheteurs.</div>
 
-  <h2>Exemple de revenus (illustratif)</h2>
+  <h2>Simulation de rentabilité mensuelle (Exemple)</h2>
   <table>
-    <tr><th>Source</th><th>Hypothèse</th><th>Par mois</th></tr>
-    <tr><td>Annonces mises en avant</td><td>300 × 1 000 FCFA</td><td>300 000 FCFA</td></tr>
-    <tr><td>Pro vérifié</td><td>60 × 3 000 FCFA</td><td>180 000 FCFA</td></tr>
-    <tr><td>Publicité locale</td><td>8 × 10 000 FCFA</td><td>80 000 FCFA</td></tr>
-    <tr class="total"><td>Total</td><td></td><td>560 000 FCFA</td></tr>
+    <tr><th>Source de revenus</th><th>Hypothèse prudente</th><th>Revenu potentiel</th></tr>
+    <tr><td>Annonces mises en avant</td><td>300 annonces × 1 000 FCFA</td><td>300 000 FCFA</td></tr>
+    <tr><td>Abonnements Pro Vérifié</td><td>60 artisans × 3 000 FCFA</td><td>180 000 FCFA</td></tr>
+    <tr><td>Publicité locale</td><td>8 entreprises × 10 000 FCFA</td><td>80 000 FCFA</td></tr>
+    <tr class="total"><td>Total estimé</td><td></td><td>560 000 FCFA / mois</td></tr>
   </table>
-  <div class="note">Exemple illustratif pour montrer le potentiel du modèle. Ce ne sont pas des résultats réels.</div>
+  <div class="note">⚠️ Données prévisionnelles illustratives démontrant la viabilité économique du modèle sur le marché camerounais.</div>
 
-  <h2>Notre plan de croissance</h2>
+  <h2>Notre plan de déploiement stratégique</h2>
   <ol class="steps">
-    <li><b>Lancement :</b> recruter les premiers artisans et vendeurs à Yaoundé et Douala.</li>
-    <li><b>Confiance :</b> vérifier les profils et afficher le badge « Vérifié ».</li>
-    <li><b>Traction :</b> suivre les inscrits, les annonces et les contacts WhatsApp.</li>
-    <li><b>Monétisation :</b> lancer les annonces mises en avant et les abonnements Pro.</li>
-    <li><b>Expansion :</b> ouvrir les autres villes (Bafoussam, Garoua, Bamenda…) et ajouter le paiement mobile.</li>
+    <li><b>Lancement :</b> Acquisition des premiers artisans de référence à Yaoundé et Douala.</li>
+    <li><b>Confiance :</b> Vérification rigoureuse des profils et déploiement du badge « Pro Vérifié ».</li>
+    <li><b>Traction :</b> Suivi en temps réel des interactions et des volumes de contacts WhatsApp générés.</li>
+    <li><b>Monétisation :</b> Activation progressive des options de mise en avant payantes et abonnements.</li>
+    <li><b>Expansion nationale :</b> Ouverture des autres pôles urbains (Bafoussam, Garoua, Bamenda...) et intégration du paiement mobile.</li>
   </ol>
 
   <div class="cta">
     <h2>Investir, s'associer ou reprendre le projet</h2>
-    <p>CamerLink est ouvert aux investisseurs, partenaires et repreneurs.</p>
+    <p>CamerLink est activement ouvert aux investisseurs, incubateurs et partenaires stratégiques.</p>
+    <div class="cta-buttons">
+      <a href="https://wa.me/2376XXXXXXXX?text=Bonjour,%20je%20suis%20intéressé(e)%20par%20le%20projet%20CamerLink" class="alt" target="_blank" rel="noopener">💬 Discuter sur WhatsApp</a>
+      <a href="mailto:tchoyieric@gmail.com">✉️ Contact e-mail</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>© 2026 CamerLink · La marketplace de référence des services et produits au Cameroun 🇨🇲</p>
+</footer>
+
+</body>
+</html>
