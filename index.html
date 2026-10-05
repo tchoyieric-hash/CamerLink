@@ -3,259 +3,291 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CamerLink · La Super-App Immersive & Futuriste 2026</title>
+  <meta name="description" content="CamerLink · La plateforme d'annonces premium au Cameroun. Services, Immobilier, Véhicules, Restaurants.">
+  <title>CamerLink · L'Excellence Numérique</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #3b82f6;
-      --primary-glow: rgba(59, 130, 246, 0.4);
-      --accent: #f59e0b;
-      --success: #10b981;
-      --bg: #030712;
-      --surface: #0f172a;
-      --surface-glass: rgba(15, 23, 42, 0.85);
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: rgba(255, 255, 255, 0.1);
-      --radius-sm: 16px;
-      --radius-md: 24px;
-      --radius-lg: 36px;
+      /* --- Design System Luxueux --- */
+      --color-bg: #050509;
+      --color-surface: #0F0F16;
+      --color-surface-glass: rgba(15, 15, 22, 0.85);
+      --color-text-main: #FFFFFF;
+      --color-text-muted: #9CA3AF;
+      --color-accent: #F59E0B; /* Or Premium */
+      --color-cta: #3B82F6; /* Bleu Confiance */
+      --color-whatsapp: #22C55E;
+      --color-border: #1F2937;
+      
+      /* --- Typographie & Espacement --- */
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --header-height: 70px;
+      --container-padding: 16px;
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
     }
 
     [data-theme="light"] {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --surface-glass: rgba(255, 255, 255, 0.9);
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --border: rgba(0, 0, 0, 0.08);
+      --color-bg: #F9FAFB;
+      --color-surface: #FFFFFF;
+      --color-surface-glass: rgba(255, 255, 255, 0.9);
+      --color-text-main: #111827;
+      --color-text-muted: #6B7280;
+      --color-border: #E5E7EB;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+    /* --- Reset & Base --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--color-bg); color: var(--color-text-main); font-family: var(--font-family); font-size: 16px; line-height: 1.5; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    button { border: none; background: none; cursor: pointer; font-family: inherit; }
+    img { max-width: 100%; display: block; }
     .hidden { display: none !important; }
 
-    header { background: var(--surface-glass); backdrop-filter: blur(20px); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-    .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .logo { font-size: 1.5rem; font-weight: 900; color: var(--text); }
-    .logo span { color: var(--primary); }
-    
+    /* --- Header Professionnel --- */
+    header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-height); background: var(--color-surface-glass); backdrop-filter: blur(12px); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; padding: 0 var(--container-padding); z-index: 1000; }
+    .logo-brand { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
+    .logo-brand span { color: var(--color-accent); }
     .header-actions { display: flex; align-items: center; gap: 10px; }
-    .btn-icon, .btn-login, .btn-user, .btn-pub { padding: 10px 18px; border-radius: 999px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); font-size: 0.9rem; }
-    .btn-icon { background: var(--surface); color: var(--text); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    .btn-login { background: transparent; color: var(--text); }
-    .btn-user { background: rgba(59, 130, 246, 0.15); color: var(--primary); }
-    .btn-pub { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; border: none; font-weight: 800; }
+    .btn-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--color-surface); color: var(--color-text-main); border: 1px solid var(--color-border); }
+    .btn-login, .btn-user { padding: 8px 16px; border-radius: 999px; font-size: 0.9rem; font-weight: 600; }
+    .btn-login { color: var(--color-text-muted); }
+    .btn-user { background: rgba(59, 130, 246, 0.1); color: var(--color-cta); }
+    .btn-pub { background: var(--color-accent); color: #000; padding: 10px 20px; border-radius: 999px; font-weight: 700; font-size: 0.9rem; transition: transform 0.1s; }
+    .btn-pub:active { transform: scale(0.97); }
 
-    .reels-section { max-width: 1200px; margin: 20px auto 10px; padding: 0 20px; }
-    .reels-section h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .reels-container { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; }
-    .reel-card { position: relative; min-width: 130px; height: 210px; border-radius: var(--radius-sm); overflow: hidden; background: #1e293b; border: 1px solid var(--border); cursor: pointer; flex-shrink: 0; }
-    .reel-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: transform 0.3s; }
-    .reel-card:hover img { transform: scale(1.05); }
-    .reel-gradient { position: absolute; inset: 0; background: linear-gradient(to top, rgba(3,7,18,0.9) 0%, transparent 60%); }
-    .reel-info { position: absolute; bottom: 10px; left: 10px; right: 10px; z-index: 2; }
-    .reel-title { font-size: 0.8rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .reel-badge { position: absolute; top: 8px; left: 8px; background: rgba(239, 68, 68, 0.9); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+    /* --- Espacement pour le Header Fixe --- */
+    .header-spacer { height: var(--header-height); }
 
-    .hero { text-align: center; padding: 30px 20px 20px; border-bottom: 1px solid var(--border); }
-    .hero h1 { font-size: 2rem; font-weight: 900; margin-bottom: 8px; }
-    .hero h1 span { color: var(--accent); }
-    .hero p { max-width: 600px; margin: 0 auto 15px; color: var(--text-muted); font-size: 0.95rem; }
+    /* --- Section Hero Séduisante --- */
+    .hero { padding: 40px var(--container-padding) 30px; text-align: center; border-bottom: 1px solid var(--color-border); }
+    .hero h1 { font-size: 2.5rem; font-weight: 900; line-height: 1.1; letter-spacing: -1px; margin-bottom: 12px; }
+    .hero h1 span { background: linear-gradient(90deg, var(--color-accent), #FBBF24); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero p { font-size: 1.1rem; color: var(--color-text-muted); max-width: 500px; margin: 0 auto 24px; }
 
-    .search-box-container { max-width: 750px; margin: 0 auto; background: var(--surface); padding: 8px; border-radius: 30px; border: 1px solid var(--border); display: flex; gap: 8px; }
-    .search-box-container input, .search-box-container select { flex: 1; background: transparent; border: none; padding: 10px 14px; color: var(--text); font-size: 0.95rem; outline: none; }
-    .btn-search { background: var(--primary); color: white; border: none; padding: 10px 24px; border-radius: 20px; font-weight: 800; cursor: pointer; }
+    /* --- Barre de Recherche & Filtres Moderne --- */
+    .search-filter-bar { max-width: 700px; margin: 0 auto; padding: 0 var(--container-padding); display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .search-input, .city-select { flex: 1; min-width: 150px; }
+    .form-el { padding: 12px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 999px; color: var(--color-text-main); font-size: 0.95rem; outline: none; appearance: none; }
+    .form-el::placeholder { color: var(--color-text-muted); }
+    .search-input { flex: 2; min-width: 200px; }
+    .city-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; }
+    .btn-search { padding: 12px 30px; background: var(--color-cta); color: white; border-radius: 999px; font-weight: 700; cursor: pointer; }
 
-    .categories-bar { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
-    .cat-chip { background: var(--surface); border: 1px solid var(--border); padding: 8px 18px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
-    .cat-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+    /* --- Catégories --- */
+    .categories-scroll { padding: 20px var(--container-padding); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+    .categories-scroll::-webkit-scrollbar { display: none; }
+    .cat-chip { padding: 8px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); white-space: nowrap; }
+    .cat-chip.active { background: var(--color-accent); color: #000; border-color: var(--color-accent); }
 
-    main { max-width: 1200px; margin: auto; padding: 10px 20px 80px; }
+    /* --- Grille d'Annonces Premium --- */
+    main { padding: 10px var(--container-padding) 80px; }
+    #listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto; }
+    .ad-card { background: var(--color-surface); border-radius: var(--radius-xl); overflow: hidden; border: 1px solid var(--color-border); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
+    .ad-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
+    .card-img-container { position: relative; width: 100%; height: 180px; }
+    .card-img-container img { width: 100%; height: 100%; object-fit: cover; }
+    .card-badge-top { position: absolute; top: 12px; left: 12px; padding: 4px 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); border-radius: 999px; font-size: 0.7rem; font-weight: 600; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card-body { padding: 16px; display: flex; flex-direction: column; flex-grow: 1; }
+    .ad-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .ad-desc { font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1; }
+    .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--color-border); }
+    .ad-city { font-size: 0.85rem; color: var(--color-text-muted); }
+    .ad-price { font-size: 1.2rem; font-weight: 900; color: var(--color-accent); }
+    .whatsapp-link-card { display: block; width: 100%; margin-top: 16px; padding: 12px; text-align: center; background: var(--color-whatsapp); color: white; border-radius: var(--radius-md); font-weight: 700; font-size: 0.95rem; transition: background 0.2s; }
+    .whatsapp-link-card:hover { background: #1da152; }
+
+    /* --- Modals Propres --- */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: var(--container-padding); z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    .modal-sheet { background: var(--color-surface); width: 100%; max-width: 450px; border-radius: var(--radius-xl); padding: 24px; border: 1px solid var(--color-border); max-height: 90vh; overflow-y: auto; transform: scale(0.95); transition: transform 0.3s ease; }
+    .modal-overlay.active .modal-sheet { transform: scale(1); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 1.5rem; font-weight: 800; }
+    .close-modal { font-size: 1.8rem; color: var(--color-text-muted); }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--color-text-muted); }
+    .form-sheet-el { width: 100%; padding: 14px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text-main); }
+    .btn-submit-modal { width: 100%; padding: 14px; background: var(--color-cta); color: white; border-radius: var(--radius-md); font-weight: 700; font-size: 1rem; margin-top: 10px; }
     
-    #listings { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .card { background: var(--surface); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
-    .card-img-wrapper { position: relative; width: 100%; height: 170px; background: #1e293b; }
-    .card img { width: 100%; height: 100%; object-fit: cover; }
-    .card-badge { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); color: white; padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
-    .card-body { padding: 18px; display: flex; flex-direction: column; flex-grow: 1; }
-    .card h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
-    .card-desc { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px; flex-grow: 1; }
-    .whatsapp-btn { display: block; text-align: center; background: #10b981; color: white; padding: 10px; border-radius: 12px; font-weight: 800; text-decoration: none; margin-bottom: 12px; font-size: 0.9rem; }
-    .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 10px; }
-    .card-price { color: var(--primary); font-weight: 900; font-size: 1.05rem; }
+    /* --- Footer --- */
+    footer { padding: 40px var(--container-padding); text-align: center; border-top: 1px solid var(--color-border); background: var(--color-surface); margin-top: auto; }
+    footer .logo-brand { font-size: 1.2rem; margin-bottom: 10px; }
+    footer p { font-size: 0.85rem; color: var(--color-text-muted); }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 2000; }
-    .modal-sheet { background: var(--surface); width: 100%; max-width: 500px; border-radius: var(--radius-lg); padding: 25px; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.85rem; }
-    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; color: var(--text); font-size: 0.95rem; outline: none; }
-    .btn-submit { width: 100%; background: var(--primary); color: white; padding: 12px; border-radius: 12px; font-weight: 900; border: none; cursor: pointer; margin-top: 10px; }
-
-    footer { text-align: center; padding: 30px; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 40px; font-size: 0.85rem; }
+    /* --- Responsive Optimisé --- */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 1rem; }
+      .search-filter-bar { flex-direction: column; gap: 12px; }
+      .search-input, .city-select, .btn-search { width: 100%; border-radius: var(--radius-md); }
+      #listings-grid { grid-template-columns: 1fr; gap: 20px; }
+      .card-img-container { height: 200px; }
+    }
+    
+    @media (max-width: 380px) {
+      .header-brand { font-size: 1.1rem; }
+      .header-actions button { padding: 6px 12px; font-size: 0.8rem; }
+      .btn-pub { padding: 8px 15px; }
+    }
   </style>
 </head>
 <body>
 
+<!-- Header --- Professionnel & Fluide --- -->
 <header>
-  <a class="logo-container" href="#">
-    <span class="logo">Camer<span>Link</span></span>
-  </a>
+  <a href="#" class="logo-brand">Camer<span>Link</span></a>
   <div class="header-actions">
-    <button class="btn-icon" onclick="toggleTheme()">🌓</button>
+    <button class="btn-icon" onclick="toggleTheme()" aria-label="Changer de thème">🌓</button>
     <button id="loginBtn" class="btn-login" onclick="openAuthModal()">Connexion</button>
-    <button id="userBtn" class="btn-user hidden" onclick="openUserModal()">Compte</button>
-    <button class="btn-pub" onclick="openPublishModal()">+ Publier</button>
+    <button id="userBtn" class="btn-user hidden" onclick="openUserModal()">Mon Compte</button>
+    <button class="btn-pub" onclick="openPublishModal()">+ Publier Offre</button>
   </div>
 </header>
 
-<div class="reels-section">
-  <h2>⚡ Tendances & Réels Live</h2>
-  <div class="reels-container">
-    <div class="reel-card" onclick="alert('Ouverture du Réel Vidéo 1')">
-      <span class="reel-badge">Live</span>
-      <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=300&q=80" alt="Reel">
-      <div class="reel-gradient"></div>
-      <div class="reel-info">
-        <div class="reel-title">Le Gourmet Bastos</div>
-      </div>
-    </div>
-    <div class="reel-card" onclick="alert('Ouverture du Réel Vidéo 2')">
-      <span class="reel-badge">Promo</span>
-      <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=300&q=80" alt="Reel">
-      <div class="reel-gradient"></div>
-      <div class="reel-info">
-        <div class="reel-title">Vente Véhicules</div>
-      </div>
-    </div>
-    <div class="reel-card" onclick="alert('Ouverture du Réel Vidéo 3')">
-      <span class="reel-badge">Tendance</span>
-      <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=300&q=80" alt="Reel">
-      <div class="reel-gradient"></div>
-      <div class="reel-info">
-        <div class="reel-title">Formations Tech</div>
-      </div>
-    </div>
-    <div class="reel-card" onclick="alert('Ouverture du Réel Vidéo 4')">
-      <span class="reel-badge">Nouveau</span>
-      <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=300&q=80" alt="Reel">
-      <div class="reel-gradient"></div>
-      <div class="reel-info">
-        <div class="reel-title">Gadgets & Services</div>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="header-spacer"></div>
 
+<!-- Section Hero --- Incitation à l'action --- -->
 <section class="hero">
-  <h1>Le Futur du Cameroun <span>en direct.</span></h1>
-  <p>Découvrez et publiez les meilleurs services, restaurants et articles du moment.</p>
-
-  <div class="search-box-container">
-    <input id="searchInput" type="search" placeholder="Rechercher une offre...">
-    <select id="cityFilter">
+  <h1>L'Excellence au Cameroun <br><span>à portée de clic.</span></h1>
+  <p>La marketplace de référence pour des offres premium vérifiées. Vendez, achetez, soyez servis.</p>
+  
+  <div class="search-filter-bar">
+    <input id="searchInput" type="search" placeholder="Que recherchez-vous ?" class="search-input form-el">
+    <select id="cityFilter" class="city-select form-el">
       <option value="">Toutes les villes</option>
     </select>
-    <button class="btn-search" onclick="loadListings()">Filtrer</button>
+    <button class="btn-search form-el" onclick="loadListings()">Rechercher</button>
   </div>
 </section>
 
-<div class="categories-bar">
+<!-- Catégories --- Ergonomique --- -->
+<div class="categories-scroll">
   <div class="cat-chip active" onclick="filterByCategory('', this)">✨ Tout voir</div>
-  <div class="cat-chip" onclick="filterByCategory('Restaurants & Gastronomie', this)">🍽️ Restaurants</div>
-  <div class="cat-chip" onclick="filterByCategory('Écoles & Formations', this)">🎓 Écoles</div>
-  <div class="cat-chip" onclick="filterByCategory('Services & Artisans', this)">🛠️ Services</div>
+  <div class="cat-chip" onclick="filterByCategory('Restaurants & Gastronomie', this)">🍽️ Gastronomie</div>
+  <div class="cat-chip" onclick="filterByCategory('Immobilier', this)">🏠 Immobilier</div>
   <div class="cat-chip" onclick="filterByCategory('Véhicules', this)">🚗 Véhicules</div>
+  <div class="cat-chip" onclick="filterByCategory('High-Tech & Services', this)">💻 Services</div>
 </div>
 
+<!-- Grille d'Annonces --- Grille parfaite --- -->
 <main>
-  <div id="listings"></div>
+  <div id="listings-grid">
+    <!-- Les cartes seront injectées ici par le script -->
+  </div>
 </main>
 
-<!-- MODAL PUBLICATION -->
-<div id="publishModal" class="modal-overlay hidden">
+<!-- Footer --- Marque --- -->
+<footer>
+  <a href="#" class="logo-brand">Camer<span>Link</span></a>
+  <p>© 2026 CamerLink · L'élite du service digital.</p>
+</footer>
+
+<!-- --- MODALS --- Système d'overlay --- -->
+
+<!-- MODAL PUBLICATION --- Conçue pour mobile --- -->
+<div id="publishModal" class="modal-overlay">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-      <h3>Publier une annonce</h3>
-      <button onclick="closePublishModal()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">×</button>
+    <div class="modal-header">
+      <h3 class="modal-title">Publier une annonce</h3>
+      <button onclick="closePublishModal()" class="close-modal" aria-label="Fermer">×</button>
     </div>
     <form id="adForm" onsubmit="handlePublishSubmit(event)">
       <div class="form-group">
-        <label>Catégorie</label>
-        <select class="form-control" id="adCategory">
+        <label>Catégorie *</label>
+        <select class="form-sheet-el" id="adCategory" required>
           <option value="Restaurants & Gastronomie">Restaurants & Gastronomie</option>
-          <option value="Écoles & Formations">Écoles & Formations</option>
-          <option value="Services & Artisans">Services & Artisans</option>
+          <option value="Immobilier">Immobilier</option>
           <option value="Véhicules">Véhicules</option>
+          <option value="High-Tech & Services">High-Tech & Services</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Titre</label>
-        <input class="form-control" id="adTitle" required placeholder="Ex: Restaurant Le Gourmet">
+        <label>Titre de l'offre (ex: Appartement Bonapriso) *</label>
+        <input class="form-sheet-el" id="adTitle" type="text" required maxlength="80">
       </div>
       <div class="form-group">
-        <label>Ville</label>
-        <select class="form-control" id="adCity"></select>
+        <label>Ville *</label>
+        <select class="form-sheet-el" id="adCity" required></select>
       </div>
       <div class="form-group">
-        <label>Prix (FCFA)</label>
-        <input class="form-control" id="adPrice" type="number" required placeholder="15000">
+        <label>Prix (FCFA) *</label>
+        <input class="form-sheet-el" id="adPrice" type="number" required min="100">
       </div>
       <div class="form-group">
-        <label>Photo de l'offre</label>
-        <input class="form-control" id="adImageFile" type="file" accept="image/*">
+        <label>Photo principale *</label>
+        <input class="form-sheet-el" id="adImageFile" type="file" accept="image/*" required>
       </div>
       <div class="form-group">
-        <label>Description</label>
-        <textarea class="form-control" id="adDescription" rows="3" required placeholder="Détails de l'offre..."></textarea>
+        <label>Description détaillée *</label>
+        <textarea class="form-sheet-el" id="adDescription" rows="4" required maxlength="500"></textarea>
       </div>
       <div class="form-group">
-        <label>WhatsApp</label>
-        <input class="form-control" id="adContact" type="tel" required placeholder="6XXXXXXXX">
+        <label>Votre numéro WhatsApp (pour être contacté) *</label>
+        <input class="form-sheet-el" id="adContact" type="tel" placeholder="699000000" required pattern="6[0-9]{8}" maxlength="9">
       </div>
-      <button class="btn-submit" type="submit" id="submitBtn">Valider la publication</button>
+      <button class="btn-submit-modal" type="submit" id="submitBtn">Publier l'annonce</button>
     </form>
   </div>
 </div>
 
-<!-- MODAL AUTH -->
-<div id="authModal" class="modal-overlay hidden">
+<!-- MODAL AUTH --- Sécurisée --- -->
+<div id="authModal" class="modal-overlay">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-      <h3>Connexion / Inscription</h3>
-      <button onclick="closeAuthModal()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">×</button>
+    <div class="modal-header">
+      <h3 class="modal-title">Espace Membre</h3>
+      <button onclick="closeAuthModal()" class="close-modal" aria-label="Fermer">×</button>
     </div>
     <form onsubmit="handleAuthSubmit(event)">
+      <p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:15px; line-height:1.4;">Utilisez votre numéro de téléphone pour vous connecter ou créer un compte automatiquement.</p>
       <div class="form-group">
-        <label>Téléphone (9 chiffres)</label>
-        <input class="form-control" id="authPhone" type="tel" maxlength="9" required placeholder="6XXXXXXXX">
+        <label>Numéro de téléphone *</label>
+        <input class="form-sheet-el" id="authPhone" type="tel" placeholder="699000000" required pattern="6[0-9]{8}" maxlength="9">
       </div>
       <div class="form-group">
-        <label>Mot de passe</label>
-        <input class="form-control" id="authPassword" type="password" required placeholder="Mot de passe">
+        <label>Mot de passe *</label>
+        <input class="form-sheet-el" id="authPassword" type="password" required placeholder="••••••••">
       </div>
-      <button class="btn-submit" type="submit">Se connecter</button>
+      <button class="btn-submit-modal" type="submit">Connexion / Inscription</button>
+      <p id="authErrorMsg" style="color:#ef4444; text-align:center; margin-top:12px; font-size:0.85rem;"></p>
     </form>
-    <p id="authErrorMsg" style="color:#ef4444; text-align:center; margin-top:10px; font-size:0.85rem;"></p>
   </div>
 </div>
 
-<footer>
-  <p>© 2026 CamerLink · Tous droits réservés</p>
-</footer>
+<!-- MODAL USER --- Profil --- -->
+<div id="userModal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3 class="modal-title">Votre Compte</h3>
+      <button onclick="closeUserModal()" class="close-modal" aria-label="Fermer">×</button>
+    </div>
+    <div style="text-align:center; padding: 20px 0;">
+      <div style="width:80px; height:80px; background:var(--color-surface); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--color-accent); margin: 0 auto 15px;">👤</div>
+      <p id="userPhoneDisplay" style="font-weight:700; font-size:1.1rem; margin-bottom:20px;"></p>
+      <button onclick="handleLogout()" style="padding: 10px 20px; background:var(--color-border); color:var(--color-text-main); border-radius:999px; font-size:0.9rem; font-weight:600;">Se déconnecter</button>
+    </div>
+  </div>
+</div>
 
+<!-- --- JAVASCRIPT --- Supabase & Logique --- -->
 <script>
+  // --- CONFIGURATION SUPABASE ---
   const SUPABASE_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const CITIES = ['Douala', 'Yaoundé', 'Bafoussam', 'Garoua', 'Bamenda', 'Kribi'];
+  const CITIES = ['Douala', 'Yaoundé', 'Bafoussam', 'Garoua', 'Bamenda', 'Kribi', 'Buea'];
   let currentCategory = '';
   let currentUser = null;
 
   const $ = id => document.getElementById(id);
 
+  // --- Thème ---
   function toggleTheme() {
     const html = document.documentElement;
     const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -264,14 +296,15 @@
   }
   if(localStorage.getItem('camerlink_theme')) document.documentElement.setAttribute('data-theme', localStorage.getItem('camerlink_theme'));
 
-  const openPublishModal = () => {
-    if (!currentUser) { openAuthModal(); return; }
-    $('publishModal').classList.remove('hidden');
-  };
-  const closePublishModal = () => $('publishModal').classList.add('hidden');
-  const openAuthModal = () => $('authModal').classList.remove('hidden');
-  const closeAuthModal = () => $('authModal').classList.add('hidden');
+  // --- Modals Logique ---
+  const openPublishModal = () => { if (!currentUser) { openAuthModal(); return; } $('publishModal').classList.add('active'); };
+  const closePublishModal = () => $('publishModal').classList.remove('active');
+  const openAuthModal = () => $('authModal').classList.add('active');
+  const closeAuthModal = () => $('authModal').classList.remove('active');
+  const openUserModal = () => { if(currentUser) { $('userPhoneDisplay').textContent = currentUser.email.replace('237','').replace('@camerlink.app','');$('userModal').classList.add('active'); } };
+  const closeUserModal = () => $('userModal').classList.remove('active');
 
+  // --- Auth Logique ---
   async function handleAuthSubmit(e) {
     e.preventDefault();
     const phone = $('authPhone').value.trim();
@@ -282,11 +315,10 @@
     if (res.error) res = await supabaseClient.auth.signUp({ email, password });
     
     if (res.error) {
-      $('authErrorMsg').textContent = "Erreur d'authentification.";
+      $('authErrorMsg').textContent = "Identifiants incorrects ou problème réseau.";
     } else {
       closeAuthModal();
       checkSession();
-      alert("Connexion réussie !");
     }
   }
 
@@ -296,145 +328,122 @@
     $('loginBtn').classList.toggle('hidden', !!currentUser);$('userBtn').classList.toggle('hidden', !currentUser);
   }
 
+  async function handleLogout() {
+    await supabaseClient.auth.signOut();
+    closeUserModal();
+    checkSession();
+  }
+
+  // --- Publication Logique ---
   async function handlePublishSubmit(e) {
     e.preventDefault();
+    if (!currentUser) return;
     const btn = $('submitBtn');
+    const originalText = btn.textContent;
     btn.textContent = "Publication en cours...";
     btn.disabled = true;
 
     let imageUrl = '';
     const fileInput = $('adImageFile');
+    const cat = $('adCategory').value;
 
     try {
-      // Gestion de l'upload d'image si un fichier est choisi
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
-        const fileName = `${Date.now()}_${file.name}`;
-        const { data: uploadData, error: uploadError } = await supabaseClient.storage
-          .from('images-annonces')
-          .upload(fileName, file);
-
+        const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
+        const { error: uploadError } = await supabaseClient.storage.from('images-annonces').upload(fileName, file);
         if (!uploadError) {
-          const { data: publicUrlData } = supabaseClient.storage
-            .from('images-annonces')
-            .getPublicUrl(fileName);
+          const { data: publicUrlData } = supabaseClient.storage.from('images-annonces').getPublicUrl(fileName);
           imageUrl = publicUrlData.publicUrl;
         }
       }
-    } catch(err) {
-      console.log("Erreur upload image:", err);
-    }
+    } catch(err) { console.error("Erreur upload:", err); }
 
-    // Images par défaut selon la catégorie si aucune image n'est uploadée
     if (!imageUrl) {
-      const cat = $('adCategory').value;
-      if (cat === 'Restaurants & Gastronomie') imageUrl = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80';
-      else if (cat === 'Véhicules') imageUrl = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=500&q=80';
-      else if (cat === 'Écoles & Formations') imageUrl = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80';
-      else imageUrl = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80';
+      if (cat === 'Restaurants & Gastronomie') imageUrl = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=500';
+      else if (cat === 'Immobilier') imageUrl = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=500';
+      else if (cat === 'Véhicules') imageUrl = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=500';
+      else imageUrl = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=500';
     }
 
     const newAd = {
-      id: Date.now(),
       title: $('adTitle').value.trim(),
-      category: $('adCategory').value,
+      category: cat,
       city: $('adCity').value,
       price: parseFloat($('adPrice').value),
       description: $('adDescription').value.trim(),
       contact: $('adContact').value.trim(),
       image_url: imageUrl,
-      user_id: currentUser ? currentUser.id : null
+      user_id: currentUser.id
     };
 
-    try {
-      await supabaseClient.from('annonces').insert([newAd]);
-    } catch(err) { 
-      console.log("Erreur insertion base:", err); 
-    }
+    const { error: insertError } = await supabaseClient.from('annonces').insert([newAd]);
 
-    $('adForm').reset();
-    btn.textContent = "Valider la publication";
+    if (insertError) {
+      console.error("Erreur DB:", insertError);
+      alert("Erreur lors de la publication.");
+    } else {
+      $('adForm').reset();
+      closePublishModal();
+      loadListings();
+    }
+    btn.textContent = originalText;
     btn.disabled = false;
-    closePublishModal();
-    loadListings();
   }
 
+  // --- Chargement & Affichage ---
   async function loadListings() {
-    const container = $('listings');
+    const container = $('listings-grid');
     const query = $('searchInput').value.trim().toLowerCase();
     const city = $('cityFilter').value;
 
-    let dataToDisplay = [];
+    let queryBuilder = supabaseClient.from('annonces').select('*').order('created_at', { ascending: false });
+    if (currentCategory) queryBuilder = queryBuilder.eq('category', currentCategory);
+    if (city) queryBuilder = queryBuilder.eq('city', city);
 
-    try {
-      let { data, error } = await supabaseClient.from('annonces').select('*').order('created_at', { ascending: false });
-      if (!error && data) {
-        dataToDisplay = data;
-      }
-    } catch(err) {
-      console.log("Erreur chargement Supabase");
+    const { data: ads, error } = await queryBuilder;
+
+    let filteredAds = ads || [];
+    if (query) {
+      filteredAds = filteredAds.filter(ad => 
+        ad.title.toLowerCase().includes(query) || 
+        ad.description.toLowerCase().includes(query) ||
+        ad.city.toLowerCase().includes(query)
+      );
     }
 
-    // Si aucune base connectée ou vide, un petit lot par défaut
-    if (dataToDisplay.length === 0) {
-      dataToDisplay = [
-        {
-          id: 1,
-          title: "Restaurant Le Gourmet Bastos",
-          category: "Restaurants & Gastronomie",
-          city: "Yaoundé",
-          price: 12000,
-          description: "Spécialités camerounaises et européennes dans un cadre chic et climatisé.",
-          contact: "699000000",
-          image_url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80"
-        },
-        {
-          id: 2,
-          title: "Formation Complète Développeur Web",
-          category: "Écoles & Formations",
-          city: "Douala",
-          price: 45000,
-          description: "Apprenez le HTML, CSS, JS et la création de PWA directement sur mobile.",
-          contact: "677000000",
-          image_url: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80"
-        }
-      ];
-    }
-
-    let filtered = dataToDisplay.filter(item => {
-      let matchCat = !currentCategory || item.category === currentCategory;
-      let matchCity = !city || item.city === city;
-      let matchQuery = !query || (item.title && item.title.toLowerCase().includes(query)) || (item.description && item.description.toLowerCase().includes(query));
-      return matchCat && matchCity && matchQuery;
-    });
-
-    if (filtered.length === 0) {
-      container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);"><p>Aucune annonce trouvée.</p></div>`;
+    if (filteredAds.length === 0) {
+      container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 60px 20px; color: var(--color-text-muted); border: 2px dashed var(--color-border); border-radius: var(--radius-xl);">
+        <div style="font-size:3rem; margin-bottom:15px;">🔍</div>
+        <h3>Aucune offre ne correspond à vos critères pour l'instant.</h3>
+        <p>Soyez le premier à publier dans cette catégorie !</p>
+      </div>`;
       return;
     }
 
-    container.innerHTML = filtered.map(item => {
-      const img = item.image_url || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80';
+    container.innerHTML = filteredAds.map(ad => {
+      const whatsappNum = ad.contact.replace(/\D/g, '');
       return `
-        <article class="card">
-          <div class="card-img-wrapper">
-            <img src="${img}" alt="Illustration">
-            <span class="card-badge">${item.category}</span>
+        <article class="ad-card">
+          <div class="card-img-container">
+            <img src="${ad.image_url}" alt="${ad.title}" loading="lazy">
+            <span class="card-badge-top">${ad.category}</span>
           </div>
           <div class="card-body">
-            <h3>${item.title}</h3>
-            <p class="card-desc">${item.description}</p>
-            <a class="whatsapp-btn" href="https://wa.me/237${(item.contact||'').replace(/\D/g,'')}" target="_blank">💬 WhatsApp</a>
-            <div class="card-footer">
-              <span style="font-size:0.8rem; color:var(--text-muted);">📍 ${item.city || 'Cameroun'}</span>
-              <span class="card-price">${Number(item.price || 0).toLocaleString('fr-FR')} FCFA</span>
+            <h3 class="ad-title">${ad.title}</h3>
+            <p class="ad-desc">${ad.description}</p>
+            <div class="card-meta">
+              <span class="ad-city">📍 ${ad.city}</span>
+              <span class="ad-price">${Number(ad.price).toLocaleString('fr-FR')} FCFA</span>
             </div>
+            <a href="https://wa.me/237${whatsappNum}" target="_blank" class="whatsapp-link-card">💬 Contacter via WhatsApp</a>
           </div>
         </article>
       `;
     }).join('');
   }
 
+  // --- Filtres ---
   function filterByCategory(cat, el) {
     currentCategory = cat;
     document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
@@ -442,9 +451,11 @@
     loadListings();
   }
 
+  // --- Initialisation ---
   document.addEventListener('DOMContentLoaded', () => {
-    $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + CITIES.map(c => `<option>${c}</option>`).join('');
-    $('adCity').innerHTML = CITIES.map(c => `<option>${c}</option>`).join('');
+    const cityOptions = CITIES.map(c => `<option>${c}</option>`).join('');
+    $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + cityOptions;
+    $('adCity').innerHTML = cityOptions;
     checkSession();
     loadListings();
   });
