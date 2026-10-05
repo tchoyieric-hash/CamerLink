@@ -902,6 +902,25 @@
     if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.active').forEach((o) => o.classList.remove('active'));
   });
 
+  let sid = '';
+  try {
+    sid = localStorage.getItem('cl-sid') || '';
+    if (!sid) {
+      sid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2)).slice(0, 36);
+      localStorage.setItem('cl-sid', sid);
+    }
+  } catch (e) { sid = 'anon' + Math.random().toString(36).slice(2, 12); }
+
+  const track = (type, extra) => {
+    sb.from('evenements').insert({ type, session_id: sid, ...(extra || {}) }).then(() => {}, () => {});
+  };
+  track('visite');
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.whatsapp-link-card')) track('whatsapp');
+    const sh = e.target.closest('[data-shop]');
+    if (sh) track('vue_boutique', { shop_user_id: sh.dataset.shop });
+  });
+
   loadReels();
   loadListings();
   loadShops();
