@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CamerLink · La Super-App des Services & Produits au Cameroun</title>
+  <title>CamerLink · La Super-App Immersive & Vidéo 2026</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
   <style>
@@ -17,148 +17,155 @@
       --text: #0f172a;
       --text-muted: #64748b;
       --border: #e2e8f0;
-      --radius-sm: 12px;
-      --radius-md: 20px;
-      --radius-lg: 28px;
-      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
-      --shadow-md: 0 12px 30px rgba(15, 23, 42, 0.08);
-      --shadow-lg: 0 25px 50px -12px rgba(37, 99, 235, 0.25);
+      --radius-sm: 14px;
+      --radius-md: 22px;
+      --radius-lg: 32px;
+      --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 16px 35px rgba(15, 23, 42, 0.09);
+      --shadow-lg: 0 30px 60px -15px rgba(37, 99, 235, 0.3);
     }
 
     [data-theme="dark"] {
-      --bg: #090d16;
-      --surface: #111827;
+      --bg: #070a12;
+      --surface: #0f172a;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --border: #1f2937;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-      --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.4);
+      --border: #1e293b;
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 16px 35px rgba(0, 0, 0, 0.5);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background: var(--bg); color: var(--text); line-height: 1.6; transition: background 0.3s ease, color 0.3s ease; }
     .hidden { display: none !important; }
 
-    /* HEADER ULTRA-MODERNE */
-    header { background: rgba(var(--surface-rgb), 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+    /* HEADER */
+    header { background: rgba(var(--surface-rgb), 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
     .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .logo-badge-pulse { width: 10px; height: 10px; background: var(--success); border-radius: 50%; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); animation: pulse 2s infinite; }
     @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
-    
     .logo { font-size: 1.5rem; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
     .logo span { color: var(--text); }
     
     .header-actions { display: flex; align-items: center; gap: 10px; }
     .btn-icon { background: var(--border); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; color: var(--text); transition: transform 0.2s; }
     .btn-icon:hover { transform: scale(1.05); }
-    
     .btn-login { background: transparent; color: var(--primary); padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border); font-weight: 600; cursor: pointer; }
     .btn-user { background: rgba(37,99,235,0.1); color: var(--primary); padding: 8px 16px; border-radius: 999px; font-weight: 600; cursor: pointer; }
-    .btn-pub { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; padding: 10px 22px; border-radius: 999px; font-weight: 700; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); border: none; cursor: pointer; transition: transform 0.2s, filter 0.2s; }
-    .btn-pub:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .btn-pub { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; padding: 10px 20px; border-radius: 999px; font-weight: 700; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); border: none; cursor: pointer; transition: transform 0.2s; }
+    .btn-pub:hover { transform: translateY(-2px); }
 
-    /* HERO SECTION IMMERSIVE */
-    .hero { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #1d4ed8 100%); color: white; text-align: center; padding: 60px 20px 50px; position: relative; overflow: hidden; }
-    .hero::before { content: ''; position: absolute; width: 500px; height: 500px; background: rgba(255,255,255,0.05); border-radius: 50%; top: -200px; right: -100px; pointer-events: none; }
-    
-    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); padding: 6px 18px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.25); }
-    .hero h1 { font-size: 2.6rem; font-weight: 900; margin-bottom: 14px; line-height: 1.15; letter-spacing: -1px; }
-    .hero h1 span { color: var(--accent); text-shadow: 0 2px 10px rgba(245,158,11,0.3); }
-    .hero p { max-width: 650px; margin: 0 auto 32px; opacity: 0.95; font-size: 1.1rem; }
+    /* HERO */
+    .hero { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%); color: white; text-align: center; padding: 55px 20px 45px; position: relative; overflow: hidden; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); padding: 6px 18px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 18px; border: 1px solid rgba(255,255,255,0.25); }
+    .hero h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -1px; line-height: 1.15; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { max-width: 650px; margin: 0 auto 28px; opacity: 0.9; font-size: 1.05rem; }
 
-    /* RECHERCHE AVANCÉE (GLASSMORPHISM) */
-    .search-box-container { max-width: 780px; margin: 0 auto; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 10px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+    /* RECHERCHE */
+    .search-box-container { max-width: 780px; margin: 0 auto; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(20px); padding: 10px; border-radius: 40px; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: grid; grid-template-columns: 1fr auto; gap: 8px; }
     .search-inputs { display: grid; grid-template-columns: 1.5fr 1.2fr; gap: 8px; }
     .search-input-wrap, .search-select-wrap { position: relative; display: flex; align-items: center; }
-    .search-input-wrap input, .search-select-wrap select { width: 100%; background: rgba(255, 255, 255, 0.95); border: none; border-radius: 30px; padding: 14px 20px 14px 45px; font-size: 0.95rem; color: #0f172a; outline: none; font-weight: 500; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-    .search-input-wrap::before { content: '🔍'; position: absolute; left: 16px; font-size: 1rem; }
-    .search-select-wrap::before { content: '📍'; position: absolute; left: 16px; font-size: 1rem; }
+    .search-input-wrap input, .search-select-wrap select { width: 100%; background: rgba(255, 255, 255, 0.95); border: none; border-radius: 30px; padding: 14px 20px 14px 45px; font-size: 0.95rem; color: #0f172a; outline: none; font-weight: 500; }
+    .search-input-wrap::before { content: '🔍'; position: absolute; left: 16px; }
+    .search-select-wrap::before { content: '📍'; position: absolute; left: 16px; }
     .search-select-wrap select { padding-left: 45px; cursor: pointer; appearance: none; }
-    .btn-search { background: var(--accent); color: #111827; padding: 14px 32px; border-radius: 30px; font-weight: 800; border: none; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(245,158,11,0.4); }
-    .btn-search:hover { transform: scale(1.02); }
+    .btn-search { background: var(--accent); color: #111827; padding: 14px 30px; border-radius: 30px; font-weight: 800; border: none; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(245,158,11,0.4); }
 
-    /* FILTRES RAPIDES PAR CATÉGORIE */
-    .categories-bar { max-width: 1150px; margin: 25px auto 10px; padding: 0 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+    /* FILTRES & CATÉGORIES AVANCÉES */
+    .categories-bar { max-width: 1150px; margin: 24px auto 10px; padding: 0 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
     .categories-bar::-webkit-scrollbar { display: none; }
-    .cat-chip { background: var(--surface); border: 1px solid var(--border); padding: 8px 18px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; box-shadow: var(--shadow-sm); }
+    .cat-chip { background: var(--surface); border: 1px solid var(--border); padding: 9px 18px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 6px; }
     .cat-chip.active, .cat-chip:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
-    /* CONTENEUR PRINCIPAL & GRILLE DE CARTES HAUT DE GAMME */
-    main { max-width: 1150px; margin: auto; padding: 20px 20px 80px; }
-    .section-header { display: flex; justify-content: space-between; align-items: center; margin: 25px 0 20px; }
-    .section-header h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
+    main { max-width: 1150px; margin: auto; padding: 10px 20px 80px; }
+
+    /* SECTION VIDÉOS EN DIRECT / REELS (NOUVELLE GÉNÉRATION) */
+    .reels-section { margin: 30px 0 40px; }
+    .reels-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .reels-header h2 { font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .reels-container { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+    .reels-container::-webkit-scrollbar { display: none; }
+    
+    .reel-card { min-width: 200px; height: 320px; background: #000; border-radius: var(--radius-md); overflow: hidden; position: relative; cursor: pointer; box-shadow: var(--shadow-md); border: 1px solid var(--border); transition: transform 0.3s; flex-shrink: 0; }
+    .reel-card:hover { transform: scale(1.03); }
+    .reel-card video, .reel-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+    .reel-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.85) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; color: white; }
+    .reel-author { font-size: 0.75rem; font-weight: 600; opacity: 0.9; margin-bottom: 2px; }
+    .reel-title { font-size: 0.9rem; font-weight: 800; line-height: 1.3; }
+    .live-badge-tag { position: absolute; top: 12px; left: 12px; background: rgba(220, 38, 38, 0.9); color: white; padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.5px; animation: pulse 1.5s infinite; }
+
+    /* GRILLE DE CARTES */
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin: 30px 0 18px; }
+    .section-header h2 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px; }
     .section-header a { color: var(--primary); font-weight: 700; text-decoration: none; cursor: pointer; font-size: 0.95rem; }
 
     #listings { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
     
-    .card { background: var(--surface); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; position: relative; }
-    .card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: rgba(37,99,235,0.3); }
+    .card { background: var(--surface); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s; display: flex; flex-direction: column; position: relative; }
+    .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: rgba(37,99,235,0.3); }
     
-    .card-img-wrapper { position: relative; width: 100%; height: 200px; background: var(--border); overflow: hidden; }
+    .card-img-wrapper { position: relative; width: 100%; height: 190px; background: var(--border); overflow: hidden; }
     .card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
     .card:hover img { transform: scale(1.05); }
     
-    .card-badge-floating { position: absolute; top: 12px; left: 12px; background: rgba(15,23,42,0.75); backdrop-filter: blur(6px); color: white; padding: 4px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card-badge-floating { position: absolute; top: 12px; left: 12px; background: rgba(15,23,42,0.75); backdrop-filter: blur(6px); color: white; padding: 4px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
     .card-verified-badge { position: absolute; top: 12px; right: 12px; background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .card-resto-badge { background: #ffedd5; color: #c2410c; }
+    .card-school-badge { background: #e0e7ff; color: #3730a3; }
 
     .card-body { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
-    .card h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; color: var(--text); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-    .card-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 18px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1; line-height: 1.5; }
+    .card h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; color: var(--text); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1; line-height: 1.5; }
     
-    .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; padding: 12px; border-radius: var(--radius-sm); font-size: 0.92rem; font-weight: 700; text-decoration: none; margin-bottom: 14px; transition: filter 0.2s, transform 0.1s; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25); }
-    .whatsapp-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+    .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; padding: 12px; border-radius: var(--radius-sm); font-size: 0.92rem; font-weight: 700; text-decoration: none; margin-bottom: 12px; transition: filter 0.2s; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25); }
+    .whatsapp-btn:hover { filter: brightness(1.05); }
 
-    .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 14px; margin-top: auto; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; margin-top: auto; }
     .card-city { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px; }
-    .card-price { color: var(--primary); font-weight: 900; font-size: 1.2rem; letter-spacing: -0.5px; }
+    .card-price { color: var(--primary); font-weight: 900; font-size: 1.15rem; letter-spacing: -0.5px; }
 
-    .btn-delete { width: 100%; background: #fee2e2; color: #dc2626; padding: 10px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; margin-top: 12px; border: 1px solid #fecaca; cursor: pointer; }
-    .btn-load-more { grid-column: 1 / -1; background: var(--surface); border: 2px dashed var(--border); padding: 18px; border-radius: var(--radius-md); font-weight: 800; color: var(--primary); text-align: center; cursor: pointer; margin-top: 15px; box-shadow: var(--shadow-sm); transition: all 0.2s; }
-    .btn-load-more:hover { background: rgba(37,99,235,0.04); border-color: var(--primary); }
+    .btn-delete { width: 100%; background: #fee2e2; color: #dc2626; padding: 10px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; margin-top: 10px; border: 1px solid #fecaca; cursor: pointer; }
 
-    /* MODALES SUPER-APP (GLASSMORPHISM) */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 2000; animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+    /* MODALES */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.7); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 2000; animation: fadeIn 0.25s; }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
 
     .modal-sheet { background: var(--surface); width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); position: relative; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .modal-header h3 { font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px; }
-    .modal-close { width: 40px; height: 40px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--text); cursor: pointer; border: none; transition: transform 0.2s; }
-    .modal-close:hover { transform: scale(1.1); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+    .modal-header h3 { font-size: 1.4rem; font-weight: 900; }
+    .modal-close { width: 40px; height: 40px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--text); cursor: pointer; border: none; }
 
-    .form-group { margin-bottom: 18px; }
-    .form-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.9rem; }
-    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 18px; font-size: 0.95rem; color: var(--text); outline: none; transition: all 0.2s; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.9rem; }
+    .form-control { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 13px 16px; font-size: 0.95rem; color: var(--text); outline: none; }
     .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.15); background: var(--surface); }
 
-    .photo-upload-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: rgba(37,99,235,0.06); color: var(--primary); padding: 22px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; border: 2px dashed rgba(37,99,235,0.3); transition: background 0.2s; }
-    .photo-upload-btn:hover { background: rgba(37,99,235,0.1); }
-    #photoPreview { display: none; width: 100%; max-height: 200px; object-fit: cover; border-radius: var(--radius-sm); margin-top: 12px; border: 1px solid var(--border); }
+    .media-upload-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .tab-btn { background: var(--bg); border: 1px solid var(--border); padding: 10px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; color: var(--text-muted); text-align: center; }
+    .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-    .btn-submit { width: 100%; background: var(--primary); color: white; padding: 16px; border-radius: var(--radius-sm); font-size: 1rem; font-weight: 800; margin-top: 10px; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(37,99,235,0.3); transition: filter 0.2s; }
-    .btn-submit:hover { filter: brightness(1.1); }
+    .photo-upload-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: rgba(37,99,235,0.06); color: var(--primary); padding: 20px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; border: 2px dashed rgba(37,99,235,0.3); }
+    #mediaPreview { display: none; width: 100%; max-height: 200px; object-fit: cover; border-radius: var(--radius-sm); margin-top: 10px; border: 1px solid var(--border); }
 
-    .auth-logo { text-align: center; font-size: 2.2rem; font-weight: 900; color: var(--primary); margin-bottom: 4px; letter-spacing: -1px; }
-    .auth-subtitle { text-align: center; color: var(--text-muted); margin-bottom: 24px; font-size: 0.95rem; }
+    .btn-submit { width: 100%; background: var(--primary); color: white; padding: 16px; border-radius: var(--radius-sm); font-size: 1rem; font-weight: 800; margin-top: 10px; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(37,99,235,0.3); }
+    .auth-logo { text-align: center; font-size: 2.2rem; font-weight: 900; color: var(--primary); margin-bottom: 4px; }
+    .auth-subtitle { text-align: center; color: var(--text-muted); margin-bottom: 22px; font-size: 0.95rem; }
     .phone-input-group { display: flex; gap: 8px; }
-    .phone-prefix { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; font-weight: 800; display: flex; align-items: center; color: var(--text); }
-    
-    .security-badge { background: rgba(16,185,129,0.1); color: var(--success); padding: 14px; border-radius: var(--radius-sm); margin-top: 20px; font-size: 0.85rem; border: 1px solid rgba(16,185,129,0.2); display: flex; gap: 10px; align-items: flex-start; font-weight: 500; }
-    .error-msg { text-align: center; color: #dc2626; font-size: 0.9rem; margin-top: 12px; font-weight: 600; }
+    .phone-prefix { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 13px 16px; font-weight: 800; display: flex; align-items: center; }
+    .security-badge { background: rgba(16,185,129,0.1); color: var(--success); padding: 12px; border-radius: var(--radius-sm); margin-top: 18px; font-size: 0.82rem; border: 1px solid rgba(16,185,129,0.2); display: flex; gap: 8px; font-weight: 500; }
+    .error-msg { text-align: center; color: #dc2626; font-size: 0.9rem; margin-top: 10px; font-weight: 600; }
 
-    /* FOOTER */
-    footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); background: var(--surface); margin-top: 60px; }
+    footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); background: var(--surface); margin-top: 50px; }
     footer a { color: var(--primary); font-weight: 700; text-decoration: none; }
 
-    /* RESPONSIVE DESIGN MOBILE EXTRÊME */
     @media (max-width: 640px) {
-      .hero { padding: 45px 16px 40px; }
-      .hero h1 { font-size: 2rem; }
+      .hero { padding: 40px 16px 35px; }
+      .hero h1 { font-size: 1.9rem; }
       .search-box-container { grid-template-columns: 1fr; background: transparent; box-shadow: none; padding: 0; border: none; gap: 10px; }
       .search-inputs { grid-template-columns: 1fr; gap: 10px; }
       .search-input-wrap input, .search-select-wrap select { background: var(--surface); box-shadow: var(--shadow-sm); }
-      .btn-search { width: 100%; padding: 16px; }
-      header { padding: 12px 16px; }
+      .btn-search { width: 100%; padding: 15px; }
     }
   </style>
 </head>
@@ -174,19 +181,19 @@
     <button class="btn-icon" onclick="toggleTheme()" title="Basculer le thème">🌓</button>
     <button id="loginBtn" class="btn-login" onclick="openAuthModal()">Connexion</button>
     <button id="userBtn" class="btn-user hidden" onclick="openUserModal()">Mon Compte</button>
-    <button class="btn-pub" onclick="openPublishModal()">+ Publier</button>
+    <button class="btn-pub" onclick="openPublishModal()">+ Publier (Offre/Resto/École)</button>
   </div>
 </header>
 
 <section class="hero">
-  <div class="hero-badge">⚡ Nouvelle Génération · 100% Cameroun</div>
-  <h1>Trouvez les meilleurs <span>pros et produits</span> en un clic.</h1>
-  <p>La super-marketplace intelligente qui connecte instantanément les talents, artisans et commerçants de confiance.</p>
+  <div class="hero-badge">🚀 Expérience 2026 · Restos, Écoles & Services</div>
+  <h1>Le meilleur du Cameroun <span>en vidéo & direct.</span></h1>
+  <p>Découvrez les services, commandez dans les meilleurs restaurants et trouvez les meilleures écoles grâce à notre flux immersif.</p>
 
   <div class="search-box-container">
     <div class="search-inputs">
       <div class="search-input-wrap">
-        <input id="searchInput" type="search" placeholder="Ex : Plombier, iPhone, Location...">
+        <input id="searchInput" type="search" placeholder="Ex : Restaurant, Université, Plombier, iPhone...">
       </div>
       <div class="search-select-wrap">
         <select id="cityFilter">
@@ -198,35 +205,72 @@
   </div>
 </section>
 
-<!-- FILTRES PAR CATÉGORIE EN CLIQUES RAPIDES -->
+<!-- FILTRES PAR CATÉGORIE -->
 <div class="categories-bar" id="categoriesBar">
-  <div class="cat-chip active" onclick="filterByCategory('', this)">✨ Toutes les offres</div>
-  <div class="cat-chip" onclick="filterByCategory('Services & Artisans', this)">🛠️ Services & Artisans</div>
+  <div class="cat-chip active" onclick="filterByCategory('', this)">✨ Tout voir</div>
+  <div class="cat-chip" onclick="filterByCategory('Restaurants & Gastronomie', this)">🍽️ Restaurants & EAT</div>
+  <div class="cat-chip" onclick="filterByCategory('Écoles & Formations', this)">🎓 Écoles & Instituts</div>
+  <div class="cat-chip" onclick="filterByCategory('Services & Artisans', this)">🛠️ Services & Pros</div>
   <div class="cat-chip" onclick="filterByCategory('Véhicules', this)">🚗 Véhicules</div>
   <div class="cat-chip" onclick="filterByCategory('Immobilier', this)">🏠 Immobilier</div>
   <div class="cat-chip" onclick="filterByCategory('High-Tech', this)">💻 High-Tech</div>
-  <div class="cat-chip" onclick="filterByCategory('Mode & Beauté', this)">👔 Mode & Beauté</div>
 </div>
 
 <main>
+
+  <!-- SECTION FLUX VIDÉO / REELS DE NOUVELLE GÉNÉRATION -->
+  <section class="reels-section">
+    <div class="reels-header">
+      <h2>🎥 Flash Reels & Vues en Action</h2>
+      <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Postez votre vidéo pro</span>
+    </div>
+    <div class="reels-container" id="reelsContainer">
+      <!-- Exemples démo hyper-réalistes générés automatiquement -->
+      <div class="reel-card" onclick="alert('Ouverture du lecteur vidéo immersif CamerLink Reels...')">
+        <span class="live-badge-tag">🔴 LIVE / REEL</span>
+        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80" alt="Restaurant Douala">
+        <div class="reel-overlay">
+          <span class="reel-author">@LeBistrotDouala</span>
+          <span class="reel-title">Nouveau menu braisé & ambiance live ce soir !</span>
+        </div>
+      </div>
+      <div class="reel-card" onclick="alert('Ouverture du lecteur vidéo immersif CamerLink Reels...')">
+        <span class="live-badge-tag">🎓 CAMPUS</span>
+        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80" alt="École Yaoundé">
+        <div class="reel-overlay">
+          <span class="reel-author">@InstitutPolytechnique</span>
+          <span class="reel-title">Visite guidée des laboratoires informatiques 2026</span>
+        </div>
+      </div>
+      <div class="reel-card" onclick="alert('Ouverture du lecteur vidéo immersif CamerLink Reels...')">
+        <span class="live-badge-tag">⚡ TECH</span>
+        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=500&q=80" alt="Coworking">
+        <div class="reel-overlay">
+          <span class="reel-author">@BastosHub</span>
+          <span class="reel-title">Espace de coworking ouvert 24/7 à Yaoundé</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <div class="section-header">
-    <h2>🔥 Annonces & Services Populaires</h2>
+    <h2>🔥 Annonces, Restos & Écoles Actifs</h2>
     <a onclick="resetAllFilters()">Réinitialiser</a>
   </div>
 
   <div id="listings">
     <div style="grid-column: 1/-1; text-align:center; padding: 60px; color: var(--text-muted);">
-      <p style="font-weight: 600; font-size: 1.05rem;">Chargement du réseau intelligent...</p>
+      <p style="font-weight: 600; font-size: 1.05rem;">Chargement des données géo-localisées...</p>
     </div>
   </div>
 </main>
 
-<!-- MODAL AUTHENTIFICATION -->
+<!-- MODAL AUTH -->
 <div id="authModal" class="modal-overlay hidden">
   <div class="modal-sheet"></div>
 </div>
 
-<!-- MODAL ESPACE UTILISATEUR -->
+<!-- MODAL COMPTE -->
 <div id="userModal" class="modal-overlay hidden">
   <div class="modal-sheet" style="text-align: center;">
     <div class="modal-header">
@@ -235,83 +279,81 @@
     </div>
     <div style="font-size: 3rem; margin-bottom: 10px;">👤</div>
     <h3 id="accountPhoneDisplay" style="font-size: 1.2rem; font-weight: 800; margin-bottom: 5px;">+237 6XXXXXXXX</h3>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Membre Vérifié CamerLink Pro</p>
-    <button class="btn-delete" style="background:#fee2e2; color:#dc2626; border-radius: var(--radius-sm); padding: 14px;" onclick="logout()">Se déconnecter de la session</button>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Membre Partenaire CamerLink</p>
+    <button class="btn-delete" style="background:#fee2e2; color:#dc2626; border-radius: var(--radius-sm); padding: 14px;" onclick="logout()">Se déconnecter</button>
   </div>
 </div>
 
-<!-- MODAL PUBLICATION -->
+<!-- MODAL PUBLICATION MULTI-SECTEURS (RESTO, ÉCOLE, OFFRE) -->
 <div id="publishModal" class="modal-overlay hidden">
   <div class="modal-sheet">
     <div class="modal-header">
-      <h3>Publier une Offre Pro</h3>
+      <h3>Publier sur CamerLink Pro</h3>
       <button class="modal-close" onclick="closePublishModal()">×</button>
     </div>
 
     <form id="adForm" onsubmit="handlePublishSubmit(event)">
       <div class="form-group">
-        <label>Titre de l'annonce ou du service</label>
-        <input class="form-control" id="adTitle" required placeholder="Ex : Service Plomberie Express Yaoundé">
-      </div>
-
-      <div class="form-group">
-        <label>Catégorie</label>
-        <select class="form-control" id="adCategory">
-          <option>Services & Artisans</option>
-          <option>Véhicules</option>
-          <option>Immobilier</option>
-          <option>High-Tech</option>
-          <option>Maison & Déco</option>
-          <option>Mode & Beauté</option>
-          <option>Emploi & Formations</option>
-          <option>Autres</option>
+        <label>Type de publication</label>
+        <select class="form-control" id="adCategory" onchange="onCategoryChange(this)">
+          <option value="Restaurants & Gastronomie">🍽️ Restaurant / Bar / Espace Gourmand</option>
+          <option value="Écoles & Formations">🎓 École / Institut / Centre de Formation</option>
+          <option value="Services & Artisans">🛠️ Service / Professionnel / Artisan</option>
+          <option value="Véhicules">🚗 Véhicule / Transport</option>
+          <option value="Immobilier">🏠 Immobilier / Logement</option>
+          <option value="High-Tech">💻 High-Tech & Électronique</option>
+          <option value="Autres">📦 Autre produit ou annonce</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label>Ville</label>
+        <label id="labelTitle">Nom du Restaurant, de l'École ou de l'Offre</label>
+        <input class="form-control" id="adTitle" required placeholder="Ex : Le Gourmet Yaoundé ou Institut Supérieur Tech">
+      </div>
+
+      <div class="form-group">
+        <label>Ville & Quartier</label>
         <select class="form-control" id="adCity"></select>
       </div>
 
       <div class="form-group">
-        <label>Prix ou Tarif (FCFA)</label>
-        <input class="form-control" id="adPrice" type="number" min="0" required placeholder="15000">
+        <label id="labelPrice">Prix moyen / Frais de scolarité / Tarif (FCFA)</label>
+        <input class="form-control" id="adPrice" type="number" min="0" required placeholder="25000">
       </div>
 
       <div class="form-group">
-        <label>Description détaillée</label>
-        <textarea class="form-control" id="adDescription" rows="4" required placeholder="Décrivez vos compétences, votre expertise ou l'état du produit..."></textarea>
+        <label>Description (Menus phares, filières, spécialités...)</label>
+        <textarea class="form-control" id="adDescription" rows="3" required placeholder="Décrivez votre offre en détail pour séduire les clients..."></textarea>
       </div>
 
       <div class="form-group">
-        <label>Numéro WhatsApp de contact</label>
+        <label>Numéro WhatsApp de commande / admission</label>
         <input class="form-control" id="adContact" type="tel" placeholder="6XXXXXXXX">
       </div>
 
       <div class="form-group">
-        <label>Photo de présentation</label>
+        <label>Photo ou miniature vidéo (Reel)</label>
         <label for="adImageFile" class="photo-upload-btn">
-          📷 <span>Sélectionner une belle image</span>
+          📷 <span>Choisir une image ou vidéo illustrative</span>
         </label>
-        <input id="adImageFile" type="file" accept="image/*" class="hidden" onchange="previewImage(this)">
+        <input id="adImageFile" type="file" accept="image/*,video/*" class="hidden" onchange="previewMedia(this)">
         <p id="fileNameDisplay" style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-top:6px;"></p>
-        <img id="photoPreview" alt="Aperçu">
+        <img id="mediaPreview" alt="Aperçu">
       </div>
 
-      <button id="publishSubmitBtn" class="btn-submit" type="submit">Publier instantanément</button>
+      <button id="publishSubmitBtn" class="btn-submit" type="submit">Publier instantanément en ligne</button>
     </form>
   </div>
 </div>
 
 <footer>
-  <p>© 2026 CamerLink · Développé avec excellence pour l'écosystème numérique camerounais 🇨🇲</p>
+  <p>© 2026 CamerLink · La Super-App Multiservices & Éducation 🇨🇲</p>
   <div style="margin-top: 10px;">
-    <a href="modele.html">Consulter le modèle économique & investisseurs</a>
+    <a href="modele.html">Modèle Économique & Partenaires</a>
   </div>
 </footer>
 
 <script>
-  // Script d'accompagnement interactif immédiat
   const SUPABASE_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -324,7 +366,6 @@
   const $ = id => document.getElementById(id);
   const escapeHTML = str => String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 
-  // Gestionnaire de Thème Dark/Light pro
   function toggleTheme() {
     const html = document.documentElement;
     const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -335,9 +376,8 @@
     document.documentElement.setAttribute('data-theme', 'dark');
   }
 
-  // Modales
   const openPublishModal = () => {
-    if (!currentUser) { openAuthModal('Veuillez vous connecter pour publier une offre.'); return; }
+    if (!currentUser) { openAuthModal('Connectez-vous pour publier votre restaurant, école ou annonce.'); return; }
     $('publishModal').classList.remove('hidden');
   };
   const closePublishModal = () => $('publishModal').classList.add('hidden');
@@ -355,7 +395,7 @@
         <button class="modal-close" onclick="closeAuthModal()">×</button>
       </div>
       <div class="auth-logo">CamerLink</div>
-      <p class="auth-subtitle">${isLogin ? 'Accédez à votre compte instantanément' : 'Rejoignez la plus grande communauté pro'}</p>
+      <p class="auth-subtitle">${isLogin ? 'Accédez à votre tableau de bord' : 'Rejoignez le réseau professionnel'}</p>
       ${customMsg ? `<p class="error-msg" style="color:var(--primary);margin-bottom:12px">${escapeHTML(customMsg)}</p>` : ''}
       <form onsubmit="handleAuthSubmit(event)">
         <div class="form-group">
@@ -374,15 +414,15 @@
           <label>Confirmer le mot de passe</label>
           <input class="form-control" id="authPasswordConfirm" type="password" minlength="8" placeholder="Répétez le mot de passe" required>
         </div>`}
-        <button id="authBtnSubmit" class="btn-submit" type="submit">${isLogin ? 'Se connecter' : "S'inscrire maintenant"}</button>
+        <button class="btn-submit" type="submit">${isLogin ? 'Se connecter' : "S'inscrire"}</button>
       </form>
       <p id="authErrorMsg" class="error-msg"></p>
       <button type="button" style="background:none; border:none; color:var(--primary); width:100%; margin-top:16px; font-weight:700; cursor:pointer;" onclick="toggleAuthMode()">
-        ${isLogin ? "Pas encore de compte ? S'inscrire" : "Déjà un compte ? Se connecter"}
+        ${isLogin ? "Pas de compte ? S'inscrire" : "Déjà un compte ? Se connecter"}
       </button>
       <div class="security-badge">
         <span>🔒</span>
-        <div>Sécurité maximale garantie. Votre numéro sert uniquement d'identifiant unique.</div>
+        <div>Sécurité cryptée de bout en bout.</div>
       </div>
     `;
   }
@@ -396,7 +436,7 @@
     const errBox = $('authErrorMsg');
     errBox.textContent = '';
 
-    if (!/^6\d{8}$/.test(phoneVal)) { errBox.textContent = 'Numéro invalide. Entrez 9 chiffres commençant par 6.'; return; }
+    if (!/^6\d{8}$/.test(phoneVal)) { errBox.textContent = 'Numéro invalide (9 chiffres commençant par 6).'; return; }
     
     const email = `237${phoneVal}@camerlink.app`;
     try {
@@ -417,9 +457,6 @@
     const { data } = await supabaseClient.auth.getSession();
     currentUser = data?.session?.user || null;
     $('loginBtn').classList.toggle('hidden', !!currentUser);$('userBtn').classList.toggle('hidden', !currentUser);
-    if (currentUser) {
-      $('accountPhoneDisplay.textContent') = currentUser.user_metadata?.phone || 'Compte Pro Vérifié';
-    }
   }
 
   async function logout() {
@@ -429,10 +466,24 @@
     loadListings();
   }
 
-  function previewImage(input) {
+  function onCategoryChange(select) {
+    const val = select.value;
+    if (val.includes('Restaurant')) {
+      $('labelTitle').textContent = "Nom du Restaurant ou Fast-Food";
+      $('labelPrice').textContent = "Prix moyen d'un plat (FCFA)";
+    } else if (val.includes('École')) {
+      $('labelTitle').textContent = "Nom de l'École ou Centre de Formation";
+      $('labelPrice').textContent = "Frais de scolarité indicatifs (FCFA)";
+    } else {
+      $('labelTitle').textContent = "Titre de l'annonce ou du service";
+      $('labelPrice').textContent = "Prix ou Tarif (FCFA)";
+    }
+  }
+
+  function previewMedia(input) {
     const file = input.files[0];
     $('fileNameDisplay').textContent = file ? file.name : '';
-    const img = $('photoPreview');
+    const img = $('mediaPreview');
     if (file) {
       img.src = URL.createObjectURL(file);
       img.style.display = 'block';
@@ -452,7 +503,7 @@
       let imageUrl = null;
       const file = $('adImageFile').files[0];
       if (file) {
-        const filePath = `${currentUser.id}/${Date.now()}.jpg`;
+        const filePath = `${currentUser.id}/${Date.now()}`;
         const upRes = await supabaseClient.storage.from('annonces').upload(filePath, file);
         if (!upRes.error) {
           imageUrl = supabaseClient.storage.from('annonces').getPublicUrl(filePath).data.publicUrl;
@@ -466,18 +517,19 @@
         price: parseFloat($('adPrice').value),
         description: $('adDescription').value.trim(),
         contact: $('adContact').value.trim(),
-        image_url: imageUrl
+        image_url: imageUrl,
+        user_id: currentUser.id
       }]);
 
       if (error) throw error;
-      $('adForm').reset();$('photoPreview').style.display = 'none';
+      $('adForm').reset();$('mediaPreview').style.display = 'none';
       closePublishModal();
       loadListings();
     } catch (err) {
-      alert("Échec de la publication. Veuillez réessayer.");
+      alert("Échec de la publication. Vérifiez votre connexion.");
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Publier instantanément';
+      btn.textContent = 'Publier instantanément en ligne';
     }
   }
 
@@ -487,7 +539,7 @@
     const city = $('cityFilter').value;
 
     try {
-      let req = supabaseClient.from('annonces').select('*').order('created_at', { ascending: false }).limit(30);
+      let req = supabaseClient.from('annonces').select('*').order('created_at', { ascending: false }).limit(35);
       if (city) req = req.eq('city', city);
       if (currentCategory) req = req.eq('category', currentCategory);
       if (query) req = req.or(`title.ilike.%${query}%,description.ilike.%${query}%`);
@@ -498,9 +550,9 @@
       if (!data || data.length === 0) {
         container.innerHTML = `
           <div style="grid-column: 1/-1; text-align:center; padding: 60px 20px;">
-            <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 6px;">Aucune offre trouvée</h3>
-            <p style="color: var(--text-muted); margin-bottom: 20px;">Soyez le premier à publier dans cette catégorie !</p>
-            <button class="btn-pub" onclick="openPublishModal()">Publier une offre</button>
+            <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 6px;">Aucune offre correspondante</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Soyez le premier à référencer votre restaurant, école ou service ici !</p>
+            <button class="btn-pub" onclick="openPublishModal()">Publier maintenant</button>
           </div>
         `;
         return;
@@ -510,22 +562,26 @@
         let wa = (item.contact || '').replace(/\D/g, '');
         if (wa.length === 9) wa = '237' + wa;
         const isMienne = currentUser && currentUser.id === item.user_id;
-        const isService = (item.category || '').toLowerCase().includes('service');
+        
+        let badgeClass = '';
+        let badgeText = escapeHTML(item.category || 'Général');
+        if (badgeText.includes('Restaurant')) { badgeClass = 'card-resto-badge'; badgeText = '🍽️ Resto'; }
+        else if (badgeText.includes('École')) { badgeClass = 'card-school-badge'; badgeText = '🎓 École'; }
 
         return `
           <article class="card">
             <div class="card-img-wrapper">
-              ${item.image_url ? `<img src="${escapeHTML(item.image_url)}" alt="Annonce" loading="lazy">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.5rem;color:var(--text-muted)">🏢</div>'}
-              <span class="card-badge-floating">${escapeHTML(item.category || 'Général')}</span>
-              ${isService ? '<span class="card-verified-badge">✓ Pro</span>' : ''}
+              ${item.image_url ? `<img src="${escapeHTML(item.image_url)}" alt="Média" loading="lazy">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.5rem;color:var(--text-muted)">🏢</div>'}
+              <span class="card-badge-floating ${badgeClass}">${badgeText}</span>
+              <span class="card-verified-badge">✓ Vérifié</span>
             </div>
             <div class="card-body">
               <h3>${escapeHTML(item.title)}</h3>
               <p class="card-desc">${escapeHTML(item.description)}</p>
 
               ${wa ? `
-                <a class="whatsapp-btn" href="https://wa.me/${wa}?text=Bonjour,\%20je\%20vous\%20contacte\%20depuis\%20CamerLink\%20concernant\%20:${encodeURIComponent(item.title)}" target="_blank" rel="noopener">
-                  💬 Discuter sur WhatsApp
+                <a class="whatsapp-btn" href="https://wa.me/${wa}?text=Bonjour,\%20je\%20vous\%20contacte\%20depuis\%20CamerLink\%20pour\%20:${encodeURIComponent(item.title)}" target="_blank" rel="noopener">
+                  💬 Commander / S'informer (WhatsApp)
                 </a>
               ` : ''}
 
@@ -540,7 +596,7 @@
       }).join('');
 
     } catch (err) {
-      container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:#dc2626; padding: 40px;">Erreur de chargement du réseau. Vérifiez votre connexion.</p>`;
+      container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:#dc2626; padding: 40px;">Erreur de chargement du flux. Vérifiez votre connexion.</p>`;
     }
   }
 
@@ -560,13 +616,12 @@
   }
 
   async function deleteListing(id) {
-    if (!confirm('Voulez-vous vraiment supprimer cette annonce ?')) return;
+    if (!confirm('Supprimer définitivement cet élément ?')) return;
     await supabaseClient.from('annonces').delete().eq('id', id);
     loadListings();
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    // Initialisation des listes déroulantes de villes
     const cityOptions = '<option value="">Toutes les villes</option>' + CITIES.map(c => `<option>${c}</option>`).join('');
     $('cityFilter').innerHTML = cityOptions;
     $('adCity').innerHTML = CITIES.map(c => `<option>${c}</option>`).join('');
