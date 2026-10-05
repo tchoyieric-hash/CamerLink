@@ -4,7 +4,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 
 const VILLES = ['Douala', 'Yaoundé', 'Bafoussam', 'Garoua', 'Bamenda', 'Bertoua', 'Limbé', 'Kribi', 'Maroua', 'Ebolowa'];
 const PAGE = 24;
-const COLONNES = 'id,title,category,city,price,description,contact,image_url,user_id,created_at';
+const COLONNES = 'id,title,category,city,price,description,contact,image_url,user_id,created_at,verified';
 let annonces = [];
 let page = 0;
 let authMode = 'login';
@@ -77,7 +77,7 @@ function normaliserNumero(raw) {
 
 async function authSubmit(e) {
     e.preventDefault();
-    const msg = $('authMessage'), btn =$('authSubmitBtn');
+    const msg = $('authMessage'), btn = $('authSubmitBtn');
     const num = normaliserNumero($('phoneNumber').value);
     const password = $('authPassword').value;
     msg.style.color = '#dc2626';
@@ -128,7 +128,8 @@ async function logout() {
 function majInterfaceUtilisateur(user) {
     currentUser = user;
     $('loginBtn').classList.toggle('hidden', !!user);
-    $('userBtn').classList.toggle('hidden', !user);$('accountPhone').textContent = (user && user.user_metadata && user.user_metadata.phone) || 'Utilisateur CamerLink';
+    $('userBtn').classList.toggle('hidden', !user);
+    $('accountPhone').textContent = (user && user.user_metadata && user.user_metadata.phone) || 'Utilisateur CamerLink';
 }
 
 async function verifierSession() {
@@ -239,7 +240,7 @@ async function fetchListings(reset = false) {
 }
 
 const applyFilters = () => fetchListings(true);
-function resetFilters() { $('q').value = '';$('cityFilter').value = ''; fetchListings(true); }
+function resetFilters() { $('q').value = ''; $('cityFilter').value = ''; fetchListings(true); }
 function chargerPlus() { page++; fetchListings(false); }
 
 function afficher(encore) {
@@ -258,7 +259,8 @@ function afficher(encore) {
         if (wa.length === 9) wa = '237' + wa;
         const photo = a.image_url && (a.image_url.startsWith('data:image/') || a.image_url.startsWith('https://'));
         const mienne = currentUser && a.user_id === currentUser.id;
-        const isService = (a.category || '').toLowerCase().includes('service');
+        const verifie = a.verified === true;
+        const message = encodeURIComponent('Bonjour, je suis intéressé(e) par votre offre sur CamerLink : ' + (a.title || ''));
 
         return `
         <article class="card">
@@ -268,12 +270,12 @@ function afficher(encore) {
             <div class="card-body">
                 <div class="card-badges">
                     <span class="cat">${escapeHTML(a.category || 'Autres')}</span>
-                    ${isService ? '<span class="verified-badge">✓ Pro Vérifié</span>' : ''}
+                    ${verifie ? '<span class="verified-badge">✓ Pro Vérifié</span>' : ''}
                 </div>
                 <h3>${escapeHTML(a.title)}</h3>
                 <p class="desc">${escapeHTML(a.description)}</p>
-                
-                ${wa ? `<a class="contact-btn" href="https://wa.me/${wa}?text=Bonjour,\%20je\%20suis\%20intéressé(e)\%20par\%20votre\%20offre\%20sur\%20CamerLink:\%20${encodeURIComponent(a.title)}" target="_blank" rel="noopener">
+
+                ${wa ? `<a class="contact-btn" href="https://wa.me/${wa}?text=${message}" target="_blank" rel="noopener">
                     💬 Discuter sur WhatsApp
                 </a>` : ''}
 
@@ -292,7 +294,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     remplirVilles();
     renderAuth();
     $('q').addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(applyFilters, 350); });
-    $('q').addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(timer); applyFilters(); } });$('cityFilter').addEventListener('change', applyFilters);
+    $('q').addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(timer); applyFilters(); } });
+    $('cityFilter').addEventListener('change', applyFilters);
     await verifierSession();
     fetchListings(true);
 });
