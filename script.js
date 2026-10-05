@@ -299,6 +299,9 @@ function afficher(liste) {
     }
     box.innerHTML = liste.map(a => {
         const tel = (a.contact || '').replace(/[^0-9+]/g, '');
+        let wa = tel.replace('+', '');
+        if (wa.startsWith('00237')) wa = wa.slice(2);
+        if (wa.length === 9) wa = '237' + wa; // ajoute l'indicatif Cameroun si absent
         const photo = a.image_url && (a.image_url.startsWith('data:image/') || a.image_url.startsWith('https://'));
         return `
         <article class="card">
@@ -310,7 +313,7 @@ function afficher(liste) {
                 </div>
                 <h3>${escapeHTML(a.title)}</h3>
                 <p class="desc">${escapeHTML(a.description)}</p>
-                ${tel ? `<a class="contact" href="https://wa.me/${tel.replace('+', '')}" target="_blank" rel="noopener">Contacter sur WhatsApp</a>` : ''}
+                ${tel ? `<a class="contact" href="https://wa.me/${wa}" target="_blank" rel="noopener">Contacter sur WhatsApp</a>` : ''}
                 <div class="foot">
                     <span class="city">📍 ${escapeHTML(a.city || 'Cameroun')}</span>
                     <span class="price">${Number(a.price || 0).toLocaleString('fr-FR')} FCFA</span>
