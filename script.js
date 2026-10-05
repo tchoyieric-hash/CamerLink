@@ -1,94 +1,67 @@
 const SUPABASE_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
-
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const VILLES = ['Douala', 'Yaoundé', 'Bafoussam', 'Garoua', 'Bamenda', 'Bertoua', 'Limbé', 'Kribi', 'Maroua', 'Ebolowa'];
-let toutes = [];
-let authMode = 'login'; // 'login' ou 'signup'
+const PAGE = 24;
+const COLONNES = 'id,title,category,city,price,description,contact,image_url,user_id,created_at';
+let annonces = [];
+let page = 0;
+let authMode = 'login';
 let currentUser = null;
+let timer = null;
 
-function escapeHTML(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-}
+const $ = id => document.getElementById(id);
+const escapeHTML = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]));
 
-/* ---------- PUBLICATION (modal) ---------- */
-function openModal() { document.getElementById('modal').classList.remove('hidden'); }
-function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+/* ---------- MODALES ---------- */
+const openModal = () => $('modal').classList.remove('hidden');
+const closeModal = () => $('modal').classList.add('hidden');
+const closeAuthModal = () => $('authModal').classList.add('hidden');
+const openUserModal = () => $('userModal').classList.remove('hidden');
+const closeUserModal = () => $('userModal').classList.add('hidden');
+
 function openPublish() {
-    const contact = document.getElementById('adContact');
-    if (currentUser && contact && !contact.value) {
-        const tel = (currentUser.user_metadata && currentUser.user_metadata.phone) || '';
-        contact.value = tel.replace('+237', '');
+    if (!currentUser) {
+        openAuthModal('Connectez-vous pour publier une annonce.');
+        return;
     }
+    const contact = $('adContact');
+    if (!contact.value) contact.value = ((currentUser.user_metadata || {}).phone || '').replace('+237', '');
     openModal();
 }
 
-/* ---------- CONNEXION / INSCRIPTION (numéro + mot de passe) ---------- */
-function renderAuth() {
-    const sheet = document.querySelector('#authModal .sheet');
-    const isLogin = authMode === 'login';
-    sheet.innerHTML = `
-        <div class="sheet-header">
-            <div></div>
-            <button class="close" onclick="closeAuthModal()">×</button>
-        </div>
-
+/* ---------- CONNEXION / INSCRIPTION ---------- */
+function renderAuth(info = '') {
+    const login = authMode === 'login';
+    document.querySelector('#authModal .sheet').innerHTML = `
+        <div class="sheet-header"><div></div><button class="close" onclick="closeAuthModal()" aria-label="Fermer">×</button></div>
         <div class="auth-logo">CamerLink</div>
-        <p class="auth-subtitle">${isLogin ? 'Connectez-vous avec votre numéro de téléphone' : 'Créez votre compte avec votre numéro de téléphone'}</p>
-
+        <p class="auth-subtitle">${login ? 'Connectez-vous avec votre numéro de téléphone' : 'Créez votre compte avec votre numéro de téléphone'}</p>
+        ${info ? `<p class="msg" style="color:#2563eb;margin:0 0 12px">${escapeHTML(info)}</p>` : ''}
         <form onsubmit="authSubmit(event)">
-            <div class="form-group">
-                <label>Numéro de téléphone</label>
-                <div class="phone-prefix">
-                    <span>🇨🇲 +237</span>
-                    <input id="phoneNumber" type="tel" inputmode="tel" maxlength="17" placeholder="6XXXXXXXX" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Mot de passe</label>
-                <input id="authPassword" type="password" minlength="6" placeholder="Au moins 6 caractères" autocomplete="${isLogin ? 'current-password' : 'new-password'}" required>
-            </div>
-
-            ${isLogin ? '' : `
-            <div class="form-group">
-                <label>Confirmer le mot de passe</label>
-                <input id="authPassword2" type="password" minlength="6" placeholder="Répétez le mot de passe" autocomplete="new-password" required>
-            </div>`}
-
-            <button id="authSubmitBtn" class="btn-ok" type="submit">
-                ${isLogin ? 'Se connecter' : "Créer mon compte"}
-            </button>
+            <div class="form-group"><label for="phoneNumber">Numéro de téléphone</label>
+                <div class="phone-prefix"><span>🇨🇲 +237</span>
+                <input id="phoneNumber" type="tel" inputmode="tel" maxlength="17" placeholder="6XXXXXXXX" required></div></div>
+            <div class="form-group"><label for="authPassword">Mot de passe</label>
+                <input id="authPassword" type="password" minlength="8" placeholder="Au moins 8 caractères" autocomplete="${login ? 'current-password' : 'new-password'}" required></div>
+            ${login ? '' : `<div class="form-group"><label for="authPassword2">Confirmer le mot de passe</label>
+                <input id="authPassword2" type="password" minlength="8" placeholder="Répétez le mot de passe" autocomplete="new-password" required></div>`}
+            <button id="authSubmitBtn" class="btn-ok" type="submit">${login ? 'Se connecter' : 'Créer mon compte'}</button>
         </form>
-
-        <p id="authMessage" class="msg"></p>
-
+        <p id="authMessage" class="msg" role="alert"></p>
         <button type="button" style="background:none;color:#2563eb;margin-top:15px;width:100%" onclick="toggleAuthMode()">
-            ${isLogin ? "Pas de compte ? S'inscrire" : 'Déjà un compte ? Se connecter'}
-        </button>
-
-        <div class="security">🔐 Votre numéro sert uniquement à identifier votre compte CamerLink.</div>
-    `;
+            ${login ? "Pas de compte ? S'inscrire" : 'Déjà un compte ? Se connecter'}</button>
+        <div class="security">🔐 Votre numéro sert uniquement à identifier votre compte CamerLink.</div>`;
 }
 
-function openAuthModal() {
+function openAuthModal(info) {
     authMode = 'login';
-    renderAuth();
-    document.getElementById('authModal').classList.remove('hidden');
+    renderAuth(typeof info === 'string' ? info : '');
+    $('authModal').classList.remove('hidden');
 }
-function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
-function openUserModal() { document.getElementById('userModal').classList.remove('hidden'); }
-function closeUserModal() { document.getElementById('userModal').classList.add('hidden'); }
+function toggleAuthMode() { authMode = authMode === 'login' ? 'signup' : 'login'; renderAuth(); }
 
-function toggleAuthMode() {
-    authMode = authMode === 'login' ? 'signup' : 'login';
-    renderAuth();
-}
-
-// Le numéro est converti en identifiant interne (aucun SMS ni e-mail réel n'est envoyé)
 function normaliserNumero(raw) {
     let d = String(raw || '').replace(/\D/g, '');
     if (d.startsWith('00237')) d = d.slice(5);
@@ -96,78 +69,47 @@ function normaliserNumero(raw) {
     return d;
 }
 
-function numeroVersEmail(num) {
-    return `237${num}@camerlink.app`;
-}
-
 async function authSubmit(e) {
     e.preventDefault();
-    const msg = document.getElementById('authMessage');
-    const btn = document.getElementById('authSubmitBtn');
-    const num = normaliserNumero(document.getElementById('phoneNumber').value);
-    const password = document.getElementById('authPassword').value;
-
+    const msg = $('authMessage'), btn = $('authSubmitBtn');
+    const num = normaliserNumero($('phoneNumber').value);
+    const password = $('authPassword').value;
     msg.style.color = '#dc2626';
     msg.textContent = '';
 
-    if (!/^6\d{8}$/.test(num)) {
-        msg.textContent = 'Entrez un numéro valide à 9 chiffres (ex : 6XXXXXXXX).';
-        return;
-    }
-    if (password.length < 6) {
-        msg.textContent = 'Le mot de passe doit contenir au moins 6 caractères.';
-        return;
-    }
-    if (authMode === 'signup') {
-        const p2 = document.getElementById('authPassword2').value;
-        if (p2 !== password) {
-            msg.textContent = 'Les deux mots de passe ne sont pas identiques.';
-            return;
-        }
+    if (!/^6\d{8}$/.test(num)) { msg.textContent = 'Entrez un numéro valide à 9 chiffres (ex : 6XXXXXXXX).'; return; }
+    if (password.length < 8) { msg.textContent = 'Le mot de passe doit contenir au moins 8 caractères.'; return; }
+    if (authMode === 'signup' && $('authPassword2').value !== password) {
+        msg.textContent = 'Les deux mots de passe ne sont pas identiques.'; return;
     }
 
-    const email = numeroVersEmail(num);
-    const ancienTexte = btn.textContent;
+    const email = `237${num}@camerlink.app`;
+    const texte = btn.textContent;
     btn.disabled = true;
     btn.textContent = 'Veuillez patienter...';
-
     try {
-        if (authMode === 'signup') {
-            const { data, error } = await supabaseClient.auth.signUp({
-                email,
-                password,
-                options: { data: { phone: '+237' + num } }
-            });
-            if (error) throw error;
-
-            if (!data.session) {
-                // Confirmation e-mail encore activée dans Supabase
-                msg.textContent = "Compte créé, mais la confirmation e-mail est activée dans Supabase. Désactivez « Confirm email » puis réessayez.";
-                return;
-            }
-            closeAuthModal();
-            majInterfaceUtilisateur(data.user);
-        } else {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) throw error;
-            closeAuthModal();
-            majInterfaceUtilisateur(data.user);
+        const res = authMode === 'signup'
+            ? await supabaseClient.auth.signUp({ email, password, options: { data: { phone: '+237' + num } } })
+            : await supabaseClient.auth.signInWithPassword({ email, password });
+        if (res.error) throw res.error;
+        if (!res.data.session) {
+            console.warn('Confirmation e-mail active dans Supabase : à désactiver.');
+            msg.textContent = 'Compte créé. Réessayez de vous connecter dans un instant.';
+            return;
         }
+        closeAuthModal();
+        majInterfaceUtilisateur(res.data.user);
+        fetchListings(true);
     } catch (err) {
-        console.error('Erreur auth :', err);
+        console.error('Auth :', err);
         const m = (err.message || '').toLowerCase();
-        if (m.includes('invalid login')) {
-            msg.textContent = 'Numéro ou mot de passe incorrect.';
-        } else if (m.includes('already registered') || m.includes('already been registered')) {
-            msg.textContent = 'Ce numéro est déjà inscrit. Connectez-vous.';
-        } else if (m.includes('rate limit')) {
-            msg.textContent = 'Trop de tentatives. Réessayez dans quelques minutes.';
-        } else {
-            msg.textContent = 'Erreur : ' + (err.message || 'inconnue');
-        }
+        msg.textContent = m.includes('invalid login') ? 'Numéro ou mot de passe incorrect.'
+            : m.includes('already') ? 'Ce numéro est déjà inscrit. Connectez-vous.'
+            : m.includes('rate limit') ? 'Trop de tentatives. Réessayez dans quelques minutes.'
+            : "Impossible de continuer pour le moment. Réessayez dans un instant.";
     } finally {
         btn.disabled = false;
-        btn.textContent = ancienTexte;
+        btn.textContent = texte;
     }
 }
 
@@ -175,40 +117,33 @@ async function logout() {
     await supabaseClient.auth.signOut();
     closeUserModal();
     majInterfaceUtilisateur(null);
+    fetchListings(true);
 }
 
 function majInterfaceUtilisateur(user) {
     currentUser = user;
-    const loginBtn = document.getElementById('loginBtn');
-    const userBtn = document.getElementById('userBtn');
-    if (user) {
-        loginBtn.classList.add('hidden');
-        userBtn.classList.remove('hidden');
-        const tel = (user.user_metadata && user.user_metadata.phone) || '';
-        document.getElementById('accountPhone').textContent = tel || 'Utilisateur CamerLink';
-    } else {
-        loginBtn.classList.remove('hidden');
-        userBtn.classList.add('hidden');
-    }
+    $('loginBtn').classList.toggle('hidden', !!user);
+    $('userBtn').classList.toggle('hidden', !user);
+    $('accountPhone').textContent = (user && user.user_metadata && user.user_metadata.phone) || 'Utilisateur CamerLink';
 }
 
 async function verifierSession() {
     try {
         const { data } = await supabaseClient.auth.getSession();
         majInterfaceUtilisateur(data && data.session ? data.session.user : null);
-    } catch (err) {
-        console.error('Session :', err);
-    }
+    } catch (err) { console.error('Session :', err); }
 }
 
-/* ---------- ANNONCES ---------- */
-function remplirVilles() {
-    const options = VILLES.map(v => `<option>${v}</option>`).join('');
-    document.getElementById('adCity').innerHTML = options;
-    document.getElementById('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + options;
+/* ---------- PHOTOS ---------- */
+function apercuPhoto(input) {
+    const file = input.files && input.files[0];
+    $('photoName').textContent = file ? file.name : '';
+    const img = $('photoPreview');
+    img.style.display = file ? 'block' : 'none';
+    if (file) img.src = URL.createObjectURL(file);
 }
 
-function photoEnTexte(file, max = 800) {
+function reduirePhoto(file, max = 1024) {
     return new Promise((resolve, reject) => {
         const img = new Image();
         const url = URL.createObjectURL(file);
@@ -219,176 +154,131 @@ function photoEnTexte(file, max = 800) {
             c.height = Math.round(img.height * r);
             c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
             URL.revokeObjectURL(url);
-            resolve(c.toDataURL('image/jpeg', 0.7));
+            c.toBlob(b => b ? resolve(b) : reject(new Error('Image illisible')), 'image/jpeg', 0.75);
         };
         img.onerror = () => reject(new Error('Image illisible'));
         img.src = url;
     });
 }
 
+/* ---------- ANNONCES ---------- */
+function remplirVilles() {
+    const opts = VILLES.map(v => `<option>${v}</option>`).join('');
+    $('adCity').innerHTML = opts;
+    $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + opts;
+}
+
 async function handleFormSubmit(e) {
     e.preventDefault();
-    const btn = document.getElementById('submitBtn');
+    if (!currentUser) { closeModal(); openAuthModal('Votre session a expiré. Reconnectez-vous.'); return; }
+    const btn = $('submitBtn');
     btn.disabled = true;
     btn.textContent = 'Publication...';
-
     try {
-        const file = document.getElementById('adImage').files[0];
-        const imageUrl = file ? await photoEnTexte(file) : null;
-
-        const annonce = {
-            title: document.getElementById('adTitle').value.trim(),
-            category: document.getElementById('adCategory').value,
-            city: document.getElementById('adCity').value,
-            price: parseFloat(document.getElementById('adPrice').value),
-            description: document.getElementById('adDescription').value.trim(),
-            contact: document.getElementById('adContact').value.trim() || null,
+        let imageUrl = null;
+        const file = $('adImage').files[0];
+        if (file) {
+            const blob = await reduirePhoto(file);
+            const chemin = `${currentUser.id}/${Date.now()}.jpg`;
+            const up = await supabaseClient.storage.from('annonces').upload(chemin, blob, { contentType: 'image/jpeg' });
+            if (up.error) throw up.error;
+            imageUrl = supabaseClient.storage.from('annonces').getPublicUrl(chemin).data.publicUrl;
+        }
+        const { error } = await supabaseClient.from('annonces').insert([{
+            title: $('adTitle').value.trim(),
+            category: $('adCategory').value,
+            city: $('adCity').value,
+            price: parseFloat($('adPrice').value),
+            description: $('adDescription').value.trim(),
+            contact: $('adContact').value.trim() || null,
             image_url: imageUrl
-        };
-
-        const { error } = await supabaseClient.from('annonces').insert([annonce]);
+        }]);
         if (error) throw error;
-        alert('Annonce publiée avec succès !');
-        document.getElementById('adForm').reset();
+        $('adForm').reset();
+        apercuPhoto($('adImage'));
         closeModal();
-        await fetchListings();
+        await fetchListings(true);
     } catch (err) {
-        console.error('Erreur :', err);
-        alert('Erreur lors de la publication : ' + (err.message || JSON.stringify(err)));
+        console.error('Publication :', err);
+        alert("La publication a échoué. Vérifiez votre connexion et les champs, puis réessayez.");
     } finally {
         btn.disabled = false;
         btn.textContent = 'Valider la publication';
     }
 }
 
-async function fetchListings() {
-    const box = document.getElementById('listings');
+async function supprimerAnnonce(id) {
+    if (!confirm('Supprimer cette annonce définitivement ?')) return;
+    const { error } = await supabaseClient.from('annonces').delete().eq('id', id);
+    if (error) { console.error(error); alert('Suppression impossible pour le moment.'); return; }
+    fetchListings(true);
+}
+
+async function fetchListings(reset = false) {
+    const box = $('listings');
+    if (reset) { page = 0; annonces = []; box.innerHTML = '<p>Chargement des annonces...</p>'; }
+    const ville = $('cityFilter').value;
+    const q = $('q').value.trim().replace(/[,()%*\\]/g, ' ');
     try {
-        const { data, error } = await supabaseClient
-            .from('annonces').select('*').order('created_at', { ascending: false });
+        let req = supabaseClient.from('annonces').select(COLONNES).order('created_at', { ascending: false })
+            .range(page * PAGE, page * PAGE + PAGE - 1);
+        if (ville) req = req.eq('city', ville);
+        if (q) req = req.or(`title.ilike.%${q}%,description.ilike.%${q}%,category.ilike.%${q}%`);
+        const { data, error } = await req;
         if (error) throw error;
-        toutes = data || [];
-        applyFilters();
+        annonces = annonces.concat(data || []);
+        afficher((data || []).length === PAGE);
     } catch (err) {
-        console.error('Erreur chargement :', err);
+        console.error('Chargement :', err);
         box.innerHTML = '<p class="msg">Impossible de charger les annonces. Vérifiez votre connexion et réessayez.</p>';
     }
 }
 
-function applyFilters() {
-    const q = document.getElementById('q').value.trim().toLowerCase();
-    const ville = document.getElementById('cityFilter').value;
-    const liste = toutes.filter(a =>
-        (!ville || a.city === ville) &&
-        (!q || `${a.title} ${a.description} ${a.category}`.toLowerCase().includes(q))
-    );
-    afficher(liste);
-}
+const applyFilters = () => fetchListings(true);
+function resetFilters() { $('q').value = ''; $('cityFilter').value = ''; fetchListings(true); }
+function chargerPlus() { page++; fetchListings(false); }
 
-function resetFilters() {
-    document.getElementById('q').value = '';
-    document.getElementById('cityFilter').value = '';
-    applyFilters();
-}
-
-function afficher(liste) {
-    const box = document.getElementById('listings');
-    if (liste.length === 0) {
-        box.innerHTML = '<p class="msg">Aucune annonce trouvée. Publiez la première !</p>';
-        return;
-    }
-    box.innerHTML = liste.map(a => {
-        const tel = (a.contact || '').replace(/[^0-9+]/g, '');
-        let wa = tel.replace('+', '');
-        if (wa.startsWith('00237')) wa = wa.slice(2);
-        if (wa.length === 9) wa = '237' + wa; // ajoute l'indicatif Cameroun si absent
+function afficher(encore) {
+    const box = $('listings');
+    if (!annonces.length) { box.innerHTML = '<p class="msg">Aucune annonce trouvée. Publiez la première !</p>'; return; }
+    box.innerHTML = annonces.map(a => {
+        let wa = (a.contact || '').replace(/\D/g, '');
+        if (wa.startsWith('00')) wa = wa.slice(2);
+        if (wa.length === 9) wa = '237' + wa;
         const photo = a.image_url && (a.image_url.startsWith('data:image/') || a.image_url.startsWith('https://'));
+        const mienne = currentUser && a.user_id === currentUser.id;
         return `
         <article class="card">
-            ${photo ? `<img src="${escapeHTML(a.image_url)}" alt="${escapeHTML(a.title)}" onerror="this.remove()">` : ''}
+            ${photo ? `<img src="${escapeHTML(a.image_url)}" alt="${escapeHTML(a.title)}" loading="lazy" onerror="this.remove()">` : ''}
             <div class="card-body">
-                <div class="top">
-                    <span class="cat">${escapeHTML(a.category || 'Autres')}</span>
-                    <span class="status">Publié</span>
-                </div>
+                <div class="top"><span class="cat">${escapeHTML(a.category || 'Autres')}</span></div>
                 <h3>${escapeHTML(a.title)}</h3>
                 <p class="desc">${escapeHTML(a.description)}</p>
-                ${tel ? `<a class="contact" href="https://wa.me/${wa}" target="_blank" rel="noopener">Contacter sur WhatsApp</a>` : ''}
+                ${wa ? `<a class="contact" href="https://wa.me/${wa}" target="_blank" rel="noopener">Contacter sur WhatsApp</a>` : ''}
                 <div class="foot">
                     <span class="city">📍 ${escapeHTML(a.city || 'Cameroun')}</span>
                     <span class="price">${Number(a.price || 0).toLocaleString('fr-FR')} FCFA</span>
                 </div>
+                ${mienne ? `<button class="btn-del" onclick="supprimerAnnonce(${Number(a.id)})">Supprimer mon annonce</button>` : ''}
             </div>
         </article>`;
-    }).join('');
+    }).join('') + (encore ? '<button class="btn-more" onclick="chargerPlus()">Voir plus d\'annonces</button>' : '');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+/* ---------- DÉMARRAGE ---------- */
+document.addEventListener('DOMContentLoaded', async () => {
     remplirVilles();
     renderAuth();
-    document.getElementById('q').addEventListener('keydown', e => { if (e.key === 'Enter') applyFilters(); });
-    verifierSession();
-    fetchListings();
-});
-/* ===== LOOK PROFESSIONNEL ===== */
-(function () {
-    const font = document.createElement('link');
-    font.rel = 'stylesheet';
-    font.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap';
-    document.head.appendChild(font);
-
-    const css = document.createElement('style');
-    css.textContent = `
-      * { font-family: 'Inter','Segoe UI',Roboto,Arial,sans-serif !important; }
-      body { background: #f4f6fb; }
-
-      header { box-shadow: 0 2px 12px rgba(15,23,42,.06); border-bottom: none; }
-      .logo { letter-spacing: -.5px; }
-
-      .hero { background: linear-gradient(135deg,#1d4ed8 0%,#2563eb 55%,#3b82f6 100%); padding: 48px 18px 44px; }
-      .hero h1 { font-weight: 800; letter-spacing: -.5px; line-height: 1.2; }
-      .badge { border: 1px solid rgba(255,255,255,.25); }
-      .search-box { box-shadow: 0 20px 40px rgba(15,23,42,.25); }
-
-      #trustBar { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; max-width: 1100px; margin: -22px auto 0; padding: 0 16px; position: relative; z-index: 5; }
-      #trustBar div { background: #fff; border-radius: 14px; padding: 12px 10px; text-align: center; font-size: .78rem; color: #475569; box-shadow: 0 6px 18px rgba(15,23,42,.08); }
-      #trustBar b { display: block; color: #0f172a; font-size: .85rem; margin-bottom: 2px; }
-
-      .card { border: 1px solid #eef1f6; box-shadow: 0 2px 10px rgba(15,23,42,.05); transition: transform .2s, box-shadow .2s; }
-      .card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(15,23,42,.12); }
-      .card img { height: 200px; }
-      .card h3 { font-size: 1.05rem; font-weight: 700; }
-      .price { font-size: 1.1rem; font-weight: 800; }
-      .contact { display: block; text-align: center; background: #16a34a; color: #fff !important; padding: 11px; border-radius: 12px; text-decoration: none; margin-top: 12px; }
-      .contact:hover { background: #15803d; }
-
-      footer { background: #0f172a; color: #94a3b8; margin-top: 30px; }
-    `;
-    document.head.appendChild(css);
-
-    // Bandeau de confiance sous l'en-tête bleu
     const hero = document.querySelector('.hero');
-    if (hero && !document.getElementById('trustBar')) {
-        const bar = document.createElement('section');
-        bar.id = 'trustBar';
-        bar.innerHTML = `
-          <div><b>✔ Profils vérifiés</b>Professionnels contrôlés</div>
-          <div><b>💬 WhatsApp direct</b>Sans intermédiaire</div>
-          <div><b>🇨🇲 Partout au Cameroun</b>Toutes les grandes villes</div>`;
-        hero.insertAdjacentElement('afterend', bar);
-    }
-})();
-(function () {
-    const f = document.querySelector('footer');
-    if (f) {
-        f.insertAdjacentHTML('beforeend',
-          '<br><a href="modele.html" style="color:#93c5fd;font-weight:600">Comment CamerLink rapporte · Investisseurs</a>');
-    }
-})();
-(function () {
-    const f = document.querySelector('footer');
-    if (f) {
-        f.insertAdjacentHTML('beforeend',
-          '<br><a href="modele.html" style="color:#93c5fd;font-weight:600">Comment CamerLink rapporte · Investisseurs</a>');
-    }
-})();
+    hero.insertAdjacentHTML('afterend', `<section id="trustBar">
+        <div><b>🆓 Gratuit</b>Pour les acheteurs</div>
+        <div><b>💬 WhatsApp direct</b>Sans intermédiaire</div>
+        <div><b>🇨🇲 Partout au Cameroun</b>Toutes les grandes villes</div></section>`);
+    document.querySelector('footer').insertAdjacentHTML('beforeend',
+        '<br><a href="modele.html" style="color:#93c5fd;font-weight:600">Modèle économique · Investisseurs</a>');
+    $('q').addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(applyFilters, 350); });
+    $('q').addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(timer); applyFilters(); } });
+    $('cityFilter').addEventListener('change', applyFilters);
+    await verifierSession();
+    fetchListings(true);
+});
