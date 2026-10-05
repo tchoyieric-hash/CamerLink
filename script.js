@@ -44,7 +44,7 @@ function renderAuth() {
                 <label>Numéro de téléphone</label>
                 <div class="phone-prefix">
                     <span>🇨🇲 +237</span>
-                    <input id="phoneNumber" type="tel" inputmode="numeric" maxlength="9" placeholder="6XXXXXXXX" required>
+                    <input id="phoneNumber" type="tel" inputmode="tel" maxlength="17" placeholder="6XXXXXXXX" required>
                 </div>
             </div>
 
@@ -89,6 +89,13 @@ function toggleAuthMode() {
 }
 
 // Le numéro est converti en identifiant interne (aucun SMS ni e-mail réel n'est envoyé)
+function normaliserNumero(raw) {
+    let d = String(raw || '').replace(/\D/g, '');
+    if (d.startsWith('00237')) d = d.slice(5);
+    else if (d.startsWith('237') && d.length === 12) d = d.slice(3);
+    return d;
+}
+
 function numeroVersEmail(num) {
     return `237${num}@camerlink.app`;
 }
@@ -97,7 +104,7 @@ async function authSubmit(e) {
     e.preventDefault();
     const msg = document.getElementById('authMessage');
     const btn = document.getElementById('authSubmitBtn');
-    const num = document.getElementById('phoneNumber').value.replace(/\D/g, '');
+    const num = normaliserNumero(document.getElementById('phoneNumber').value);
     const password = document.getElementById('authPassword').value;
 
     msg.style.color = '#dc2626';
