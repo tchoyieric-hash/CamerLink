@@ -48,7 +48,6 @@
     .btn-user { background: rgba(59, 130, 246, 0.15); color: var(--primary); }
     .btn-pub { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; border: none; font-weight: 800; }
 
-    /* SECTION REELS / VIDEOS HYPER */
     .reels-section { max-width: 1200px; margin: 20px auto 10px; padding: 0 20px; }
     .reels-section h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
     .reels-container { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; }
@@ -111,7 +110,6 @@
   </div>
 </header>
 
-<!-- SECTION REELS / HIGHLIGHTS IMMERSIFS -->
 <div class="reels-section">
   <h2>⚡ Tendances & Réels Live</h2>
   <div class="reels-container">
@@ -205,6 +203,10 @@
         <input class="form-control" id="adPrice" type="number" required placeholder="15000">
       </div>
       <div class="form-group">
+        <label>Photo de l'offre</label>
+        <input class="form-control" id="adImageFile" type="file" accept="image/*">
+      </div>
+      <div class="form-group">
         <label>Description</label>
         <textarea class="form-control" id="adDescription" rows="3" required placeholder="Détails de l'offre..."></textarea>
       </div>
@@ -212,7 +214,7 @@
         <label>WhatsApp</label>
         <input class="form-control" id="adContact" type="tel" required placeholder="6XXXXXXXX">
       </div>
-      <button class="btn-submit" type="submit">Valider la publication</button>
+      <button class="btn-submit" type="submit" id="submitBtn">Valider la publication</button>
     </form>
   </div>
 </div>
@@ -251,45 +253,6 @@
   const CITIES = ['Douala', 'Yaoundé', 'Bafoussam', 'Garoua', 'Bamenda', 'Kribi'];
   let currentCategory = '';
   let currentUser = null;
-
-  let localAds = [
-    {
-      id: 1,
-      title: "Restaurant Le Gourmet Bastos",
-      category: "Restaurants & Gastronomie",
-      city: "Yaoundé",
-      price: 12000,
-      description: "Spécialités camerounaises et européennes dans un cadre chic et climatisé.",
-      contact: "699000000"
-    },
-    {
-      id: 2,
-      title: "Formation Complète Développeur Web",
-      category: "Écoles & Formations",
-      city: "Douala",
-      price: 45000,
-      description: "Apprenez le HTML, CSS, JS et la création de PWA directement sur mobile.",
-      contact: "677000000"
-    },
-    {
-      id: 3,
-      title: "Service de Nettoyage & Dépannage Pro",
-      category: "Services & Artisans",
-      city: "Yaoundé",
-      price: 10000,
-      description: "Intervention rapide à domicile pour vos plomberies et entretiens.",
-      contact: "655000000"
-    },
-    {
-      id: 4,
-      title: "Toyota Corolla Clean Climatisée",
-      category: "Véhicules",
-      city: "Douala",
-      price: 3800000,
-      description: "Véhicule personnel en très bon état général, visite technique à jour.",
-      contact: "688000000"
-    }
-  ];
 
   const $ = id => document.getElementById(id);
 
@@ -335,7 +298,42 @@
 
   async function handlePublishSubmit(e) {
     e.preventDefault();
-    
+    const btn = $('submitBtn');
+    btn.textContent = "Publication en cours...";
+    btn.disabled = true;
+
+    let imageUrl = '';
+    const fileInput = $('adImageFile');
+
+    try {
+      // Gestion de l'upload d'image si un fichier est choisi
+      if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const fileName = `${Date.now()}_${file.name}`;
+        const { data: uploadData, error: uploadError } = await supabaseClient.storage
+          .from('images-annonces')
+          .upload(fileName, file);
+
+        if (!uploadError) {
+          const { data: publicUrlData } = supabaseClient.storage
+            .from('images-annonces')
+            .getPublicUrl(fileName);
+          imageUrl = publicUrlData.publicUrl;
+        }
+      }
+    } catch(err) {
+      console.log("Erreur upload image:", err);
+    }
+
+    // Images par défaut selon la catégorie si aucune image n'est uploadée
+    if (!imageUrl) {
+      const cat = $('adCategory').value;
+      if (cat === 'Restaurants & Gastronomie') imageUrl = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80';
+      else if (cat === 'Véhicules') imageUrl = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=500&q=80';
+      else if (cat === 'Écoles & Formations') imageUrl = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80';
+      else imageUrl = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80';
+    }
+
     const newAd = {
       id: Date.now(),
       title: $('adTitle').value.trim(),
@@ -343,17 +341,20 @@
       city: $('adCity').value,
       price: parseFloat($('adPrice').value),
       description: $('adDescription').value.trim(),
-      contact: $('adContact').value.trim()
+      contact: $('adContact').value.trim(),
+      image_url: imageUrl,
+      user_id: currentUser ? currentUser.id : null
     };
 
     try {
-      if (currentUser) {
-        await supabaseClient.from('annonces').insert([{ ...newAd, user_id: currentUser.id }]);
-      }
-    } catch(err) { console.log(err); }
+      await supabaseClient.from('annonces').insert([newAd]);
+    } catch(err) { 
+      console.log("Erreur insertion base:", err); 
+    }
 
-    localAds.unshift(newAd);
     $('adForm').reset();
+    btn.textContent = "Valider la publication";
+    btn.disabled = false;
     closePublishModal();
     loadListings();
   }
@@ -363,22 +364,47 @@
     const query = $('searchInput').value.trim().toLowerCase();
     const city = $('cityFilter').value;
 
-    let dataToDisplay = [...localAds];
+    let dataToDisplay = [];
 
     try {
-      let req = supabaseClient.from('annonces').select('*').order('created_at', { ascending: false });
-      const { data } = await req;
-      if (data && data.length > 0) {
-        dataToDisplay = [...data, ...localAds];
+      let { data, error } = await supabaseClient.from('annonces').select('*').order('created_at', { ascending: false });
+      if (!error && data) {
+        dataToDisplay = data;
       }
     } catch(err) {
-      console.log("Utilisation des données locales");
+      console.log("Erreur chargement Supabase");
+    }
+
+    // Si aucune base connectée ou vide, un petit lot par défaut
+    if (dataToDisplay.length === 0) {
+      dataToDisplay = [
+        {
+          id: 1,
+          title: "Restaurant Le Gourmet Bastos",
+          category: "Restaurants & Gastronomie",
+          city: "Yaoundé",
+          price: 12000,
+          description: "Spécialités camerounaises et européennes dans un cadre chic et climatisé.",
+          contact: "699000000",
+          image_url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80"
+        },
+        {
+          id: 2,
+          title: "Formation Complète Développeur Web",
+          category: "Écoles & Formations",
+          city: "Douala",
+          price: 45000,
+          description: "Apprenez le HTML, CSS, JS et la création de PWA directement sur mobile.",
+          contact: "677000000",
+          image_url: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80"
+        }
+      ];
     }
 
     let filtered = dataToDisplay.filter(item => {
       let matchCat = !currentCategory || item.category === currentCategory;
       let matchCity = !city || item.city === city;
-      let matchQuery = !query || item.title.toLowerCase().includes(query) || item.description.toLowerCase().includes(query);
+      let matchQuery = !query || (item.title && item.title.toLowerCase().includes(query)) || (item.description && item.description.toLowerCase().includes(query));
       return matchCat && matchCity && matchQuery;
     });
 
@@ -388,11 +414,7 @@
     }
 
     container.innerHTML = filtered.map(item => {
-      let img = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80';
-      if (item.category === 'Restaurants & Gastronomie') img = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80';
-      else if (item.category === 'Véhicules') img = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=500&q=80';
-      else if (item.category === 'Écoles & Formations') img = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=80';
-
+      const img = item.image_url || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80';
       return `
         <article class="card">
           <div class="card-img-wrapper">
