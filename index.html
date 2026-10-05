@@ -3,89 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>CamerLink - Marketplace du Cameroun</title>
-
+  <title>CamerLink · Marketplace & Artisans de Confiance au Cameroun</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
-    body { background: #f5f7fb; color: #172033; line-height: 1.5; }
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #fbbf24;
+      --success: #16a34a;
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+    body { background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
     .hidden { display: none !important; }
 
-    header { background: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 100; }
-    .logo { font-size: 1.45rem; font-weight: 800; color: #2563eb; }
-    .logo span { color: #111827; }
+    /* HEADER */
+    header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; letter-spacing: -0.5px; }
+    .logo span { color: var(--text); }
     .header-actions { display: flex; align-items: center; gap: 10px; }
 
-    button { border: none; cursor: pointer; font-weight: 700; }
-    .btn-login { background: #2563eb; color: white; padding: 11px 18px; border-radius: 999px; }
-    .btn-user { background: #eef4ff; color: #2563eb; padding: 10px 15px; border-radius: 999px; }
-    .btn-pub { background: #fbbf24; color: #111827; padding: 12px 20px; border-radius: 999px; }
+    button { border: none; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
+    .btn-login { background: transparent; color: var(--primary); padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border); }
+    .btn-login:hover { background: #f8fafc; border-color: var(--primary); }
+    .btn-user { background: #eef2ff; color: var(--primary); padding: 8px 16px; border-radius: 999px; }
+    .btn-pub { background: var(--accent); color: #111827; padding: 10px 20px; border-radius: 999px; font-weight: 700; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); }
+    .btn-pub:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
-    .hero { background: #2563eb; color: white; text-align: center; padding: 35px 18px 30px; }
-    .badge { display: inline-block; background: rgba(255,255,255,.12); padding: 8px 16px; border-radius: 999px; font-size: .9rem; margin-bottom: 15px; }
-    .hero h1 { font-size: 2rem; margin-bottom: 10px; }
-    .hero h1 span { color: #fbbf24; }
-    .hero p { max-width: 600px; margin: auto; opacity: .95; }
+    /* HERO SECTION */
+    .hero { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; text-align: center; padding: 50px 20px 45px; position: relative; overflow: hidden; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); backdrop-filter: blur(6px); padding: 6px 16px; border-radius: 999px; font-size: 0.85rem; font-weight: 500; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.2); }
+    .hero h1 { font-size: 2.3rem; font-weight: 800; margin-bottom: 12px; line-height: 1.2; letter-spacing: -0.5px; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { max-width: 620px; margin: 0 auto 28px; opacity: 0.92; font-size: 1.05rem; }
 
-    .search-box { background: white; max-width: 600px; margin: 22px auto 0; padding: 12px; border-radius: 24px; display: grid; gap: 10px; }
+    /* SEARCH BOX */
+    .search-box { background: white; max-width: 700px; margin: 0 auto; padding: 10px; border-radius: 35px; display: grid; grid-template-columns: 1fr auto; gap: 8px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
+    .search-inputs { display: grid; grid-template-columns: 1.6fr 1fr; gap: 6px; }
+    input, select, textarea { width: 100%; border: 1px solid transparent; border-radius: 25px; padding: 12px 18px; font-size: 0.95rem; outline: none; background: #f8fafc; color: var(--text); transition: all 0.2s; }
+    input:focus, select:focus, textarea:focus { background: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+    .btn-search { background: var(--primary); color: white; padding: 12px 28px; border-radius: 25px; font-weight: 700; }
+    .btn-search:hover { background: var(--primary-dark); }
 
-    input, select, textarea { width: 100%; border: 1px solid #dbe1ea; border-radius: 12px; padding: 13px; font-size: 1rem; outline: none; }
-    input:focus, select:focus, textarea:focus { border-color: #2563eb; }
+    /* TRUST BAR */
+    #trustBar { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; max-width: 1150px; margin: -28px auto 35px; padding: 0 20px; position: relative; z-index: 10; }
+    .trust-card { background: var(--surface); padding: 18px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px; border: 1px solid var(--border); }
+    .trust-icon { font-size: 1.6rem; background: #eef2ff; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 14px; }
+    .trust-text h4 { font-size: 0.92rem; font-weight: 700; color: var(--text); }
+    .trust-text p { font-size: 0.82rem; color: var(--text-light); }
 
-    .btn-search { background: #fbbf24; color: #111827; padding: 14px; border-radius: 999px; font-size: 1rem; }
+    /* MAIN CONTAINER */
+    main { max-width: 1150px; margin: auto; padding: 10px 20px 60px; }
+    .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .head h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.3px; }
+    .head a { color: var(--primary); font-weight: 700; text-decoration: none; cursor: pointer; font-size: 0.95rem; }
+    .head a:hover { text-decoration: underline; }
 
-    main { max-width: 1100px; margin: auto; padding: 25px 16px 50px; }
-    .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .head h2 { font-size: 1.25rem; }
-    .head a { color: #2563eb; font-weight: 700; cursor: pointer; }
+    /* LISTINGS GRID */
+    #listings { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 24px; }
+    .card { background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); transition: transform 0.25s ease, box-shadow 0.25s ease; display: flex; flex-direction: column; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(15,23,42,0.1); }
+    .card-img-wrapper { position: relative; width: 100%; height: 190px; background: #f1f5f9; }
+    .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-body { padding: 18px; display: flex; flex-direction: column; flex-grow: 1; }
+    
+    .card-badges { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; }
+    .cat { background: #eef2ff; color: var(--primary); padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .verified-badge { background: #dcfce7; color: #15803d; padding: 4px 8px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
 
-    #listings { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
-    .card { background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 25px rgba(15,23,42,.08); }
-    .card img { width: 100%; height: 190px; object-fit: cover; display: block; }
-    .card-body { padding: 14px; }
-    .top { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
-    .cat { background: #eef4ff; color: #2563eb; padding: 5px 9px; border-radius: 999px; font-size: .75rem; font-weight: 700; }
-    .status { background: #ecfdf3; color: #16a34a; padding: 5px 9px; border-radius: 999px; font-size: .75rem; font-weight: 700; }
-    .card h3 { margin: 8px 0; }
-    .desc { color: #64748b; font-size: .9rem; min-height: 42px; }
-    .contact { color: #16a34a; font-weight: 700; font-size: .9rem; margin-top: 10px; display: block; }
-    .foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #edf0f4; margin-top: 12px; padding-top: 12px; }
-    .city { color: #64748b; font-size: .85rem; }
-    .price { color: #2563eb; font-weight: 800; }
+    .card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--text); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .desc { color: var(--text-light); font-size: 0.88rem; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1; }
+    
+    .contact-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; padding: 11px; border-radius: 12px; font-size: 0.9rem; font-weight: 700; text-decoration: none; margin-bottom: 12px; transition: background 0.2s; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2); }
+    .contact-btn:hover { background: #22bf5b; }
+
+    .foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 14px; margin-top: auto; }
+    .city { color: var(--text-light); font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .price { color: var(--primary); font-weight: 800; font-size: 1.1rem; }
+
+    .btn-del { width: 100%; background: #fee2e2; color: #dc2626; padding: 9px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; margin-top: 10px; border: 1px solid #fecaca; }
+    .btn-del:hover { background: #fef2f2; }
+    .btn-more { grid-column: 1 / -1; background: white; border: 1px solid var(--border); padding: 16px; border-radius: var(--radius); font-weight: 700; color: var(--primary); text-align: center; cursor: pointer; margin-top: 10px; box-shadow: var(--shadow); }
+    .btn-more:hover { background: #f8fafc; }
 
     /* MODALES */
-    #modal, #authModal, #userModal { position: fixed; inset: 0; background: rgba(15,23,42,.65); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 1000; }
-    .sheet { background: white; width: 100%; max-width: 470px; max-height: 92vh; overflow-y: auto; border-radius: 24px; padding: 24px; }
-    .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-    .close { width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; font-size: 1.2rem; }
+    #modal, #authModal, #userModal { position: fixed; inset: 0; background: rgba(15,23,42,0.65); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 1000; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    .form-group { margin-bottom: 13px; }
-    .form-group label { display: block; margin-bottom: 6px; font-weight: 700; font-size: .9rem; }
-    .btn-ok { width: 100%; background: #2563eb; color: white; padding: 14px; border-radius: 999px; font-size: 1rem; margin-top: 5px; }
+    .sheet { background: white; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 28px; box-shadow: 0 25px 50px rgba(0,0,0,0.25); }
+    .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .sheet-header h3 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.3px; }
+    .close { width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--text-light); }
+    .close:hover { background: #e2e8f0; color: var(--text); }
 
-    .photo-btn { display: block; width: 100%; text-align: center; background: #eef4ff; color: #2563eb; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; border: 1px dashed #2563eb; }
-    .photo-name { margin-top: 8px; font-size: .85rem; color: #64748b; text-align: center; word-break: break-all; }
-    #photoPreview { display: none; width: 100%; max-height: 200px; object-fit: cover; border-radius: 12px; margin-top: 10px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.88rem; }
+    .btn-ok { width: 100%; background: var(--primary); color: white; padding: 14px; border-radius: 14px; font-size: 1rem; font-weight: 700; margin-top: 10px; box-shadow: 0 4px 15px rgba(37,99,235,0.3); }
+    .btn-ok:hover { background: var(--primary-dark); }
 
-    .auth-logo { text-align: center; font-size: 2rem; font-weight: 800; color: #2563eb; margin-bottom: 5px; }
-    .auth-subtitle { text-align: center; color: #64748b; margin-bottom: 20px; }
+    .photo-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #eef2ff; color: var(--primary); padding: 18px; border-radius: 14px; font-weight: 700; cursor: pointer; border: 2px dashed #c7d2fe; transition: background 0.2s; }
+    .photo-btn:hover { background: #e0e7ff; }
+    .photo-name { margin-top: 8px; font-size: 0.85rem; color: var(--text-light); text-align: center; word-break: break-all; }
+    #photoPreview { display: none; width: 100%; max-height: 190px; object-fit: cover; border-radius: 12px; margin-top: 10px; border: 1px solid var(--border); }
+
+    .auth-logo { text-align: center; font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; letter-spacing: -0.5px; }
+    .auth-subtitle { text-align: center; color: var(--text-light); margin-bottom: 24px; font-size: 0.92rem; }
     .phone-prefix { display: flex; gap: 8px; }
-    .phone-prefix span { background: #f1f5f9; border: 1px solid #dbe1ea; border-radius: 12px; padding: 13px; font-weight: 700; white-space: nowrap; }
-    .security { background: #f0fdf4; color: #166534; padding: 12px; border-radius: 12px; margin-top: 15px; font-size: .85rem; }
+    .phone-prefix span { background: #f1f5f9; border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px; font-weight: 700; display: flex; align-items: center; }
+    .security { background: #f0fdf4; color: #166534; padding: 14px; border-radius: 14px; margin-top: 18px; font-size: 0.85rem; border: 1px solid #bbf7d0; display: flex; gap: 10px; align-items: flex-start; }
 
-    .account-box { text-align: center; }
-    .account-icon { width: 65px; height: 65px; margin: 0 auto 12px; background: #eef4ff; color: #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; }
-    .logout { width: 100%; background: #fee2e2; color: #dc2626; padding: 14px; border-radius: 999px; margin-top: 15px; }
+    .account-box { text-align: center; padding: 10px 0; }
+    .account-icon { width: 75px; height: 75px; margin: 0 auto 14px; background: #eef2ff; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; }
+    .logout { width: 100%; background: #fee2e2; color: #dc2626; padding: 13px; border-radius: 14px; margin-top: 24px; font-weight: 700; border: 1px solid #fecaca; }
 
-    .msg { text-align: center; color: #dc2626; font-size: .9rem; margin-top: 10px; }
-    footer { text-align: center; padding: 25px; color: #64748b; font-size: .85rem; }
+    .msg { text-align: center; color: #dc2626; font-size: 0.9rem; margin-top: 10px; font-weight: 600; }
+    footer { text-align: center; padding: 35px 20px; color: var(--text-light); font-size: 0.88rem; border-top: 1px solid var(--border); margin-top: 50px; background: white; }
 
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 1.6rem; }
-      header { padding: 12px; }
-      .btn-pub { padding: 10px 13px; font-size: .85rem; }
+    /* RESPONSIVE MOBILE */
+    @media (max-width: 640px) {
+      .hero { padding: 40px 16px 35px; }
+      .hero h1 { font-size: 1.8rem; }
+      .search-box { grid-template-columns: 1fr; background: transparent; box-shadow: none; padding: 0; gap: 10px; }
+      .search-inputs { grid-template-columns: 1fr; gap: 10px; }
+      input, select { background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+      .btn-search { width: 100%; padding: 14px; }
+      header { padding: 12px 16px; }
+      .logo { font-size: 1.35rem; }
+      .btn-pub { padding: 8px 14px; font-size: 0.85rem; }
     }
   </style>
 </head>
@@ -93,93 +145,111 @@
 <body>
 
 <header>
-  <div class="logo">Camer<span>Link</span></div>
-
+  <a class="logo" href="index.html">Camer<span>Link</span></a>
   <div class="header-actions">
     <button id="loginBtn" class="btn-login" onclick="openAuthModal()">Se connecter</button>
     <button id="userBtn" class="btn-user hidden" onclick="openUserModal()">Mon compte</button>
-    <button class="btn-pub" onclick="openPublish()">Publier une annonce</button>
+    <button class="btn-pub" onclick="openPublish()">+ Publier</button>
   </div>
 </header>
 
 <section class="hero">
-  <div class="badge">🇨🇲 La marketplace pensée pour le Cameroun</div>
-
-  <h1>Tout ce dont vous avez besoin, <span>au même endroit.</span></h1>
-
-  <p>Trouvez des produits, des professionnels, des véhicules et des services près de chez vous !</p>
+  <div class="badge">🇨🇲 Marketplace & Artisans de Confiance</div>
+  <h1>Trouvez les meilleurs <span>pros et produits</span> près de chez vous.</h1>
+  <p>Plombiers, électriciens, véhicules, matériel... Connectez-vous directement avec des prestataires qualifiés au Cameroun.</p>
 
   <div class="search-box">
-    <input id="q" type="search" placeholder="Que recherchez-vous ? Ex: Toyota, dépannage...">
-    <select id="cityFilter">
-      <option value="">Toutes les villes</option>
-    </select>
+    <div class="search-inputs">
+      <input id="q" type="search" placeholder="Que recherchez-vous ? Ex: Plombier, iPhone...">
+      <select id="cityFilter">
+        <option value="">Toutes les villes</option>
+      </select>
+    </div>
     <button class="btn-search" onclick="applyFilters()">Rechercher</button>
   </div>
 </section>
 
+<!-- BARRE DE RÉASSURANCE PROFESSIONNELLE -->
+<div id="trustBar">
+  <div class="trust-card">
+    <div class="trust-icon">🛠️</div>
+    <div class="trust-text">
+      <h4>Artisans VÉRIFIÉS</h4>
+      <p>Profils contrôlés et notés</p>
+    </div>
+  </div>
+  <div class="trust-card">
+    <div class="trust-icon">💬</div>
+    <div class="trust-text">
+      <h4>Contact Direct</h4>
+      <p>Discutez sur WhatsApp sans frais</p>
+    </div>
+  </div>
+  <div class="trust-card">
+    <div class="trust-icon">🇨🇲</div>
+    <div class="trust-text">
+      <h4>100% Local</h4>
+      <p>Présent dans les grandes villes</p>
+    </div>
+  </div>
+</div>
+
 <main>
   <div class="head">
-    <h2>🔥 Annonces récentes</h2>
-    <a onclick="resetFilters()">Voir tout</a>
+    <h2>🔥 Annonces et Services Récents</h2>
+    <a onclick="resetFilters()">Tout afficher</a>
   </div>
 
   <div id="listings">
-    <p>Chargement des annonces...</p>
+    <p style="text-align:center; color: var(--text-light); grid-column: 1/-1; padding: 50px;">Chargement des annonces...</p>
   </div>
 </main>
 
-
-<!-- MODAL CONNEXION (le contenu est généré par script.js) -->
+<!-- MODAL CONNEXION / INSCRIPTION -->
 <div id="authModal" class="hidden">
   <div class="sheet"></div>
 </div>
-
 
 <!-- MODAL COMPTE -->
 <div id="userModal" class="hidden">
   <div class="sheet">
     <div class="sheet-header">
-      <h2>Mon compte</h2>
+      <h3>Mon compte</h3>
       <button class="close" onclick="closeUserModal()">×</button>
     </div>
-
     <div class="account-box">
       <div class="account-icon">👤</div>
       <h3 id="accountPhone">Utilisateur CamerLink</h3>
-      <p style="color:#64748b;margin-top:5px">Compte CamerLink</p>
+      <p style="color:var(--text-light); font-size: 0.9rem; margin-top:4px;">Membre vérifié CamerLink</p>
       <button class="logout" onclick="logout()">Se déconnecter</button>
     </div>
   </div>
 </div>
 
-
 <!-- MODAL PUBLICATION -->
 <div id="modal" class="hidden">
   <div class="sheet">
-
     <div class="sheet-header">
-      <h3>Publier une annonce</h3>
+      <h3>Publier une offre / Un service</h3>
       <button class="close" onclick="closeModal()">×</button>
     </div>
 
     <form id="adForm" onsubmit="handleFormSubmit(event)">
-
       <div class="form-group">
-        <label>Titre de l'annonce</label>
-        <input id="adTitle" required placeholder="Ex : iPhone 13 Pro Max">
+        <label>Titre de l'offre ou du service</label>
+        <input id="adTitle" required placeholder="Ex : Dépannage Plomberie Yaoundé / iPhone 13">
       </div>
 
       <div class="form-group">
         <label>Catégorie</label>
         <select id="adCategory">
+          <option>Services & Artisans</option>
           <option>Véhicules</option>
           <option>Immobilier</option>
           <option>High-Tech</option>
-          <option>Services</option>
-          <option>Mode</option>
-          <option>Maison</option>
-          <option>Emploi</option>
+          <option>Maison & Déco</option>
+          <option>Mode & Beauté</option>
+          <option>Emploi & Formations</option>
           <option>Autres</option>
         </select>
       </div>
@@ -190,41 +260,43 @@
       </div>
 
       <div class="form-group">
-        <label>Prix (FCFA)</label>
-        <input id="adPrice" type="number" min="0" required placeholder="250000">
+        <label>Tarif / Prix (FCFA)</label>
+        <input id="adPrice" type="number" min="0" required placeholder="15000">
       </div>
 
       <div class="form-group">
-        <label>Description</label>
-        <textarea id="adDescription" rows="4" required placeholder="État, lieu de récupération..."></textarea>
+        <label>Description détaillée</label>
+        <textarea id="adDescription" rows="4" required placeholder="Précisez vos compétences, vos horaires ou l'état exact du produit..."></textarea>
       </div>
 
       <div class="form-group">
-        <label>Contact WhatsApp / téléphone</label>
+        <label>Numéro WhatsApp / Téléphone</label>
         <input id="adContact" type="tel" placeholder="6XXXXXXXX">
       </div>
 
       <div class="form-group">
-        <label>Photo</label>
-
-        <label for="adImage" class="photo-btn">📷 Choisir une photo dans la galerie</label>
+        <label>Photo illustrative</label>
+        <label for="adImage" class="photo-btn">
+          📷 <span>Choisir une photo de réalisation ou du produit</span>
+        </label>
         <input id="adImage" type="file" accept="image/*" class="hidden" onchange="apercuPhoto(this)">
-
         <p id="photoName" class="photo-name"></p>
         <img id="photoPreview" alt="Aperçu de la photo">
       </div>
 
-      <button id="submitBtn" class="btn-ok" type="submit">Valider la publication</button>
-
+      <button id="submitBtn" class="btn-ok" type="submit">Valider et publier</button>
     </form>
   </div>
 </div>
 
-
-<footer>© 2026 CamerLink · La marketplace pensée pour le Cameroun 🇨🇲</footer>
+<footer>
+  <p>© 2026 CamerLink · La marketplace de référence des services et produits au Cameroun 🇨🇲</p>
+  <div style="margin-top: 10px;">
+    <a href="modele.html" style="color:var(--primary); font-weight:700; text-decoration:none;">Modèle économique · Investisseurs</a>
+  </div>
+</footer>
 
 <script>
-  // Aperçu de la photo choisie dans la galerie
   function apercuPhoto(input) {
     const file = input.files && input.files[0];
     const name = document.getElementById('photoName');
@@ -239,7 +311,6 @@
     img.style.display = 'block';
   }
 </script>
-
 <script src="script.js"></script>
 
 </body>
