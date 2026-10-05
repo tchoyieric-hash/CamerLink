@@ -1,0 +1,70 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+serve(async (req) => {
+  // Gérer les requêtes CORS pré-flight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  try {
+    const { imageUrl } = await req.json()
+
+    if (!imageUrl) {
+      return new Response(JSON.stringify({ error: "Aucune URL d'image fournies." }), {
+        status: 400,
+        headers: { ...corsHeaders, 'ContentType': 'application/json' },
+      })
+    }
+
+    const openAiApiKey = Deno.env.get('OPENAI_API_KEY')
+    if (!openAiApiKey) {
+      throw new Error("Clé API OpenAI non configurée dans Supabase Secrets.")
+    }
+
+    // Appel à l'API Vision d'OpenAI
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "Tu es un assistant e-commerce expert pour le marché camerounais. Analyse l'image du produit ou service et retourne UNIQUEMENT un objet JSON valide avec les clés suivantes : 'title' (titre accrocheur et court), 'category' (ex: Mode, High-Tech, Maison, Services, Agriculture), 'description' (description professionnelle et vendeuse), et 'suggested_price' (estimation numérique du prix en Francs CFA XAF sans symboles)."
+          },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: "Analyse cette image pour une annonce de marketplace." },
+              { type: "image_url", image_url: { url: imageUrl } }
+            ]
+          }
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 300
+      })
+    })
+
+    const aiData = await response.json()
+    const parsedResult = JSON.parse(aiData.choices[0].message.content)
+
+    return new Response(JSON.stringify(parsedResult), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+    })
+
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
+    })
+  }
+})
