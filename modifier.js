@@ -5,7 +5,6 @@
   const BUCKET = 'annonces-images';
   const CATS = ['Services', 'Restaurants', 'Boutiques', 'Immobilier', 'Véhicules'];
   const CITIES = ['Yaoundé', 'Douala', 'Kribi', 'Bafoussam', 'Garoua', 'Bamenda', 'Limbe', 'Autre'];
-
   const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { autoRefreshToken: false } });
   const $ = (id) => document.getElementById(id);
   const opts = (list) => list.map((v) => `<option value="${v}">${v}</option>`).join('');
@@ -14,10 +13,7 @@
   document.body.insertAdjacentHTML('beforeend', `
     <div id="editModal" class="modal-overlay" role="dialog" aria-modal="true">
       <div class="modal-sheet">
-        <div class="modal-header">
-          <h3>Modifier mon annonce</h3>
-          <button type="button" class="modal-close" id="eClose" aria-label="Fermer">×</button>
-        </div>
+        <div class="modal-header"><h3>Modifier mon annonce</h3><button type="button" class="modal-close" id="eClose" aria-label="Fermer">×</button></div>
         <form id="editForm">
           <div class="form-group"><label for="eCat">Catégorie</label><select class="form-sheet-el" id="eCat">${opts(CATS)}</select></div>
           <div class="form-group"><label for="eTitle">Titre</label><input class="form-sheet-el" id="eTitle" type="text" required minlength="3" maxlength="120"></div>
@@ -25,11 +21,7 @@
           <div class="form-group"><label for="ePrice">Prix (FCFA) · 0 = prix à discuter</label><input class="form-sheet-el" id="ePrice" type="number" min="0" step="1" required></div>
           <div class="form-group"><label for="eDesc">Description</label><textarea class="form-sheet-el" id="eDesc" rows="3" required maxlength="2000"></textarea></div>
           <div class="form-group"><label for="eContact">Numéro WhatsApp</label><input class="form-sheet-el" id="eContact" type="tel" required></div>
-          <div class="form-group">
-            <label for="ePhoto">Nouvelle photo (facultatif)</label>
-            <input class="form-sheet-el" id="ePhoto" type="file" accept="image/jpeg,image/png,image/webp">
-            <p class="form-hint">Laissez vide pour garder la photo actuelle.</p>
-          </div>
+          <div class="form-group"><label for="ePhoto">Nouvelle photo (facultatif)</label><input class="form-sheet-el" id="ePhoto" type="file" accept="image/jpeg,image/png,image/webp"><p class="form-hint">Laissez vide pour garder la photo actuelle.</p></div>
           <button type="submit" class="btn-submit-modal" id="eSubmit">Enregistrer les modifications</button>
           <p class="form-error" id="eError" role="alert"></p>
         </form>
@@ -129,17 +121,10 @@
     }
   });
 
-  // Icône et installation sur le téléphone
   [['manifest', '/manifest.webmanifest'], ['icon', '/icon-192.png'], ['apple-touch-icon', '/icon-192.png']]
-    .forEach(([rel, href]) => {
-      const l = document.createElement('link');
-      l.rel = rel;
-      l.href = href;
-      document.head.appendChild(l);
-    });
+    .forEach(([rel, href]) => { const l = document.createElement('link'); l.rel = rel; l.href = href; document.head.appendChild(l); });
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 
-  // === Disponibilité, carte et urgence ===
   const FRAIS = 12 * 3600 * 1000;
   let geo = {}, me = null, onlyDispo = false, map;
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -241,4 +226,73 @@
   $('xUrg').addEventListener('click', showUrgence);
   new MutationObserver(decorate).observe(grid, { childList: true });
   loadGeo();
+
+  let avis = {}, uid = null, yNote = 0;
+  sb.auth.getSession().then(({ data }) => { uid = data.session ? data.session.user.id : null; });
+  sb.auth.onAuthStateChange((_e, s) => { uid = s ? s.user.id : null; decorateAvis(); });
+  const etoiles = (n) => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n));
+
+  async function loadAvis() {
+    const { data } = await sb.from('avis').select('annonce_id,user_id,note,commentaire,created_at').order('created_at', { ascending: false });
+    avis = {};
+    (data || []).forEach((v) => { (avis[v.annonce_id] = avis[v.annonce_id] || []).push(v); });
+    decorateAvis();
+  }
+
+  function decorateAvis() {
+    grid.querySelectorAll('.ad-card').forEach((card) => {
+      const b = card.querySelector('[data-report],[data-delete]');
+      if (!b) return;
+      const id = b.dataset.report || b.dataset.delete;
+      const list = avis[id] || [];
+      card.querySelectorAll('.y-extra').forEach((n) => n.remove());
+      const moy = list.length ? list.reduce((s, v) => s + v.note, 0) / list.length : 0;
+      const ligne = list.length ? `<span style="color:#F59E0B">${etoiles(moy)}</span> ${moy.toFixed(1).replace('.', ',')} (${list.length} avis)` : 'Aucun avis';
+      card.querySelector('.ad-title').insertAdjacentHTML('afterend', `<button type="button" class="y-extra shop-info" style="text-align:left;background:none;border:0;padding:0" data-avis="${esc(id)}">${ligne}</button>`);
+      const rep = card.querySelector('[data-report]');
+      if (rep) rep.insertAdjacentHTML('beforebegin', `<button type="button" class="y-extra btn-report" style="color:#F59E0B" data-avis="${esc(id)}">⭐ Donner un avis</button>`);
+    });
+  }
+
+  function showAvis(id) {
+    const list = avis[id] || [];
+    const owner = !!grid.querySelector(`[data-delete="${id}"]`);
+    const moi = list.find((v) => v.user_id === uid);
+    yNote = moi ? moi.note : 0;
+    let form;
+    if (!uid) form = '<p class="form-hint">Connectez-vous (bouton « Connexion » en haut) pour donner votre avis.</p>';
+    else if (owner) form = '<p class="form-hint">Vous ne pouvez pas noter votre propre annonce.</p>';
+    else form = `<div class="form-group"><label>Votre note</label><div id="yStars" style="font-size:2rem;color:#F59E0B;cursor:pointer">${[1, 2, 3, 4, 5].map((n) => `<span data-note="${n}">${n <= yNote ? '★' : '☆'}</span>`).join('')}</div></div>
+      <div class="form-group"><textarea class="form-sheet-el" id="yText" rows="3" maxlength="500" placeholder="Votre expérience (facultatif)">${esc(moi ? moi.commentaire || '' : '')}</textarea></div>
+      <button type="button" class="btn-submit-modal" id="ySend" data-id="${esc(id)}">${moi ? 'Modifier mon avis' : 'Publier mon avis'}</button><p class="form-error" id="yErr"></p>`;
+    const items = list.length ? list.map((v) => `<div class="shop-ad" style="display:block"><span style="color:#F59E0B">${etoiles(v.note)}</span> <span class="shop-info">${new Date(v.created_at).toLocaleDateString('fr-FR')}</span>${v.commentaire ? `<div class="shop-info">${esc(v.commentaire)}</div>` : ''}</div>`).join('') : '<p class="shop-info">Aucun avis pour le moment.</p>';
+    openX('⭐ Avis', form + '<div class="shop-ads">' + items + '</div>');
+  }
+
+  document.addEventListener('click', async (e) => {
+    const a = e.target.closest('[data-avis]');
+    if (a) { showAvis(a.dataset.avis); return; }
+    const n = e.target.closest('[data-note]');
+    if (n) {
+      yNote = Number(n.dataset.note);
+      document.querySelectorAll('#yStars [data-note]').forEach((s) => { s.textContent = Number(s.dataset.note) <= yNote ? '★' : '☆'; });
+      return;
+    }
+    const send = e.target.closest('#ySend');
+    if (!send) return;
+    if (!yNote) { $('yErr').textContent = 'Choisissez une note de 1 à 5.'; return; }
+    send.disabled = true;
+    const id = send.dataset.id;
+    const payload = { note: yNote, commentaire: $('yText').value.trim() || null };
+    const existe = (avis[id] || []).some((v) => v.user_id === uid);
+    const r = existe
+      ? await sb.from('avis').update(payload).eq('annonce_id', id).eq('user_id', uid)
+      : await sb.from('avis').insert({ annonce_id: Number(id), ...payload });
+    if (r.error) { send.disabled = false; $('yErr').textContent = 'Envoi impossible. Reconnectez-vous et réessayez.'; return; }
+    await loadAvis();
+    showAvis(id);
+  });
+
+  new MutationObserver(decorateAvis).observe(grid, { childList: true });
+  loadAvis();
 })();
