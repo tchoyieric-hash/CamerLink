@@ -128,4 +128,14 @@
       btn.textContent = 'Enregistrer les modifications';
     }
   });
+
+  // Icône et installation sur le téléphone
+  [['manifest', '/manifest.webmanifest'], ['icon', '/icon-192.png'], ['apple-touch-icon', '/icon-192.png']]
+    .forEach(([rel, href]) => {
+      const l = document.createElement('link');
+      l.rel = rel;
+      l.href = href;
+      document.head.appendChild(l);
+    });
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 })();
