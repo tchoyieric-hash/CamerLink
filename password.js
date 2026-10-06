@@ -37,7 +37,7 @@
   document.body.insertAdjacentHTML('beforeend',
     '<div id="pwModal" class="modal-overlay" role="dialog" aria-modal="true"><div class="modal-sheet">' +
     '<div class="modal-header"><h3>🔑 Changer mon mot de passe</h3><button type="button" class="modal-close" id="pwClose" aria-label="Fermer">×</button></div>' +
-    '<div class="form-group"><label for="pwNew">Nouveau mot de passe (6 caractères minimum)</label><input class="form-sheet-el" id="pwNew" type="password" autocomplete="new-password"></div>' +
+    '<div class="form-group"><label for="pwNew">Nouveau mot de passe (8 caractères minimum)</label><input class="form-sheet-el" id="pwNew" type="password" autocomplete="new-password"></div>' +
     '<div class="form-group"><label for="pwNew2">Répétez le mot de passe</label><input class="form-sheet-el" id="pwNew2" type="password" autocomplete="new-password"></div>' +
     '<button type="button" class="btn-submit-modal" id="pwSave">Enregistrer</button>' +
     '<p class="form-error" id="pwErr" role="alert"></p></div></div>');
@@ -80,7 +80,7 @@
   $('pwSave').addEventListener('click', async () => {
     const a = $('pwNew').value, b = $('pwNew2').value, err = $('pwErr'), btn = $('pwSave');
     err.textContent = '';
-    if (a.length < 6) { err.textContent = 'Minimum 6 caractères.'; return; }
+    if (a.length < 8) { err.textContent = 'Minimum 8 caractères.'; return; }
     if (a !== b) { err.textContent = 'Les deux mots de passe sont différents.'; return; }
     btn.disabled = true;
     try {
