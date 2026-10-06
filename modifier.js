@@ -138,7 +138,7 @@
       document.head.appendChild(l);
     });
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
-})();
+
   // === Disponibilité, carte et urgence ===
   const FRAIS = 12 * 3600 * 1000;
   let geo = {}, me = null, onlyDispo = false, map;
@@ -241,3 +241,4 @@
   $('xUrg').addEventListener('click', showUrgence);
   new MutationObserver(decorate).observe(grid, { childList: true });
   loadGeo();
+})();
