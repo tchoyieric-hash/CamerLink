@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8">
@@ -181,7 +181,7 @@
     </div>
     <div class="auth-tabs">
       <button type="button" class="auth-tab active" data-method="phone">📱 Téléphone</button>
-      <button type="button" class="auth-tab" data-method="email">✉️ E-mail</button>
+      <button type="button" class="auth-tab" data-method="email">✉️️ E-mail</button>
     </div>
     <form id="phoneForm">
       <div class="auth-tabs">
@@ -337,7 +337,7 @@
   let currentUser = null;
 
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]
   ));
   const safeImg = (url) => {
     const u = String(url || '');
@@ -499,7 +499,10 @@
       const wa = waNumber(ad.contact);
       const msg = encodeURIComponent(`Bonjour, je suis intéressé par votre offre « ${ad.title} » sur CamerLink`);
       const mine = currentUser && ad.user_id === currentUser.id;
-      const shop = shopsByUser[ad.user_id];
+      
+      // SÉCURISATION : On vérifie que la boutique appartient bien au propriétaire exact de l'annonce
+      const shop = (ad.user_id && shopsByUser[ad.user_id] && shopsByUser[ad.user_id].user_id === ad.user_id) ? shopsByUser[ad.user_id] : null;
+
       return `
       <article class="ad-card">
         <div class="card-img-container">
@@ -584,8 +587,7 @@
     currentUser = session ? session.user : null;
     updateAuthUI();
     const knownPhone = currentUser && (currentUser.phone || (currentUser.user_metadata && currentUser.user_metadata.phone));
-    if (knownPhone && !$('adContact').value) {
-      $('adContact').value = '+' + String(knownPhone).replace(/^\+/, '');
+    if (knownPhone && !$('adContact').value) {$('adContact').value = '+' + String(knownPhone).replace(/^\+/, '');
     }
     renderShops();
     renderListings();
@@ -612,8 +614,7 @@
     authMethod = method;
     document.querySelectorAll('[data-method]').forEach((t) =>
       t.classList.toggle('active', t.dataset.method === method));
-    $('phoneForm').hidden = method !== 'phone';
-    $('emailForm').hidden = method !== 'email';
+    $('phoneForm').hidden = method !== 'phone';$('emailForm').hidden = method !== 'email';
   }
 
   function setAuthMode(mode) {
@@ -660,8 +661,7 @@
     e.preventDefault();
     const phone = normalizePhone($('authPhone').value);
     const password = $('phonePassword').value;
-    const btn = $('phoneSubmit');
-    $('phoneError').textContent = '';
+    const btn = $('phoneSubmit');$('phoneError').textContent = '';
     if (!phone) {
       $('phoneError').textContent = 'Numéro invalide. Exemple : 6 91 23 45 67';
       return;
@@ -700,8 +700,7 @@
     const email = $('authEmail').value.trim();
     const password = $('authPassword').value;
     const btn = $('authSubmit');
-    $('authError').style.color = '';
-    $('authError').textContent = '';
+    $('authError').style.color = '';$('authError').textContent = '';
     if (authMode === 'signup' && password.length < 8) {
       $('authError').textContent = 'Minimum 8 caractères.';
       return;
@@ -722,8 +721,7 @@
           $('emailForm').reset();
           toast('Compte créé, bienvenue !');
         } else {
-          $('authError').style.color = 'var(--color-whatsapp)';
-          $('authError').textContent = 'Compte créé. Vérifiez votre e-mail pour confirmer, puis connectez-vous.';
+          $('authError').style.color = 'var(--color-whatsapp)';$('authError').textContent = 'Compte créé. Vérifiez votre e-mail pour confirmer, puis connectez-vous.';
         }
       }
     } catch (err) {
@@ -802,13 +800,13 @@
         price: Math.max(0, Math.round(Number($('adPrice').value))),
         description: $('adDesc').value.trim(),
         contact: $('adContact').value.trim(),
-        image_url: imageUrl
+        image_url: imageUrl,
+        user_id: currentUser.id
       });
       if (error) throw error;
       toast('Offre publiée avec succès !');
       closeModal('publishModal');
-      $('adForm').reset();
-      $('imgPreview').style.display = 'none';
+      $('adForm').reset();$('imgPreview').style.display = 'none';
       loadListings();
     } catch (ex) {
       console.error(ex);
@@ -830,11 +828,9 @@
     $('proType').value = s ? s.type : 'Restaurant';
     $('proCity').value = s ? s.city : CITIES[0];
     $('proAddress').value = s ? (s.address || '') : '';
-    $('proContact').value = s ? (s.contact || '') : ($('adContact').value || '');
-    $('proHours').value = s ? (s.hours || '') : '';
+    $('proContact').value = s ? (s.contact || '') : ($('adContact').value \vert{}\vert{} '');$('proHours').value = s ? (s.hours || '') : '';
     $('proDesc').value = s ? (s.description || '') : '';
-    $('proLogo').value = '';
-    $('proError').textContent = '';
+    $('proLogo').value = '';$('proError').textContent = '';
     openModal('proModal');
   }
 
