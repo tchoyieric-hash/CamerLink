@@ -516,7 +516,11 @@
       const wa = waNumber(ad.contact);
       const msg = encodeURIComponent(`Bonjour, je suis intéressé par votre offre « ${ad.title} » sur CamerLink`);
       const mine = currentUser && ad.user_id === currentUser.id;
-      const shop = ad.etablissement_id ? shopsById[ad.etablissement_id] : shopsByUser[ad.user_id];
+      
+      // CORRECTION : On s'assure que le badge de l'établissement ne s'affiche 
+      // que si l'annonce est explicitement liée à cet établissement via `etablissement_id`.
+      const shop = ad.etablissement_id ? shopsById[ad.etablissement_id] : null;
+
       return `
       <article class="ad-card">
         <div class="card-img-container">
