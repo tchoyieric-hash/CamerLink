@@ -77,7 +77,7 @@ function normaliserNumero(raw) {
 
 async function authSubmit(e) {
     e.preventDefault();
-    const msg = $('authMessage'), btn = $('authSubmitBtn');
+    const msg = $('authMessage'), btn =$('authSubmitBtn');
     const num = normaliserNumero($('phoneNumber').value);
     const password = $('authPassword').value;
     msg.style.color = '#dc2626';
@@ -128,8 +128,7 @@ async function logout() {
 function majInterfaceUtilisateur(user) {
     currentUser = user;
     $('loginBtn').classList.toggle('hidden', !!user);
-    $('userBtn').classList.toggle('hidden', !user);
-    $('accountPhone').textContent = (user && user.user_metadata && user.user_metadata.phone) || 'Utilisateur CamerLink';
+    $('userBtn').classList.toggle('hidden', !user);$('accountPhone').textContent = (user && user.user_metadata && user.user_metadata.phone) || 'Utilisateur CamerLink';
 }
 
 async function verifierSession() {
@@ -139,7 +138,7 @@ async function verifierSession() {
     } catch (err) { console.error('Session :', err); }
 }
 
-/* ---------- GESTION DES PHOTOS (COMPRESSION HAUTE PERFORMANCE) ---------- */
+/* ---------- GESTION DES PHOTOS ---------- */
 function apercuPhoto(input) {
     const file = input.files && input.files[0];
     $('photoName').textContent = file ? file.name : '';
@@ -189,6 +188,8 @@ async function handleFormSubmit(e) {
             if (up.error) throw up.error;
             imageUrl = supabaseClient.storage.from('annonces').getPublicUrl(chemin).data.publicUrl;
         }
+        
+        // CORRECTION MAJEURE : Ajout explicite de user_id pour rattacher l'annonce à son créateur
         const { error } = await supabaseClient.from('annonces').insert([{
             title: $('adTitle').value.trim(),
             category: $('adCategory').value,
@@ -196,8 +197,10 @@ async function handleFormSubmit(e) {
             price: parseFloat($('adPrice').value),
             description: $('adDescription').value.trim(),
             contact: $('adContact').value.trim() || null,
-            image_url: imageUrl
+            image_url: imageUrl,
+            user_id: currentUser.id 
         }]);
+        
         if (error) throw error;
         $('adForm').reset();
         apercuPhoto($('adImage'));
@@ -240,7 +243,7 @@ async function fetchListings(reset = false) {
 }
 
 const applyFilters = () => fetchListings(true);
-function resetFilters() { $('q').value = ''; $('cityFilter').value = ''; fetchListings(true); }
+function resetFilters() { $('q').value = '';$('cityFilter').value = ''; fetchListings(true); }
 function chargerPlus() { page++; fetchListings(false); }
 
 function afficher(encore) {
@@ -294,8 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     remplirVilles();
     renderAuth();
     $('q').addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(applyFilters, 350); });
-    $('q').addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(timer); applyFilters(); } });
-    $('cityFilter').addEventListener('change', applyFilters);
+    $('q').addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(timer); applyFilters(); } });$('cityFilter').addEventListener('change', applyFilters);
     await verifierSession();
     fetchListings(true);
 });
