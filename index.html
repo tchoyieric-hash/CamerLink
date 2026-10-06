@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="CamerLink · La plateforme d'annonces et de commerces au Cameroun. Restaurants, boutiques, services, immobilier, véhicules.">
-  <title>CamerLink · L'Excellence Numérique</title>
+  <title>CamerLink · Annonces et commerces locaux au Cameroun</title>
   <meta name="theme-color" content="#050509">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="CamerLink · Annonces et commerces vérifiés au Cameroun">
+  <meta property="og:title" content="CamerLink · Annonces et commerces locaux au Cameroun">
   <meta property="og:description" content="Restaurants, boutiques, services, immobilier, véhicules. Contactez directement sur WhatsApp."><meta property="og:image" content="https://camer-link.vercel.app/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -150,7 +150,7 @@
 
 <section class="hero">
   <h1>L'Excellence au Cameroun<br><span>à portée de clic.</span></h1>
-  <p>Annonces, restaurants et boutiques vérifiés, à contacter en un clic.</p>
+  <p>Annonces, restaurants et boutiques du Cameroun, à contacter en un clic.</p>
   <div class="search-filter-bar">
     <input id="searchInput" type="search" placeholder="Que recherchez-vous (ex: artisan...) ?" class="search-input form-el" aria-label="Rechercher">
     <select id="cityFilter" class="city-select form-el" aria-label="Ville"></select>
@@ -194,8 +194,8 @@
         <p class="form-hint">Cameroun (+237) par défaut.</p>
       </div>
       <div class="form-group">
-        <label for="phonePassword">Mot de passe (6 caractères minimum)</label>
-        <input class="form-sheet-el" id="phonePassword" type="password" required minlength="6" autocomplete="current-password">
+        <label for="phonePassword">Mot de passe (8 caractères minimum)</label>
+        <input class="form-sheet-el" id="phonePassword" type="password" required minlength="8" autocomplete="current-password">
       </div>
       <button type="submit" class="btn-submit-modal" id="phoneSubmit">Se connecter</button>
       <p class="form-error" id="phoneError" role="alert"></p>
@@ -342,8 +342,12 @@
     return (/^https:\/\//i.test(u) || /^data:image\/(jpeg|png|webp);base64,/i.test(u)) ? u : '';
   };
   const waNumber = (contact) => {
-    const d = String(contact || '').replace(/\D/g, '');
-    return d.length === 9 ? '237' + d : d;
+    let d = String(contact || '').replace(/\D/g, '');
+    d = d.replace(/^00/, '');
+    if (d.startsWith('2370')) d = '237' + d.slice(4);
+    if (d.length === 10 && d[0] === '0') d = '237' + d.slice(1);
+    if (d.length === 9) d = '237' + d;
+    return d;
   };
   const priceText = (p) => Number(p) > 0 ? Number(p).toLocaleString('fr-FR') + ' FCFA' : 'Prix à discuter';
 
@@ -931,6 +935,6 @@
 </script>
 <script src="modifier.js"></script>
 <script src="extras.js"></script>
+<script src="password.js"></script>
 </body>
 </html>
-<script src="password.js"></script>
