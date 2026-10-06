@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8">
@@ -181,7 +181,7 @@
     </div>
     <div class="auth-tabs">
       <button type="button" class="auth-tab active" data-method="phone">📱 Téléphone</button>
-      <button type="button" class="auth-tab" data-method="email">✉️️ E-mail</button>
+      <button type="button" class="auth-tab" data-method="email">✉️ E-mail</button>
     </div>
     <form id="phoneForm">
       <div class="auth-tabs">
@@ -499,10 +499,7 @@
       const wa = waNumber(ad.contact);
       const msg = encodeURIComponent(`Bonjour, je suis intéressé par votre offre « ${ad.title} » sur CamerLink`);
       const mine = currentUser && ad.user_id === currentUser.id;
-      
-      // SÉCURISATION : On vérifie que la boutique appartient bien au propriétaire exact de l'annonce
-      const shop = (ad.user_id && shopsByUser[ad.user_id] && shopsByUser[ad.user_id].user_id === ad.user_id) ? shopsByUser[ad.user_id] : null;
-
+      const shop = shopsByUser[ad.user_id];
       return `
       <article class="ad-card">
         <div class="card-img-container">
@@ -800,8 +797,7 @@
         price: Math.max(0, Math.round(Number($('adPrice').value))),
         description: $('adDesc').value.trim(),
         contact: $('adContact').value.trim(),
-        image_url: imageUrl,
-        user_id: currentUser.id
+        image_url: imageUrl
       });
       if (error) throw error;
       toast('Offre publiée avec succès !');
