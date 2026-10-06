@@ -194,8 +194,9 @@
         <p class="form-hint">Cameroun (+237) par défaut.</p>
       </div>
       <div class="form-group">
-        <label for="phonePassword">Mot de passe (8 caractères minimum)</label>
-        <input class="form-sheet-el" id="phonePassword" type="password" required minlength="8" autocomplete="current-password">
+        <label for="phonePassword">Mot de passe</label>
+        <input class="form-sheet-el" id="phonePassword" type="password" required autocomplete="current-password">
+        <p class="form-hint">8 caractères minimum pour un nouveau compte.</p>
       </div>
       <button type="submit" class="btn-submit-modal" id="phoneSubmit">Se connecter</button>
       <p class="form-error" id="phoneError" role="alert"></p>
@@ -210,8 +211,9 @@
         <input class="form-sheet-el" id="authEmail" type="email" required autocomplete="email">
       </div>
       <div class="form-group">
-        <label for="authPassword">Mot de passe (8 caractères minimum)</label>
-        <input class="form-sheet-el" id="authPassword" type="password" required minlength="8" autocomplete="current-password">
+        <label for="authPassword">Mot de passe</label>
+        <input class="form-sheet-el" id="authPassword" type="password" required autocomplete="current-password">
+        <p class="form-hint">8 caractères minimum pour un nouveau compte.</p>
       </div>
       <button type="submit" class="btn-submit-modal" id="authSubmit">Se connecter</button>
       <p class="form-error" id="authError" role="alert"></p>
@@ -664,6 +666,10 @@
       $('phoneError').textContent = 'Numéro invalide. Exemple : 6 91 23 45 67';
       return;
     }
+    if (phoneMode === 'signup' && password.length < 8) {
+      $('phoneError').textContent = 'Minimum 8 caractères.';
+      return;
+    }
     btn.disabled = true;
     try {
       const email = phoneToEmail(phone);
@@ -694,8 +700,13 @@
     const email = $('authEmail').value.trim();
     const password = $('authPassword').value;
     const btn = $('authSubmit');
-    btn.disabled = true;
+    $('authError').style.color = '';
     $('authError').textContent = '';
+    if (authMode === 'signup' && password.length < 8) {
+      $('authError').textContent = 'Minimum 8 caractères.';
+      return;
+    }
+    btn.disabled = true;
     try {
       if (authMode === 'login') {
         const { error } = await sb.auth.signInWithPassword({ email, password });
