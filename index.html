@@ -228,6 +228,12 @@
       <button class="modal-close" data-close="publishModal" aria-label="Fermer">×</button>
     </div>
     <form id="adForm">
+      <div class="form-group" id="adShopWrap" hidden>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <input type="checkbox" id="adAsShop" style="width:16px; height:16px; accent-color:var(--a1);">
+          Publier au nom de mon établissement
+        </label>
+      </div>
       <div class="form-group"><label for="adCategory">Catégorie</label><select class="form-sheet-el" id="adCategory"></select></div>
       <div class="form-group"><label for="adTitle">Titre</label><input class="form-sheet-el" id="adTitle" type="text" required minlength="3" maxlength="120" placeholder="Ex: Menuisier qualifié"></div>
       <div class="form-group"><label for="adCity">Ville</label><select class="form-sheet-el" id="adCity"></select></div>
@@ -333,6 +339,8 @@
   let allListings = [];
   let shops = [];
   let shopsByUser = {};
+  let shopsById = {};
+  let currentShopId = null;
   let currentCategory = '';
   let currentUser = null;
 
@@ -404,7 +412,7 @@
     $('listings-grid').innerHTML = '<div class="state-msg">Chargement des annonces…</div>';
     const { data, error } = await sb
       .from('annonces')
-      .select('id, created_at, title, category, price, city, description, contact, image_url, verified, user_id')
+      .select('id, created_at, title, category, price, city, description, contact, image_url, verified, user_id, etablissement_id')
       .order('verified', { ascending: false })
       .order('created_at', { ascending: false })
       .limit(60);
@@ -427,8 +435,12 @@
       .order('created_at', { ascending: false })
       .limit(40);
     shops = error ? [] : (data || []);
-    shopsByUser = {};
-    shops.forEach((s) => { shopsByUser[s.user_id] = s; });
+    shopsByUser = {}; 
+    shopsById = {};
+    shops.forEach((s) => { 
+        shopsByUser[s.user_id] = s; 
+        shopsById[s.id] = s; 
+    });
     renderShops();
     renderListings();
   }
@@ -440,6 +452,7 @@
 
   function renderShops() {
     const mine = currentUser && shopsByUser[currentUser.id];
+    currentShopId = mine ? mine.id : null;
     const cta = `
       <button class="shop-card shop-cta" id="proCta">
         <div class="shop-logo">${mine ? '✎' : '+'}</div>
@@ -447,11 +460,15 @@
         <div class="shop-type">${mine ? 'Modifier ma fiche' : 'Rejoignez CamerLink'}</div>
       </button>`;
     $('shops-container').innerHTML = cta + shops.map((s) => `
-      <button class="shop-card" data-shop="${esc(s.user_id)}">
+      <button class="shop-card" data-shop="${esc(s.id)}">
         <div class="shop-logo">${logoHtml(s)}</div>
         <div class="shop-name">${esc(s.name)}${s.verified ? ' ✔' : ''}</div>
         <div class="shop-type">${esc(s.type)} · ${esc(s.city)}</div>
       </button>`).join('');
+    
+    if ($('adShopWrap')) {
+      $('adShopWrap').hidden = !mine;
+    }
   }
 
   async function loadReels() {
@@ -499,7 +516,7 @@
       const wa = waNumber(ad.contact);
       const msg = encodeURIComponent(`Bonjour, je suis intéressé par votre offre « ${ad.title} » sur CamerLink`);
       const mine = currentUser && ad.user_id === currentUser.id;
-      const shop = shopsByUser[ad.user_id];
+      const shop = ad.etablissement_id ? shopsById[ad.etablissement_id] : shopsByUser[ad.user_id];
       return `
       <article class="ad-card">
         <div class="card-img-container">
@@ -509,7 +526,7 @@
         </div>
         <div class="card-body">
           <h3 class="ad-title">${esc(ad.title)}</h3>
-          ${shop ? `<button class="shop-link" data-shop="${esc(ad.user_id)}">🏪 ${esc(shop.name)}${shop.verified ? ' ✔' : ''}</button>` : ''}
+          ${shop ? `<button class="shop-link" data-shop="${esc(shop.id)}">🏪 ${esc(shop.name)}${shop.verified ? ' ✔' : ''}</button>` : ''}
           <p class="ad-desc">${esc(ad.description)}</p>
           <div class="card-meta">
             <span class="ad-city">📍 ${esc(ad.city || 'Cameroun')}</span>
@@ -523,11 +540,11 @@
     }).join('');
   }
 
-  function openShop(userId) {
-    const s = shopsByUser[userId];
+  function openShop(shopId) {
+    const s = shopsById[shopId] || shopsByUser[shopId];
     if (!s) return;
     const wa = waNumber(s.contact);
-    const ads = allListings.filter((a) => a.user_id === userId);
+    const ads = allListings.filter((a) => a.etablissement_id ? a.etablissement_id === s.id : a.user_id === s.user_id);
     $('shopTitle').textContent = s.name;
     $('shopBody').innerHTML = `
       <div class="shop-head">
@@ -797,7 +814,8 @@
         price: Math.max(0, Math.round(Number($('adPrice').value))),
         description: $('adDesc').value.trim(),
         contact: $('adContact').value.trim(),
-        image_url: imageUrl
+        image_url: imageUrl,
+        etablissement_id: ($('adAsShop') &&$('adAsShop').checked) ? currentShopId : null
       });
       if (error) throw error;
       toast('Offre publiée avec succès !');
