@@ -152,8 +152,6 @@
   function decorate() {
     if (!grid) return;
     grid.querySelectorAll('.card, .ad-card').forEach((card) => {
-      const key = card.querySelector('[data-report],[data-delete], .btn-del');
-      // Récupération de l'ID depuis le bouton de suppression ou le texte prix/autre si nécessaire
       const delBtn = card.querySelector('.btn-del');
       let id = null;
       if (delBtn) {
@@ -272,10 +270,13 @@
   });
 
   if (grid) new MutationObserver(decorate).observe(grid, { childList: true });
-  ['shopBody', 'xBody'].jobs?.forEach?.((id) => {
-    const el = $(id);
-    if (el) new MutationObserver(() => fixWa(el)).observe(el, { childList: true });
-  });
+  
+  const shopBodyEl = $('shopBody');
+  if (shopBodyEl) new MutationObserver(() => fixWa(shopBodyEl)).observe(shopBodyEl, { childList: true });
+  
+  const xBodyEl = $('xBody');
+  if (xBodyEl) new MutationObserver(() => fixWa(xBodyEl)).observe(xBodyEl, { childList: true });
+
   decorate();
   loadVideos().then(decorate);
 })();
