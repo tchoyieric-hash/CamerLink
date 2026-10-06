@@ -43,6 +43,15 @@
     '<p class="form-error" id="pwErr" role="alert"></p></div></div>');
 
   const footer = document.querySelector('footer');
+
+  /* 3) Lien Informations légales dans le pied de page */
+  if (footer) {
+    const legal = document.createElement('p');
+    legal.style.marginTop = '8px';
+    legal.innerHTML = '<a href="legal.html" style="color:var(--a1);font-weight:600">Informations légales · Contact</a>';
+    footer.appendChild(legal);
+  }
+
   const link = document.createElement('p');
   link.hidden = true;
   link.innerHTML = '<a href="#" id="pwChange" style="color:var(--a1);font-size:.85rem;font-weight:600">🔑 Changer mon mot de passe</a>';
