@@ -118,7 +118,42 @@
     }, true);
   }
 
-  /* ===== 3) VIDEOS ===== */
+  /* ===== 3) GESTION DES FAVORIS (LocalStorage) ===== */
+  function getFavoris() {
+    try {
+      return JSON.parse(localStorage.getItem('camerlink_favoris')) || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function toggleFavori(annonceId) {
+    let favoris = getFavoris();
+    const index = favoris.indexOf(annonceId);
+
+    if (index > -1) {
+      favoris.splice(index, 1);
+      toast('Annonce retirée des favoris.');
+    } else {
+      favoris.push(annonceId);
+      toast('Annonce ajoutée aux favoris ❤️');
+    }
+
+    localStorage.setItem('camerlink_favoris', JSON.stringify(favoris));
+    decorate();
+  }
+
+  /* ===== 4) COMPTEUR DE VUES ===== */
+  async function incrementerVues(id) {
+    try {
+      // Incrémentation basique sécurisée dans Supabase (nécessite une colonne 'vues' de type int dans la table annonces)
+      const { data } = await sb.from('annonces').select('vues').eq('id', id).single();
+      const currentVues = (data && data.vues) ? data.vues : 0;
+      await sb.from('annonces').update({ vues: currentVues + 1 }).eq('id', id);
+    } catch (e) {}
+  }
+
+  /* ===== 5) VIDEOS ===== */
   let videos = null;
   async function loadVideos() {
     try {
@@ -131,44 +166,32 @@
     } catch (e) { videos = null; }
   }
 
-  /* ===== 4) FILTRAGE GLOBAL (Ville, Catégorie & Recherche texte) ===== */
+  /* ===== 6) FILTRAGE GLOBAL (Ville, Catégorie & Recherche) ===== */
   async function filtrerGlobal() {
     try {
       const selectVille = document.querySelector('select');
       const villeCible = selectVille ? selectVille.value : '';
-      
       const catActive = document.querySelector('[data-cat].active')?.textContent.trim() || 'Tout voir';
-      
       const inputRecherche = document.querySelector('input[type="text"], input[placeholder*="recherchez"]');
       const motCle = inputRecherche ? inputRecherche.value.trim() : '';
 
       let query = sb.from('annonces').select('*');
 
-      // Filtre par ville
       if (villeCible && villeCible !== 'Toutes les villes' && villeCible !== '') {
         query = query.eq('ville', villeCible);
       }
-
-      // Filtre par catégorie
       if (catActive && catActive !== 'Tout voir') {
         query = query.eq('categorie', catActive);
       }
-
-      // Recherche textuelle par mots-clés
       if (motCle !== '') {
         query = query.or(`titre.ilike.%${motCle}%,description.ilike.%${motCle}%`);
       }
 
       const { data, error } = await query;
-      if (error) {
-        console.error("Erreur de filtrage :", error.message);
-        return;
-      }
+      if (error) return;
 
       afficherAnnoncesFiltrees(data);
-    } catch (err) {
-      console.error("Erreur inattendue lors du filtrage :", err);
-    }
+    } catch (err) {}
   }
 
   function afficherAnnoncesFiltrees(liste) {
@@ -197,11 +220,8 @@
     decorate();
   }
 
-  // Écouteurs d'événements pour déclencher le filtre automatiquement
   document.addEventListener('change', (e) => {
-    if (e.target.tagName === 'SELECT') {
-      filtrerGlobal();
-    }
+    if (e.target.tagName === 'SELECT') filtrerGlobal();
   });
 
   document.addEventListener('input', (e) => {
@@ -211,7 +231,7 @@
   });
 
   const st = document.createElement('style');
-  st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}';
+  st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}.btn-fav{border-color:#ff4757 !important;}';
   document.head.appendChild(st);
 
   document.body.insertAdjacentHTML('beforeend',
@@ -230,6 +250,8 @@
   const grid = $('listings') \vert{}\vert{}$('listings-grid');
   function decorate() {
     if (!grid) return;
+    const favoris = getFavoris();
+
     grid.querySelectorAll('.card, .ad-card').forEach((card) => {
       const delBtn = card.querySelector('.btn-del');
       let id = card.dataset.id || null;
@@ -237,17 +259,31 @@
         const match = delBtn.getAttribute('onclick')?.match(/\d+/);
         if (match) id = match[0];
       }
+
       card.querySelectorAll('.v-extra').forEach((n) => n.remove());
-      if (videos === null || !id) return;
-      const url = videos[id];
+      if (!id) return;
+
+      const estFav = favoris.includes(String(id));
       const desc = card.querySelector('.desc, .ad-desc');
-      if (url && desc) {
+
+      if (desc) {
+        // Bouton Favori
         desc.insertAdjacentHTML('afterend',
-          `<button type="button" class="v-extra v-btn v-play" data-vplay="${esc(id)}">▶ Voir la vidéo</button>`);
+          `<button type="button" class="v-extra v-btn btn-fav" data-fav="${esc(id)}" style="background:${estFav ? '#ff4757' : 'transparent'};color:${estFav ? '#fff' : '#ff4757'}">
+            ${estFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris'}
+          </button>`);
+
+        // Bouton Vidéo si dispo
+        if (videos !== null && videos[id]) {
+          desc.insertAdjacentHTML('afterend',
+            `<button type="button" class="v-extra v-btn v-play" data-vplay="${esc(id)}">▶ Voir la vidéo</button>`);
+        }
       }
+
       if (delBtn) {
+        const hasVid = videos !== null && !!videos[id];
         delBtn.insertAdjacentHTML('beforebegin',
-          `<button type="button" class="v-extra v-btn" data-vadd="${esc(id)}">🎬 ${url ? 'Changer la vidéo' : 'Ajouter une vidéo'}</button>`);
+          `<button type="button" class="v-extra v-btn" data-vadd="${esc(id)}">🎬 ${hasVid ? 'Changer la vidéo' : 'Ajouter une vidéo'}</button>`);
       }
     });
     fixWa(grid);
@@ -256,9 +292,11 @@
   function showPlayer(id) {
     const url = videos && videos[id];
     if (!url) return;
+    incrementerVues(id); // Incrémente le compteur de vues à l'ouverture
     openV('🎬 Vidéo',
       `<video src="${esc(url)}" controls playsinline autoplay preload="metadata" style="width:100%;max-height:70vh;border-radius:12px;background:#000"></video>`);
   }
+
   function showUploader(id) {
     const has = !!(videos && videos[id]);
     openV(has ? '🎬 Changer la vidéo' : '🎬 Ajouter une vidéo',
@@ -311,8 +349,7 @@
       decorate();
       toast('Vidéo ajoutée.');
     } catch (ex) {
-      console.error(ex);
-      err.textContent = 'Envoi impossible. Vérifiez votre connexion et la taille (max 20 Mo), puis réessayez.';
+      err.textContent = 'Envoi impossible. Vérifiez votre connexion.';
       btn.disabled = false;
       btn.textContent = 'Envoyer la vidéo';
     }
@@ -322,7 +359,7 @@
     if (!confirm('Supprimer cette vidéo ?')) return;
     const err = $('vErr');
     const r = await sb.from('annonces').update({ video_url: null }).eq('id', id).select('id');
-    if (r.error || !r.data || !r.data.length) { err.textContent = 'Suppression impossible. Reconnectez-vous.'; return; }
+    if (r.error || !r.data || !r.data.length) { err.textContent = 'Suppression impossible.'; return; }
     removeFile(videos[id]);
     delete videos[id];
     closeV();
@@ -331,6 +368,8 @@
   }
 
   document.addEventListener('click', (e) => {
+    const fav = e.target.closest('[data-fav]');
+    if (fav) { toggleFavori(fav.dataset.fav); return; }
     const play = e.target.closest('[data-vplay]');
     if (play) { showPlayer(play.dataset.vplay); return; }
     const add = e.target.closest('[data-vadd]');
@@ -340,6 +379,7 @@
     const rm = e.target.closest('#vRemove');
     if (rm) dropVideo(rm.dataset.id);
   });
+
   document.addEventListener('change', (e) => {
     if (e.target.id !== 'vFile') return;
     const f = e.target.files[0], prev = $('vPrev');
