@@ -7,7 +7,7 @@
   const TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
   ));
   const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { autoRefreshToken: false } });
 
@@ -68,41 +68,57 @@
     });
   }
 
-  /* ===== 2) GESTION DES FAVORIS (LocalStorage) ===== */
-  function getFavoris() {
-    try {
-      return JSON.parse(localStorage.getItem('camerlink_favoris')) || [];
-    } catch (e) {
-      return [];
-    }
+  /* ===== 2) CONNEXION ===== */
+  const phoneForm = $('phoneForm');
+  if (phoneForm) {
+    phoneForm.addEventListener('submit', async (e) => {
+      const input = $('authPhone'), err =$('phoneError');
+      const phone = normPhone(input.value);
+      if (!phone) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        err.textContent = 'Numéro invalide. Exemple : 6 91 23 45 67';
+        return;
+      }
+      input.value = phone;
+      const active = document.querySelector('[data-pmode].active');
+      if (!active || active.dataset.pmode !== 'login') return;
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const btn = $('phoneSubmit');
+      const password = $('phonePassword').value;
+      err.textContent = '';
+      btn.disabled = true;
+
+      const emails = [phone.slice(1) + '@phone.camerlink.app'];
+      if (/^\+237\d{9}$/.test(phone)) emails.push('237' + phone.slice(4) + '@camerlink.app');
+
+      let ok = false, last = null;
+      try {
+        for (const email of emails) {
+          const { error } = await sb.auth.signInWithPassword({ email, password });
+          if (!error) { ok = true; break; }
+          last = error;
+          if (!/invalid login/i.test(error.message || '')) break;
+        }
+      } catch (ex) { last = ex; }
+
+      if (ok) {
+        $('authModal').classList.remove('active');
+        toast('Connexion réussie.');
+        setTimeout(() => location.reload(), 500);
+        return;
+      }
+      const m = String((last && last.message) || '');
+      err.textContent = /invalid login/i.test(m) ? 'Numéro ou mot de passe incorrect.'
+        : /rate limit|too many/i.test(m) ? 'Trop de tentatives. Patientez une minute.'
+        : 'Une erreur est survenue. Réessayez.';
+      btn.disabled = false;
+    }, true);
   }
 
-  function toggleFavori(annonceId) {
-    let favoris = getFavoris();
-    const index = favoris.indexOf(Number(annonceId));
-
-    if (index > -1) {
-      favoris.splice(index, 1);
-      toast('Annonce retirée des favoris.');
-    } else {
-      favoris.push(Number(annonceId));
-      toast('Annonce ajoutée aux favoris ❤️');
-    }
-
-    localStorage.setItem('camerlink_favoris', JSON.stringify(favoris));
-    decorate();
-  }
-
-  /* ===== 3) COMPTEUR DE VUES ===== */
-  async function incrementerVues(id) {
-    try {
-      const { data } = await sb.from('annonces').select('vues').eq('id', id).single();
-      const currentVues = (data && data.vues) ? data.vues : 0;
-      await sb.from('annonces').update({ vues: currentVues + 1 }).eq('id', id);
-    } catch (e) {}
-  }
-
-  /* ===== 4) VIDEOS ===== */
+  /* ===== 3) VIDEOS ===== */
   let videos = null;
   async function loadVideos() {
     try {
@@ -119,10 +135,12 @@
   st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}';
   document.head.appendChild(st);
 
-  document.body.insertAdjacentHTML('beforeend',
-    '<div id="vModal" class="modal-overlay" role="dialog" aria-modal="true"><div class="modal-sheet">' +
-    '<div class="modal-header"><h3 id="vTitle"></h3><button type="button" class="modal-close" id="vClose" aria-label="Fermer">×</button></div>' +
-    '<div id="vBody"></div></div></div>');
+  if (!$('vModal')) {
+    document.body.insertAdjacentHTML('beforeend',
+      '<div id="vModal" class="modal-overlay" role="dialog" aria-modal="true"><div class="modal-sheet">' +
+      '<div class="modal-header"><h3 id="vTitle"></h3><button type="button" class="modal-close" id="vClose" aria-label="Fermer">×</button></div>' +
+      '<div id="vBody"></div></div></div>');
+  }
 
   const openV = (title, html) => { $('vTitle').textContent = title; $('vBody').innerHTML = html; $('vModal').classList.add('active'); };
   const closeV = () => {
@@ -130,36 +148,31 @@
     if (v) { v.pause(); v.removeAttribute('src'); v.load(); }
     $('vBody').innerHTML = '';$('vModal').classList.remove('active');
   };
-  $('vClose').addEventListener('click', closeV);$('vModal').addEventListener('click', (e) => { if (e.target.id === 'vModal') closeV(); });
+  
+  const vCloseBtn = $('vClose');
+  if (vCloseBtn) vCloseBtn.addEventListener('click', closeV);
+  const vModalEl = $('vModal');
+  if (vModalEl) vModalEl.addEventListener('click', (e) => { if (e.target.id === 'vModal') closeV(); });
 
   const grid = $('listings-grid');
   function decorate() {
     if (!grid) return;
-    const favoris = getFavoris();
-
     grid.querySelectorAll('.ad-card').forEach((card) => {
-      const delBtn = card.querySelector('.btn-delete');
-      const id = Number(card.dataset.id);
-      if (!id) return;
-
-      const estFav = favoris.includes(id);
-      const favBtn = card.querySelector('[data-fav]');
-      if (favBtn) {
-        favBtn.classList.toggle('active', estFav);
-      }
-
-      const desc = card.querySelector('.ad-desc');
+      const key = card.querySelector('[data-report],[data-delete]');
+      if (!key) return;
+      const id = key.dataset.report || key.dataset.delete;
+      const del = card.querySelector('[data-delete]');
       card.querySelectorAll('.v-extra').forEach((n) => n.remove());
-
-      if (desc && videos !== null && videos[id]) {
+      if (videos === null) return;
+      const url = videos[id];
+      const desc = card.querySelector('.ad-desc');
+      if (url && desc) {
         desc.insertAdjacentHTML('afterend',
           `<button type="button" class="v-extra v-btn v-play" data-vplay="${esc(id)}">▶ Voir la vidéo</button>`);
       }
-
-      if (delBtn) {
-        const hasVid = videos !== null && !!videos[id];
-        delBtn.insertAdjacentHTML('beforebegin',
-          `<button type="button" class="v-extra v-btn" data-vadd="${esc(id)}">🎬 ${hasVid ? 'Changer la vidéo' : 'Ajouter une vidéo'}</button>`);
+      if (del) {
+        del.insertAdjacentHTML('beforebegin',
+          `<button type="button" class="v-extra v-btn" data-vadd="${esc(id)}">🎬 ${url ? 'Changer la vidéo' : 'Ajouter une vidéo'}</button>`);
       }
     });
     fixWa(grid);
@@ -168,11 +181,9 @@
   function showPlayer(id) {
     const url = videos && videos[id];
     if (!url) return;
-    incrementerVues(id);
     openV('🎬 Vidéo',
       `<video src="${esc(url)}" controls playsinline autoplay preload="metadata" style="width:100%;max-height:70vh;border-radius:12px;background:#000"></video>`);
   }
-
   function showUploader(id) {
     const has = !!(videos && videos[id]);
     openV(has ? '🎬 Changer la vidéo' : '🎬 Ajouter une vidéo',
@@ -195,9 +206,10 @@
   }
 
   async function sendVideo(id) {
-    const f = $('vFile').files[0], err = $('vErr'), btn =$('vSend');
+    const fInput = $('vFile');
+    if (!fInput || !fInput.files[0]) { $('vErr').textContent = 'Choisissez une vidéo.'; return; }
+    const f = fInput.files[0], err = $('vErr'), btn =$('vSend');
     err.textContent = '';
-    if (!f) { err.textContent = 'Choisissez une vidéo.'; return; }
     if (!TYPES.includes(f.type)) { err.textContent = 'Format non pris en charge. Utilisez une vidéo MP4.'; return; }
     if (f.size > MAX_MB * 1048576) {
       err.textContent = `Vidéo trop lourde (${(f.size / 1048576).toFixed(1)} Mo). Maximum ${MAX_MB} Mo.`;
@@ -225,7 +237,8 @@
       decorate();
       toast('Vidéo ajoutée.');
     } catch (ex) {
-      err.textContent = 'Envoi impossible. Vérifiez votre connexion.';
+      console.error(ex);
+      err.textContent = 'Envoi impossible. Vérifiez votre connexion et la taille (max 20 Mo), puis réessayez.';
       btn.disabled = false;
       btn.textContent = 'Envoyer la vidéo';
     }
@@ -235,7 +248,7 @@
     if (!confirm('Supprimer cette vidéo ?')) return;
     const err = $('vErr');
     const r = await sb.from('annonces').update({ video_url: null }).eq('id', id).select('id');
-    if (r.error || !r.data || !r.data.length) { err.textContent = 'Suppression impossible.'; return; }
+    if (r.error || !r.data || !r.data.length) { if (err) err.textContent = 'Suppression impossible. Reconnectez-vous.'; return; }
     removeFile(videos[id]);
     delete videos[id];
     closeV();
@@ -253,18 +266,19 @@
     const rm = e.target.closest('#vRemove');
     if (rm) dropVideo(rm.dataset.id);
   });
-
   document.addEventListener('change', (e) => {
     if (e.target.id !== 'vFile') return;
-    const f = e.target.files[0];
-    const vPrev = $('vPrev');
-    if (!vPrev) return;
-    vPrev.style.display = f ? 'block' : 'none';
-    if (f) vPrev.src = URL.createObjectURL(f);
+    const f = e.target.files[0], prev = $('vPrev');
+    if (!prev) return;
+    prev.style.display = f ? 'block' : 'none';
+    if (f) prev.src = URL.createObjectURL(f);
   });
 
   if (grid) new MutationObserver(decorate).observe(grid, { childList: true });
-
+  ['shopBody', 'xBody'].forEach((id) => {
+    const el = $(id);
+    if (el) new MutationObserver(() => fixWa(el)).observe(el, { childList: true });
+  });
   decorate();
   loadVideos().then(decorate);
 })();
