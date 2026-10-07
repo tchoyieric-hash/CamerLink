@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8">
@@ -244,7 +244,7 @@
         <img id="imgPreview" class="img-preview" alt="Aperçu de la photo">
       </div>
       <div class="form-group"><label for="adDesc">Description</label><textarea class="form-sheet-el" id="adDesc" rows="3" required maxlength="2000" placeholder="Détails..."></textarea></div>
-      <div class="form-group"><label for="adContact">Numéro WhatsApp</label><input class="form-sheet-el" id="adContact" type="tel" required pattern="\+?[0-9 ]{8,15}" placeholder="6XXXXXXXX ou +2376XXXXXXXX"></div>
+      <div class="form-group"><label for="adContact">Numéro WhatsApp</label><input class="form-sheet-el" id="adContact" type="tel" required pattern="\+?[0-9 ]{8,20}" placeholder="6XXXXXXXX ou +2376XXXXXXXX"></div>
       <button type="submit" class="btn-submit-modal" id="pubSubmit">Publier</button>
       <p class="form-error" id="pubError" role="alert"></p>
     </form>
@@ -266,7 +266,7 @@
       </div>
       <div class="form-group"><label for="proCity">Ville</label><select class="form-sheet-el" id="proCity"></select></div>
       <div class="form-group"><label for="proAddress">Adresse / quartier</label><input class="form-sheet-el" id="proAddress" type="text" maxlength="200" placeholder="Ex: Bastos, face Total"></div>
-      <div class="form-group"><label for="proContact">Numéro WhatsApp</label><input class="form-sheet-el" id="proContact" type="tel" required pattern="\+?[0-9 ]{8,15}" placeholder="6XXXXXXXX"></div>
+      <div class="form-group"><label for="proContact">Numéro WhatsApp</label><input class="form-sheet-el" id="proContact" type="tel" required pattern="\+?[0-9 ]{8,20}" placeholder="6XXXXXXXX"></div>
       <div class="form-group"><label for="proHours">Horaires</label><input class="form-sheet-el" id="proHours" type="text" maxlength="120" placeholder="Lun-Sam 8h-20h"></div>
       <div class="form-group"><label for="proDesc">Présentation</label><textarea class="form-sheet-el" id="proDesc" rows="3" maxlength="600" placeholder="Ce qui vous rend unique..."></textarea></div>
       <div class="form-group">
@@ -517,8 +517,8 @@
       const msg = encodeURIComponent(`Bonjour, je suis intéressé par votre offre « ${ad.title} » sur CamerLink`);
       const mine = currentUser && ad.user_id === currentUser.id;
       
-      // CORRECTION : On s'assure que le badge de l'établissement ne s'affiche 
-      // que si l'annonce est explicitement liée à cet établissement via `etablissement_id`.
+      // Le badge de l'établissement ne s'affiche que si l'annonce est
+      // explicitement liée à cet établissement via `etablissement_id`.
       const shop = ad.etablissement_id ? shopsById[ad.etablissement_id] : null;
 
       return `
@@ -548,7 +548,7 @@
     const s = shopsById[shopId] || shopsByUser[shopId];
     if (!s) return;
     const wa = waNumber(s.contact);
-    const ads = allListings.filter((a) => a.etablissement_id ? a.etablissement_id === s.id : a.user_id === s.user_id);
+    const ads = allListings.filter((a) => a.etablissement_id === s.id);
     $('shopTitle').textContent = s.name;
     $('shopBody').innerHTML = `
       <div class="shop-head">
@@ -593,7 +593,7 @@
     let d = String(raw || '').replace(/[^\d+]/g, '');
     if (d.startsWith('+')) d = d.slice(1);
     else if (d.startsWith('00')) d = d.slice(2);
-    if (d.length === 9 && d[0] === '6') d = '237' + d;
+    if (/^0?6\d{8}$/.test(d)) d = '237' + d.slice(-9);
     return /^\d{10,15}$/.test(d) ? '+' + d : null;
   }
 
@@ -846,7 +846,7 @@
     $('proType').value = s ? s.type : 'Restaurant';
     $('proCity').value = s ? s.city : CITIES[0];
     $('proAddress').value = s ? (s.address || '') : '';
-    $('proContact').value = s ? (s.contact || '') : ($('adContact').value \vert{}\vert{} '');$('proHours').value = s ? (s.hours || '') : '';
+    $('proContact').value = s ? (s.contact || '') : ($('adContact').value || '');$('proHours').value = s ? (s.hours || '') : '';
     $('proDesc').value = s ? (s.description || '') : '';
     $('proLogo').value = '';$('proError').textContent = '';
     openModal('proModal');
@@ -962,4 +962,4 @@
 <script src="extras.js"></script>
 <script src="password.js"></script>
 </body>
-</html>
+  </html>
