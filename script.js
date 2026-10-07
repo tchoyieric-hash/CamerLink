@@ -256,7 +256,7 @@
 
   document.addEventListener('change', (e) => {
     if (e.target.id !== 'vFile') return;
-    const f = e.target.files[0], prev = $('vTest'); // Correction mineure
+    const f = e.target.files[0];
     const vPrev = $('vPrev');
     if (!vPrev) return;
     vPrev.style.display = f ? 'block' : 'none';
