@@ -205,12 +205,20 @@
     }
 
     liste.forEach(annonce => {
+      const vuesCount = annonce.vues !== undefined && annonce.vues !== null ? annonce.vues : 0;
       const cardHTML = `
         <div class="card ad-card" data-id="${esc(annonce.id)}">
-          <h3>${esc(annonce.titre)}</h3>
-          <p class="desc">${esc(annonce.description)}</p>
-          <span class="prix">${esc(annonce.prix)} FCFA</span>
-          <span class="ville">📍 ${esc(annonce.ville)}</span>
+          <div class="card-img-container" style="position:relative; background:#2a2b3d; height:180px;">
+            <div class="card-badges-top" style="position:absolute; top:10px; left:10px; right:10px; display:flex; justify-content:space-between; align-items:center; z-index:10;">
+              <span class="badge-pill" style="background:rgba(0,0,0,0.75); color:#fff; padding:4px 10px; border-radius:20px; font-size:11px;">👁️ ${vuesCount} vue${vuesCount > 1 ? 's' : ''}</span>
+            </div>
+          </div>
+          <div style="padding: 14px;">
+            <h3>${esc(annonce.titre)}</h3>
+            <p class="desc">${esc(annonce.description)}</p>
+            <span class="prix">${esc(annonce.prix)} FCFA</span>
+            <span class="ville">📍 ${esc(annonce.ville)}</span>
+          </div>
         </div>
       `;
       grid.innerHTML += cardHTML;
