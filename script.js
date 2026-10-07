@@ -118,21 +118,11 @@
     }, true);
   }
 
-  /* ===== 3) VIDEOS (Filtré par utilisateur connecté) ===== */
+  /* ===== 3) VIDEOS & CHARGEMENT ===== */
   let videos = null;
   async function loadVideos() {
     try {
-      const { data: { user }, error: userError } = await sb.auth.getUser();
-      if (userError || !user) {
-        videos = null;
-        return;
-      }
-
-      const { data, error } = await sb
-        .from('annonces')
-        .select('id,video_url')
-        .eq('user_id', user.id);
-
+      const { data, error } = await sb.from('annonces').select('id,video_url');
       if (error) { videos = null; return; }
       videos = {};
       (data || []).forEach((a) => {
@@ -140,6 +130,66 @@
       });
     } catch (e) { videos = null; }
   }
+
+  /* ===== 4) FILTRAGE PAR VILLE ET CATEGORIE ===== */
+  async function filtrerAnnonces(villeCible, categorieCible) {
+    try {
+      let query = sb.from('annonces').select('*');
+
+      if (villeCible && villeCible !== 'Toutes les villes' && villeCible !== '') {
+        query = query.eq('ville', villeCible);
+      }
+      if (categorieCible && categorieCible !== 'Tout voir') {
+        query = query.eq('categorie', categorieCible);
+      }
+
+      const { data, error } = await query;
+      if (error) {
+        console.error("Erreur de filtrage :", error.message);
+        return;
+      }
+
+      afficherAnnoncesFiltrees(data);
+    } catch (err) {
+      console.error("Erreur inattendue lors du filtrage :", err);
+    }
+  }
+
+  function afficherAnnoncesFiltrees(liste) {
+    const grid = $('listings') \vert{}\vert{}$('listings-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    if (!liste || liste.length === 0) {
+      grid.innerHTML = '<p style="color: #fff; text-align: center; grid-column: 1/-1; padding: 30px;">Aucune annonce trouvée.</p>';
+      return;
+    }
+
+    // Reconstruction dynamique des cartes selon les données filtrées
+    liste.forEach(annonce => {
+      const cardHTML = `
+        <div class="card ad-card" data-id="${esc(annonce.id)}">
+          <h3>${esc(annonce.titre)}</h3>
+          <p class="desc">${esc(annonce.description)}</p>
+          <span class="prix">${esc(annonce.prix)} FCFA</span>
+          <span class="ville">📍 ${esc(annonce.ville)}</span>
+        </div>
+      `;
+      grid.innerHTML += cardHTML;
+    });
+
+    decorate();
+  }
+
+  // Écouteur sur le sélecteur de ville
+  document.addEventListener('change', (e) => {
+    if (e.target.tagName === 'SELECT' && (e.target.id.includes('ville') || e.target.classList.contains('ville-select') || e.target.options.length > 3)) {
+      const ville = e.target.value;
+      const catActive = document.querySelector('[data-cat].active')?.textContent.trim() || 'Tout voir';
+      filtrerAnnonces(ville, catActive);
+    }
+  });
 
   const st = document.createElement('style');
   st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}';
@@ -163,8 +213,8 @@
     if (!grid) return;
     grid.querySelectorAll('.card, .ad-card').forEach((card) => {
       const delBtn = card.querySelector('.btn-del');
-      let id = null;
-      if (delBtn) {
+      let id = card.dataset.id || null;
+      if (!id && delBtn) {
         const match = delBtn.getAttribute('onclick')?.match(/\d+/);
         if (match) id = match[0];
       }
