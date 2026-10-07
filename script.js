@@ -165,8 +165,8 @@
     } catch (e) { videos = null; }
   }
 
-  /* ===== 6) FILTRAGE GLOBAL (Ville, Catégorie & Recherche) ===== */
-  async function filtrerGlobal() {
+  /* ===== 6) CHARGEMENT ET AFFICHAGE DES ANNONCES ===== */
+  async function chargerAnnonces() {
     try {
       const selectVille = document.querySelector('select');
       const villeCible = selectVille ? selectVille.value : '';
@@ -174,7 +174,7 @@
       const inputRecherche = document.querySelector('input[type="text"], input[placeholder*="recherchez"]');
       const motCle = inputRecherche ? inputRecherche.value.trim() : '';
 
-      let query = sb.from('annonces').select('*');
+      let query = sb.from('annonces').select('*').order('created_at', { ascending: false });
 
       if (villeCible && villeCible !== 'Toutes les villes' && villeCible !== '') {
         query = query.eq('ville', villeCible);
@@ -187,10 +187,17 @@
       }
 
       const { data, error } = await query;
-      if (error) return;
+      if (error) {
+        const grid = $('listings') \vert{}\vert{}$('listings-grid');
+        if (grid) grid.innerHTML = '<p style="color: #ff6b6b; text-align: center; grid-column: 1/-1; padding: 30px;">Erreur lors du chargement des annonces.</p>';
+        return;
+      }
 
       afficherAnnoncesFiltrees(data);
-    } catch (err) {}
+    } catch (err) {
+      const grid = $('listings') \vert{}\vert{}$('listings-grid');
+      if (grid) grid.innerHTML = '<p style="color: #ff6b6b; text-align: center; grid-column: 1/-1; padding: 30px;">Erreur de connexion.</p>';
+    }
   }
 
   function afficherAnnoncesFiltrees(liste) {
@@ -213,7 +220,6 @@
           <div class="card-image-container">
             <img src="${esc(annonce.image_url || 'default.jpg')}" alt="${esc(annonce.titre)}" style="width:100%; height:180px; object-fit:cover;">
             
-            <!-- Badges Vues et Favoris en haut de l'image -->
             <div class="card-badges-top">
               <span class="badge-pill badge-views">
                 <i class="fas fa-eye"></i> <span>${annonce.vues || 0}</span>
@@ -239,12 +245,12 @@
   }
 
   document.addEventListener('change', (e) => {
-    if (e.target.tagName === 'SELECT') filtrerGlobal();
+    if (e.target.tagName === 'SELECT') chargerAnnonces();
   });
 
   document.addEventListener('input', (e) => {
     if (e.target.type === 'text' && (e.target.placeholder?.toLowerCase().includes('recherch') || e.target.id.includes('search'))) {
-      filtrerGlobal();
+      chargerAnnonces();
     }
   });
 
@@ -413,6 +419,8 @@
   const xBodyEl = $('xBody');
   if (xBodyEl) new MutationObserver(() => fixWa(xBodyEl)).observe(xBodyEl, { childList: true });
 
-  decorate();
-  loadVideos().then(decorate);
+  // Lancement du chargement initial
+  loadVideos().then(() => {
+    chargerAnnonces();
+  });
 })();
