@@ -165,7 +165,7 @@
     } catch (e) { videos = null; }
   }
 
-  /* ===== 6) FILTRAGE GLOBAL (Ville, Catégorie & Recherche) ===== */
+  /* ===== 6) FILTRAGE GLOBAL & AFFICHAGE DES ANNONCES ===== */
   async function filtrerGlobal() {
     try {
       const selectVille = document.querySelector('select');
@@ -200,29 +200,36 @@
     grid.innerHTML = '';
 
     if (!liste || liste.length === 0) {
-      grid.innerHTML = '<p style="color: #fff; text-align: center; grid-column: 1/-1; padding: 30px;">Aucune annonce trouvée.</p>';
+      grid.innerHTML = '<div class="state-msg">Aucune annonce trouvée pour ces critères.</div>';
       return;
     }
 
-    liste.forEach(annonce => {
-      const vuesCount = annonce.vues !== undefined && annonce.vues !== null ? annonce.vues : 0;
-      const cardHTML = `
-        <div class="card ad-card" data-id="${esc(annonce.id)}">
-          <div class="card-img-container" style="position:relative; background:#2a2b3d; height:180px;">
-            <div class="card-badges-top" style="position:absolute; top:10px; left:10px; right:10px; display:flex; justify-content:space-between; align-items:center; z-index:10;">
-              <span class="badge-pill" style="background:rgba(0,0,0,0.75); color:#fff; padding:4px 10px; border-radius:20px; font-size:11px;">👁️ ${vuesCount} vue${vuesCount > 1 ? 's' : ''}</span>
-            </div>
+    grid.innerHTML = liste.map((ad) => {
+      const vuesCount = ad.vues !== undefined && ad.vues !== null ? ad.vues : 0;
+      const img = ad.image_url ? ad.image_url : '';
+      const wa = ad.contact ? ad.contact : '';
+      const msg = encodeURIComponent(`Bonjour, je suis intéressé par votre offre « ${ad.title} » sur CamerLink`);
+
+      return `
+      <article class="ad-card" data-id="${esc(ad.id)}">
+        <div class="card-img-container" style="position:relative; width:100%; height:165px; background:var(--color-bg);">
+          <span class="card-badge-top" style="position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; text-transform:uppercase;">${esc(ad.category || 'Service')}</span>
+          <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.75); color:#fff; padding:3px 8px; border-radius:999px; font-size:11px; z-index:5;">👁️ ${vuesCount}</div>
+          ${img ? `<img src="${esc(img)}" alt="${esc(ad.title)}" style="width:100%; height:100%; object-fit:cover;" loading="lazy">` : ''}
+        </div>
+        <div class="card-body" style="padding:14px; display:flex; flex-direction:column; flex-grow:1;">
+          <h3 class="ad-title" style="font-size:1rem; font-weight:800; margin-bottom:4px;">${esc(ad.title)}</h3>
+          <p class="ad-desc" style="font-size:0.85rem; color:var(--color-text-muted); margin-bottom:10px; flex-grow:1;">${esc(ad.description)}</p>
+          <div class="card-meta" style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:10px; border-top:1px solid var(--color-border);">
+            <span class="ad-city" style="font-size:0.8rem; color:var(--color-text-muted);">📍 ${esc(ad.city || 'Cameroun')}</span>
+            <span class="ad-price" style="font-size:1.1rem; font-weight:700; color:var(--color-accent);">${Number(ad.price) > 0 ? Number(ad.price).toLocaleString('fr-FR') + ' FCFA' : 'Prix à discuter'}</span>
           </div>
-          <div style="padding: 14px;">
-            <h3>${esc(annonce.titre)}</h3>
-            <p class="desc">${esc(annonce.description)}</p>
-            <span class="prix">${esc(annonce.prix)} FCFA</span>
-            <span class="ville">📍 ${esc(annonce.ville)}</span>
+          <div class="card-actions-row" style="display:flex; gap:8px; margin-top:12px;">
+            ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${esc(wa)}?text=${msg}" target="_blank" rel="noopener noreferrer" style="flex:1; padding:10px; text-align:center; background:var(--color-whatsapp); color:white; border-radius:12px; font-weight:700; font-size:0.85rem;">WhatsApp</a>` : ''}
           </div>
         </div>
-      `;
-      grid.innerHTML += cardHTML;
-    });
+      </article>`;
+    }).join('');
 
     decorate();
   }
@@ -410,4 +417,5 @@
 
   decorate();
   loadVideos().then(decorate);
+  filtrerGlobal();
 })();
