@@ -205,12 +205,31 @@
     }
 
     liste.forEach(annonce => {
+      const favoris = getFavoris();
+      const estFav = favoris.includes(String(annonce.id));
+
       const cardHTML = `
         <div class="card ad-card" data-id="${esc(annonce.id)}">
-          <h3>${esc(annonce.titre)}</h3>
-          <p class="desc">${esc(annonce.description)}</p>
-          <span class="prix">${esc(annonce.prix)} FCFA</span>
-          <span class="ville">📍 ${esc(annonce.ville)}</span>
+          <div class="card-image-container">
+            <img src="${esc(annonce.image_url || 'default.jpg')}" alt="${esc(annonce.titre)}" style="width:100%; height:180px; object-fit:cover;">
+            
+            <!-- Badges Vues et Favoris en haut de l'image -->
+            <div class="card-badges-top">
+              <span class="badge-pill badge-views">
+                <i class="fas fa-eye"></i> <span>${annonce.vues || 0}</span>
+              </span>
+              <button type="button" class="btn-favorite ${estFav ? 'active' : ''}" data-fav="${esc(annonce.id)}" id="btn-fav-${esc(annonce.id)}">
+                <i class="${estFav ? 'fas' : 'far'} fa-heart" id="heart-${esc(annonce.id)}"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-content">
+            <h3 class="card-title">${esc(annonce.titre)}</h3>
+            <p class="card-description desc">${esc(annonce.description)}</p>
+            <div class="card-price">${esc(annonce.prix)} FCFA</div>
+            <span class="ville" style="font-size:0.85rem; color:#94a3b8;">📍 ${esc(annonce.ville)}</span>
+          </div>
         </div>
       `;
       grid.innerHTML += cardHTML;
@@ -230,7 +249,7 @@
   });
 
   const st = document.createElement('style');
-  st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}.btn-fav{border-color:#ff4757 !important; margin-bottom: 8px;}';
+  st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}';
   document.head.appendChild(st);
 
   document.body.insertAdjacentHTML('beforeend',
@@ -263,24 +282,16 @@
       if (!id) return;
 
       const estFav = favoris.includes(String(id));
-      const desc = card.querySelector('.desc, .ad-desc');
-
-      // Ajout du bouton Favori tout en haut de la carte pour une visibilité immédiate
-      if (!card.querySelector('.btn-fav')) {
-        card.insertAdjacentHTML('afterbegin',
-          `<button type="button" class="v-extra v-btn btn-fav" data-fav="${esc(id)}" style="background:${estFav ? '#ff4757' : 'transparent'};color:${estFav ? '#fff' : '#ff4757'}">
-            ${estFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris'}
-          </button>`);
-      } else {
-        // Mettre à jour l'état visuel du bouton s'il existe déjà
-        const existingFavBtn = card.querySelector('.btn-fav');
-        if (existingFavBtn) {
-          existingFavBtn.style.background = estFav ? '#ff4757' : 'transparent';
-          existingFavBtn.style.color = estFav ? '#fff' : '#ff4757';
-          existingFavBtn.textContent = estFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris';
+      const favBtn = card.querySelector('[data-fav]');
+      if (favBtn) {
+        favBtn.className = `btn-favorite ${estFav ? 'active' : ''}`;
+        const heartIcon = favBtn.querySelector('i');
+        if (heartIcon) {
+          heartIcon.className = `${estFav ? 'fas' : 'far'} fa-heart`;
         }
       }
 
+      const desc = card.querySelector('.desc, .card-description');
       if (desc && videos !== null && videos[id]) {
         desc.insertAdjacentHTML('afterend',
           `<button type="button" class="v-extra v-btn v-play" data-vplay="${esc(id)}">▶ Voir la vidéo</button>`);
