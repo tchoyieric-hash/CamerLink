@@ -1,24 +1,36 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="CamerLink · La plateforme d'annonces et de commerces au Cameroun. Restaurants, boutiques, services, immobilier, véhicules.">
+  <meta name="description" content="CamerLink · La plateforme de référence des annonces, services et commerces au Cameroun. Restaurants, boutiques, services, immobilier, véhicules.">
   <title>CamerLink · Annonces et commerces locaux au Cameroun</title>
   <meta name="theme-color" content="#050509">
   <meta property="og:type" content="website">
   <meta property="og:title" content="CamerLink · Annonces et commerces locaux au Cameroun">
-  <meta property="og:description" content="Restaurants, boutiques, services, immobilier, véhicules. Contactez directement sur WhatsApp."><meta property="og:image" content="https://camer-link.vercel.app/og-image.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:url" content="https://camer-link.vercel.app/">
+  <meta property="og:description" content="Restaurants, boutiques, services, immobilier, véhicules. Contactez directement sur WhatsApp.">
+  <meta property="og:image" content="https://camer-link.vercel.app/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://camer-link.vercel.app/">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <style>
-    :root { --color-bg:#05060D; --color-surface:#0B0D1A; --color-surface-glass:rgba(11,13,26,0.78); --color-text-main:#F5F7FF; --color-text-muted:#8F98B8; --a1:#22D3EE; --a2:#8B5CF6; --color-accent:#F59E0B; --color-cta:#3B82F6; --color-whatsapp:#22C55E; --color-danger:#EF4444; --color-border:rgba(139,152,255,0.16); --font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; --font-display:'Space Grotesk','Inter',sans-serif; --header-height:68px; --container-padding:16px; --radius-xl:22px; --radius-lg:16px; --radius-md:12px; --glow:0 0 24px rgba(34,211,238,0.18); }
-    [data-theme="light"] { --color-bg:#F4F6FC; --color-surface:#FFFFFF; --color-surface-glass:rgba(255,255,255,0.85); --color-text-main:#101428; --color-text-muted:#5E6786; --color-border:rgba(60,70,130,0.15); --glow:0 4px 20px rgba(60,70,130,0.12); }
+    :root { 
+      --color-bg:#05060D; --color-surface:#0B0D1A; --color-surface-glass:rgba(11,13,26,0.82); 
+      --color-text-main:#F5F7FF; --color-text-muted:#8F98B8; --a1:#22D3EE; --a2:#8B5CF6; 
+      --color-accent:#F59E0B; --color-cta:#3B82F6; --color-whatsapp:#22C55E; --color-danger:#EF4444; 
+      --color-border:rgba(139,152,255,0.16); --font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; 
+      --font-display:'Space Grotesk','Inter',sans-serif; --header-height:68px; --container-padding:16px; 
+      --radius-xl:22px; --radius-lg:16px; --radius-md:12px; --glow:0 0 24px rgba(34,211,238,0.18); 
+    }
+    [data-theme="light"] { 
+      --color-bg:#F4F6FC; --color-surface:#FFFFFF; --color-surface-glass:rgba(255,255,255,0.88); 
+      --color-text-main:#101428; --color-text-muted:#5E6786; --color-border:rgba(60,70,130,0.15); 
+      --glow:0 4px 20px rgba(60,70,130,0.12); 
+    }
     * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent; }
     body { background:var(--color-bg); color:var(--color-text-main); font-family:var(--font-family); font-size:16px; line-height:1.5; overflow-x:hidden; display:flex; flex-direction:column; min-height:100vh; position:relative; }
     body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(600px 400px at 85% -5%,rgba(139,92,246,0.22),transparent 70%),radial-gradient(500px 380px at 0% 20%,rgba(34,211,238,0.14),transparent 70%),linear-gradient(rgba(143,152,184,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(143,152,184,0.05) 1px,transparent 1px); background-size:auto,auto,36px 36px,36px 36px; }
@@ -27,21 +39,28 @@
     img { max-width:100%; display:block; }
     :focus-visible { outline:2px solid var(--a1); outline-offset:2px; }
 
+    /* Network Status Banner */
+    #net-status { position:fixed; bottom:0; left:0; right:0; background:var(--color-danger); color:#fff; text-align:center; font-size:0.75rem; font-weight:700; padding:4px; z-index:4000; transition:transform 0.3s; transform:translateY(100%); }
+    #net-status.offline { transform:translateY(0); }
+
     header { position:fixed; top:0; left:0; right:0; height:var(--header-height); background:var(--color-surface-glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-bottom:1px solid var(--color-border); display:flex; align-items:center; justify-content:space-between; padding:0 var(--container-padding); z-index:1000; }
     .logo-brand { font-family:var(--font-display); font-size:1.4rem; font-weight:700; letter-spacing:-0.5px; white-space:nowrap; }
     .logo-brand span { background:linear-gradient(90deg,var(--a1),var(--a2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
     .header-actions { display:flex; align-items:center; gap:6px; }
-    .btn-icon { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--color-surface); border:1px solid var(--color-border); }
+    .btn-icon { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--color-surface); border:1px solid var(--color-border); transition:0.2s; }
+    .btn-icon:hover { border-color:var(--a1); }
     .btn-login { color:var(--color-text-muted); padding:8px 10px; font-size:0.85rem; font-weight:600; white-space:nowrap; }
-    .btn-pub { background:linear-gradient(90deg,var(--a1),var(--a2)); color:#fff; padding:9px 13px; border-radius:999px; font-weight:700; font-size:0.8rem; white-space:nowrap; box-shadow:0 0 18px rgba(139,92,246,0.45); }
+    .btn-pub { background:linear-gradient(90deg,var(--a1),var(--a2)); color:#fff; padding:9px 13px; border-radius:999px; font-weight:700; font-size:0.8rem; white-space:nowrap; box-shadow:0 0 18px rgba(139,92,246,0.45); transition:0.2s; }
+    .btn-pub:hover { opacity:0.9; transform:scale(1.02); }
     @media (max-width:400px) { .logo-brand { font-size:1.2rem; } .btn-login { padding:8px 6px; } }
     .header-spacer { height:var(--header-height); }
 
     .reels-section { padding:20px var(--container-padding) 12px; border-bottom:1px solid var(--color-border); }
-    .reels-section h2, .shops-section h2 { font-family:var(--font-display); font-size:1.05rem; font-weight:700; margin-bottom:12px; }
+    .reels-section h2, .shops-section h2 { font-family:var(--font-display); font-size:1.05rem; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
     .reels-container, .shops-container { display:flex; gap:12px; overflow-x:auto; scrollbar-width:none; padding-bottom:4px; }
     .reels-container::-webkit-scrollbar, .shops-container::-webkit-scrollbar { display:none; }
-    .reel-card { position:relative; min-width:110px; height:175px; border-radius:var(--radius-lg); overflow:hidden; background:var(--color-surface); border:1px solid var(--color-border); flex-shrink:0; display:block; }
+    .reel-card { position:relative; min-width:110px; height:175px; border-radius:var(--radius-lg); overflow:hidden; background:var(--color-surface); border:1px solid var(--color-border); flex-shrink:0; display:block; transition:transform 0.2s; }
+    .reel-card:hover { transform:scale(1.03); }
     .reel-card img { width:100%; height:100%; object-fit:cover; }
     .reel-gradient { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 60%); }
     .reel-badge { position:absolute; top:8px; left:8px; padding:2px 8px; background:linear-gradient(90deg,var(--a1),var(--a2)); color:#fff; border-radius:999px; font-size:0.62rem; font-weight:800; text-transform:uppercase; }
@@ -53,11 +72,13 @@
     .hero h1 span { background:linear-gradient(90deg,var(--a1),var(--a2),var(--a1)); background-size:200% auto; -webkit-background-clip:text; background-clip:text; color:transparent; animation:shine 6s linear infinite; }
     @keyframes shine { to { background-position:200% center; } }
     .hero p { font-size:0.95rem; color:var(--color-text-muted); max-width:480px; margin:0 auto 20px; }
-    .search-filter-bar { max-width:700px; margin:0 auto; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
-    .form-el { padding:12px 16px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; color:var(--color-text-main); font-size:0.93rem; outline:none; font-family:inherit; }
+    
+    .search-filter-bar { max-width:750px; margin:0 auto; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+    .form-el { padding:12px 16px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; color:var(--color-text-main); font-size:0.93rem; outline:none; font-family:inherit; transition:0.2s; }
     .form-el:focus { border-color:var(--a1); box-shadow:var(--glow); }
-    .search-input { flex:2; min-width:190px; }
-    .city-select { flex:1; min-width:140px; }
+    .search-input { flex:2; min-width:180px; }
+    .city-select { flex:1; min-width:130px; }
+    .price-select { flex:1; min-width:130px; }
 
     .shops-section { padding:18px var(--container-padding) 6px; }
     .shop-card { min-width:150px; max-width:150px; padding:14px 12px; text-align:center; background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-lg); flex-shrink:0; transition:0.2s; }
@@ -69,31 +90,46 @@
     .shop-cta { border:1px dashed var(--a1); background:transparent; }
     .shop-cta .shop-logo { background:transparent; border:1px dashed var(--a1); color:var(--a1); }
 
-    .categories-scroll { padding:14px var(--container-padding); display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; }
+    .categories-scroll { padding:14px var(--container-padding); display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; max-width:1200px; margin:0 auto; }
     .categories-scroll::-webkit-scrollbar { display:none; }
     .cat-chip { padding:8px 16px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; font-size:0.85rem; font-weight:600; color:var(--color-text-muted); white-space:nowrap; transition:0.2s; }
     .cat-chip.active { background:linear-gradient(90deg,var(--a1),var(--a2)); color:#fff; border-color:transparent; box-shadow:0 0 16px rgba(34,211,238,0.35); }
 
     main { padding:10px var(--container-padding) 80px; flex-grow:1; }
+    .filter-tabs-row { max-width:1200px; margin:0 auto 16px; display:flex; justify-content:space-between; align-items:center; }
+    .results-count { font-size:0.85rem; color:var(--color-text-muted); font-weight:500; }
+    .fav-toggle-btn { font-size:0.85rem; font-weight:600; color:var(--a1); display:flex; align-items:center; gap:5px; padding:6px 12px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; }
+
     #listings-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; max-width:1200px; margin:0 auto; }
-    .ad-card { background:var(--color-surface); border-radius:var(--radius-xl); overflow:hidden; border:1px solid var(--color-border); display:flex; flex-direction:column; transition:0.25s; }
+    .ad-card { background:var(--color-surface); border-radius:var(--radius-xl); overflow:hidden; border:1px solid var(--color-border); display:flex; flex-direction:column; transition:0.25s; position:relative; }
     .ad-card:hover { border-color:rgba(34,211,238,0.5); box-shadow:var(--glow); transform:translateY(-3px); }
     .card-img-container { position:relative; width:100%; height:165px; background:var(--color-bg); }
     .card-img-container img { width:100%; height:100%; object-fit:cover; }
-    .card-badge-top { position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; text-transform:uppercase; }
-    .card-badge-verified { position:absolute; top:10px; right:10px; padding:3px 8px; background:linear-gradient(90deg,var(--a1),var(--color-cta)); border-radius:999px; font-size:0.68rem; font-weight:700; color:white; box-shadow:0 0 12px rgba(34,211,238,0.5); }
+    .card-badge-top { position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; text-transform:uppercase; backdrop-filter:blur(4px); }
+    .card-badge-verified { position:absolute; top:10px; right:42px; padding:3px 8px; background:linear-gradient(90deg,var(--a1),var(--color-cta)); border-radius:999px; font-size:0.68rem; font-weight:700; color:white; box-shadow:0 0 12px rgba(34,211,238,0.5); }
+    
+    .btn-fav { position:absolute; top:8px; right:8px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.9rem; z-index:3; transition:0.2s; }
+    .btn-fav.active { color:var(--color-danger); background:rgba(255,255,255,0.9); }
+
     .card-body { padding:14px; display:flex; flex-direction:column; flex-grow:1; }
     .ad-title { font-size:1rem; font-weight:800; margin-bottom:4px; overflow-wrap:anywhere; }
-    .shop-link { align-self:flex-start; margin-bottom:6px; padding:2px 10px; border:1px solid var(--color-border); border-radius:999px; font-size:0.74rem; font-weight:600; color:var(--a1); }
+    .shop-link { align-self:flex-start; margin-bottom:6px; padding:2px 10px; border:1px solid var(--color-border); border-radius:999px; font-size:0.74rem; font-weight:600; color:var(--a1); background:rgba(34,211,238,0.05); }
     .ad-desc { font-size:0.85rem; color:var(--color-text-muted); margin-bottom:10px; flex-grow:1; overflow-wrap:anywhere; white-space:pre-line; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
     .card-meta { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:10px; border-top:1px solid var(--color-border); }
     .ad-city { font-size:0.8rem; color:var(--color-text-muted); }
     .ad-price { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--color-accent); }
-    .whatsapp-link-card { display:block; width:100%; margin-top:12px; padding:10px; text-align:center; background:var(--color-whatsapp); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.85rem; }
+    
+    .card-actions-row { display:flex; gap:8px; margin-top:12px; }
+    .whatsapp-link-card { flex:1; padding:10px; text-align:center; background:var(--color-whatsapp); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.85rem; transition:0.2s; }
+    .whatsapp-link-card:hover { opacity:0.9; }
+    .btn-share { width:42px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1rem; color:var(--color-text-main); transition:0.2s; }
+    .btn-share:hover { border-color:var(--a1); }
+
     .btn-delete { width:100%; margin-top:8px; padding:9px; border:1px solid var(--color-danger); color:var(--color-danger); border-radius:var(--radius-md); font-weight:700; font-size:0.82rem; }
     .btn-report { width:100%; margin-top:8px; padding:8px; color:var(--color-text-muted); font-size:0.78rem; font-weight:600; border-radius:var(--radius-md); }
     .btn-report:hover { color:var(--color-danger); }
-    .state-msg { color:var(--color-text-muted); text-align:center; grid-column:1/-1; padding:30px; }
+    
+    .state-msg { color:var(--color-text-muted); text-align:center; grid-column:1/-1; padding:40px 20px; }
     .state-msg button { margin-top:12px; padding:9px 20px; background:var(--color-cta); color:#fff; border-radius:999px; font-weight:700; }
 
     .modal-overlay { position:fixed; inset:0; background:rgba(2,3,10,0.8); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:var(--container-padding); z-index:2000; opacity:0; visibility:hidden; transition:0.2s; }
@@ -106,7 +142,8 @@
     .form-group label { display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px; color:var(--color-text-muted); }
     .form-sheet-el { width:100%; padding:12px; background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); color:var(--color-text-main); font-size:0.95rem; font-family:inherit; }
     .form-sheet-el:focus { border-color:var(--a1); outline:none; }
-    .btn-submit-modal { width:100%; padding:13px; background:linear-gradient(90deg,var(--a1),var(--a2)); color:white; border-radius:var(--radius-md); font-weight:700; margin-top:8px; }
+    .btn-submit-modal { width:100%; padding:13px; background:linear-gradient(90deg,var(--a1),var(--a2)); color:white; border-radius:var(--radius-md); font-weight:700; margin-top:8px; transition:0.2s; }
+    .btn-submit-modal:hover { opacity:0.9; }
     .btn-submit-modal:disabled { opacity:0.6; cursor:wait; }
     .auth-tabs { display:flex; gap:8px; margin-bottom:16px; }
     .auth-tab { flex:1; padding:9px; border-radius:999px; border:1px solid var(--color-border); font-weight:700; font-size:0.85rem; color:var(--color-text-muted); }
@@ -123,14 +160,16 @@
     .shop-ad { display:flex; justify-content:space-between; gap:10px; padding:8px 0; font-size:0.88rem; border-bottom:1px solid var(--color-border); }
     .shop-ad b { color:var(--color-accent); white-space:nowrap; }
 
-    #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:var(--color-text-main); color:var(--color-bg); padding:11px 20px; border-radius:999px; font-weight:600; font-size:0.88rem; z-index:3000; opacity:0; pointer-events:none; transition:0.25s; max-width:90vw; text-align:center; }
+    #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:var(--color-text-main); color:var(--color-bg); padding:11px 20px; border-radius:999px; font-weight:600; font-size:0.88rem; z-index:3000; opacity:0; pointer-events:none; transition:0.25s; max-width:90vw; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3); }
     #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
     footer { padding:24px var(--container-padding); text-align:center; border-top:1px solid var(--color-border); background:var(--color-surface); margin-top:auto; }
-    footer p { font-size:0.8rem; color:var(--color-text-muted); }
+    footer p { font-size:0.8rem; color:var(--color-text-muted); margin-top:8px; }
   </style>
 </head>
 <body>
+
+<div id="net-status">⚠️ Connexion Internet perdue. Mode hors-ligne activé.</div>
 
 <header>
   <a href="#" class="logo-brand">Camer<span>Link</span></a>
@@ -154,6 +193,13 @@
   <div class="search-filter-bar">
     <input id="searchInput" type="search" placeholder="Que recherchez-vous (ex: artisan...) ?" class="search-input form-el" aria-label="Rechercher">
     <select id="cityFilter" class="city-select form-el" aria-label="Ville"></select>
+    <select id="priceFilter" class="price-select form-el" aria-label="Budget max">
+      <option value="">Tous les prix</option>
+      <option value="10000">Max 10 000 FCFA</option>
+      <option value="50000">Max 50 000 FCFA</option>
+      <option value="250000">Max 250 000 FCFA</option>
+      <option value="1000000">Max 1 Million</option>
+    </select>
   </div>
 </section>
 
@@ -165,14 +211,19 @@
 <div class="categories-scroll" id="categoryChips"></div>
 
 <main>
+  <div class="filter-tabs-row">
+    <span class="results-count" id="resultsCount">Chargement des annonces...</span>
+    <button class="fav-toggle-btn" id="favToggleBtn">❤️ Mes Favoris (<span id="favCount">0</span>)</button>
+  </div>
   <div id="listings-grid"></div>
 </main>
 
 <footer>
   <a href="#" class="logo-brand">Camer<span>Link</span></a>
-  <p>© 2026 CamerLink · L'élite du service digital.</p>
+  <p>© 2026 CamerLink · L'élite du service digital au Cameroun.</p>
 </footer>
 
+<!-- Modals d'authentification, publication, boutique, signalement -->
 <div id="authModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
   <div class="modal-sheet">
     <div class="modal-header">
@@ -343,6 +394,23 @@
   let currentShopId = null;
   let currentCategory = '';
   let currentUser = null;
+  let favorites = [];
+  let showOnlyFavorites = false;
+
+  try {
+    favorites = JSON.parse(localStorage.getItem('cl-favs') || '[]');
+  } catch (e) { favorites = []; }
+
+  function saveFavorites() {
+    try { localStorage.setItem('cl-favs', JSON.stringify(favorites)); } catch (e) {}
+    $('favCount').textContent = favorites.length;
+  }
+  saveFavorites();
+
+  // Gestion du réseau en ligne/hors-ligne
+  window.addEventListener('online', () => $('net-status').classList.remove('offline'));
+  window.addEventListener('offline', () => $('net-status').classList.add('offline'));
+  if (!navigator.onLine) $('net-status').classList.add('offline');
 
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]
@@ -406,7 +474,14 @@
     clearTimeout(searchTimer);
     searchTimer = setTimeout(renderListings, 200);
   });
-  $('cityFilter').addEventListener('change', renderListings);
+  $('cityFilter').addEventListener('change', renderListings);$('priceFilter').addEventListener('change', renderListings);
+
+  $('favToggleBtn').addEventListener('click', () => {
+    showOnlyFavorites = !showOnlyFavorites;
+    $('favToggleBtn').style.borderColor = showOnlyFavorites ? 'var(--a1)' : 'var(--color-border)';
+    $('favToggleBtn').style.background = showOnlyFavorites ? 'rgba(34,211,238,0.1)' : 'var(--color-surface)';
+    renderListings();
+  });
 
   async function loadListings() {
     $('listings-grid').innerHTML = '<div class="state-msg">Chargement des annonces…</div>';
@@ -415,7 +490,7 @@
       .select('id, created_at, title, category, price, city, description, contact, image_url, verified, user_id, etablissement_id')
       .order('verified', { ascending: false })
       .order('created_at', { ascending: false })
-      .limit(60);
+      .limit(80);
     if (error) {
       console.error(error);
       $('listings-grid').innerHTML =
@@ -466,8 +541,7 @@
         <div class="shop-type">${esc(s.type)} · ${esc(s.city)}</div>
       </button>`).join('');
     
-    if ($('adShopWrap')) {
-      $('adShopWrap').hidden = !mine;
+    if ($('adShopWrap')) {$('adShopWrap').hidden = !mine;
     }
   }
 
@@ -496,18 +570,23 @@
     const grid = $('listings-grid');
     const term = $('searchInput').value.trim().toLowerCase();
     const city = $('cityFilter').value;
+    const maxPrice = Number($('priceFilter').value) || 0;
 
     const filtered = allListings.filter((ad) => {
       const okCat = !currentCategory || ad.category === currentCategory;
       const okCity = !city || ad.city === city;
+      const okPrice = !maxPrice || (Number(ad.price) <= maxPrice);
+      const okFav = !showOnlyFavorites || favorites.includes(ad.id);
       const okSearch = !term ||
         (ad.title || '').toLowerCase().includes(term) ||
         (ad.description || '').toLowerCase().includes(term);
-      return okCat && okCity && okSearch;
+      return okCat && okCity && okPrice && okFav && okSearch;
     });
 
+    $('resultsCount').textContent = `${filtered.length} annonce${filtered.length > 1 ? 's' : ''} trouvée${filtered.length > 1 ? 's' : ''}`;
+
     if (filtered.length === 0) {
-      grid.innerHTML = '<div class="state-msg">Aucune annonce trouvée.</div>';
+      grid.innerHTML = '<div class="state-msg">Aucune annonce trouvée pour ces critères.</div>';
       return;
     }
 
@@ -516,16 +595,15 @@
       const wa = waNumber(ad.contact);
       const msg = encodeURIComponent(`Bonjour, je suis intéressé par votre offre « ${ad.title} » sur CamerLink`);
       const mine = currentUser && ad.user_id === currentUser.id;
-      
-      // Le badge de l'établissement ne s'affiche que si l'annonce est
-      // explicitement liée à cet établissement via `etablissement_id`.
+      const isFav = favorites.includes(ad.id);
       const shop = ad.etablissement_id ? shopsById[ad.etablissement_id] : null;
 
       return `
-      <article class="ad-card">
+      <article class="ad-card" data-id="${ad.id}">
         <div class="card-img-container">
           <span class="card-badge-top">${esc(ad.category || 'Service')}</span>
           ${ad.verified ? '<span class="card-badge-verified">✔ Vérifié</span>' : ''}
+          <button class="btn-fav ${isFav ? 'active' : ''}" data-fav="${ad.id}" aria-label="Favori">❤️</button>
           ${img ? `<img src="${esc(img)}" alt="${esc(ad.title)}" loading="lazy">` : ''}
         </div>
         <div class="card-body">
@@ -536,13 +614,56 @@
             <span class="ad-city">📍 ${esc(ad.city || 'Cameroun')}</span>
             <span class="ad-price">${esc(priceText(ad.price))}</span>
           </div>
-          ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${esc(wa)}?text=${msg}" target="_blank" rel="noopener noreferrer">Contacter sur WhatsApp</a>` : ''}
+          <div class="card-actions-row">
+            ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${esc(wa)}?text=${msg}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : ''}
+            <button class="btn-share" data-share-title="${esc(ad.title)}" data-share-price="${esc(priceText(ad.price))}" aria-label="Partager">📤</button>
+          </div>
           ${mine ? `<button class="btn-delete" data-delete="${esc(ad.id)}">Supprimer mon annonce</button>` : ''}
           ${!mine ? `<button class="btn-report" data-report="${esc(ad.id)}">🚩 Signaler cette annonce</button>` : ''}
         </div>
       </article>`;
     }).join('');
   }
+
+  // Gestion des favoris et du partage
+  document.addEventListener('click', async (e) => {
+    const favBtn = e.target.closest('[data-fav]');
+    if (favBtn) {
+      const id = Number(favBtn.dataset.fav);
+      if (favorites.includes(id)) {
+        favorites = favorites.filter((x) => x !== id);
+        toast('Retiré de vos favoris');
+      } else {
+        favorites.push(id);
+        toast('Ajouté à vos favoris ❤️');
+      }
+      saveFavorites();
+      renderListings();
+      return;
+    }
+
+    const shareBtn = e.target.closest('[data-share-title]');
+    if (shareBtn) {
+      const title = shareBtn.dataset.shareTitle;
+      const price = shareBtn.dataset.sharePrice;
+      const shareData = {
+        title: 'CamerLink - ' + title,
+        text: `Découvrez "${title}" à ${price} sur CamerLink !`,
+        url: window.location.href
+      };
+      if (navigator.share) {
+        try { await navigator.share(shareData); } catch (err) {}
+      } else {
+        navigator.clipboard.writeText(`${shareData.text} - ${shareData.url}`);
+        toast('Lien copié dans le presse-papier !');
+      }
+      return;
+    }
+
+    const s = e.target.closest('[data-shop]');
+    if (s) openShop(s.dataset.shop);
+    if (e.target.closest('#proCta')) openPro();
+  });
 
   function openShop(shopId) {
     const s = shopsById[shopId] || shopsByUser[shopId];
@@ -561,19 +682,13 @@
       ${s.description ? `<p class="shop-info" style="white-space:pre-line">${esc(s.description)}</p>` : ''}
       ${s.address ? `<p class="shop-info">🧭 ${esc(s.address)}</p>` : ''}
       ${s.hours ? `<p class="shop-info">🕒 ${esc(s.hours)}</p>` : ''}
-      ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${esc(wa)}?text=${encodeURIComponent('Bonjour, je vous contacte depuis CamerLink')}" target="_blank" rel="noopener noreferrer">Contacter sur WhatsApp</a>` : ''}
+      ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${esc(wa)}?text=${encodeURIComponent('Bonjour, je vous contacte depuis CamerLink')}" target="_blank" rel="noopener noreferrer" style="display:block; text-align:center; padding:10px; margin-top:10px;">Contacter sur WhatsApp</a>` : ''}
       <div class="shop-ads">
         <b>Offres (${ads.length})</b>
         ${ads.length ? ads.map((a) => `<div class="shop-ad"><span>${esc(a.title)}</span><b>${esc(priceText(a.price))}</b></div>`).join('') : '<p class="shop-info">Aucune offre pour le moment.</p>'}
       </div>`;
     openModal('shopModal');
   }
-
-  document.addEventListener('click', (e) => {
-    const s = e.target.closest('[data-shop]');
-    if (s) openShop(s.dataset.shop);
-    if (e.target.closest('#proCta')) openPro();
-  });
 
   $('listings-grid').addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-delete]');
@@ -651,7 +766,6 @@
 
   const PHONE_EMAIL_DOMAIN = 'phone.camerlink.app';
   let phoneMode = 'login';
-
   const phoneToEmail = (phone) => phone.replace('+', '') + '@' + PHONE_EMAIL_DOMAIN;
 
   function setPhoneMode(mode) {
@@ -698,7 +812,7 @@
         const { data, error } = await sb.auth.signUp({ email, password, options: { data: { phone } } });
         if (error) throw error;
         if (!data.session) {
-          $('phoneError').textContent = "Compte créé mais non activé. Contactez l'administrateur du site.";
+          $('phoneError').textContent = "Compte créé mais non activé. Contactez l'administrateur.";
           return;
         }
       }
@@ -739,7 +853,7 @@
           $('emailForm').reset();
           toast('Compte créé, bienvenue !');
         } else {
-          $('authError').style.color = 'var(--color-whatsapp)';$('authError').textContent = 'Compte créé. Vérifiez votre e-mail pour confirmer, puis connectez-vous.';
+          $('authError').style.color = 'var(--color-whatsapp)';$('authError').textContent = 'Compte créé. Vérifiez votre e-mail pour confirmer.';
         }
       }
     } catch (err) {
@@ -828,7 +942,7 @@
       loadListings();
     } catch (ex) {
       console.error(ex);
-      err.textContent = 'Publication impossible. Vérifiez les champs (photo de moins de 2 Mo) et réessayez.';
+      err.textContent = 'Publication impossible. Vérifiez les champs (photo < 2 Mo) et réessayez.';
     } finally {
       btn.disabled = false;
       btn.textContent = 'Publier';
@@ -846,7 +960,7 @@
     $('proType').value = s ? s.type : 'Restaurant';
     $('proCity').value = s ? s.city : CITIES[0];
     $('proAddress').value = s ? (s.address || '') : '';
-    $('proContact').value = s ? (s.contact || '') : ($('adContact').value || '');$('proHours').value = s ? (s.hours || '') : '';
+    $('proContact').value = s ? (s.contact || '') : ($('adContact').value \vert{}\vert{} '');$('proHours').value = s ? (s.hours || '') : '';
     $('proDesc').value = s ? (s.description || '') : '';
     $('proLogo').value = '';$('proError').textContent = '';
     openModal('proModal');
@@ -881,7 +995,7 @@
       loadShops();
     } catch (ex) {
       console.error(ex);
-      $('proError').textContent = 'Enregistrement impossible. Vérifiez les champs et réessayez.';
+      $('proError').textContent = 'Enregistrement impossible. Vérifiez les champs.';
     } finally {
       btn.disabled = false;
       btn.textContent = 'Enregistrer';
@@ -889,7 +1003,6 @@
   });
 
   let reportId = null;
-
   $('listings-grid').addEventListener('click', (e) => {
     const b = e.target.closest('[data-report]');
     if (!b) return;
@@ -923,7 +1036,7 @@
     }
     closeModal('reportModal');
     $('reportForm').reset();
-    toast('Merci, votre signalement a été envoyé.');
+    toast('Merci, votre signalement a été pris en compte.');
   });
 
   document.querySelectorAll('[data-close]').forEach((b) =>
@@ -962,4 +1075,4 @@
 <script src="extras.js"></script>
 <script src="password.js"></script>
 </body>
-  </html>
+</html>
