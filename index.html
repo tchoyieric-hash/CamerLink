@@ -1071,3 +1071,86 @@
 <script src="password.js"></script>
 </body>
 </html>
+<!-- Le conteneur où les cartes vont s'afficher (à placer là où vous le souhaitez dans votre page) -->
+<div id="services-container" class="services-grid"></div>
+
+<!-- Le style CSS (que vous pouvez aussi mettre dans le <head> de votre page) -->
+<style>
+  .services-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .service-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .service-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+
+  .service-content {
+    padding: 16px;
+  }
+
+  .btn-whatsapp {
+    display: block;
+    text-align: center;
+    background: #25D366;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 12px;
+  }
+</style>
+
+<!-- Le script JavaScript d'injection dynamique -->
+<script>
+  async function chargerServicesSupabase() {
+    const { data: services, error } = await sb
+      .from('services')
+      .select('*');
+
+    if (error) {
+      console.error('Erreur lors du chargement des services :', error);
+      return;
+    }
+
+    const container = document.getElementById('services-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    services.forEach(service => {
+      const phone = service.telephone || ''; 
+      const message = encodeURIComponent(`Bonjour, je suis intéressé par votre service "${service.titre}" sur CamerLink.`);
+      
+      const card = document.createElement('div');
+      card.className = 'service-card';
+      
+      card.innerHTML = `
+        <img src="${service.image_url || 'default-image.jpg'}" alt="${service.titre}" loading="lazy">
+        <div class="service-content">
+          <h3>${service.titre}</h3>
+          <p>${service.description}</p>
+          <div class="service-price">${service.prix ? service.prix + ' XAF' : ''}</div>
+          <a href="https://wa.me/${phone}?text=${message}" class="btn-whatsapp" target="_blank">
+            Contacter sur WhatsApp
+          </a>
+        </div>
+      `;
+      
+      container.appendChild(card);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', chargerServicesSupabase);
+</script>
