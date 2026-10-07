@@ -68,57 +68,7 @@
     });
   }
 
-  /* ===== 2) CONNEXION ===== */
-  const phoneForm = $('phoneForm');
-  if (phoneForm) {
-    phoneForm.addEventListener('submit', async (e) => {
-      const input = $('authPhone'), err =$('phoneError');
-      const phone = normPhone(input.value);
-      if (!phone) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        err.textContent = 'Numéro invalide. Exemple : 6 91 23 45 67';
-        return;
-      }
-      input.value = phone;
-      const active = document.querySelector('[data-pmode].active');
-      if (!active || active.dataset.pmode !== 'login') return;
-
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const btn = $('phoneSubmit');
-      const password = $('phonePassword').value;
-      err.textContent = '';
-      btn.disabled = true;
-
-      const emails = [phone.slice(1) + '@phone.camerlink.app'];
-      if (/^\+237\d{9}$/.test(phone)) emails.push('237' + phone.slice(4) + '@camerlink.app');
-
-      let ok = false, last = null;
-      try {
-        for (const email of emails) {
-          const { error } = await sb.auth.signInWithPassword({ email, password });
-          if (!error) { ok = true; break; }
-          last = error;
-          if (!/invalid login/i.test(error.message || '')) break;
-        }
-      } catch (ex) { last = ex; }
-
-      if (ok) {
-        $('authModal').classList.remove('active');
-        toast('Connexion réussie.');
-        setTimeout(() => location.reload(), 500);
-        return;
-      }
-      const m = String((last && last.message) || '');
-      err.textContent = /invalid login/i.test(m) ? 'Numéro ou mot de passe incorrect.'
-        : /rate limit|too many/i.test(m) ? 'Trop de tentatives. Patientez une minute.'
-        : 'Une erreur est survenue. Réessayez.';
-      btn.disabled = false;
-    }, true);
-  }
-
-  /* ===== 3) GESTION DES FAVORIS (LocalStorage) ===== */
+  /* ===== 2) GESTION DES FAVORIS (LocalStorage) ===== */
   function getFavoris() {
     try {
       return JSON.parse(localStorage.getItem('camerlink_favoris')) || [];
@@ -129,13 +79,13 @@
 
   function toggleFavori(annonceId) {
     let favoris = getFavoris();
-    const index = favoris.indexOf(annonceId);
+    const index = favoris.indexOf(Number(annonceId));
 
     if (index > -1) {
       favoris.splice(index, 1);
       toast('Annonce retirée des favoris.');
     } else {
-      favoris.push(annonceId);
+      favoris.push(Number(annonceId));
       toast('Annonce ajoutée aux favoris ❤️');
     }
 
@@ -143,7 +93,7 @@
     decorate();
   }
 
-  /* ===== 4) COMPTEUR DE VUES ===== */
+  /* ===== 3) COMPTEUR DE VUES ===== */
   async function incrementerVues(id) {
     try {
       const { data } = await sb.from('annonces').select('vues').eq('id', id).single();
@@ -152,7 +102,7 @@
     } catch (e) {}
   }
 
-  /* ===== 5) VIDEOS ===== */
+  /* ===== 4) VIDEOS ===== */
   let videos = null;
   async function loadVideos() {
     try {
@@ -165,87 +115,8 @@
     } catch (e) { videos = null; }
   }
 
-  /* ===== 6) FILTRAGE GLOBAL & AFFICHAGE DES ANNONCES ===== */
-  async function filtrerGlobal() {
-    try {
-      const selectVille = document.querySelector('select');
-      const villeCible = selectVille ? selectVille.value : '';
-      const catActive = document.querySelector('[data-cat].active')?.textContent.trim() || 'Tout voir';
-      const inputRecherche = document.querySelector('input[type="text"], input[placeholder*="recherchez"]');
-      const motCle = inputRecherche ? inputRecherche.value.trim() : '';
-
-      let query = sb.from('annonces').select('*');
-
-      if (villeCible && villeCible !== 'Toutes les villes' && villeCible !== '') {
-        query = query.eq('ville', villeCible);
-      }
-      if (catActive && catActive !== 'Tout voir') {
-        query = query.eq('categorie', catActive);
-      }
-      if (motCle !== '') {
-        query = query.or(`titre.ilike.%${motCle}%,description.ilike.%${motCle}%`);
-      }
-
-      const { data, error } = await query;
-      if (error) return;
-
-      afficherAnnoncesFiltrees(data);
-    } catch (err) {}
-  }
-
-  function afficherAnnoncesFiltrees(liste) {
-    const grid = $('listings') \vert{}\vert{}$('listings-grid');
-    if (!grid) return;
-
-    grid.innerHTML = '';
-
-    if (!liste || liste.length === 0) {
-      grid.innerHTML = '<div class="state-msg">Aucune annonce trouvée pour ces critères.</div>';
-      return;
-    }
-
-    grid.innerHTML = liste.map((ad) => {
-      const vuesCount = ad.vues !== undefined && ad.vues !== null ? ad.vues : 0;
-      const img = ad.image_url ? ad.image_url : '';
-      const wa = ad.contact ? ad.contact : '';
-      const msg = encodeURIComponent(`Bonjour, je suis intéressé par votre offre « ${ad.title} » sur CamerLink`);
-
-      return `
-      <article class="ad-card" data-id="${esc(ad.id)}">
-        <div class="card-img-container" style="position:relative; width:100%; height:165px; background:var(--color-bg);">
-          <span class="card-badge-top" style="position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; text-transform:uppercase;">${esc(ad.category || 'Service')}</span>
-          <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.75); color:#fff; padding:3px 8px; border-radius:999px; font-size:11px; z-index:5;">👁️ ${vuesCount}</div>
-          ${img ? `<img src="${esc(img)}" alt="${esc(ad.title)}" style="width:100%; height:100%; object-fit:cover;" loading="lazy">` : ''}
-        </div>
-        <div class="card-body" style="padding:14px; display:flex; flex-direction:column; flex-grow:1;">
-          <h3 class="ad-title" style="font-size:1rem; font-weight:800; margin-bottom:4px;">${esc(ad.title)}</h3>
-          <p class="ad-desc" style="font-size:0.85rem; color:var(--color-text-muted); margin-bottom:10px; flex-grow:1;">${esc(ad.description)}</p>
-          <div class="card-meta" style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:10px; border-top:1px solid var(--color-border);">
-            <span class="ad-city" style="font-size:0.8rem; color:var(--color-text-muted);">📍 ${esc(ad.city || 'Cameroun')}</span>
-            <span class="ad-price" style="font-size:1.1rem; font-weight:700; color:var(--color-accent);">${Number(ad.price) > 0 ? Number(ad.price).toLocaleString('fr-FR') + ' FCFA' : 'Prix à discuter'}</span>
-          </div>
-          <div class="card-actions-row" style="display:flex; gap:8px; margin-top:12px;">
-            ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${esc(wa)}?text=${msg}" target="_blank" rel="noopener noreferrer" style="flex:1; padding:10px; text-align:center; background:var(--color-whatsapp); color:white; border-radius:12px; font-weight:700; font-size:0.85rem;">WhatsApp</a>` : ''}
-          </div>
-        </div>
-      </article>`;
-    }).join('');
-
-    decorate();
-  }
-
-  document.addEventListener('change', (e) => {
-    if (e.target.tagName === 'SELECT') filtrerGlobal();
-  });
-
-  document.addEventListener('input', (e) => {
-    if (e.target.type === 'text' && (e.target.placeholder?.toLowerCase().includes('recherch') || e.target.id.includes('search'))) {
-      filtrerGlobal();
-    }
-  });
-
   const st = document.createElement('style');
-  st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}.btn-fav{border-color:#ff4757 !important; margin-bottom: 8px;}';
+  st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}';
   document.head.appendChild(st);
 
   document.body.insertAdjacentHTML('beforeend',
@@ -261,38 +132,24 @@
   };
   $('vClose').addEventListener('click', closeV);$('vModal').addEventListener('click', (e) => { if (e.target.id === 'vModal') closeV(); });
 
-  const grid = $('listings') \vert{}\vert{}$('listings-grid');
+  const grid = $('listings-grid');
   function decorate() {
     if (!grid) return;
     const favoris = getFavoris();
 
-    grid.querySelectorAll('.card, .ad-card').forEach((card) => {
-      const delBtn = card.querySelector('.btn-del');
-      let id = card.dataset.id || null;
-      if (!id && delBtn) {
-        const match = delBtn.getAttribute('onclick')?.match(/\d+/);
-        if (match) id = match[0];
-      }
-
-      card.querySelectorAll('.v-extra').forEach((n) => n.remove());
+    grid.querySelectorAll('.ad-card').forEach((card) => {
+      const delBtn = card.querySelector('.btn-delete');
+      const id = Number(card.dataset.id);
       if (!id) return;
 
-      const estFav = favoris.includes(String(id));
-      const desc = card.querySelector('.desc, .ad-desc');
-
-      if (!card.querySelector('.btn-fav')) {
-        card.insertAdjacentHTML('afterbegin',
-          `<button type="button" class="v-extra v-btn btn-fav" data-fav="${esc(id)}" style="background:${estFav ? '#ff4757' : 'transparent'};color:${estFav ? '#fff' : '#ff4757'}">
-            ${estFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris'}
-          </button>`);
-      } else {
-        const existingFavBtn = card.querySelector('.btn-fav');
-        if (existingFavBtn) {
-          existingFavBtn.style.background = estFav ? '#ff4757' : 'transparent';
-          existingFavBtn.style.color = estFav ? '#fff' : '#ff4757';
-          existingFavBtn.textContent = estFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris';
-        }
+      const estFav = favoris.includes(id);
+      const favBtn = card.querySelector('[data-fav]');
+      if (favBtn) {
+        favBtn.classList.toggle('active', estFav);
       }
+
+      const desc = card.querySelector('.ad-desc');
+      card.querySelectorAll('.v-extra').forEach((n) => n.remove());
 
       if (desc && videos !== null && videos[id]) {
         desc.insertAdjacentHTML('afterend',
@@ -387,8 +244,6 @@
   }
 
   document.addEventListener('click', (e) => {
-    const fav = e.target.closest('[data-fav]');
-    if (fav) { toggleFavori(fav.dataset.fav); return; }
     const play = e.target.closest('[data-vplay]');
     if (play) { showPlayer(play.dataset.vplay); return; }
     const add = e.target.closest('[data-vadd]');
@@ -408,14 +263,7 @@
   });
 
   if (grid) new MutationObserver(decorate).observe(grid, { childList: true });
-  
-  const shopBodyEl = $('shopBody');
-  if (shopBodyEl) new MutationObserver(() => fixWa(shopBodyEl)).observe(shopBodyEl, { childList: true });
-  
-  const xBodyEl = $('xBody');
-  if (xBodyEl) new MutationObserver(() => fixWa(xBodyEl)).observe(xBodyEl, { childList: true });
 
   decorate();
   loadVideos().then(decorate);
-  filtrerGlobal();
 })();
