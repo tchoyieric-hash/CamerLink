@@ -45,26 +45,7 @@
     if (typeof decorate === 'function') decorate();
   }
 
-  /* ===== 2) GESTION DU STATUT DES ANNONCES (VENDU / ACTIF) ===== */
-  window.toggleListingStatus = async function(id, currentStatus) {
-    const newStatus = (currentStatus === 'sold') ? 'active' : 'sold';
-    
-    const { error } = await sb
-      .from('annonces')
-      .update({ status: newStatus })
-      .eq('id', id)
-      .select('id');
-
-    if (error) {
-      alert('Erreur lors de la mise à jour du statut.');
-      console.error(error);
-    } else {
-      toast(newStatus === 'sold' ? 'Annonce marquée comme vendue' : 'Annonce réactivée');
-      setTimeout(() => location.reload(), 800);
-    }
-  }
-
-  /* ===== 3) NUMEROS +237 ===== */
+  /* ===== 2) NUMEROS +237 ===== */
   function normPhone(raw) {
     const s = String(raw || '').trim();
     let d = s.replace(/\D/g, '');
@@ -112,7 +93,7 @@
     });
   }
 
-  /* ===== 4) CONNEXION ===== */
+  /* ===== 3) CONNEXION ===== */
   const phoneForm = $('phoneForm');
   if (phoneForm) {
     phoneForm.addEventListener('submit', async (e) => {
@@ -162,11 +143,11 @@
     }, true);
   }
 
-  /* ===== 5) VIDEOS & DECORATION DES CARTES ===== */
+  /* ===== 4) VIDEOS & DECORATION DES CARTES ===== */
   let videos = null;
   async function loadVideos() {
     try {
-      const { data, error } = await sb.from('annonces').select('id,video_url,status');
+      const { data, error } = await sb.from('annonces').select('id,video_url');
       if (error) { videos = null; return; }
       videos = {};
       (data || []).forEach((a) => {
@@ -211,17 +192,16 @@
       
       card.querySelectorAll('.v-extra, .fav-extra').forEach((n) => n.remove());
 
-      // Bouton Favori
+      // Bouton Favori inséré proprement sans casser la structure
       const isFav = favorites.includes(id);
-      const headerArea = card.querySelector('.ad-header, h3, .ad-title') || card.firstElementChild;
-      if (headerArea) {
-        headerArea.insertAdjacentHTML('afterend',
-          `<button type="button" class="fav-extra" onclick="toggleFavorite('${esc(id)}')" style="background:none;border:none;cursor:pointer;font-size:1.1rem;margin:5px 0;">${isFav ? '❤️ Favoris' : '🤍 Ajouter aux favoris'}</button>`);
+      const desc = card.querySelector('.ad-desc');
+      if (desc) {
+        desc.insertAdjacentHTML('beforebegin',
+          `<button type="button" class="fav-extra" onclick="toggleFavorite('${esc(id)}')" style="background:none;border:none;cursor:pointer;font-size:1rem;margin:4px 0;display:block;">${isFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris'}</button>`);
       }
 
       if (videos === null) return;
       const url = videos[id];
-      const desc = card.querySelector('.ad-desc');
       if (url && desc) {
         desc.insertAdjacentHTML('afterend',
           `<button type="button" class="v-extra v-btn v-play" data-vplay="${esc(id)}">▶ Voir la vidéo</button>`);
