@@ -118,7 +118,7 @@
     }, true);
   }
 
-  /* ===== 3) VIDEOS & CHARGEMENT ===== */
+  /* ===== 3) VIDEOS ===== */
   let videos = null;
   async function loadVideos() {
     try {
@@ -131,16 +131,32 @@
     } catch (e) { videos = null; }
   }
 
-  /* ===== 4) FILTRAGE PAR VILLE ET CATEGORIE ===== */
-  async function filtrerAnnonces(villeCible, categorieCible) {
+  /* ===== 4) FILTRAGE GLOBAL (Ville, Catégorie & Recherche texte) ===== */
+  async function filtrerGlobal() {
     try {
+      const selectVille = document.querySelector('select');
+      const villeCible = selectVille ? selectVille.value : '';
+      
+      const catActive = document.querySelector('[data-cat].active')?.textContent.trim() || 'Tout voir';
+      
+      const inputRecherche = document.querySelector('input[type="text"], input[placeholder*="recherchez"]');
+      const motCle = inputRecherche ? inputRecherche.value.trim() : '';
+
       let query = sb.from('annonces').select('*');
 
+      // Filtre par ville
       if (villeCible && villeCible !== 'Toutes les villes' && villeCible !== '') {
         query = query.eq('ville', villeCible);
       }
-      if (categorieCible && categorieCible !== 'Tout voir') {
-        query = query.eq('categorie', categorieCible);
+
+      // Filtre par catégorie
+      if (catActive && catActive !== 'Tout voir') {
+        query = query.eq('categorie', catActive);
+      }
+
+      // Recherche textuelle par mots-clés
+      if (motCle !== '') {
+        query = query.or(`titre.ilike.%${motCle}%,description.ilike.%${motCle}%`);
       }
 
       const { data, error } = await query;
@@ -166,7 +182,6 @@
       return;
     }
 
-    // Reconstruction dynamique des cartes selon les données filtrées
     liste.forEach(annonce => {
       const cardHTML = `
         <div class="card ad-card" data-id="${esc(annonce.id)}">
@@ -182,12 +197,16 @@
     decorate();
   }
 
-  // Écouteur sur le sélecteur de ville
+  // Écouteurs d'événements pour déclencher le filtre automatiquement
   document.addEventListener('change', (e) => {
-    if (e.target.tagName === 'SELECT' && (e.target.id.includes('ville') || e.target.classList.contains('ville-select') || e.target.options.length > 3)) {
-      const ville = e.target.value;
-      const catActive = document.querySelector('[data-cat].active')?.textContent.trim() || 'Tout voir';
-      filtrerAnnonces(ville, catActive);
+    if (e.target.tagName === 'SELECT') {
+      filtrerGlobal();
+    }
+  });
+
+  document.addEventListener('input', (e) => {
+    if (e.target.type === 'text' && (e.target.placeholder?.toLowerCase().includes('recherch') || e.target.id.includes('search'))) {
+      filtrerGlobal();
     }
   });
 
