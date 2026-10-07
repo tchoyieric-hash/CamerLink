@@ -118,11 +118,21 @@
     }, true);
   }
 
-  /* ===== 3) VIDEOS ===== */
+  /* ===== 3) VIDEOS (Filtré par utilisateur connecté) ===== */
   let videos = null;
   async function loadVideos() {
     try {
-      const { data, error } = await sb.from('annonces').select('id,video_url');
+      const { data: { user }, error: userError } = await sb.auth.getUser();
+      if (userError || !user) {
+        videos = null;
+        return;
+      }
+
+      const { data, error } = await sb
+        .from('annonces')
+        .select('id,video_url')
+        .eq('user_id', user.id);
+
       if (error) { videos = null; return; }
       videos = {};
       (data || []).forEach((a) => {
