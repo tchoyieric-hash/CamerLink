@@ -107,6 +107,7 @@
     .card-badge-top { position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; text-transform:uppercase; backdrop-filter:blur(4px); }
     .card-badge-verified { position:absolute; top:10px; right:42px; padding:3px 8px; background:linear-gradient(90deg,var(--a1),var(--color-cta)); border-radius:999px; font-size:0.68rem; font-weight:700; color:white; box-shadow:0 0 12px rgba(34,211,238,0.5); }
     
+    .card-views-badge { position:absolute; top:10px; right:10px; padding:3px 8px; background:rgba(0,0,0,0.75); border-radius:999px; font-size:11px; font-weight:600; color:white; backdrop-filter:blur(4px); z-index:3; }
     .btn-fav { position:absolute; top:8px; right:8px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.9rem; z-index:3; transition:0.2s; }
     .btn-fav.active { color:var(--color-danger); background:rgba(255,255,255,0.9); }
 
@@ -471,7 +472,8 @@
     clearTimeout(searchTimer);
     searchTimer = setTimeout(renderListings, 200);
   });
-  $('cityFilter').addEventListener('change', renderListings);$('priceFilter').addEventListener('change', renderListings);
+  $('cityFilter').addEventListener('change', renderListings);
+  $('priceFilter').addEventListener('change', renderListings);
 
   $('favToggleBtn').addEventListener('click', () => {
     showOnlyFavorites = !showOnlyFavorites;
@@ -484,7 +486,7 @@
     $('listings-grid').innerHTML = '<div class="state-msg">Chargement des annonces…</div>';
     const { data, error } = await sb
       .from('annonces')
-      .select('id, created_at, title, category, price, city, description, contact, image_url, verified, user_id, etablissement_id')
+      .select('id, created_at, title, category, price, city, description, contact, image_url, verified, user_id, etablissement_id, vues')
       .order('verified', { ascending: false })
       .order('created_at', { ascending: false })
       .limit(80);
@@ -538,7 +540,7 @@
         <div class="shop-type">${esc(s.type)} · ${esc(s.city)}</div>
       </button>`).join('');
     
-    if ($('adShopWrap')) {$('adShopWrap').hidden = !mine; }
+    if ($('adShopWrap')) { $('adShopWrap').hidden = !mine; }
   }
 
   async function loadReels() {
@@ -593,12 +595,14 @@
       const mine = currentUser && ad.user_id === currentUser.id;
       const isFav = favorites.includes(ad.id);
       const shop = ad.etablissement_id ? shopsById[ad.etablissement_id] : null;
+      const vuesCount = ad.vues !== undefined && ad.vues !== null ? ad.vues : 0;
 
       return `
       <article class="ad-card" data-id="${ad.id}">
         <div class="card-img-container">
           <span class="card-badge-top">${esc(ad.category || 'Service')}</span>
           ${ad.verified ? '<span class="card-badge-verified">✔ Vérifié</span>' : ''}
+          <span class="card-views-badge">👁️ ${vuesCount}</span>
           <button class="btn-fav ${isFav ? 'active' : ''}" data-fav="${ad.id}" aria-label="Favori">❤️</button>
           ${img ? `<img src="${esc(img)}" alt="${esc(ad.title)}" loading="lazy">` : ''}
         </div>
@@ -715,7 +719,7 @@
     currentUser = session ? session.user : null;
     updateAuthUI();
     const knownPhone = currentUser && (currentUser.phone || (currentUser.user_metadata && currentUser.user_metadata.phone));
-    if (knownPhone && !$('adContact').value) {$('adContact').value = '+' + String(knownPhone).replace(/^\+/, ''); }
+    if (knownPhone && !$('adContact').value) { $('adContact').value = '+' + String(knownPhone).replace(/^\+/, ''); }
     renderShops();
     renderListings();
   });
@@ -741,7 +745,8 @@
     authMethod = method;
     document.querySelectorAll('[data-method]').forEach((t) =>
       t.classList.toggle('active', t.dataset.method === method));
-    $('phoneForm').hidden = method !== 'phone';$('emailForm').hidden = method !== 'email';
+    $('phoneForm').hidden = method !== 'phone';
+    $('emailForm').hidden = method !== 'email';
   }
 
   function setAuthMode(mode) {
@@ -787,7 +792,8 @@
     e.preventDefault();
     const phone = normalizePhone($('authPhone').value);
     const password = $('phonePassword').value;
-    const btn = $('phoneSubmit');$('phoneError').textContent = '';
+    const btn = $('phoneSubmit');
+    $('phoneError').textContent = '';
     if (!phone) {
       $('phoneError').textContent = 'Numéro invalide. Exemple : 6 91 23 45 67';
       return;
@@ -826,7 +832,8 @@
     const email = $('authEmail').value.trim();
     const password = $('authPassword').value;
     const btn = $('authSubmit');
-    $('authError').style.color = '';$('authError').textContent = '';
+    $('authError').style.color = '';
+    $('authError').textContent = '';
     if (authMode === 'signup' && password.length < 8) {
       $('authError').textContent = 'Minimum 8 caractères.';
       return;
@@ -847,7 +854,8 @@
           $('emailForm').reset();
           toast('Compte créé, bienvenue !');
         } else {
-          $('authError').style.color = 'var(--color-whatsapp)';$('authError').textContent = 'Compte créé. Vérifiez votre e-mail pour confirmer.';
+          $('authError').style.color = 'var(--color-whatsapp)';
+          $('authError').textContent = 'Compte créé. Vérifiez votre e-mail pour confirmer.';
         }
       }
     } catch (err) {
