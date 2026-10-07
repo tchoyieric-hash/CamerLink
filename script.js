@@ -146,7 +146,6 @@
   /* ===== 4) COMPTEUR DE VUES ===== */
   async function incrementerVues(id) {
     try {
-      // Incrémentation basique sécurisée dans Supabase (nécessite une colonne 'vues' de type int dans la table annonces)
       const { data } = await sb.from('annonces').select('vues').eq('id', id).single();
       const currentVues = (data && data.vues) ? data.vues : 0;
       await sb.from('annonces').update({ vues: currentVues + 1 }).eq('id', id);
@@ -231,7 +230,7 @@
   });
 
   const st = document.createElement('style');
-  st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}.btn-fav{border-color:#ff4757 !important;}';
+  st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}.btn-fav{border-color:#ff4757 !important; margin-bottom: 8px;}';
   document.head.appendChild(st);
 
   document.body.insertAdjacentHTML('beforeend',
@@ -266,18 +265,25 @@
       const estFav = favoris.includes(String(id));
       const desc = card.querySelector('.desc, .ad-desc');
 
-      if (desc) {
-        // Bouton Favori
-        desc.insertAdjacentHTML('afterend',
+      // Ajout du bouton Favori tout en haut de la carte pour une visibilité immédiate
+      if (!card.querySelector('.btn-fav')) {
+        card.insertAdjacentHTML('afterbegin',
           `<button type="button" class="v-extra v-btn btn-fav" data-fav="${esc(id)}" style="background:${estFav ? '#ff4757' : 'transparent'};color:${estFav ? '#fff' : '#ff4757'}">
             ${estFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris'}
           </button>`);
-
-        // Bouton Vidéo si dispo
-        if (videos !== null && videos[id]) {
-          desc.insertAdjacentHTML('afterend',
-            `<button type="button" class="v-extra v-btn v-play" data-vplay="${esc(id)}">▶ Voir la vidéo</button>`);
+      } else {
+        // Mettre à jour l'état visuel du bouton s'il existe déjà
+        const existingFavBtn = card.querySelector('.btn-fav');
+        if (existingFavBtn) {
+          existingFavBtn.style.background = estFav ? '#ff4757' : 'transparent';
+          existingFavBtn.style.color = estFav ? '#fff' : '#ff4757';
+          existingFavBtn.textContent = estFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris';
         }
+      }
+
+      if (desc && videos !== null && videos[id]) {
+        desc.insertAdjacentHTML('afterend',
+          `<button type="button" class="v-extra v-btn v-play" data-vplay="${esc(id)}">▶ Voir la vidéo</button>`);
       }
 
       if (delBtn) {
@@ -292,7 +298,7 @@
   function showPlayer(id) {
     const url = videos && videos[id];
     if (!url) return;
-    incrementerVues(id); // Incrémente le compteur de vues à l'ouverture
+    incrementerVues(id);
     openV('🎬 Vidéo',
       `<video src="${esc(url)}" controls playsinline autoplay preload="metadata" style="width:100%;max-height:70vh;border-radius:12px;background:#000"></video>`);
   }
