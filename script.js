@@ -20,7 +20,51 @@
     toast._t = setTimeout(() => t.classList.remove('show'), 3500);
   }
 
-  /* ===== 1) NUMEROS +237 ===== */
+  /* ===== 1) GESTION DES FAVORIS ===== */
+  window.getFavorites = function() {
+    try {
+      return JSON.parse(localStorage.getItem('camerlink_favorites')) || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  window.toggleFavorite = function(id) {
+    let favs = window.getFavorites();
+    const index = favs.indexOf(id);
+    
+    if (index > -1) {
+      favs.splice(index, 1);
+      toast('Retiré de vos favoris');
+    } else {
+      favs.push(id);
+      toast('Ajouté à vos favoris');
+    }
+    
+    localStorage.setItem('camerlink_favorites', JSON.stringify(favs));
+    if (typeof decorate === 'function') decorate();
+  }
+
+  /* ===== 2) GESTION DU STATUT DES ANNONCES (VENDU / ACTIF) ===== */
+  window.toggleListingStatus = async function(id, currentStatus) {
+    const newStatus = (currentStatus === 'sold') ? 'active' : 'sold';
+    
+    const { error } = await sb
+      .from('annonces')
+      .update({ status: newStatus })
+      .eq('id', id)
+      .select('id');
+
+    if (error) {
+      alert('Erreur lors de la mise à jour du statut.');
+      console.error(error);
+    } else {
+      toast(newStatus === 'sold' ? 'Annonce marquée comme vendue' : 'Annonce réactivée');
+      setTimeout(() => location.reload(), 800);
+    }
+  }
+
+  /* ===== 3) NUMEROS +237 ===== */
   function normPhone(raw) {
     const s = String(raw || '').trim();
     let d = s.replace(/\D/g, '');
@@ -68,7 +112,7 @@
     });
   }
 
-  /* ===== 2) CONNEXION ===== */
+  /* ===== 4) CONNEXION ===== */
   const phoneForm = $('phoneForm');
   if (phoneForm) {
     phoneForm.addEventListener('submit', async (e) => {
@@ -118,11 +162,11 @@
     }, true);
   }
 
-  /* ===== 3) VIDEOS ===== */
+  /* ===== 5) VIDEOS & DECORATION DES CARTES ===== */
   let videos = null;
   async function loadVideos() {
     try {
-      const { data, error } = await sb.from('annonces').select('id,video_url');
+      const { data, error } = await sb.from('annonces').select('id,video_url,status');
       if (error) { videos = null; return; }
       videos = {};
       (data || []).forEach((a) => {
@@ -155,14 +199,26 @@
   if (vModalEl) vModalEl.addEventListener('click', (e) => { if (e.target.id === 'vModal') closeV(); });
 
   const grid = $('listings-grid');
-  function decorate() {
+  window.decorate = function() {
     if (!grid) return;
+    const favorites = window.getFavorites();
+
     grid.querySelectorAll('.ad-card').forEach((card) => {
       const key = card.querySelector('[data-report],[data-delete]');
       if (!key) return;
       const id = key.dataset.report || key.dataset.delete;
       const del = card.querySelector('[data-delete]');
-      card.querySelectorAll('.v-extra').forEach((n) => n.remove());
+      
+      card.querySelectorAll('.v-extra, .fav-extra').forEach((n) => n.remove());
+
+      // Bouton Favori
+      const isFav = favorites.includes(id);
+      const headerArea = card.querySelector('.ad-header, h3, .ad-title') || card.firstElementChild;
+      if (headerArea) {
+        headerArea.insertAdjacentHTML('afterend',
+          `<button type="button" class="fav-extra" onclick="toggleFavorite('${esc(id)}')" style="background:none;border:none;cursor:pointer;font-size:1.1rem;margin:5px 0;">${isFav ? '❤️ Favoris' : '🤍 Ajouter aux favoris'}</button>`);
+      }
+
       if (videos === null) return;
       const url = videos[id];
       const desc = card.querySelector('.ad-desc');
@@ -234,7 +290,7 @@
       videos[id] = url;
       if (old) removeFile(old);
       closeV();
-      decorate();
+      window.decorate();
       toast('Vidéo ajoutée.');
     } catch (ex) {
       console.error(ex);
@@ -252,7 +308,7 @@
     removeFile(videos[id]);
     delete videos[id];
     closeV();
-    decorate();
+    window.decorate();
     toast('Vidéo supprimée.');
   }
 
@@ -274,11 +330,11 @@
     if (f) prev.src = URL.createObjectURL(f);
   });
 
-  if (grid) new MutationObserver(decorate).observe(grid, { childList: true });
+  if (grid) new MutationObserver(window.decorate).observe(grid, { childList: true });
   ['shopBody', 'xBody'].forEach((id) => {
     const el = $(id);
     if (el) new MutationObserver(() => fixWa(el)).observe(el, { childList: true });
   });
-  decorate();
-  loadVideos().then(decorate);
+  window.decorate();
+  loadVideos().then(window.decorate);
 })();
