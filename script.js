@@ -256,10 +256,11 @@
 
   document.addEventListener('change', (e) => {
     if (e.target.id !== 'vFile') return;
-    const f = e.target.files[0], prev = $('vPrev');
-    if (!prev) return;
-    prev.style.display = f ? 'block' : 'none';
-    if (f) prev.src = URL.createObjectURL(f);
+    const f = e.target.files[0], prev = $('vTest'); // Correction mineure
+    const vPrev = $('vPrev');
+    if (!vPrev) return;
+    vPrev.style.display = f ? 'block' : 'none';
+    if (f) vPrev.src = URL.createObjectURL(f);
   });
 
   if (grid) new MutationObserver(decorate).observe(grid, { childList: true });
