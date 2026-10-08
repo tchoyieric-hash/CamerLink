@@ -275,6 +275,23 @@
   </div>
 </div>
 
+<!-- MODALE DE DEMANDE DE RATTACHEMENT -->
+<div id="claimModal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3>Récupérer mes annonces</h3>
+      <button class="modal-close" data-close="claimModal">×</button>
+    </div>
+    <form id="claimForm">
+      <p style="font-size:0.85rem; color:var(--color-text-muted); margin-bottom:14px;">Indique le numéro utilisé sur tes annonces. L'équipe CamerLink te contactera sur WhatsApp pour vérifier que c'est bien toi, puis rattachera tes annonces à ton compte.</p>
+      <div class="form-group"><label>Numéro de tes annonces</label><input class="form-sheet-el" id="claimPhone" type="tel" required placeholder="6 91 23 45 67"></div>
+      <div class="form-group"><label>Message (facultatif)</label><textarea class="form-sheet-el" id="claimNote" rows="2" maxlength="500" placeholder="Ex : je suis le menuisier de Bastos"></textarea></div>
+      <button type="submit" class="btn-submit-modal" id="claimSubmit">Envoyer ma demande</button>
+      <p class="form-error" id="claimError"></p>
+    </form>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -581,9 +598,14 @@
       const ad = allListings.find(a => a.id === id);
       if (!ad) return;
 
-      const newViews = (ad.views || 0) + 1;
-      ad.views = newViews;
-      sb.from('annonces').update({ views: newViews }).eq('id', id).then(() => {});
+      const vuKey = 'cl-vu-' + id;
+      let dejaVu = false;
+      try { dejaVu = !!sessionStorage.getItem(vuKey); sessionStorage.setItem(vuKey, '1'); } catch (e) {}
+      if (!dejaVu) {
+        ad.views = (ad.views || 0) + 1;
+        sb.rpc('increment_views', { annonce_id: id }).then(() => {});
+      }
+      const newViews = ad.views || 0;
 
       const wa = waNumber(ad.contact);
       const locationText = ad.quartier ? `${ad.quartier}, ${ad.city}` : ad.city;
@@ -602,6 +624,7 @@
           ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Bonjour, je vous contacte suite à votre annonce « ' + ad.title + ' » sur CamerLink')}" target="_blank" style="flex:1; text-align:center; padding:12px;">WhatsApp</a>` : ''}
           <button id="openChatBtn" class="chat-btn-card" style="flex:1; padding:12px; border-radius:var(--radius-md);">💬 Discuter</button>
         </div>
+        ${currentUser && currentUser.id === ad.user_id ? '' : `<button id="claimOpenBtn" data-phone="${esc(ad.contact)}" style="margin-top:4px; font-size:0.85rem; font-weight:600; color:var(--a1); text-align:center;">🙋 C'est mon annonce ? La récupérer</button>`}
       `;
 
       const chatBtn = $('openChatBtn');
@@ -670,9 +693,43 @@
     loadListings();
   });
 
+  // --- DEMANDE DE RATTACHEMENT D'ANNONCES ---
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('#claimOpenBtn');
+    if (!btn) return;
+    if (!currentUser) { toast('Connectez-vous pour récupérer vos annonces'); closeModal('detailModal'); openModal('authModal'); return; }
+    $('claimPhone').value = btn.dataset.phone || '';
+    $('claimError').textContent = '';
+    closeModal('detailModal');
+    openModal('claimModal');
+  });
+
+  $('claimForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('claimError').textContent = '';
+    const digits = $('claimPhone').value.replace(/\D/g, '');
+    if (digits.length < 9) { $('claimError').textContent = 'Entre un numéro à 9 chiffres.'; return; }
+    const btn = $('claimSubmit');
+    btn.disabled = true;
+    const { error } = await sb.from('claim_requests').insert({
+      phone: '+237' + digits.slice(-9),
+      note: $('claimNote').value.trim() || null
+    });
+    btn.disabled = false;
+    if (error) {
+      $('claimError').textContent = error.code === '23505'
+        ? 'Tu as déjà une demande en attente pour ce numéro.'
+        : 'Envoi impossible, réessaie dans un instant.';
+      return;
+    }
+    $('claimNote').value = '';
+    closeModal('claimModal');
+    toast('Demande envoyée ! Nous te contactons sur WhatsApp.');
+  });
+
   loadListings();
   loadShops();
 })();
 </script>
 </body>
-</html>
+        </html>
