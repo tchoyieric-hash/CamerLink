@@ -1,13 +1,13 @@
 (() => {
   'use strict';
   const SB_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
-  const SB_KEY = 'sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2aWRkaXBkdWhhZWx4Y3Z5eWtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1ODExMzcsImV4cCI6MjEwNjE1NzEzN30.L5iaUIW0IQ0hX5uOiOuK-lo_zkf926Xs6CDjCjrpffk';
   const VBUCKET = 'annonces-videos';
   const MAX_MB = 20;
   const TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]
   ));
   const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { autoRefreshToken: false } });
 
@@ -192,7 +192,6 @@
       
       card.querySelectorAll('.v-extra, .fav-extra').forEach((n) => n.remove());
 
-      // Bouton Favori inséré proprement sans casser la structure
       const isFav = favorites.includes(id);
       const desc = card.querySelector('.ad-desc');
       if (desc) {
