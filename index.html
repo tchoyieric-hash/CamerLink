@@ -76,18 +76,16 @@
     .fav-toggle-btn { font-size:0.85rem; font-weight:600; color:var(--a1); padding:6px 12px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; }
 
     #listings-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; max-width:1200px; margin:0 auto; }
-    .ad-card { background:var(--color-surface); border-radius:var(--radius-xl); overflow:hidden; border:1px solid var(--color-border); display:flex; flex-direction:column; position:relative; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .ad-card { background:var(--color-surface); border-radius:var(--radius-xl); overflow:hidden; border:1px solid var(--color-border); display:flex; flex-direction:column; position:relative; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor:pointer; }
     .ad-card:hover { border-color:var(--a1); box-shadow:0 0 30px rgba(34, 211, 238, 0.25); transform:translateY(-4px); }
     .card-img-container { position:relative; width:100%; height:165px; background:var(--color-bg); }
     .card-img-container img { width:100%; height:100%; object-fit:cover; }
     .card-badge-top { position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; text-transform:uppercase; }
-    .card-badge-verified { position:absolute; top:10px; right:42px; padding:3px 8px; background:linear-gradient(90deg,var(--a1),var(--color-cta)); border-radius:999px; font-size:0.68rem; font-weight:700; color:white; }
     .btn-fav { position:absolute; top:8px; right:8px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.9rem; z-index:3; }
     .btn-fav.active { color:var(--color-danger); background:rgba(255,255,255,0.9); }
 
     .card-body { padding:14px; display:flex; flex-direction:column; flex-grow:1; }
     .ad-title { font-size:1rem; font-weight:800; margin-bottom:4px; }
-    .shop-link { align-self:flex-start; margin-bottom:6px; padding:2px 10px; border:1px solid var(--color-border); border-radius:999px; font-size:0.74rem; font-weight:600; color:var(--a1); background:rgba(34,211,238,0.05); }
     .ad-desc { font-size:0.85rem; color:var(--color-text-muted); margin-bottom:10px; flex-grow:1; white-space:pre-line; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
     .card-meta { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:10px; border-top:1px solid var(--color-border); }
     .ad-city { background:rgba(34,211,238,0.08); padding:3px 8px; border-radius:999px; border:1px solid rgba(34,211,238,0.2); font-size:0.75rem; font-weight:600; color:var(--a1); }
@@ -245,6 +243,17 @@
   </div>
 </div>
 
+<!-- MODALE DE DÉTAIL D'UNE ANNONCE -->
+<div id="detailModal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3>Détails de l'offre</h3>
+      <button class="modal-close" data-close="detailModal">×</button>
+    </div>
+    <div id="detailBody" style="display: flex; flex-direction: column; gap: 12px;"></div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -277,7 +286,6 @@
   saveFavorites();
 
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]));
-  const safeImg = (url) => (/^https:\/\//i.test(String(url || '')) ? url : '');
   const waNumber = (contact) => {
     let d = String(contact || '').replace(/\D/g, '');
     if (d.length === 9) d = '237' + d;
@@ -369,7 +377,7 @@
       const isFav = favorites.includes(ad.id);
       const locationText = ad.quartier ? `${ad.quartier} · ${ad.city}` : ad.city;
       return `
-      <article class="ad-card">
+      <article class="ad-card" data-detail-id="${ad.id}">
         <div class="card-img-container">
           <span class="card-badge-top">${esc(ad.category)}</span>
           <button class="btn-fav ${isFav ? 'active' : ''}" data-fav="${ad.id}">❤️</button>
@@ -382,7 +390,7 @@
             <span class="ad-city">📍 ${esc(locationText)}</span>
             <span class="ad-price">${esc(priceText(ad.price))}</span>
           </div>
-          <div class="card-actions-row">
+          <div class="card-actions-row" onclick="event.stopPropagation()">
             ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Intéressé par votre offre sur CamerLink')}" target="_blank">WhatsApp</a>` : ''}
           </div>
         </div>
@@ -390,19 +398,44 @@
     }).join('');
   }
 
+  // Clic global (Favoris, Bouton Shop, et Ouverture des Détails d'une annonce)
   document.addEventListener('click', (e) => {
     const fav = e.target.closest('[data-fav]');
     if (fav) {
       const id = Number(fav.dataset.fav);
       favorites = favorites.includes(id) ? favorites.filter(x => x !== id) : [...favorites, id];
       saveFavorites(); renderListings();
+      return;
     }
+
     if (e.target.closest('#proCta')) {
       if (!currentUser) { toast('Connectez-vous d’abord'); openModal('authModal'); return; }
       const s = shopsByUser[currentUser.id];
       $('proName').value = s ? s.name : '';
       $('proContact').value = s ? s.contact : '';
       openModal('proModal');
+      return;
+    }
+
+    const card = e.target.closest('[data-detail-id]');
+    if (card) {
+      const id = Number(card.dataset.detailId);
+      const ad = allListings.find(a => a.id === id);
+      if (!ad) return;
+
+      const wa = waNumber(ad.contact);
+      const locationText = ad.quartier ? `${ad.quartier}, ${ad.city}` : ad.city;
+
+      $('detailBody').innerHTML = `
+        ${ad.image_url ? `<img src="${esc(ad.image_url)}" style="width:100%; max-height:240px; object-fit:cover; border-radius:12px;">` : ''}
+        <div style="font-size:0.8rem; color:var(--a1); font-weight:700; text-transform:uppercase;">${esc(ad.category)}</div>
+        <h2 style="font-size:1.2rem; font-weight:800;">${esc(ad.title)}</h2>
+        <div style="font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:var(--color-accent);">${esc(priceText(ad.price))}</div>
+        <div style="font-size:0.88rem; color:var(--color-text-muted);">📍 ${esc(locationText)}</div>
+        <p style="font-size:0.92rem; white-space:pre-line; background:var(--color-bg); padding:12px; border-radius:8px; border:1px solid var(--color-border);">${esc(ad.description)}</p>
+        ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Bonjour, je vous contacte suite à votre annonce « ' + ad.title + ' » sur CamerLink')}" target="_blank" style="display:block; text-align:center; padding:12px; margin-top:8px;">Discuter sur WhatsApp</a>` : ''}
+      `;
+      openModal('detailModal');
     }
   });
 
