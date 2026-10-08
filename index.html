@@ -10,120 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-  <style>
-    :root { 
-      --color-bg:#05060D; --color-surface:#0B0D1A; --color-surface-glass:rgba(11,13,26,0.82); 
-      --color-text-main:#F5F7FF; --color-text-muted:#8F98B8; --a1:#22D3EE; --a2:#8B5CF6; 
-      --color-accent:#F59E0B; --color-cta:#3B82F6; --color-whatsapp:#22C55E; --color-call:#10B981; --color-danger:#EF4444; 
-      --color-border:rgba(139,152,255,0.16); --font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; 
-      --font-display:'Space Grotesk','Inter',sans-serif; --header-height:68px; --container-padding:16px; 
-      --radius-xl:22px; --radius-lg:16px; --radius-md:12px; --glow:0 0 24px rgba(34,211,238,0.18); 
-    }
-    [data-theme="light"] { 
-      --color-bg:#F4F6FC; --color-surface:#FFFFFF; --color-surface-glass:rgba(255,255,255,0.88); 
-      --color-text-main:#101428; --color-text-muted:#5E6786; --color-border:rgba(60,70,130,0.15); 
-      --glow:0 4px 20px rgba(60,70,130,0.12); 
-    }
-    * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent; }
-    body { background:var(--color-bg); color:var(--color-text-main); font-family:var(--font-family); font-size:16px; line-height:1.5; overflow-x:hidden; display:flex; flex-direction:column; min-height:100vh; position:relative; }
-    body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(600px 400px at 85% -5%,rgba(139,92,246,0.22),transparent 70%),radial-gradient(500px 380px at 0% 20%,rgba(34,211,238,0.14),transparent 70%); }
-    a { text-decoration:none; color:inherit; }
-    button { border:none; background:none; cursor:pointer; font-family:inherit; color:inherit; }
-    img, video { max-width:100%; display:block; }
-
-    header { position:fixed; top:0; left:0; right:0; height:var(--header-height); background:var(--color-surface-glass); backdrop-filter:blur(16px); border-bottom:1px solid var(--color-border); display:flex; align-items:center; justify-content:space-between; padding:0 var(--container-padding); z-index:1000; }
-    .logo-brand { font-family:var(--font-display); font-size:1.4rem; font-weight:700; }
-    .logo-brand span { background:linear-gradient(90deg,var(--a1),var(--a2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
-    .header-actions { display:flex; align-items:center; gap:6px; }
-    .btn-icon { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--color-surface); border:1px solid var(--color-border); position:relative; }
-    .btn-login { color:var(--color-text-muted); padding:8px 10px; font-size:0.85rem; font-weight:600; }
-    .btn-pub { background:linear-gradient(90deg,var(--a1),var(--a2)); color:#fff; padding:9px 13px; border-radius:999px; font-weight:700; font-size:0.8rem; box-shadow:0 0 18px rgba(139,92,246,0.45); }
-    .header-spacer { height:var(--header-height); }
-    #msgBadge { position:absolute; top:4px; right:4px; background:var(--color-danger); width:8px; height:8px; border-radius:50%; display:none; }
-
-    .hero { padding:34px var(--container-padding) 26px; text-align:center; border-bottom:1px solid var(--color-border); }
-    .hero h1 { font-family:var(--font-display); font-size:2.1rem; font-weight:700; line-height:1.15; margin-bottom:10px; }
-    .hero h1 span { background:linear-gradient(90deg,var(--a1),var(--a2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
-    .hero p { font-size:0.95rem; color:var(--color-text-muted); max-width:480px; margin:0 auto 20px; }
-    
-    .search-filter-bar { max-width:820px; margin:0 auto; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
-    .form-el { padding:12px 16px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; color:var(--color-text-main); font-size:0.93rem; outline:none; font-family:inherit; }
-    .search-input { flex:2; min-width:180px; }
-    .city-select, .price-select { flex:1; min-width:130px; }
-
-    .shops-section { padding:18px var(--container-padding) 6px; max-width:1200px; margin:0 auto; width:100%; }
-    .shops-section h2 { font-family:var(--font-display); font-size:1.05rem; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
-    .shops-container { display:flex; gap:14px; overflow-x:auto; scrollbar-width:none; padding-bottom:6px; min-height:90px; }
-    .shops-container::-webkit-scrollbar { display:none; }
-    
-    .shop-story-card { display:flex; flex-direction:column; align-items:center; min-width:76px; max-width:76px; cursor:pointer; flex-shrink:0; }
-    .story-ring { width:70px; height:70px; border-radius:50%; padding:3px; background:linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); display:flex; align-items:center; justify-content:center; position:relative; margin-bottom:6px; }
-    .story-ring.has-video { background:linear-gradient(135deg, #FF3366, #FF9900, var(--a2)); }
-    .story-avatar-wrap { width:100%; height:100%; border-radius:50%; background:var(--color-surface); border:2px solid var(--color-bg); overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; color:var(--color-text-main); }
-    .story-avatar-wrap img { width:100%; height:100%; object-fit:cover; }
-    .shop-story-name { font-size:0.75rem; font-weight:600; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; color:var(--color-text-main); }
-    .shop-story-card.cta-card .story-ring { background:var(--color-surface); border:2px dashed var(--a1); padding:0; }
-    .shop-story-card.cta-card .story-avatar-wrap { color:var(--a1); font-size:1.5rem; }
-
-    /* Styles pour la visionneuse de story */
-    .story-modal { position:fixed; inset:0; background:rgba(0,0,0,0.92); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:var(--container-padding); z-index:9999; opacity:0; visibility:hidden; transition:0.2s; }
-    .story-modal.active { opacity:1; visibility:visible; }
-    .story-modal-content { position:relative; width:100%; max-width:420px; height:100%; max-height:85vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px; }
-    .close-story-btn { position:absolute; top:10px; right:15px; background:none; border:none; color:#fff; font-size:32px; cursor:pointer; z-index:10; }
-    .story-header-info { display:flex; align-items:center; gap:10px; width:100%; margin-bottom:12px; }
-    .viewer-avatar { width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid var(--a1); }
-    #viewerShopName { color:#fff; font-weight:600; font-size:0.95rem; }
-    .story-media-container { width:100%; display:flex; justify-content:center; align-items:center; background:#000; border-radius:16px; overflow:hidden; max-height:60vh; }
-    .story-media-container img { width:100%; max-height:60vh; object-fit:contain; }
-    .story-caption { color:#fff; font-size:0.9rem; text-align:center; margin-top:15px; padding:0 10px; }
-
-    .categories-scroll { padding:14px var(--container-padding); display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; max-width:1200px; margin:0 auto; }
-    .categories-scroll::-webkit-scrollbar { display:none; }
-    .cat-chip { padding:8px 16px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; font-size:0.85rem; font-weight:600; color:var(--color-text-muted); white-space:nowrap; }
-    .cat-chip.active { background:linear-gradient(90deg,var(--a1),var(--a2)); color:#fff; border-color:transparent; }
-
-    main { padding:10px var(--container-padding) 80px; flex-grow:1; }
-    .filter-tabs-row { max-width:1200px; margin:0 auto 16px; display:flex; justify-content:space-between; align-items:center; }
-    .results-count { font-size:0.85rem; color:var(--color-text-muted); }
-    .fav-toggle-btn { font-size:0.85rem; font-weight:600; color:var(--a1); padding:6px 12px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; }
-
-    #listings-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; max-width:1200px; margin:0 auto; }
-    .ad-card { background:var(--color-surface); border-radius:var(--radius-xl); overflow:hidden; border:1px solid var(--color-border); display:flex; flex-direction:column; position:relative; cursor:pointer; }
-    .card-img-container { position:relative; width:100%; height:165px; background:var(--color-bg); }
-    .card-img-container img { width:100%; height:100%; object-fit:cover; }
-    .card-badge-top { position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; z-index:2; }
-    .card-views { position:absolute; bottom:8px; left:8px; padding:2px 8px; background:rgba(0,0,0,0.6); border-radius:999px; font-size:0.7rem; color:white; z-index:2; }
-    .btn-fav { position:absolute; top:8px; right:8px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; color:#fff; z-index:3; }
-    .btn-fav.active { color:var(--color-danger); background:rgba(255,255,255,0.9); }
-    .card-body { padding:14px; display:flex; flex-direction:column; flex-grow:1; }
-    .ad-title { font-size:1rem; font-weight:800; margin-bottom:4px; }
-    .ad-desc { font-size:0.85rem; color:var(--color-text-muted); margin-bottom:8px; flex-grow:1; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-    
-    .ad-rating { display:flex; align-items:center; gap:4px; font-size:0.82rem; font-weight:600; color:var(--color-accent); margin-bottom:10px; }
-    .ad-rating span { color:var(--color-text-muted); font-weight:normal; }
-
-    .card-meta { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:10px; border-top:1px solid var(--color-border); }
-    .ad-city { background:rgba(34,211,238,0.08); padding:3px 8px; border-radius:999px; font-size:0.75rem; color:var(--a1); font-weight:600; }
-    .ad-price { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--color-accent); }
-    .state-msg { color:var(--color-text-muted); text-align:center; grid-column:1/-1; padding:40px 20px; }
-
-    .modal-overlay { position:fixed; inset:0; background:rgba(2,3,10,0.85); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:var(--container-padding); z-index:2000; opacity:0; visibility:hidden; transition:0.2s; }
-    .modal-overlay.active { opacity:1; visibility:visible; }
-    .modal-sheet { background:var(--color-surface); width:100%; max-width:450px; border-radius:var(--radius-xl); padding:22px; border:1px solid var(--color-border); max-height:90vh; overflow-y:auto; }
-    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
-    .modal-header h3 { font-family:var(--font-display); font-size:1.2rem; font-weight:700; }
-    .modal-close { font-size:1.6rem; color:var(--color-text-muted); }
-    .form-group { margin-bottom:14px; }
-    .form-group label { display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px; color:var(--color-text-muted); }
-    .form-sheet-el { width:100%; padding:12px; background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); color:var(--color-text-main); font-size:0.95rem; }
-    .btn-submit-modal { width:100%; padding:13px; background:linear-gradient(90deg,var(--a1),var(--a2)); color:white; border-radius:var(--radius-md); font-weight:700; margin-top:8px; }
-    .form-error { color:var(--color-danger); font-size:0.82rem; margin-top:10px; }
-    
-    #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:var(--color-text-main); color:var(--color-bg); padding:11px 20px; border-radius:999px; font-weight:600; font-size:0.88rem; z-index:3000; opacity:0; pointer-events:none; transition:0.25s; }
-    #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-    footer { padding:24px var(--container-padding); text-align:center; border-top:1px solid var(--color-border); background:var(--color-surface); margin-top:auto; }
-    footer p { font-size:0.8rem; color:var(--color-text-muted); margin-top:8px; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -154,6 +41,7 @@
   </div>
 </section>
 
+<!-- Section Statuts / Stories 24h Artisans -->
 <section class="shops-section">
   <h2>⚡ Statuts & Reels Artisans</h2>
   <div id="shops-container" class="shops-container"></div>
@@ -181,7 +69,7 @@
     <span class="results-count" id="resultsCount">Chargement...</span>
     <button class="fav-toggle-btn" id="favToggleBtn">❤️ Favoris (<span id="favCount">0</span>)</button>
   </div>
-  <div id="listings-grid"></div>
+  <div id="listings-grid" class="listings-grid"></div>
 </main>
 
 <footer>
@@ -189,18 +77,20 @@
   <p>© 2026 CamerLink · L'élite du service digital au Cameroun.</p>
 </footer>
 
+<!-- Modale Authentification -->
 <div id="authModal" class="modal-overlay">
   <div class="modal-sheet">
-    <div class="modal-header"><h3>Connexion</h3><button class="modal-close" data-close="authModal">×</button></div>
+    <div class="modal-header"><h3>Connexion / Inscription</h3><button class="modal-close" data-close="authModal">×</button></div>
     <form id="phoneForm">
-      <div class="form-group"><label>Téléphone</label><input class="form-sheet-el" id="authPhone" type="tel" required placeholder="6 91 23 45 67"></div>
+      <div class="form-group"><label>Téléphone WhatsApp</label><input class="form-sheet-el" id="authPhone" type="tel" required placeholder="6 91 23 45 67"></div>
       <div class="form-group"><label>Mot de passe</label><input class="form-sheet-el" id="phonePassword" type="password" required></div>
-      <button type="submit" class="btn-submit-modal">Se connecter</button>
+      <button type="submit" id="phoneSubmit" class="btn-submit-modal">Se connecter</button>
       <p class="form-error" id="phoneError"></p>
     </form>
   </div>
 </div>
 
+<!-- Modale Publication -->
 <div id="publishModal" class="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-header"><h3>Publier une offre</h3><button class="modal-close" data-close="publishModal">×</button></div>
@@ -209,270 +99,16 @@
       <div class="form-group"><label>Titre</label><input class="form-sheet-el" id="adTitle" type="text" required></div>
       <div class="form-group"><label>Ville</label><select class="form-sheet-el" id="adCity"></select></div>
       <div class="form-group"><label>Prix (FCFA)</label><input class="form-sheet-el" id="adPrice" type="number" required></div>
-      <div class="form-group"><label>Photo</label><input class="form-sheet-el" id="adImage" type="file" accept="image/*" required></div>
+      <div class="form-group"><label>Photo principale</label><input class="form-sheet-el" id="adImage" type="file" accept="image/*" required></div>
       <div class="form-group"><label>Description</label><textarea class="form-sheet-el" id="adDesc" rows="3" required></textarea></div>
       <div class="form-group"><label>WhatsApp / Téléphone</label><input class="form-sheet-el" id="adContact" type="tel" required></div>
       <button type="submit" class="btn-submit-modal">Publier</button>
+      <p class="form-error" id="pubError"></p>
     </form>
   </div>
 </div>
 
 <div id="toast"></div>
-
-<script>
-// Fonctions globales de la visionneuse de stories
-function viewStory(mediaUrl, caption, shopName, avatarUrl) {
-  document.getElementById('viewerMedia').src = mediaUrl;
-  document.getElementById('viewerCaption').textContent = caption || '';
-  document.getElementById('viewerShopName').textContent = shopName;
-  document.getElementById('viewerAvatar').src = avatarUrl || 'https://via.placeholder.com/150';
-  document.getElementById('storyViewerModal').classList.add('active');
-}
-
-function closeStoryViewer() {
-  document.getElementById('storyViewerModal').classList.remove('active');
-}
-
-function openAddStoryModal() {
-  alert("Interface de publication de statut (24h) en cours d'ouverture...");
-}
-
-(() => {
-  'use strict';
-  const SUPABASE_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2aWRkaXBkdWhhZWx4Y3Z5eWtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1ODExMzcsImV4cCI6MjEwNjE1NzEzN30.L5iaUIW0IQ0hX5uOiOuK-lo_zkf926Xs6CDjCjrpffk';
-  const BUCKET = 'annonces-images';
-
-  const CATEGORIES = [
-    { value: 'Services', chip: '🛠 Services' },
-    { value: 'Restaurants', chip: '🍽 Gastronomie' },
-    { value: 'Boutiques', chip: '🛍 Boutiques' },
-    { value: 'Immobilier', chip: '🏠 Immobilier' }
-  ];
-  const CITIES = ['Yaoundé', 'Douala', 'Kribi', 'Bafoussam', 'Garoua'];
-
-  const $ = (id) => document.getElementById(id);
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  let allListings = [], stories = [], currentUser = null, favorites = [], currentCategory = '';
-
-  try { favorites = JSON.parse(localStorage.getItem('cl-favs') || '[]'); } catch (e) {}
-  function saveFavorites() {
-    try { localStorage.setItem('cl-favs', JSON.stringify(favorites)); } catch (e) {}
-    $('favCount').textContent = favorites.length;
-  }
-  saveFavorites();
-
-  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]));
-  const toast = (msg) => {
-    const t = $('toast'); t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  };
-  const openModal = (id) => $(id).classList.add('active');
-  const closeModal = (id) => $(id).classList.remove('active');
-
-  $('themeBtn').addEventListener('click', () => {
-    const html = document.documentElement;
-    html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-  });
-
-  const cityOpts = '<option value="">Toutes les villes</option>' + CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
-  $('cityFilter').innerHTML = cityOpts;
-  $('adCity').innerHTML = CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
-  $('adCategory').innerHTML = CATEGORIES.map(c => `<option value="${c.value}">${c.value}</option>`).join('');
-  $('categoryChips').innerHTML = '<button class="cat-chip active" data-cat="">✨ Tout voir</button>' +
-    CATEGORIES.map(c => `<button class="cat-chip" data-cat="${c.value}">${c.chip}</button>`).join('');
-
-  $('categoryChips').addEventListener('click', (e) => {
-    const chip = e.target.closest('.cat-chip');
-    if (!chip) return;
-    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    currentCategory = chip.dataset.cat;
-    renderListings();
-  });
-
-  $('searchInput').addEventListener('input', renderListings);
-  $('cityFilter').addEventListener('change', renderListings);$('priceFilter').addEventListener('change', renderListings);
-
-  async function loadData() {
-    try {
-      const res = await sb.from('annonces').select('*').order('created_at', { ascending: false });
-      if (res.error) throw res.error;
-      allListings = res.data || [];
-    } catch (err) {
-      console.warn("Erreur chargement annonces:", err.message);
-      allListings = [];
-    }
-
-    // Chargement dynamique des statuts d'artisans (stories de moins de 24h depuis Supabase)
-    try {
-      const now = new Date().toISOString();
-      const resStories = await sb.from('artisan_stories')
-        .select(`id, media_url, caption, created_at, artisan_id, profiles (full_name, avatar_url, shop_name)`)
-        .gt('expires_at', now)
-        .order('created_at', { ascending: false });
-      
-      if (!resStories.error) {
-        stories = resStories.data || [];
-      }
-    } catch (e) {
-      console.warn("Erreur chargement stories:", e.message);
-      stories = [];
-    }
-
-    renderListings();
-    renderShops();
-  }
-
-  function renderShops() {
-    const container = $('shops-container');
-    
-    // Bouton fixe "Mon statut" au début
-    let html = `
-      <div class="shop-story-card cta-card" onclick="openAddStoryModal()">
-        <div class="story-ring"><div class="story-avatar-wrap">+</div></div>
-        <div class="shop-story-name">Mon statut</div>
-      </div>
-    `;
-
-    if (stories.length === 0) {
-      // S'il n'y a pas encore de story en base, on peut afficher un message discret ou laisser le bouton d'ajout seul
-      container.innerHTML = html + `<div style="font-size:0.8rem; color:var(--color-text-muted); padding:20px 10px; display:flex; align-items:center;">Aucun statut actif pour le moment</div>`;
-      return;
-    }
-
-    // Boucle sur les vrais statuts d'artisans actifs
-    stories.forEach(story => {
-      const shopName = story.profiles?.shop_name || story.profiles?.full_name || 'Artisan';
-      const avatar = story.profiles?.avatar_url || '';
-      const initial = esc((shopName).charAt(0));
-
-      const safeMedia = esc(story.media_url);
-      const safeCaption = esc(story.caption || '');
-      const safeShopName = esc(shopName);
-      const safeAvatar = esc(avatar);
-
-      html += `
-        <div class="shop-story-card" onclick="viewStory('${safeMedia}', '${safeCaption}', '${safeShopName}', '${safeAvatar}')">
-          <div class="story-ring">
-            <div class="story-avatar-wrap">
-              ${avatar ? `<img src="${avatar}" alt="${safeShopName}">` : initial}
-            </div>
-          </div>
-          <div class="shop-story-name">${safeShopName}</div>
-        </div>
-      `;
-    });
-
-    container.innerHTML = html;
-  }
-
-  function renderListings() {
-    const grid = $('listings-grid');
-    const term = $('searchInput').value.trim().toLowerCase();
-    const city = $('cityFilter').value;
-    const maxPrice = Number($('priceFilter').value) || 0;
-
-    let filtered = allListings.filter(ad => {
-      return (!currentCategory || ad.category === currentCategory) &&
-             (!city || ad.city === city) &&
-             (!maxPrice || Number(ad.price) <= maxPrice) &&
-             (!term || ad.title.toLowerCase().includes(term));
-    });
-
-    $('resultsCount').textContent = `${filtered.length} annonce(s)`;
-    if (filtered.length === 0) {
-      grid.innerHTML = '<div class="state-msg">Aucune annonce disponible pour le moment.</div>';
-      return;
-    }
-
-    grid.innerHTML = filtered.map(ad => {
-      const isFav = favorites.includes(ad.id);
-      const rating = Number(ad.note_moyenne || 0).toFixed(1);
-      const reviewCount = ad.nb_avis || 0;
-      
-      const rawContact = String(ad.contact || '');
-      const cleanContact = rawContact.replace(/\D/g, ''); 
-      const whatsappNumber = cleanContact.startsWith('237') ? cleanContact : '237' + cleanContact;
-      const viewsCount = ad.views || 0;
-
-      return `
-      <article class="ad-card">
-        <div class="card-img-container">
-          <span class="card-badge-top">${esc(ad.category)}</span>
-          <span class="card-views">👁 ${viewsCount}</span>
-          <button class="btn-fav ${isFav ? 'active' : ''}" data-fav="${ad.id}">❤️</button>
-          ${ad.image_url ? `<img src="${esc(ad.image_url)}" loading="lazy">` : ''}
-        </div>
-        <div class="card-body">
-          <h3 class="ad-title">${esc(ad.title)}</h3>
-          <p class="ad-desc">${esc(ad.description)}</p>
-          
-          <div class="ad-rating">
-            ⭐ ${rating} <span>(${reviewCount} avis)</span>
-          </div>
-
-          <div class="card-meta">
-            <span class="ad-city">📍 ${esc(ad.city)}</span>
-            <span class="ad-price">${Number(ad.price).toLocaleString('fr-FR')} FCFA</span>
-          </div>
-
-          ${cleanContact ? `
-            <div style="display: flex; gap: 8px; margin-top: 10px;">
-              <a href="https://api.whatsapp.com/send?phone=${whatsappNumber}" target="_blank" style="flex: 1; background: #22C55E; color: white; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">WhatsApp</a>
-              <a href="tel:${rawContact}" style="flex: 1; background: #10B981; color: white; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">Appel</a>
-            </div>
-          ` : ''}
-        </div>
-      </article>`;
-    }).join('');
-  }
-
-  document.addEventListener('click', (e) => {
-    const fav = e.target.closest('[data-fav]');
-    if (fav) {
-      const id = Number(fav.dataset.fav);
-      const idx = favorites.indexOf(id);
-      if (idx > -1) favorites.splice(idx, 1);
-      else favorites.push(id);
-      saveFavorites();
-      renderListings();
-    }
-  });
-
-  $('pubBtn').addEventListener('click', () => {
-    if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
-    openModal('publishModal');
-  });
-
-  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
-
-  sb.auth.onAuthStateChange((_, session) => {
-    currentUser = session ? session.user : null;
-    $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
-  });
-
-  $('authBtn').addEventListener('click', async () => {
-    if (currentUser) { await sb.auth.signOut(); toast('Déconnecté'); }
-    else { openModal('authModal'); }
-  });
-
-  $('phoneForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = $('authPhone'].value + '@phone.camerlink.app';
-    const password = $('phonePassword').value;
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) {
-      const signUp = await sb.auth.signUp({ email, password });
-      if (signUp.error) { $('phoneError').textContent = 'Erreur d’authentification'; return; }
-    }
-    closeModal('authModal');
-    toast('Connecté !');
-  });
-
-  loadData();
-})();
-</script>
+<script src="script.js"></script>
 </body>
 </html>
