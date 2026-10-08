@@ -273,31 +273,8 @@
   function renderShops() {
     $('shops-container').innerHTML = shops.length === 0 ? 
       `<div style="font-size:0.8rem; color:var(--color-text-muted); padding:10px;">Aucun shop actif</div>` :
-      shops.map(s => `
-        <div class="shop-story-card" data-shop-id="${s.id}">
-          <div class="story-ring ${s.video_url ? 'has-video' : ''}">
-            <div class="story-avatar-wrap">
-              ${s.logo_url ? `<img src="${esc(s.logo_url)}">` : esc((s.name||'S').charAt(0))}
-            </div>
-          </div>
-          <div class="shop-story-name">${esc(s.name)}</div>
-        </div>
-      `).join('');
+      shops.map(s => `<div class="shop-story-card"><div class="story-ring"><div class="story-avatar-wrap">${esc((s.name||'S').charAt(0))}</div></div><div class="shop-story-name">${esc(s.name)}</div></div>`).join('');
   }
-
-  $('shops-container').addEventListener('click', (e) => {
-    const card = e.target.closest('[data-shop-id]');
-    if (!card) return;
-    const shopId = card.dataset.shopId;
-    const shop = shops.find(s => String(s.id) === String(shopId));
-    if (shop) {
-      if (shop.video_url) {
-        window.open(shop.video_url, '_blank');
-      } else {
-        toast(`Boutique : ${shop.name}`);
-      }
-    }
-  });
 
   function renderListings() {
     const grid = $('listings-grid');
@@ -374,7 +351,7 @@
 
   $('pubBtn').addEventListener('click', () => {
     if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
-    openModal('publishManager') || openModal('publishModal');
+    openModal('publishModal');
   });
 
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
@@ -391,19 +368,12 @@
 
   $('phoneForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const phoneInput = $('authPhone');
-    const passInput = $('phonePassword');
-    if (!phoneInput || !passInput) return;
-    const email = phoneInput.value + '@phone.camerlink.app';
-    const password = passInput.value;
+    const email = $('authPhone').value + '@phone.camerlink.app';
+    const password = $('phonePassword').value;
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
       const signUp = await sb.auth.signUp({ email, password });
-      if (signUp.error) { 
-        const errEl = $('phoneError');
-        if (errEl) errEl.textContent = 'Erreur d’authentification'; 
-        return; 
-      }
+      if (signUp.error) { $('phoneError').textContent = 'Erreur d’authentification'; return; }
     }
     closeModal('authModal');
     toast('Connecté !');
