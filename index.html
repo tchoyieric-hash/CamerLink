@@ -14,7 +14,7 @@
     :root { 
       --color-bg:#05060D; --color-surface:#0B0D1A; --color-surface-glass:rgba(11,13,26,0.82); 
       --color-text-main:#F5F7FF; --color-text-muted:#8F98B8; --a1:#22D3EE; --a2:#8B5CF6; 
-      --color-accent:#F59E0B; --color-cta:#3B82F6; --color-whatsapp:#22C55E; --color-danger:#EF4444; 
+      --color-accent:#F59E0B; --color-cta:#3B82F6; --color-whatsapp:#22C55E; --color-call:#10B981; --color-danger:#EF4444; 
       --color-border:rgba(139,152,255,0.16); --font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; 
       --font-display:'Space Grotesk','Inter',sans-serif; --header-height:68px; --container-padding:16px; 
       --radius-xl:22px; --radius-lg:16px; --radius-md:12px; --glow:0 0 24px rgba(34,211,238,0.18); 
@@ -94,8 +94,9 @@
     .ad-city { background:rgba(34,211,238,0.08); padding:3px 8px; border-radius:999px; border:1px solid rgba(34,211,238,0.2); font-size:0.75rem; font-weight:600; color:var(--a1); }
     .ad-price { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--color-accent); }
     
-    .card-actions-row { display:flex; gap:8px; margin-top:12px; }
-    .whatsapp-link-card { flex:1; padding:10px; text-align:center; background:var(--color-whatsapp); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.85rem; }
+    .card-actions-row { display:flex; gap:6px; margin-top:12px; }
+    .whatsapp-link-card { flex:1; padding:10px; text-align:center; background:var(--color-whatsapp); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.8rem; }
+    .call-link-card { flex:1; padding:10px; text-align:center; background:var(--color-call); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.8rem; }
     
     .state-msg { color:var(--color-text-muted); text-align:center; grid-column:1/-1; padding:40px 20px; }
 
@@ -112,7 +113,6 @@
     .form-error { color:var(--color-danger); font-size:0.82rem; margin-top:10px; }
     .img-preview { margin-top:8px; width:100%; max-height:160px; object-fit:cover; border-radius:var(--radius-md); display:none; }
 
-    /* Styles Chat et Inbox */
     .chat-messages-box { height: 260px; overflow-y: auto; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
     .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 0.88rem; word-break: break-word; }
     .chat-bubble.mine { background: var(--color-cta); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
@@ -120,7 +120,8 @@
     .chat-input-row { display: flex; gap: 8px; }
     .chat-input-row input { flex-grow: 1; margin: 0; }
     .chat-input-row button { padding: 0 16px; background: var(--color-cta); color: #fff; border-radius: var(--radius-md); font-weight: 700; }
-    .chat-btn-card { flex:1; padding:10px; text-align:center; background:var(--color-cta); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.85rem; }
+    .chat-btn-card { flex:1; padding:10px; text-align:center; background:var(--color-cta); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.8rem; }
+    .call-btn-card { flex:1; padding:10px; text-align:center; background:var(--color-call); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.8rem; }
     .inbox-item { padding: 12px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; display: flex; flex-direction: column; gap: 4px; transition: 0.2s; }
     .inbox-item:hover { border-color: var(--a1); }
 
@@ -232,7 +233,7 @@
       <div class="form-group"><label>Prix (FCFA)</label><input class="form-sheet-el" id="adPrice" type="number" required></div>
       <div class="form-group"><label>Photo</label><input class="form-sheet-el" id="adImage" type="file" accept="image/*" required><img id="imgPreview" class="img-preview"></div>
       <div class="form-group"><label>Description</label><textarea class="form-sheet-el" id="adDesc" rows="3" required></textarea></div>
-      <div class="form-group"><label>WhatsApp</label><input class="form-sheet-el" id="adContact" type="tel" required></div>
+      <div class="form-group"><label>WhatsApp / Téléphone</label><input class="form-sheet-el" id="adContact" type="tel" required></div>
       <button type="submit" class="btn-submit-modal" id="pubSubmit">Publier</button>
       <p class="form-error" id="pubError"></p>
     </form>
@@ -249,7 +250,7 @@
       <div class="form-group"><label>Nom</label><input class="form-sheet-el" id="proName" type="text" required></div>
       <div class="form-group"><label>Type</label><select class="form-sheet-el" id="proType"><option>Restaurant</option><option>Boutique</option><option>Services</option></select></div>
       <div class="form-group"><label>Ville</label><select class="form-sheet-el" id="proCity"></select></div>
-      <div class="form-group"><label>WhatsApp</label><input class="form-sheet-el" id="proContact" type="tel" required></div>
+      <div class="form-group"><label>Téléphone</label><input class="form-sheet-el" id="proContact" type="tel" required></div>
       <button type="submit" class="btn-submit-modal" id="proSubmit">Enregistrer</button>
       <p class="form-error" id="proError"></p>
     </form>
@@ -463,6 +464,7 @@
           </div>
           <div class="card-actions-row" onclick="event.stopPropagation()">
             ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Intéressé par votre offre sur CamerLink')}" target="_blank">WhatsApp</a>` : ''}
+            ${wa ? `<a class="call-link-card" href="tel:+${wa}">📞 Appel</a>` : ''}
           </div>
         </div>
       </article>`;
@@ -481,7 +483,6 @@
     }
   });
 
-  // Gestion de la boîte de réception (Inbox)
   async function openInbox() {
     if (!currentUser) {
       toast('Connectez-vous pour voir vos messages');
@@ -661,7 +662,7 @@
   }));
 
   document.addEventListener('click', async (e) => {
-    if (e.target.closest('[data-fav]') || e.target.closest('.whatsapp-link-card')) return;
+    if (e.target.closest('[data-fav]') || e.target.closest('.whatsapp-link-card') || e.target.closest('.call-link-card')) return;
 
     const card = e.target.closest('[data-detail-id]');
     if (card) {
@@ -687,10 +688,11 @@
         <div style="font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:var(--color-accent);">${esc(priceText(ad.price))}</div>
         <div style="font-size:0.88rem; color:var(--color-text-muted);">📍 ${esc(locationText)}</div>
         <p style="font-size:0.92rem; white-space:pre-line; background:var(--color-bg); padding:12px; border-radius:8px; border:1px solid var(--color-border);">${esc(ad.description)}</p>
-        <div style="display:flex; gap:8px; margin-top:8px;">
+        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
           ${isOwner ? 
-            `<div style="flex:1; text-align:center; padding:12px; font-size:0.85rem; color:var(--color-text-muted); background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-md);">C'est votre propre annonce</div>` :
+            `<div style="width:100%; text-align:center; padding:12px; font-size:0.85rem; color:var(--color-text-muted); background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-md);">C'est votre propre annonce</div>` :
             `${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Bonjour, je vous contacte suite à votre annonce « ' + ad.title + ' » sur CamerLink')}" target="_blank" style="flex:1; text-align:center; padding:12px;">WhatsApp</a>` : ''}
+             ${wa ? `<a class="call-link-card" href="tel:+${wa}" style="flex:1; text-align:center; padding:12px;">📞 Appel</a>` : ''}
              <button id="openChatBtn" class="chat-btn-card" style="flex:1; padding:12px; border-radius:var(--radius-md);">💬 Discuter</button>`
           }
         </div>
@@ -729,8 +731,8 @@
 
   $('phoneForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = $('authPhone').value + '@phone.camerlink.app';
-    const password = $('phonePassword').value;
+    const email = $('authPhone'].value + '@phone.camerlink.app';
+    const password = $('phonePassword'].value;
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
       const signUp = await sb.auth.signUp({ email, password });
