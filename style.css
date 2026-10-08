@@ -6,56 +6,55 @@
 }
 
 body {
-    background-color: #f3f4f6; /* Fond général clair et moderne style e-commerce (ou garde ton sombre #0c0c14 si tu préfères le dark mode, remplace simplement par #0f1017) */
-    color: #1f2937;
-    line-height: 1.5;
+    background-color: #0c0c14; /* Restauration de ton fond sombre d'origine */
+    color: #e2e8f0;
+    line-height: 1.6;
 }
 
 header {
-    background: #ffffff;
-    color: #111827;
+    background: #111827;
+    color: white;
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 header h1 {
     font-size: 1.5rem;
-    font-weight: 800;
-    color: #2563eb;
+    color: #3b82f6;
 }
 
 .container {
-    max-width: 1280px;
+    max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
 }
 
 .listings-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
 }
 
-/* --- Carte Produit Style "Grande Marketplace" --- */
+/* --- Carte Produit Pro (Gardant ton thème sombre) --- */
 .card {
-    background: #ffffff;
-    border-radius: 8px;
+    background: #151621;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease-in-out;
-    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.06);
     display: flex;
     flex-direction: column;
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-    border-color: #cbd5e1;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    border-color: rgba(59, 130, 246, 0.4);
 }
 
 /* --- Image et Badges --- */
@@ -63,8 +62,7 @@ header h1 {
     position: relative !important;
     width: 100%;
     height: 180px;
-    background-color: #f8fafc;
-    overflow: hidden;
+    background-color: #1f2030;
 }
 
 .card-image-container img {
@@ -75,14 +73,14 @@ header h1 {
 }
 
 .card:hover .card-image-container img {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
 .card-badges-top {
     position: absolute !important;
-    top: 8px;
-    left: 8px;
-    right: 8px;
+    top: 10px;
+    left: 10px;
+    right: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -90,34 +88,36 @@ header h1 {
 }
 
 .badge-pill {
-    background: #2563eb;
-    color: #ffffff;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #f8fafc;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .btn-favorite {
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     cursor: pointer;
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: transform 0.2s ease, background 0.2s ease;
-    color: #4b5563;
+    color: #f8fafc;
 }
 
 .btn-favorite:hover {
-    background: #ffffff;
-    color: #ef4444;
+    background: rgba(30, 41, 59, 0.95);
 }
 
 .btn-favorite:active {
@@ -126,23 +126,23 @@ header h1 {
 
 .btn-favorite.active .fa-heart {
     font-weight: 900;
-    color: #ef4444;
+    color: #ff4757;
 }
 
 /* --- Contenu de la carte --- */
 .card-content {
-    padding: 1rem;
+    padding: 1.1rem;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 }
 
 .card-title {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.4rem;
-    color: #111827;
-    line-height: 1.35;
+    color: #f8fafc;
+    line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -150,58 +150,48 @@ header h1 {
 }
 
 .card-price {
-    color: #059669; /* Vert marchand professionnel */
+    color: #10b981; /* Vert marchand professionnel bien lisible sur fond sombre */
     font-size: 1.15rem;
-    font-weight: 800;
-    margin-bottom: 0.2rem;
-}
-
-.card-location {
-    font-size: 0.8rem;
-    color: #6b7280;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
 }
 
 .card-description {
-    font-size: 0.8rem;
-    color: #6b7280;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-top: auto;
     margin-bottom: 0.8rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    flex-grow: 1;
 }
 
-/* --- Bouton d'action "Commander / Panier" style Jumia --- */
+/* --- Bouton d'action unique propre --- */
 .card-action-btn {
     width: 100%;
-    background-color: #f97316; /* Orange signature des grandes marketplaces (comme Jumia) */
+    background-color: #2563eb;
     color: white;
     border: none;
-    padding: 0.55rem 0.75rem;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: background-color 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
     text-decoration: none;
     margin-top: auto;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .card-action-btn:hover {
-    background-color: #ea580c;
+    background-color: #1d4ed8;
 }
 
-/* Nettoyage des éléments administratifs sur le front-office public */
+/* Masquer les boutons administratifs sur le front-office */
 .card-annonce .btn-video,
 .card-annonce .btn-supprimer {
     display: none !important;
