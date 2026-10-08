@@ -48,7 +48,7 @@
     .hero h1 span { background:linear-gradient(90deg,var(--a1),var(--a2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
     .hero p { font-size:0.95rem; color:var(--color-text-muted); max-width:480px; margin:0 auto 20px; }
     
-    .search-filter-bar { max-width:750px; margin:0 auto; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+    .search-filter-bar { max-width:820px; margin:0 auto; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
     .form-el { padding:12px 16px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; color:var(--color-text-main); font-size:0.93rem; outline:none; font-family:inherit; }
     .search-input { flex:2; min-width:180px; }
     .city-select, .price-select { flex:1; min-width:130px; }
@@ -81,6 +81,7 @@
     .card-img-container { position:relative; width:100%; height:165px; background:var(--color-bg); }
     .card-img-container img { width:100%; height:100%; object-fit:cover; }
     .card-badge-top { position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; text-transform:uppercase; }
+    .card-badge-views { position:absolute; bottom:8px; left:8px; padding:2px 8px; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); border-radius:999px; font-size:0.68rem; color:#fff; }
     .btn-fav { position:absolute; top:8px; right:8px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.9rem; z-index:3; }
     .btn-fav.active { color:var(--color-danger); background:rgba(255,255,255,0.9); }
 
@@ -143,6 +144,11 @@
       <option value="50000">Max 50 000 FCFA</option>
       <option value="250000">Max 250 000 FCFA</option>
       <option value="1000000">Max 1 Million</option>
+    </select>
+    <select id="sortFilter" class="price-select form-el">
+      <option value="recent">Plus récentes</option>
+      <option value="price-asc">Prix : croissant</option>
+      <option value="price-desc">Prix : décroissant</option>
     </select>
   </div>
 </section>
@@ -323,8 +329,8 @@
     renderListings();
   });
 
-  $('searchInput').addEventListener('input', renderListings);
-  $('cityFilter').addEventListener('change', renderListings);$('priceFilter').addEventListener('change', renderListings);
+  $('searchInput').addEventListener('input', renderListings);$('cityFilter').addEventListener('change', renderListings);
+  $('priceFilter').addEventListener('change', renderListings);$('sortFilter').addEventListener('change', renderListings);
 
   async function loadListings() {
     const { data } = await sb.from('annonces').select('*').order('created_at', { ascending: false });
@@ -361,12 +367,20 @@
     const term = $('searchInput').value.trim().toLowerCase();
     const city = $('cityFilter').value;
     const maxPrice = Number($('priceFilter').value) || 0;
+    const sortBy = $('sortFilter') ?$('sortFilter').value : 'recent';
 
-    const filtered = allListings.filter((ad) => {
+    let filtered = allListings.filter((ad) => {
       return (!currentCategory || ad.category === currentCategory) &&
              (!city || ad.city === city) &&
              (!maxPrice || Number(ad.price) <= maxPrice) &&
              (!term || ad.title.toLowerCase().includes(term));
+    });
+
+    // Tri intelligent
+    filtered.sort((a, b) => {
+      if (sortBy === 'price-asc') return Number(a.price) - Number(b.price);
+      if (sortBy === 'price-desc') return Number(b.price) - Number(a.price);
+      return new Date(b.created_at) - new Date(a.created_at);
     });
 
     $('resultsCount').textContent = `${filtered.length} annonce(s)`;
@@ -376,10 +390,12 @@
       const wa = waNumber(ad.contact);
       const isFav = favorites.includes(ad.id);
       const locationText = ad.quartier ? `${ad.quartier} · ${ad.city}` : ad.city;
+      const viewsCount = ad.views || 0;
       return `
       <article class="ad-card" data-detail-id="${ad.id}">
         <div class="card-img-container">
           <span class="card-badge-top">${esc(ad.category)}</span>
+          <span class="card-badge-views">👁️ ${viewsCount}</span>
           <button class="btn-fav ${isFav ? 'active' : ''}" data-fav="${ad.id}">❤️</button>
           ${ad.image_url ? `<img src="${esc(ad.image_url)}" loading="lazy">` : ''}
         </div>
@@ -398,8 +414,8 @@
     }).join('');
   }
 
-  // Clic global (Favoris, Bouton Shop, et Ouverture des Détails d'une annonce)
-  document.addEventListener('click', (e) => {
+  // Clic global (Favoris, Bouton Shop, et Ouverture des Détails + Incrémentation des vues)
+  document.addEventListener('click', async (e) => {
     const fav = e.target.closest('[data-fav]');
     if (fav) {
       const id = Number(fav.dataset.fav);
@@ -423,12 +439,20 @@
       const ad = allListings.find(a => a.id === id);
       if (!ad) return;
 
+      // Incrémenter les vues dans Supabase en arrière-plan
+      const newViews = (ad.views || 0) + 1;
+      ad.views = newViews;
+      sb.from('annonces').update({ views: newViews }).eq('id', id).then(() => {});
+
       const wa = waNumber(ad.contact);
       const locationText = ad.quartier ? `${ad.quartier}, ${ad.city}` : ad.city;
 
       $('detailBody').innerHTML = `
         ${ad.image_url ? `<img src="${esc(ad.image_url)}" style="width:100%; max-height:240px; object-fit:cover; border-radius:12px;">` : ''}
-        <div style="font-size:0.8rem; color:var(--a1); font-weight:700; text-transform:uppercase;">${esc(ad.category)}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:0.8rem; color:var(--a1); font-weight:700; text-transform:uppercase;">${esc(ad.category)}</div>
+          <div style="font-size:0.75rem; color:var(--color-text-muted);">👁️ ${newViews} vues</div>
+        </div>
         <h2 style="font-size:1.2rem; font-weight:800;">${esc(ad.title)}</h2>
         <div style="font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:var(--color-accent);">${esc(priceText(ad.price))}</div>
         <div style="font-size:0.88rem; color:var(--color-text-muted);">📍 ${esc(locationText)}</div>
@@ -436,6 +460,7 @@
         ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Bonjour, je vous contacte suite à votre annonce « ' + ad.title + ' » sur CamerLink')}" target="_blank" style="display:block; text-align:center; padding:12px; margin-top:8px;">Discuter sur WhatsApp</a>` : ''}
       `;
       openModal('detailModal');
+      renderListings(); // Met à jour le compteur sur la grille
     }
   });
 
@@ -452,7 +477,7 @@
 
   $('phoneForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = $('authPhone').value + '@phone.camerlink.app';
+    const email = $('authPhone'].value + '@phone.camerlink.app';
     const password = $('phonePassword').value;
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
@@ -484,6 +509,7 @@
       description: $('adDesc').value,
       contact: $('adContact').value,
       image_url: imageUrl,
+      views: 0,
       etablissement_id: $('adAsShop').checked ? currentShopId : null
     });
     closeModal('publishModal');
