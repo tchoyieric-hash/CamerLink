@@ -94,7 +94,6 @@
     
     .card-actions-row { display:flex; gap:8px; margin-top:12px; }
     .whatsapp-link-card { flex:1; padding:10px; text-align:center; background:var(--color-whatsapp); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.85rem; }
-    .chat-btn-card { flex:1; padding:10px; text-align:center; background:var(--color-cta); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.85rem; }
     
     .state-msg { color:var(--color-text-muted); text-align:center; grid-column:1/-1; padding:40px 20px; }
 
@@ -119,6 +118,7 @@
     .chat-input-row { display: flex; gap: 8px; }
     .chat-input-row input { flex-grow: 1; margin: 0; }
     .chat-input-row button { padding: 0 16px; background: var(--color-cta); color: #fff; border-radius: var(--radius-md); font-weight: 700; }
+    .chat-btn-card { flex:1; padding:10px; text-align:center; background:var(--color-cta); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.85rem; }
 
     #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:var(--color-text-main); color:var(--color-bg); padding:11px 20px; border-radius:999px; font-weight:600; font-size:0.88rem; z-index:3000; opacity:0; pointer-events:none; transition:0.25s; }
     #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -249,16 +249,6 @@
   </div>
 </div>
 
-<div id="shopModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header">
-      <h3>Établissement</h3>
-      <button class="modal-close" data-close="shopModal">×</button>
-    </div>
-    <div id="shopBody"></div>
-  </div>
-</div>
-
 <!-- MODALE DE DÉTAIL D'UNE ANNONCE -->
 <div id="detailModal" class="modal-overlay">
   <div class="modal-sheet">
@@ -308,6 +298,7 @@
 
   let allListings = [], shops = [], shopsByUser = {}, currentShopId = null, currentUser = null, favorites = [];
   let activeChatReceiverId = null, activeAdId = null, chatSubscription = null;
+  let currentCategory = '';
 
   try { favorites = JSON.parse(localStorage.getItem('cl-favs') || '[]'); } catch (e) {}
 
@@ -358,16 +349,18 @@
   $('searchInput').addEventListener('input', renderListings);$('cityFilter').addEventListener('change', renderListings);
   $('priceFilter').addEventListener('change', renderListings);$('sortFilter').addEventListener('change', renderListings);
 
+  // Fonction de chargement avec affichage d'erreur intégré à l'écran si un problème survient
   async function loadListings() {
     try {
       const { data, error } = await sb.from('annonces').select('*').order('created_at', { ascending: false });
       if (error) throw error;
       allListings = data || [];
+      renderListings();
     } catch (err) {
       console.error('Erreur chargement annonces:', err);
-      allListings = [];
+      $('listings-grid').innerHTML = `<div class="state-msg" style="color:var(--color-danger);">Erreur Supabase : ${esc(err.message || err)}</div>`;
+      $('resultsCount').textContent = 'Erreur de chargement';
     }
-    renderListings();
   }
 
   async function loadShops() {
@@ -397,6 +390,14 @@
       </button>`).join('');
     if ($('adShopWrap'))$('adShopWrap').hidden = !mine;
   }
+
+  $('shops-container').addEventListener('click', (e) => {
+    const cta = e.target.closest('#proCta');
+    if (cta) {
+      if (!currentUser) { toast('Connectez-vous pour gérer votre shop'); openModal('authModal'); return; }
+      openModal('proModal');
+    }
+  });
 
   function renderListings() {
     const grid = $('listings-grid');
@@ -449,6 +450,19 @@
     }).join('');
   }
 
+  // Gestion des Favoris
+  document.addEventListener('click', (e) => {
+    const favBtn = e.target.closest('[data-fav]');
+    if (favBtn) {
+      const id = Number(favBtn.dataset.fav);
+      const idx = favorites.indexOf(id);
+      if (idx > -1) favorites.splice(idx, 1);
+      else favorites.push(id);
+      saveFavorites();
+      renderListings();
+    }
+  });
+
   // --- SYSTÈME DE DISCUSSION EN TEMPS RÉEL (SUPABASE REALTIME) ---
   async function openChat(receiverId, adId, adTitle) {
     if (!currentUser) {
@@ -479,7 +493,7 @@
     if (!error && data) {
       renderMessages(data);
     } else {
-      $('chatMessages').innerHTML = '<div style="text-align:center; color:var(--color-danger); font-size:0.85rem; padding:20px;">Erreur de chargement des messages (Vérifiez la table messages).</div>';
+      $('chatMessages').innerHTML = '<div style="text-align:center; color:var(--color-danger); font-size:0.85rem; padding:20px;">Erreur de chargement (Vérifiez que la table messages existe).</div>';
     }
 
     // Activer l'écoute en temps réel (Realtime)
@@ -494,7 +508,6 @@
         { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload) => {
           const msg = payload.new;
-          // Vérifier si le message appartient à la conversation active
           if (
             (msg.sender_id === currentUser.id && msg.receiver_id === activeChatReceiverId) ||
             (msg.sender_id === activeChatReceiverId && msg.receiver_id === currentUser.id)
@@ -521,7 +534,6 @@
 
   function appendMessageBubble(m) {
     const box = $('chatMessages');
-    // Supprimer le message "aucun message" s'il y est
     if (box.querySelector('div')?.textContent.includes('Aucun message') || box.querySelector('div')?.textContent.includes('Chargement')) {
       box.innerHTML = '';
     }
@@ -550,7 +562,7 @@
     }
   });
 
-  // Fermeture du chat propre (suppression de l'écouteur canal)
+  // Fermeture des modales et nettoyage du canal Realtime
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => {
     const modalId = b.dataset.close;
     closeModal(modalId);
@@ -592,7 +604,6 @@
         </div>
       `;
 
-      // Brancher l'action du bouton de chat interne
       const chatBtn = $('openChatBtn');
       if (chatBtn) {
         chatBtn.addEventListener('click', () => {
@@ -657,20 +668,6 @@
     closeModal('publishModal');
     toast('Offre publiée !');
     loadListings();
-  });
-
-  $('proForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    await sb.from('etablissements').upsert({
-      user_id: currentUser.id,
-      name: $('proName').value,
-      type: $('proType').value,
-      city: $('proCity').value,
-      contact: $('proContact').value
-    }, { onConflict: 'user_id' });
-    closeModal('proModal');
-    toast('Établissement enregistré !');
-    loadShops();
   });
 
   loadListings();
