@@ -273,8 +273,33 @@
   function renderShops() {
     $('shops-container').innerHTML = shops.length === 0 ? 
       `<div style="font-size:0.8rem; color:var(--color-text-muted); padding:10px;">Aucun shop actif</div>` :
-      shops.map(s => `<div class="shop-story-card"><div class="story-ring"><div class="story-avatar-wrap">${esc((s.name||'S').charAt(0))}</div></div><div class="shop-story-name">${esc(s.name)}</div></div>`).join('');
+      shops.map(s => `
+        <div class="shop-story-card" data-shop-id="${s.id}">
+          <div class="story-ring ${s.video_url ? 'has-video' : ''}">
+            <div class="story-avatar-wrap">
+              ${s.logo_url ? `<img src="${esc(s.logo_url)}">` : esc((s.name||'S').charAt(0))}
+            </div>
+          </div>
+          <div class="shop-story-name">${esc(s.name)}</div>
+        </div>
+      `).join('');
   }
+
+  // Événement de clic pour ouvrir le shop / artisan
+  document.getElementById('shops-container').addEventListener('click', (e) => {
+    const card = e.target.closest('[data-shop-id]');
+    if (!card) return;
+    const shopId = card.dataset.shopId;
+    const shop = shops.find(s => String(s.id) === String(shopId));
+    if (shop) {
+      // Si une URL de vidéo/reel existe, ou redirection vers les détails de la boutique
+      if (shop.video_url) {
+        window.open(shop.video_url, '_blank');
+      } else {
+        toast(`Boutique : ${shop.name}`);
+      }
+    }
+  });
 
   function renderListings() {
     const grid = $('listings-grid');
@@ -368,7 +393,7 @@
 
   $('phoneForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = $('authPhone').value + '@phone.camerlink.app';
+    const email = $('authPhone'].value + '@phone.camerlink.app';
     const password = $('phonePassword').value;
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
