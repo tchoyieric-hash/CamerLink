@@ -57,13 +57,25 @@
     .shops-container::-webkit-scrollbar { display:none; }
     
     .shop-story-card { display:flex; flex-direction:column; align-items:center; min-width:76px; max-width:76px; cursor:pointer; flex-shrink:0; }
-    .story-ring { width:70px; height:70px; border-radius:50%; padding:3px; background:linear-gradient(135deg, var(--a1), var(--a2)); display:flex; align-items:center; justify-content:center; position:relative; margin-bottom:6px; }
+    .story-ring { width:70px; height:70px; border-radius:50%; padding:3px; background:linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); display:flex; align-items:center; justify-content:center; position:relative; margin-bottom:6px; }
     .story-ring.has-video { background:linear-gradient(135deg, #FF3366, #FF9900, var(--a2)); }
     .story-avatar-wrap { width:100%; height:100%; border-radius:50%; background:var(--color-surface); border:2px solid var(--color-bg); overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; color:var(--color-text-main); }
     .story-avatar-wrap img { width:100%; height:100%; object-fit:cover; }
     .shop-story-name { font-size:0.75rem; font-weight:600; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; color:var(--color-text-main); }
     .shop-story-card.cta-card .story-ring { background:var(--color-surface); border:2px dashed var(--a1); padding:0; }
     .shop-story-card.cta-card .story-avatar-wrap { color:var(--a1); font-size:1.5rem; }
+
+    /* Styles pour la visionneuse de story */
+    .story-modal { position:fixed; inset:0; background:rgba(0,0,0,0.92); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:var(--container-padding); z-index:9999; opacity:0; visibility:hidden; transition:0.2s; }
+    .story-modal.active { opacity:1; visibility:visible; }
+    .story-modal-content { position:relative; width:100%; max-width:420px; height:100%; max-height:85vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px; }
+    .close-story-btn { position:absolute; top:10px; right:15px; background:none; border:none; color:#fff; font-size:32px; cursor:pointer; z-index:10; }
+    .story-header-info { display:flex; align-items:center; gap:10px; width:100%; margin-bottom:12px; }
+    .viewer-avatar { width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid var(--a1); }
+    #viewerShopName { color:#fff; font-weight:600; font-size:0.95rem; }
+    .story-media-container { width:100%; display:flex; justify-content:center; align-items:center; background:#000; border-radius:16px; overflow:hidden; max-height:60vh; }
+    .story-media-container img { width:100%; max-height:60vh; object-fit:contain; }
+    .story-caption { color:#fff; font-size:0.9rem; text-align:center; margin-top:15px; padding:0 10px; }
 
     .categories-scroll { padding:14px var(--container-padding); display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; max-width:1200px; margin:0 auto; }
     .categories-scroll::-webkit-scrollbar { display:none; }
@@ -147,6 +159,21 @@
   <div id="shops-container" class="shops-container"></div>
 </section>
 
+<!-- Modal Visionneuse de Story (24h) -->
+<div id="storyViewerModal" class="story-modal">
+  <div class="story-modal-content">
+    <button class="close-story-btn" onclick="closeStoryViewer()">&times;</button>
+    <div class="story-header-info">
+      <img id="viewerAvatar" src="" alt="" class="viewer-avatar">
+      <span id="viewerShopName">Nom de l'artisan</span>
+    </div>
+    <div class="story-media-container">
+      <img id="viewerMedia" src="" alt="Statut artisan">
+    </div>
+    <p id="viewerCaption" class="story-caption"></p>
+  </div>
+</div>
+
 <div class="categories-scroll" id="categoryChips"></div>
 
 <main>
@@ -193,6 +220,23 @@
 <div id="toast"></div>
 
 <script>
+// Fonctions globales de la visionneuse de stories
+function viewStory(mediaUrl, caption, shopName, avatarUrl) {
+  document.getElementById('viewerMedia').src = mediaUrl;
+  document.getElementById('viewerCaption').textContent = caption || '';
+  document.getElementById('viewerShopName').textContent = shopName;
+  document.getElementById('viewerAvatar').src = avatarUrl || 'https://via.placeholder.com/150';
+  document.getElementById('storyViewerModal').classList.add('active');
+}
+
+function closeStoryViewer() {
+  document.getElementById('storyViewerModal').classList.remove('active');
+}
+
+function openAddStoryModal() {
+  alert("Interface de publication de statut (24h) en cours d'ouverture...");
+}
+
 (() => {
   'use strict';
   const SUPABASE_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
@@ -210,7 +254,7 @@
   const $ = (id) => document.getElementById(id);
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  let allListings = [], shops = [], currentUser = null, favorites = [], currentCategory = '';
+  let allListings = [], stories = [], currentUser = null, favorites = [], currentCategory = '';
 
   try { favorites = JSON.parse(localStorage.getItem('cl-favs') || '[]'); } catch (e) {}
   function saveFavorites() {
@@ -261,19 +305,67 @@
       allListings = [];
     }
 
+    // Chargement dynamique des statuts d'artisans (stories de moins de 24h depuis Supabase)
     try {
-      const resShop = await sb.from('etablissements').select('*');
-      if (!resShop.error) shops = resShop.data || [];
-    } catch (e) { shops = []; }
+      const now = new Date().toISOString();
+      const resStories = await sb.from('artisan_stories')
+        .select(`id, media_url, caption, created_at, artisan_id, profiles (full_name, avatar_url, shop_name)`)
+        .gt('expires_at', now)
+        .order('created_at', { ascending: false });
+      
+      if (!resStories.error) {
+        stories = resStories.data || [];
+      }
+    } catch (e) {
+      console.warn("Erreur chargement stories:", e.message);
+      stories = [];
+    }
 
     renderListings();
     renderShops();
   }
 
   function renderShops() {
-    $('shops-container').innerHTML = shops.length === 0 ? 
-      `<div style="font-size:0.8rem; color:var(--color-text-muted); padding:10px;">Aucun shop actif</div>` :
-      shops.map(s => `<div class="shop-story-card"><div class="story-ring"><div class="story-avatar-wrap">${esc((s.name||'S').charAt(0))}</div></div><div class="shop-story-name">${esc(s.name)}</div></div>`).join('');
+    const container = $('shops-container');
+    
+    // Bouton fixe "Mon statut" au début
+    let html = `
+      <div class="shop-story-card cta-card" onclick="openAddStoryModal()">
+        <div class="story-ring"><div class="story-avatar-wrap">+</div></div>
+        <div class="shop-story-name">Mon statut</div>
+      </div>
+    `;
+
+    if (stories.length === 0) {
+      // S'il n'y a pas encore de story en base, on peut afficher un message discret ou laisser le bouton d'ajout seul
+      container.innerHTML = html + `<div style="font-size:0.8rem; color:var(--color-text-muted); padding:20px 10px; display:flex; align-items:center;">Aucun statut actif pour le moment</div>`;
+      return;
+    }
+
+    // Boucle sur les vrais statuts d'artisans actifs
+    stories.forEach(story => {
+      const shopName = story.profiles?.shop_name || story.profiles?.full_name || 'Artisan';
+      const avatar = story.profiles?.avatar_url || '';
+      const initial = esc((shopName).charAt(0));
+
+      const safeMedia = esc(story.media_url);
+      const safeCaption = esc(story.caption || '');
+      const safeShopName = esc(shopName);
+      const safeAvatar = esc(avatar);
+
+      html += `
+        <div class="shop-story-card" onclick="viewStory('${safeMedia}', '${safeCaption}', '${safeShopName}', '${safeAvatar}')">
+          <div class="story-ring">
+            <div class="story-avatar-wrap">
+              ${avatar ? `<img src="${avatar}" alt="${safeShopName}">` : initial}
+            </div>
+          </div>
+          <div class="shop-story-name">${safeShopName}</div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
   }
 
   function renderListings() {
@@ -368,7 +460,7 @@
 
   $('phoneForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = $('authPhone').value + '@phone.camerlink.app';
+    const email = $('authPhone'].value + '@phone.camerlink.app';
     const password = $('phonePassword').value;
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
