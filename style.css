@@ -38,6 +38,7 @@ header { position:fixed; top:0; left:0; right:0; height:var(--header-height); ba
 .search-input { flex:2; min-width:180px; }
 .city-select, .price-select { flex:1; min-width:130px; }
 
+/* Statuts / Stories Artisans */
 .shops-section { padding:18px var(--container-padding) 6px; max-width:1200px; margin:0 auto; width:100%; }
 .shops-section h2 { font-family:var(--font-display); font-size:1.05rem; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
 .shops-container { display:flex; gap:14px; overflow-x:auto; scrollbar-width:none; padding-bottom:6px; min-height:90px; }
@@ -45,14 +46,13 @@ header { position:fixed; top:0; left:0; right:0; height:var(--header-height); ba
 
 .shop-story-card { display:flex; flex-direction:column; align-items:center; min-width:76px; max-width:76px; cursor:pointer; flex-shrink:0; }
 .story-ring { width:70px; height:70px; border-radius:50%; padding:3px; background:linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); display:flex; align-items:center; justify-content:center; position:relative; margin-bottom:6px; }
-.story-ring.has-video { background:linear-gradient(135deg, #FF3366, #FF9900, var(--a2)); }
 .story-avatar-wrap { width:100%; height:100%; border-radius:50%; background:var(--color-surface); border:2px solid var(--color-bg); overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; color:var(--color-text-main); }
 .story-avatar-wrap img { width:100%; height:100%; object-fit:cover; }
 .shop-story-name { font-size:0.75rem; font-weight:600; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; color:var(--color-text-main); }
 .shop-story-card.cta-card .story-ring { background:var(--color-surface); border:2px dashed var(--a1); padding:0; }
 .shop-story-card.cta-card .story-avatar-wrap { color:var(--a1); font-size:1.5rem; }
 
-/* Styles pour la visionneuse de story */
+/* Visionneuse de story */
 .story-modal { position:fixed; inset:0; background:rgba(0,0,0,0.92); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:var(--container-padding); z-index:9999; opacity:0; visibility:hidden; transition:0.2s; }
 .story-modal.active { opacity:1; visibility:visible; }
 .story-modal-content { position:relative; width:100%; max-width:420px; height:100%; max-height:85vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px; }
@@ -74,15 +74,17 @@ main { padding:10px var(--container-padding) 80px; flex-grow:1; }
 .results-count { font-size:0.85rem; color:var(--color-text-muted); }
 .fav-toggle-btn { font-size:0.85rem; font-weight:600; color:var(--a1); padding:6px 12px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; }
 
-/* --- Style pro pour les cartes CamerLink --- */
+/* Grille et cartes pro Jumia-style */
 .listings-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1.5rem;
     padding: 1rem 0;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.card {
+.ad-card {
     background: #151621;
     border-radius: 12px;
     overflow: hidden;
@@ -91,77 +93,67 @@ main { padding:10px var(--container-padding) 80px; flex-grow:1; }
     display: flex;
     flex-direction: column;
     transition: transform 0.2s ease;
+    position: relative;
 }
 
-.card:hover {
+.ad-card:hover {
     transform: translateY(-3px);
     border-color: rgba(59, 130, 246, 0.5);
 }
 
-.card-image-container {
+.card-img-container {
     position: relative;
     width: 100%;
     height: 190px;
     background: #1f2030;
 }
 
-.card-image-container img {
+.card-img-container img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.card-content {
+.card-badge-top { position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; z-index:2; }
+.card-views { position:absolute; bottom:8px; left:8px; padding:2px 8px; background:rgba(0,0,0,0.6); border-radius:999px; font-size:0.7rem; color:white; z-index:2; }
+
+.card-body {
     padding: 1.2rem;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 }
 
-.card-title {
+.ad-title {
     font-size: 1.05rem;
     font-weight: 700;
     color: #ffffff;
     margin-bottom: 0.5rem;
 }
 
-.card-price {
+.ad-price {
     font-size: 1.2rem;
     font-weight: 800;
     color: #10b981;
     margin-bottom: 0.8rem;
 }
 
-.card-description {
+.ad-desc {
     font-size: 0.85rem;
     color: #94a3b8;
     margin-bottom: 1rem;
     line-height: 1.4;
+    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
 }
 
-/* Bouton d'action unique style Jumia */
-.btn-commander {
-    width: 100%;
-    background: #f97316;
-    color: #ffffff;
-    border: none;
-    padding: 0.7rem;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    margin-top: auto;
-    transition: background 0.2s;
-}
+.ad-rating { display:flex; align-items:center; gap:4px; font-size:0.82rem; font-weight:600; color:var(--color-accent); margin-bottom:10px; }
+.ad-rating span { color:var(--color-text-muted); font-weight:normal; }
 
-.btn-commander:hover {
-    background: #ea580c;
-}
+.card-meta { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:10px; border-top:1px solid var(--color-border); margin-bottom:10px; }
+.ad-city { background:rgba(34,211,238,0.08); padding:3px 8px; border-radius:999px; font-size:0.75rem; color:var(--a1); font-weight:600; }
 
-/* Autres éléments globaux */
 .state-msg { color:var(--color-text-muted); text-align:center; grid-column:1/-1; padding:40px 20px; }
+
 .modal-overlay { position:fixed; inset:0; background:rgba(2,3,10,0.85); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:var(--container-padding); z-index:2000; opacity:0; visibility:hidden; transition:0.2s; }
 .modal-overlay.active { opacity:1; visibility:visible; }
 .modal-sheet { background:var(--color-surface); width:100%; max-width:450px; border-radius:var(--radius-xl); padding:22px; border:1px solid var(--color-border); max-height:90vh; overflow-y:auto; }
