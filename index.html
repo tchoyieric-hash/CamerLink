@@ -300,10 +300,8 @@
       const rating = Number(ad.note_moyenne || 0).toFixed(1);
       const reviewCount = ad.nb_avis || 0;
       
-      // Nettoyage rigoureux du numéro pour WhatsApp et Appel (suppression des espaces et caractères non numériques)
       const rawContact = String(ad.contact || '');
       const cleanContact = rawContact.replace(/\D/g, ''); 
-      // Si le numéro commence par 6 sans indicatif pays, on ajoute 237
       const whatsappNumber = cleanContact.startsWith('237') ? cleanContact : '237' + cleanContact;
       const viewsCount = ad.views || 0;
 
@@ -330,7 +328,7 @@
 
           ${cleanContact ? `
             <div style="display: flex; gap: 8px; margin-top: 10px;">
-              <a href="https://wa.me/${whatsappNumber}" target="_blank" style="flex: 1; background: #22C55E; color: white; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">WhatsApp</a>
+              <a href="https://api.whatsapp.com/send?phone=${whatsappNumber}" target="_blank" style="flex: 1; background: #22C55E; color: white; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">WhatsApp</a>
               <a href="tel:${rawContact}" style="flex: 1; background: #10B981; color: white; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">Appel</a>
             </div>
           ` : ''}
