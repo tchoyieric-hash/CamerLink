@@ -333,16 +333,26 @@
   $('priceFilter').addEventListener('change', renderListings);$('sortFilter').addEventListener('change', renderListings);
 
   async function loadListings() {
-    const { data } = await sb.from('annonces').select('*').order('created_at', { ascending: false });
-    allListings = data || [];
+    try {
+      const { data, error } = await sb.from('annonces').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      allListings = data || [];
+    } catch (err) {
+      console.error('Erreur chargement annonces:', err);
+      allListings = [];
+    }
     renderListings();
   }
 
   async function loadShops() {
-    const { data } = await sb.from('etablissements').select('*');
-    shops = data || [];
-    shopsByUser = {}; shopsById = {};
-    shops.forEach((s) => { shopsByUser[s.user_id] = s; shopsById[s.id] = s; });
+    try {
+      const { data } = await sb.from('etablissements').select('*');
+      shops = data || [];
+      shopsByUser = {}; shopsById = {};
+      shops.forEach((s) => { shopsByUser[s.user_id] = s; shopsById[s.id] = s; });
+    } catch (e) {
+      shops = [];
+    }
     renderShops();
   }
 
@@ -376,7 +386,6 @@
              (!term || ad.title.toLowerCase().includes(term));
     });
 
-    // Tri intelligent
     filtered.sort((a, b) => {
       if (sortBy === 'price-asc') return Number(a.price) - Number(b.price);
       if (sortBy === 'price-desc') return Number(b.price) - Number(a.price);
@@ -414,7 +423,6 @@
     }).join('');
   }
 
-  // Clic global (Favoris, Bouton Shop, et Ouverture des Détails + Incrémentation des vues)
   document.addEventListener('click', async (e) => {
     const fav = e.target.closest('[data-fav]');
     if (fav) {
@@ -439,7 +447,6 @@
       const ad = allListings.find(a => a.id === id);
       if (!ad) return;
 
-      // Incrémenter les vues dans Supabase en arrière-plan
       const newViews = (ad.views || 0) + 1;
       ad.views = newViews;
       sb.from('annonces').update({ views: newViews }).eq('id', id).then(() => {});
@@ -460,7 +467,7 @@
         ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Bonjour, je vous contacte suite à votre annonce « ' + ad.title + ' » sur CamerLink')}" target="_blank" style="display:block; text-align:center; padding:12px; margin-top:8px;">Discuter sur WhatsApp</a>` : ''}
       `;
       openModal('detailModal');
-      renderListings(); // Met à jour le compteur sur la grille
+      renderListings();
     }
   });
 
@@ -477,7 +484,7 @@
 
   $('phoneForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = $('authPhone'].value + '@phone.camerlink.app';
+    const email = $('authPhone').value + '@phone.camerlink.app';
     const password = $('phonePassword').value;
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
@@ -524,7 +531,7 @@
       name: $('proName').value,
       type: $('proType').value,
       city: $('proCity').value,
-      contact: $('proContact').value
+      contact: $('proContact'].value
     }, { onConflict: 'user_id' });
     closeModal('proModal');
     toast('Établissement enregistré !');
