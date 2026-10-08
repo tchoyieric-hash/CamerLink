@@ -317,14 +317,15 @@
 
           <div class="card-meta">
             <span class="ad-city">📍 ${esc(ad.city)}</span>
-            <div style="display:flex; gap:6px;">
-              ${cleanContact ? `
-                <a href="https://wa.me/237${cleanContact}" target="_blank" class="btn-icon" style="width:32px; height:32px; background:rgba(34,197,94,0.15); border-color:var(--color-whatsapp); font-size:0.9rem;" title="WhatsApp">💬</a>
-                <a href="tel:${cleanContact}" class="btn-icon" style="width:32px; height:32px; background:rgba(16,185,129,0.15); border-color:var(--color-call); font-size:0.9rem;" title="Appeler">📞</a>
-              ` : ''}
-            </div>
             <span class="ad-price">${Number(ad.price).toLocaleString('fr-FR')} FCFA</span>
           </div>
+
+          ${cleanContact ? `
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <a href="https://wa.me/237${cleanContact}" target="_blank" style="flex: 1; background: #22C55E; color: white; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">WhatsApp</a>
+              <a href="tel:${cleanContact}" style="flex: 1; background: #10B981; color: white; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">Appel</a>
+            </div>
+          ` : ''}
         </div>
       </article>`;
     }).join('');
