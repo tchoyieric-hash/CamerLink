@@ -285,14 +285,12 @@
       `).join('');
   }
 
-  // Événement de clic pour ouvrir le shop / artisan
-  document.getElementById('shops-container').addEventListener('click', (e) => {
+  $('shops-container').addEventListener('click', (e) => {
     const card = e.target.closest('[data-shop-id]');
     if (!card) return;
     const shopId = card.dataset.shopId;
     const shop = shops.find(s => String(s.id) === String(shopId));
     if (shop) {
-      // Si une URL de vidéo/reel existe, ou redirection vers les détails de la boutique
       if (shop.video_url) {
         window.open(shop.video_url, '_blank');
       } else {
@@ -376,7 +374,7 @@
 
   $('pubBtn').addEventListener('click', () => {
     if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
-    openModal('publishModal');
+    openModal('publishManager') || openModal('publishModal');
   });
 
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
@@ -393,12 +391,19 @@
 
   $('phoneForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = $('authPhone'].value + '@phone.camerlink.app';
-    const password = $('phonePassword').value;
+    const phoneInput = $('authPhone');
+    const passInput = $('phonePassword');
+    if (!phoneInput || !passInput) return;
+    const email = phoneInput.value + '@phone.camerlink.app';
+    const password = passInput.value;
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
       const signUp = await sb.auth.signUp({ email, password });
-      if (signUp.error) { $('phoneError').textContent = 'Erreur d’authentification'; return; }
+      if (signUp.error) { 
+        const errEl = $('phoneError');
+        if (errEl) errEl.textContent = 'Erreur d’authentification'; 
+        return; 
+      }
     }
     closeModal('authModal');
     toast('Connecté !');
