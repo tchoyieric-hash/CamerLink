@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="CamerLink · La plateforme de référence des annonces, services et commerces au Cameroun.">
   <title>CamerLink · Annonces et commerces locaux au Cameroun</title>
-  <meta name="theme-color" content="#050509">
+  <meta name="theme-color" content="#050609">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,7 +76,8 @@
     .fav-toggle-btn { font-size:0.85rem; font-weight:600; color:var(--a1); padding:6px 12px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; }
 
     #listings-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; max-width:1200px; margin:0 auto; }
-    .ad-card { background:var(--color-surface); border-radius:var(--radius-xl); overflow:hidden; border:1px solid var(--color-border); display:flex; flex-direction:column; position:relative; }
+    .ad-card { background:var(--color-surface); border-radius:var(--radius-xl); overflow:hidden; border:1px solid var(--color-border); display:flex; flex-direction:column; position:relative; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .ad-card:hover { border-color:var(--a1); box-shadow:0 0 30px rgba(34, 211, 238, 0.25); transform:translateY(-4px); }
     .card-img-container { position:relative; width:100%; height:165px; background:var(--color-bg); }
     .card-img-container img { width:100%; height:100%; object-fit:cover; }
     .card-badge-top { position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; text-transform:uppercase; }
@@ -89,14 +90,11 @@
     .shop-link { align-self:flex-start; margin-bottom:6px; padding:2px 10px; border:1px solid var(--color-border); border-radius:999px; font-size:0.74rem; font-weight:600; color:var(--a1); background:rgba(34,211,238,0.05); }
     .ad-desc { font-size:0.85rem; color:var(--color-text-muted); margin-bottom:10px; flex-grow:1; white-space:pre-line; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
     .card-meta { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:10px; border-top:1px solid var(--color-border); }
-    .ad-city { font-size:0.8rem; color:var(--color-text-muted); }
+    .ad-city { background:rgba(34,211,238,0.08); padding:3px 8px; border-radius:999px; border:1px solid rgba(34,211,238,0.2); font-size:0.75rem; font-weight:600; color:var(--a1); }
     .ad-price { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--color-accent); }
     
     .card-actions-row { display:flex; gap:8px; margin-top:12px; }
     .whatsapp-link-card { flex:1; padding:10px; text-align:center; background:var(--color-whatsapp); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.85rem; }
-    .btn-share { width:42px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; }
-    .btn-delete { width:100%; margin-top:8px; padding:9px; border:1px solid var(--color-danger); color:var(--color-danger); border-radius:var(--radius-md); font-weight:700; font-size:0.82rem; }
-    .btn-report { width:100%; margin-top:8px; padding:8px; color:var(--color-text-muted); font-size:0.78rem; font-weight:600; }
     
     .state-msg { color:var(--color-text-muted); text-align:center; grid-column:1/-1; padding:40px 20px; }
 
@@ -110,19 +108,8 @@
     .form-group label { display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px; color:var(--color-text-muted); }
     .form-sheet-el { width:100%; padding:12px; background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); color:var(--color-text-main); font-size:0.95rem; }
     .btn-submit-modal { width:100%; padding:13px; background:linear-gradient(90deg,var(--a1),var(--a2)); color:white; border-radius:var(--radius-md); font-weight:700; margin-top:8px; }
-    .auth-tabs { display:flex; gap:8px; margin-bottom:16px; }
-    .auth-tab { flex:1; padding:9px; border-radius:999px; border:1px solid var(--color-border); font-weight:700; font-size:0.85rem; color:var(--color-text-muted); }
-    .auth-tab.active { background:linear-gradient(90deg,var(--a1),var(--a2)); border-color:transparent; color:#fff; }
     .form-error { color:var(--color-danger); font-size:0.82rem; margin-top:10px; }
-    .form-hint { font-size:0.78rem; color:var(--color-text-muted); margin-top:6px; }
     .img-preview { margin-top:8px; width:100%; max-height:160px; object-fit:cover; border-radius:var(--radius-md); display:none; }
-
-    .shop-head { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
-    .shop-head .shop-logo { width:64px; height:64px; margin:0; flex-shrink:0; }
-    .shop-info { font-size:0.88rem; color:var(--color-text-muted); margin-bottom:6px; }
-    .shop-ads { margin-top:14px; border-top:1px solid var(--color-border); padding-top:12px; }
-    .shop-ad { display:flex; justify-content:space-between; gap:10px; padding:8px 0; font-size:0.88rem; border-bottom:1px solid var(--color-border); }
-    .shop-ad b { color:var(--color-accent); }
 
     #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:var(--color-text-main); color:var(--color-bg); padding:11px 20px; border-radius:999px; font-weight:600; font-size:0.88rem; z-index:3000; opacity:0; pointer-events:none; transition:0.25s; }
     #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -217,6 +204,10 @@
       <div class="form-group"><label>Catégorie</label><select class="form-sheet-el" id="adCategory"></select></div>
       <div class="form-group"><label>Titre</label><input class="form-sheet-el" id="adTitle" type="text" required></div>
       <div class="form-group"><label>Ville</label><select class="form-sheet-el" id="adCity"></select></div>
+      <div class="form-group">
+        <label>Quartier / Précision</label>
+        <input class="form-sheet-el" id="adQuartier" type="text" required placeholder="Ex: Bastos, Akwa, Bonapriso...">
+      </div>
       <div class="form-group"><label>Prix (FCFA)</label><input class="form-sheet-el" id="adPrice" type="number" required></div>
       <div class="form-group"><label>Photo</label><input class="form-sheet-el" id="adImage" type="file" accept="image/*" required><img id="imgPreview" class="img-preview"></div>
       <div class="form-group"><label>Description</label><textarea class="form-sheet-el" id="adDesc" rows="3" required></textarea></div>
@@ -376,6 +367,7 @@
     grid.innerHTML = filtered.map((ad) => {
       const wa = waNumber(ad.contact);
       const isFav = favorites.includes(ad.id);
+      const locationText = ad.quartier ? `${ad.quartier} · ${ad.city}` : ad.city;
       return `
       <article class="ad-card">
         <div class="card-img-container">
@@ -387,7 +379,7 @@
           <h3 class="ad-title">${esc(ad.title)}</h3>
           <p class="ad-desc">${esc(ad.description)}</p>
           <div class="card-meta">
-            <span class="ad-city">📍 ${esc(ad.city)}</span>
+            <span class="ad-city">📍 ${esc(locationText)}</span>
             <span class="ad-price">${esc(priceText(ad.price))}</span>
           </div>
           <div class="card-actions-row">
@@ -454,6 +446,7 @@
       category: $('adCategory').value,
       title: $('adTitle').value,
       city: $('adCity').value,
+      quartier: $('adQuartier').value.trim(),
       price: Number($('adPrice').value),
       description: $('adDesc').value,
       contact: $('adContact').value,
