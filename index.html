@@ -29,7 +29,7 @@
     body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(600px 400px at 85% -5%,rgba(139,92,246,0.22),transparent 70%),radial-gradient(500px 380px at 0% 20%,rgba(34,211,238,0.14),transparent 70%); }
     a { text-decoration:none; color:inherit; }
     button { border:none; background:none; cursor:pointer; font-family:inherit; color:inherit; }
-    img { max-width:100%; display:block; }
+    img, video { max-width:100%; display:block; }
 
     #net-status { position:fixed; bottom:0; left:0; right:0; background:var(--color-danger); color:#fff; text-align:center; font-size:0.75rem; font-weight:700; padding:4px; z-index:4000; transition:transform 0.3s; transform:translateY(100%); }
     #net-status.offline { transform:translateY(0); }
@@ -55,17 +55,21 @@
     .search-input { flex:2; min-width:180px; }
     .city-select, .price-select { flex:1; min-width:130px; }
 
-    .shops-section { padding:18px var(--container-padding) 6px; }
-    .shops-section h2 { font-family:var(--font-display); font-size:1.05rem; font-weight:700; margin-bottom:12px; }
-    .shops-container { display:flex; gap:12px; overflow-x:auto; scrollbar-width:none; padding-bottom:4px; }
+    /* SECTION REELS / STATUTS ARTISANS */
+    .shops-section { padding:18px var(--container-padding) 6px; max-width:1200px; margin:0 auto; width: 100%; }
+    .shops-section h2 { font-family:var(--font-display); font-size:1.05rem; font-weight:700; margin-bottom:12px; display: flex; align-items:center; gap: 6px; }
+    .shops-container { display:flex; gap:14px; overflow-x:auto; scrollbar-width:none; padding-bottom:6px; }
     .shops-container::-webkit-scrollbar { display:none; }
-    .shop-card { min-width:150px; max-width:150px; padding:14px 12px; text-align:center; background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-lg); flex-shrink:0; }
-    .shop-logo { width:52px; height:52px; margin:0 auto 8px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:#fff; background:linear-gradient(135deg,var(--a1),var(--a2)); }
-    .shop-logo img { width:100%; height:100%; object-fit:cover; }
-    .shop-name { font-size:0.85rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .shop-type { font-size:0.7rem; color:var(--color-text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .shop-cta { border:1px dashed var(--a1); background:transparent; }
-    .shop-cta .shop-logo { background:transparent; border:1px dashed var(--a1); color:var(--a1); }
+    
+    .shop-story-card { display: flex; flex-direction: column; align-items: center; min-width: 76px; max-width: 76px; cursor: pointer; flex-shrink: 0; }
+    .story-ring { width: 70px; height: 70px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--a1), var(--a2)); display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 6px; box-shadow: 0 4px 14px rgba(139,92,246,0.3); }
+    .story-ring.has-video { background: linear-gradient(135deg, #FF3366, #FF9900, var(--a2)); }
+    .story-avatar-wrap { width: 100%; height: 100%; border-radius: 50%; background: var(--color-surface); border: 2px solid var(--color-bg); overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; color: var(--color-text-main); }
+    .story-avatar-wrap img, .story-avatar-wrap video { width: 100%; height: 100%; object-fit: cover; }
+    .shop-story-name { font-size: 0.75rem; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; color: var(--color-text-main); }
+    
+    .shop-story-card.cta-card .story-ring { background: dashed 2px var(--a1); padding: 0; background: var(--color-surface); }
+    .shop-story-card.cta-card .story-avatar-wrap { border: none; color: var(--a1); font-size: 1.5rem; }
 
     .categories-scroll { padding:14px var(--container-padding); display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; max-width:1200px; margin:0 auto; }
     .categories-scroll::-webkit-scrollbar { display:none; }
@@ -100,7 +104,7 @@
     
     .state-msg { color:var(--color-text-muted); text-align:center; grid-column:1/-1; padding:40px 20px; }
 
-    .modal-overlay { position:fixed; inset:0; background:rgba(2,3,10,0.8); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:var(--container-padding); z-index:2000; opacity:0; visibility:hidden; transition:0.2s; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(2,3,10,0.85); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:var(--container-padding); z-index:2000; opacity:0; visibility:hidden; transition:0.2s; }
     .modal-overlay.active { opacity:1; visibility:visible; }
     .modal-sheet { background:var(--color-surface); width:100%; max-width:450px; border-radius:var(--radius-xl); padding:22px; border:1px solid var(--color-border); max-height:90vh; overflow-y:auto; }
     .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
@@ -112,6 +116,21 @@
     .btn-submit-modal { width:100%; padding:13px; background:linear-gradient(90deg,var(--a1),var(--a2)); color:white; border-radius:var(--radius-md); font-weight:700; margin-top:8px; }
     .form-error { color:var(--color-danger); font-size:0.82rem; margin-top:10px; }
     .img-preview { margin-top:8px; width:100%; max-height:160px; object-fit:cover; border-radius:var(--radius-md); display:none; }
+
+    /* REEL / STORY VIEWER MODAL */
+    .reel-modal-sheet { background: #000; padding: 0; max-width: 400px; height: 80vh; max-height: 700px; border-radius: 24px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--color-border); }
+    .reel-video-container { width: 100%; height: 100%; position: relative; background: #111; display: flex; align-items: center; justify-content: center; }
+    .reel-video-container video { width: 100%; height: 100%; object-fit: cover; }
+    .reel-overlay-content { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 30%, transparent 50%, rgba(0,0,0,0.85) 100%); display: flex; flex-direction: column; justify-content: space-between; padding: 16px; z-index: 5; pointer-events: none; }
+    .reel-header-row { display: flex; justify-content: space-between; align-items: center; pointer-events: auto; }
+    .reel-shop-info { display: flex; align-items: center; gap: 10px; }
+    .reel-avatar { width: 38px; height: 38px; border-radius: 50%; overflow: hidden; border: 2px solid var(--a1); background: var(--color-surface); }
+    .reel-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .reel-shop-name { font-weight: 700; font-size: 0.9rem; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+    .reel-shop-city { font-size: 0.72rem; color: var(--color-text-muted); }
+    .reel-footer-actions { display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
+    .reel-desc { font-size: 0.85rem; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); margin-bottom: 4px; }
+    .reel-buttons { display: flex; gap: 8px; }
 
     .chat-messages-box { height: 260px; overflow-y: auto; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
     .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 0.88rem; word-break: break-word; }
@@ -171,8 +190,9 @@
   </div>
 </section>
 
+<!-- SECTION STATUTS / REELS DES ARTISANS -->
 <section class="shops-section">
-  <h2>🏪 Établissements</h2>
+  <h2>⚡ Statuts & Reels Artisans</h2>
   <div id="shops-container" class="shops-container"></div>
 </section>
 
@@ -243,17 +263,48 @@
 <div id="proModal" class="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-header">
-      <h3>Mon établissement</h3>
+      <h3>Mon établissement & Reel</h3>
       <button class="modal-close" data-close="proModal">×</button>
     </div>
     <form id="proForm">
-      <div class="form-group"><label>Nom</label><input class="form-sheet-el" id="proName" type="text" required></div>
-      <div class="form-group"><label>Type</label><select class="form-sheet-el" id="proType"><option>Restaurant</option><option>Boutique</option><option>Services</option></select></div>
+      <div class="form-group"><label>Nom de l'entreprise / Artiste</label><input class="form-sheet-el" id="proName" type="text" required></div>
+      <div class="form-group"><label>Type</label><select class="form-sheet-el" id="proType"><option>Artisan / Service</option><option>Restaurant</option><option>Boutique</option></select></div>
       <div class="form-group"><label>Ville</label><select class="form-sheet-el" id="proCity"></select></div>
-      <div class="form-group"><label>Téléphone</label><input class="form-sheet-el" id="proContact" type="tel" required></div>
-      <button type="submit" class="btn-submit-modal" id="proSubmit">Enregistrer</button>
+      <div class="form-group"><label>Téléphone / WhatsApp</label><input class="form-sheet-el" id="proContact" type="tel" required></div>
+      <div class="form-group"><label>Logo (Image)</label><input class="form-sheet-el" id="proLogo" type="file" accept="image/*"></div>
+      <div class="form-group"><label>🎬 Vidéo Reel / Statut (Court métrage de vos réalisations)</label><input class="form-sheet-el" id="proVideo" type="file" accept="video/*"></div>
+      <div class="form-group"><label>Légende de votre Reel</label><input class="form-sheet-el" id="proReelDesc" type="text" placeholder="Ex: Démonstration de notre savoir-faire..."></div>
+      <button type="submit" class="btn-submit-modal" id="proSubmit">Enregistrer le shop & Reel</button>
       <p class="form-error" id="proError"></p>
     </form>
+  </div>
+</div>
+
+<!-- MODALE DE LECTURE REEL / STATUT -->
+<div id="reelModal" class="modal-overlay">
+  <div class="reel-modal-sheet">
+    <div class="reel-video-container">
+      <video id="reelPlayer" autoplay playsinline loop></video>
+      <div class="reel-overlay-content">
+        <div class="reel-header-row">
+          <div class="reel-shop-info">
+            <div class="reel-avatar" id="reelAvatarWrap"></div>
+            <div>
+              <div class="reel-shop-name" id="reelShopName">Nom</div>
+              <div class="reel-shop-city" id="reelShopCity">Ville</div>
+            </div>
+          </div>
+          <button class="modal-close" data-close="reelModal" style="color:#fff; font-size:1.8rem; text-shadow:0 1px 3px rgba(0,0,0,0.8);">×</button>
+        </div>
+        <div class="reel-footer-actions">
+          <div class="reel-desc" id="reelDescText"></div>
+          <div class="reel-buttons">
+            <a id="reelWaBtn" class="whatsapp-link-card" href="#" target="_blank">WhatsApp</a>
+            <a id="reelCallBtn" class="call-link-card" href="#">📞 Appel</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -398,16 +449,30 @@
   function renderShops() {
     const mine = currentUser && shopsByUser[currentUser.id];
     currentShopId = mine ? mine.id : null;
-    const cta = `<button class="shop-card shop-cta" id="proCta">
-      <div class="shop-logo">${mine ? '✎' : '+'}</div>
-      <div class="shop-name">${mine ? 'Mon shop' : 'Créer un shop'}</div>
-    </button>`;
-    $('shops-container').innerHTML = cta + shops.map((s) => `
-      <button class="shop-card" data-shop="${esc(s.id)}">
-        <div class="shop-logo">${s.logo_url ? `<img src="${esc(s.logo_url)}">` : esc(s.name.charAt(0))}</div>
-        <div class="shop-name">${esc(s.name)}</div>
-        <div class="shop-type">${esc(s.city)}</div>
-      </button>`).join('');
+    
+    // Bouton de création / édition de son shop & reel
+    const cta = `<div class="shop-story-card cta-card" id="proCta">
+      <div class="story-ring">
+        <div class="story-avatar-wrap">${mine ? '✎' : '+'}</div>
+      </div>
+      <div class="shop-story-name">${mine ? 'Mon Shop' : 'Créer Reel'}</div>
+    </div>`;
+
+    const shopsHTML = shops.map((s) => {
+      const hasVideo = !!s.video_url;
+      const avatarContent = s.logo_url ? `<img src="${esc(s.logo_url)}">` : esc(s.name.charAt(0));
+      return `
+      <div class="shop-story-card" data-shop-id="${s.id}">
+        <div class="story-ring ${hasVideo ? 'has-video' : ''}">
+          <div class="story-avatar-wrap">
+            ${avatarContent}
+          </div>
+        </div>
+        <div class="shop-story-name">${esc(s.name)}</div>
+      </div>`;
+    }).join('');
+
+    $('shops-container').innerHTML = cta + shopsHTML;
     if ($('adShopWrap'))$('adShopWrap').hidden = !mine;
   }
 
@@ -415,8 +480,117 @@
     const cta = e.target.closest('#proCta');
     if (cta) {
       if (!currentUser) { toast('Connectez-vous pour gérer votre shop'); openModal('authModal'); return; }
+      if (mineShopData()) {
+        // Pré-remplir si existant
+        const m = mineShopData();
+        $('proName').value = m.name || '';
+        $('proType').value = m.type \vert{}\vert{} 'Artisan / Service';$('proCity').value = m.city || 'Yaoundé';
+        $('proContact').value = m.contact \vert{}\vert{} '';$('proReelDesc').value = m.reel_desc || '';
+      }
       openModal('proModal');
+      return;
     }
+
+    const card = e.target.closest('[data-shop-id]');
+    if (card) {
+      const shopId = card.dataset.shopId;
+      const shop = shops.find(s => s.id == shopId);
+      if (!shop) return;
+
+      if (!shop.video_url) {
+        toast("Cet artisan n'a pas encore posté de Reel vidéo.");
+        return;
+      }
+
+      // Ouvrir le lecteur de Reel
+      const player = $('reelPlayer');
+      player.src = shop.video_url;
+      $('reelShopName').textContent = shop.name;
+      $('reelShopCity').textContent = shop.city;
+      $('reelDescText').textContent = shop.reel_desc || shop.name + ' · CamerLink';
+      
+      const avatarHtml = shop.logo_url ? `<img src="${esc(shop.logo_url)}">` : `<span>${esc(shop.name.charAt(0))}</span>`;
+      $('reelAvatarWrap').innerHTML = avatarHtml;
+
+      const wa = waNumber(shop.contact);
+      $('reelWaBtn').href = `https://wa.me/${wa}?text=${encodeURIComponent('Bonjour, je vous contacte suite à votre Reel sur CamerLink')}`;
+      $('reelCallBtn').href = `tel:+${wa}`;
+
+      openModal('reelModal');
+      player.play().catch(() => {});
+    }
+  });
+
+  function mineShopData() {
+    return currentUser && shopsByUser[currentUser.id] ? shopsByUser[currentUser.id] : null;
+  }
+
+  // Fermer la vidéo quand on ferme la modale reel
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => {
+    const modalId = b.dataset.close;
+    closeModal(modalId);
+    if (modalId === 'reelModal') {
+      const player = $('reelPlayer');
+      player.pause();
+      player.src = '';
+    }
+    if (modalId === 'chatModal' && chatSubscription) {
+      sb.removeChannel(chatSubscription);
+      chatSubscription = null;
+    }
+  }));
+
+  $('proForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!currentUser) return;
+
+    let logoUrl = mineShopData()?.logo_url || null;
+    let videoUrl = mineShopData()?.video_url || null;
+
+    const logoFile = $('proLogo').files[0];
+    if (logoFile) {
+      const path = `${currentUser.id}/logo_${Date.now()}.jpg`;
+      await sb.storage.from(BUCKET).upload(path, logoFile);
+      logoUrl = sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+    }
+
+    const videoFile = $('proVideo').files[0];
+    if (videoFile) {
+      const path = `${currentUser.id}/reel_${Date.now()}.mp4`;
+      await sb.storage.from(BUCKET).upload(path, videoFile);
+      videoUrl = sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+    }
+
+    const payload = {
+      user_id: currentUser.id,
+      name: $('proName').value,
+      type: $('proType').value,
+      city: $('proCity').value,
+      contact: $('proContact').value,
+      logo_url: logoUrl,
+      video_url: videoUrl,
+      reel_desc: $('proReelDesc').value
+    };
+
+    const existing = mineShopData();
+    let error;
+    if (existing) {
+      const res = await sb.from('etablissements').update(payload).eq('id', existing.id);
+      error = res.error;
+    } else {
+      const res = await sb.from('etablissements').insert(payload);
+      error = res.error;
+    }
+
+    if (error) {
+      $('proError').textContent = "Erreur lors de l'enregistrement";
+      console.error(error);
+      return;
+    }
+
+    closeModal('proModal');
+    toast('Shop & Reel mis à jour !');
+    loadShops();
   });
 
   function renderListings() {
@@ -652,17 +826,8 @@
       .subscribe();
   }
 
-  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => {
-    const modalId = b.dataset.close;
-    closeModal(modalId);
-    if (modalId === 'chatModal' && chatSubscription) {
-      sb.removeChannel(chatSubscription);
-      chatSubscription = null;
-    }
-  }));
-
   document.addEventListener('click', async (e) => {
-    if (e.target.closest('[data-fav]') || e.target.closest('.whatsapp-link-card') || e.target.closest('.call-link-card')) return;
+    if (e.target.closest('[data-fav]') || e.target.closest('.whatsapp-link-card') || e.target.closest('.call-link-card') || e.target.closest('[data-shop-id]') || e.target.closest('#proCta')) return;
 
     const card = e.target.closest('[data-detail-id]');
     if (card) {
@@ -748,7 +913,7 @@
   });
 
   $('adForm').addEventListener('submit', async (e) => {
-    e.Item = e.target;
+    e.preventDefault();
     const file = $('adImage').files[0];
     const path = `${currentUser.id}/${Date.now()}.jpg`;
     await sb.storage.from(BUCKET).upload(path, file);
@@ -762,6 +927,7 @@
       quartier: $('adQuartier').value.trim(),
       price: Number($('adPrice').value),
       description: $('adDesc').value,
+      content: $('adDesc').value,
       contact: $('adContact').value,
       image_url: imageUrl,
       views: 0,
