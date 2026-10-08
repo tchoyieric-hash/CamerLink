@@ -5,11 +5,23 @@
   const VBUCKET = 'annonces-videos';
   const MAX_MB = 20;
   const TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
+  
+  const CATEGORIES = [
+    { value: 'Services', chip: '🛠 Services' },
+    { value: 'Restaurants', chip: '🍽 Gastronomie' },
+    { value: 'Boutiques', chip: '🛍 Boutiques' },
+    { value: 'Immobilier', chip: '🏠 Immobilier' }
+  ];
+  const CITIES = ['Yaoundé', 'Douala', 'Kribi', 'Bafoussam', 'Garoua'];
+
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]
   ));
+  
   const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { autoRefreshToken: false } });
+
+  let allListings = [], stories = [], videos = null, currentUser = null, currentCategory = '';
 
   function toast(msg) {
     const t = $('toast');
@@ -20,19 +32,42 @@
     toast._t = setTimeout(() => t.classList.remove('show'), 3500);
   }
 
+  const openModal = (id) => $(id).classList.add('active');
+  const closeModal = (id) => $(id).classList.remove('active');
+
+  // Gestion des thèmes
+  $('themeBtn').addEventListener('click', () => {
+    const html = document.documentElement;
+    html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  // Initialisation filtres et selects
+  $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+  $('adCity').innerHTML = CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+  $('adCategory').innerHTML = CATEGORIES.map(c => `<option value="${c.value}">${c.value}</option>`).join('');
+  $('categoryChips').innerHTML = '<button class="cat-chip active" data-cat="">✨ Tout voir</button>' +
+    CATEGORIES.map(c => `<button class="cat-chip" data-cat="${c.value}">${c.chip}</button>`).join('');
+
+  $('categoryChips').addEventListener('click', (e) => {
+    const chip = e.target.closest('.cat-chip');
+    if (!chip) return;
+    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    currentCategory = chip.dataset.cat;
+    renderListings();
+  });
+
+  $('searchInput').addEventListener('input', renderListings);
+  $('cityFilter').addEventListener('change', renderListings);$('priceFilter').addEventListener('change', renderListings);
+
   /* ===== 1) GESTION DES FAVORIS ===== */
   window.getFavorites = function() {
-    try {
-      return JSON.parse(localStorage.getItem('camerlink_favorites')) || [];
-    } catch (e) {
-      return [];
-    }
+    try { return JSON.parse(localStorage.getItem('camerlink_favorites')) || []; } catch (e) { return []; }
   }
 
   window.toggleFavorite = function(id) {
     let favs = window.getFavorites();
     const index = favs.indexOf(id);
-    
     if (index > -1) {
       favs.splice(index, 1);
       toast('Retiré de vos favoris');
@@ -40,10 +75,11 @@
       favs.push(id);
       toast('Ajouté à vos favoris');
     }
-    
     localStorage.setItem('camerlink_favorites', JSON.stringify(favs));
-    if (typeof decorate === 'function') decorate();
+    $('favCount').textContent = favs.length;
+    renderListings();
   }
+  $('favCount').textContent = window.getFavorites().length;
 
   /* ===== 2) NUMEROS +237 ===== */
   function normPhone(raw) {
@@ -57,6 +93,7 @@
     if (intl && /^\d{8,15}$/.test(d) && !d.startsWith('237')) return '+' + d;
     return null;
   }
+  
   function guardPhone(formId, inputId, errId) {
     const form = $(formId), input =$(inputId);
     if (!form || !input) return;
@@ -70,250 +107,232 @@
         e.preventDefault();
         e.stopImmediatePropagation();
         const er = $(errId);
-        if (er) er.textContent = 'Numéro WhatsApp invalide. Exemple : 6 91 23 45 67';
+        if (er) er.textContent = 'Numéro invalide. Exemple : 6 91 23 45 67';
         return;
       }
       input.value = n;
     }, true);
   }
   guardPhone('adForm', 'adContact', 'pubError');
-  guardPhone('proForm', 'proContact', 'proError');
-  guardPhone('editForm', 'eContact', 'eError');
 
-  function fixWa(root) {
-    if (!root) return;
-    root.querySelectorAll('a[href^="https://wa.me/"]').forEach((a) => {
-      try {
-        const u = new URL(a.href);
-        const n = normPhone(decodeURIComponent(u.pathname.slice(1)));
-        if (!n) return;
-        u.pathname = '/' + n.slice(1);
-        if (u.toString() !== a.href) a.href = u.toString();
-      } catch (e) {}
-    });
+  /* ===== 3) CHARGEMENT DONNEES SUPABASE ===== */
+  async function loadData() {
+    // 1. Annonces
+    try {
+      const res = await sb.from('annonces').select('*').order('created_at', { ascending: false });
+      if (!res.error) allListings = res.data || [];
+    } catch (err) { allListings = []; }
+
+    // 2. Stories 24h (Table artisan_stories validée dans le dashboard)
+    try {
+      const now = new Date().toISOString();
+      const resStories = await sb.from('artisan_stories')
+        .select(`id, media_url, caption, created_at, artisan_id, profiles (full_name, avatar_url, shop_name)`)
+        .gt('expires_at', now)
+        .order('created_at', { ascending: false });
+      
+      if (!resStories.error) stories = resStories.data || [];
+    } catch (e) { stories = []; }
+
+    // 3. Vidéos
+    try {
+      const resVid = await sb.from('annonces').select('id,video_url');
+      if (!resVid.error) {
+        videos = {};
+        (resVid.data || []).forEach(a => {
+          if (a.video_url && /^https:\/\//i.test(a.video_url)) videos[a.id] = a.video_url;
+        });
+      }
+    } catch (e) { videos = {}; }
+
+    renderShops();
+    renderListings();
   }
 
-  /* ===== 3) CONNEXION ===== */
+  /* ===== 4) AFFICHAGE DES STORIES (Établissements) ===== */
+  window.viewStory = function(mediaUrl, caption, shopName, avatarUrl) {
+    $('viewerMedia').src = mediaUrl;
+    $('viewerCaption').textContent = caption \vert{}\vert{} '';$('viewerShopName').textContent = shopName;
+    $('viewerAvatar').src = avatarUrl \vert{}\vert{} 'https://via.placeholder.com/150';$('storyViewerModal').classList.add('active');
+  }
+
+  window.closeStoryViewer = function() {
+    $('storyViewerModal').classList.remove('active');
+  }
+
+  function renderShops() {
+    const container = $('shops-container');
+    if (!container) return;
+
+    let html = `
+      <div class="shop-story-card cta-card" onclick="openAddStoryModal()">
+        <div class="story-ring"><div class="story-avatar-wrap">+</div></div>
+        <div class="shop-story-name">Mon statut</div>
+      </div>
+    `;
+
+    if (stories.length === 0) {
+      container.innerHTML = html;
+      return;
+    }
+
+    stories.forEach(story => {
+      const shopName = story.profiles?.shop_name || story.profiles?.full_name || 'Artisan';
+      const avatar = story.profiles?.avatar_url || '';
+      const initial = esc(shopName.charAt(0));
+
+      html += `
+        <div class="shop-story-card" onclick="viewStory('${esc(story.media_url)}', '${esc(story.caption || '')}', '${esc(shopName)}', '${esc(avatar)}')">
+          <div class="story-ring">
+            <div class="story-avatar-wrap">
+              ${avatar ? `<img src="${avatar}" alt="${esc(shopName)}">` : initial}
+            </div>
+          </div>
+          <div class="shop-story-name">${esc(shopName)}</div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  window.openAddStoryModal = function() {
+    if (!currentUser) { toast('Connectez-vous pour publier un statut'); openModal('authModal'); return; }
+    toast("Fonctionnalité de publication de story active.");
+  }
+
+  /* ===== 5) AFFICHAGE DES ANNONCES & CARTES PRO ===== */
+  function renderListings() {
+    const grid = $('listings-grid');
+    if (!grid) return;
+    
+    const term = $('searchInput').value.trim().toLowerCase();
+    const city = $('cityFilter').value;
+    const maxPrice = Number($('priceFilter').value) || 0;
+    const favorites = window.getFavorites();
+
+    let filtered = allListings.filter(ad => {
+      return (!currentCategory || ad.category === currentCategory) &&
+             (!city || ad.city === city) &&
+             (!maxPrice || Number(ad.price) <= maxPrice) &&
+             (!term || ad.title.toLowerCase().includes(term));
+    });
+
+    $('resultsCount').textContent = `${filtered.length} annonce(s)`;
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div class="state-msg">Aucune annonce disponible pour le moment.</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(ad => {
+      const isFav = favorites.includes(String(ad.id));
+      const rating = Number(ad.note_moyenne || 0).toFixed(1);
+      const reviewCount = ad.nb_avis || 0;
+      
+      const rawContact = String(ad.contact || '');
+      const cleanContact = rawContact.replace(/\D/g, ''); 
+      const whatsappNumber = cleanContact.startsWith('237') ? cleanContact : '237' + cleanContact;
+      const viewsCount = ad.views || ad.vues || 0;
+      const vUrl = videos ? videos[ad.id] : null;
+
+      return `
+      <article class="ad-card">
+        <div class="card-img-container">
+          <span class="card-badge-top">${esc(ad.category)}</span>
+          <span class="card-views">👁 ${viewsCount}</span>
+          <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFavorite('${ad.id}')" style="position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; color:${isFav ? '#EF4444' : '#fff'}; z-index:3;">❤️</button>
+          ${ad.image_url ? `<img src="${esc(ad.image_url)}" loading="lazy">` : ''}
+        </div>
+        <div class="card-body">
+          <h3 class="ad-title">${esc(ad.title)}</h3>
+          <div class="ad-price">${Number(ad.price).toLocaleString('fr-FR')} FCFA</div>
+          <p class="ad-desc">${esc(ad.description)}</p>
+          
+          <div class="ad-rating">⭐ ${rating} <span>(${reviewCount} avis)</span></div>
+
+          <div class="card-meta">
+            <span class="ad-city">📍 ${esc(ad.city)}</span>
+          </div>
+
+          ${vUrl ? `<button type="button" onclick="showVideoPlayer('${esc(vUrl)}')" style="width:100%; margin-bottom:8px; padding:8px; background:var(--a1); color:#05060D; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer;">▶ Voir la vidéo</button>` : ''}
+
+          ${cleanContact ? `
+            <div style="display: flex; gap: 8px;">
+              <a href="https://api.whatsapp.com/send?phone=${whatsappNumber}" target="_blank" style="flex: 1; background: #22C55E; color: white; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">WhatsApp</a>
+              <a href="tel:${rawContact}" style="flex: 1; background: #10B981; color: white; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">Appel</a>
+            </div>
+          ` : ''}
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  // Visionneuse de vidéo simple
+  if (!$('videoModalOverlay')) {
+    document.body.insertAdjacentHTML('beforeend', `
+      <div id="videoModalOverlay" class="modal-overlay" onclick="if(event.target.id==='videoModalOverlay') closeVideoPlayer()">
+        <div class="modal-sheet" style="padding:10px; background:#000; max-width:400px;">
+          <button type="button" class="modal-close" onclick="closeVideoPlayer()" style="color:#fff; float:right; margin:5px;">×</button>
+          <video id="activeVideoPlayer" controls playsinline autoplay style="width:100%; border-radius:12px; max-height:70vh;"></video>
+        </div>
+      </div>
+    `);
+  }
+
+  window.showVideoPlayer = function(url) {
+    const p = $('activeVideoPlayer');
+    p.src = url;
+    $('videoModalOverlay').classList.add('active');
+  }
+
+  window.closeVideoPlayer = function() {
+    const p = $('activeVideoPlayer');
+    p.pause();
+    p.src = '';
+    $('videoModalOverlay').classList.remove('active');
+  }
+
+  /* ===== 6) AUTHENTIFICATION ===== */
+  sb.auth.onAuthStateChange((_, session) => {
+    currentUser = session ? session.user : null;
+    $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
+  });
+
+  $('authBtn').addEventListener('click', async () => {
+    if (currentUser) { await sb.auth.signOut(); toast('Déconnecté'); }
+    else { openModal('authModal'); }
+  });
+
   const phoneForm = $('phoneForm');
   if (phoneForm) {
     phoneForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
       const input = $('authPhone'), err =$('phoneError');
       const phone = normPhone(input.value);
-      if (!phone) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        err.textContent = 'Numéro invalide. Exemple : 6 91 23 45 67';
-        return;
-      }
-      input.value = phone;
-      const active = document.querySelector('[data-pmode].active');
-      if (!active || active.dataset.pmode !== 'login') return;
-
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const btn = $('phoneSubmit');
+      if (!phone) { err.textContent = 'Numéro invalide. Exemple : 6 91 23 45 67'; return; }
+      
+      const email = phone.slice(1) + '@phone.camerlink.app';
       const password = $('phonePassword').value;
       err.textContent = '';
-      btn.disabled = true;
 
-      const emails = [phone.slice(1) + '@phone.camerlink.app'];
-      if (/^\+237\d{9}$/.test(phone)) emails.push('237' + phone.slice(4) + '@camerlink.app');
-
-      let ok = false, last = null;
-      try {
-        for (const email of emails) {
-          const { error } = await sb.auth.signInWithPassword({ email, password });
-          if (!error) { ok = true; break; }
-          last = error;
-          if (!/invalid login/i.test(error.message || '')) break;
-        }
-      } catch (ex) { last = ex; }
-
-      if (ok) {
-        $('authModal').classList.remove('active');
-        toast('Connexion réussie.');
-        setTimeout(() => location.reload(), 500);
-        return;
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        const signUp = await sb.auth.signUp({ email, password });
+        if (signUp.error) { err.textContent = 'Erreur d’authentification ou mot de passe incorrect'; return; }
       }
-      const m = String((last && last.message) || '');
-      err.textContent = /invalid login/i.test(m) ? 'Numéro ou mot de passe incorrect.'
-        : /rate limit|too many/i.test(m) ? 'Trop de tentatives. Patientez une minute.'
-        : 'Une erreur est survenue. Réessayez.';
-      btn.disabled = false;
-    }, true);
-  }
-
-  /* ===== 4) VIDEOS & DECORATION DES CARTES ===== */
-  let videos = null;
-  async function loadVideos() {
-    try {
-      const { data, error } = await sb.from('annonces').select('id,video_url');
-      if (error) { videos = null; return; }
-      videos = {};
-      (data || []).forEach((a) => {
-        if (a.video_url && /^https:\/\//i.test(a.video_url)) videos[a.id] = a.video_url;
-      });
-    } catch (e) { videos = null; }
-  }
-
-  const st = document.createElement('style');
-  st.textContent = '.v-btn{display:block;width:100%;margin-top:10px;padding:11px;border-radius:var(--radius-md,12px);border:1px solid var(--a1,#22D3EE);background:transparent;color:var(--a1,#22D3EE);font-weight:700;font-size:.9rem;cursor:pointer}.v-play{background:var(--a1,#22D3EE);color:#05060D}';
-  document.head.appendChild(st);
-
-  if (!$('vModal')) {
-    document.body.insertAdjacentHTML('beforeend',
-      '<div id="vModal" class="modal-overlay" role="dialog" aria-modal="true"><div class="modal-sheet">' +
-      '<div class="modal-header"><h3 id="vTitle"></h3><button type="button" class="modal-close" id="vClose" aria-label="Fermer">×</button></div>' +
-      '<div id="vBody"></div></div></div>');
-  }
-
-  const openV = (title, html) => { $('vTitle').textContent = title; $('vBody').innerHTML = html; $('vModal').classList.add('active'); };
-  const closeV = () => {
-    const v = $('vBody').querySelector('video');
-    if (v) { v.pause(); v.removeAttribute('src'); v.load(); }
-    $('vBody').innerHTML = '';$('vModal').classList.remove('active');
-  };
-  
-  const vCloseBtn = $('vClose');
-  if (vCloseBtn) vCloseBtn.addEventListener('click', closeV);
-  const vModalEl = $('vModal');
-  if (vModalEl) vModalEl.addEventListener('click', (e) => { if (e.target.id === 'vModal') closeV(); });
-
-  const grid = $('listings-grid');
-  window.decorate = function() {
-    if (!grid) return;
-    const favorites = window.getFavorites();
-
-    grid.querySelectorAll('.ad-card').forEach((card) => {
-      const key = card.querySelector('[data-report],[data-delete]');
-      if (!key) return;
-      const id = key.dataset.report || key.dataset.delete;
-      const del = card.querySelector('[data-delete]');
-      
-      card.querySelectorAll('.v-extra, .fav-extra').forEach((n) => n.remove());
-
-      const isFav = favorites.includes(id);
-      const desc = card.querySelector('.ad-desc');
-      if (desc) {
-        desc.insertAdjacentHTML('beforebegin',
-          `<button type="button" class="fav-extra" onclick="toggleFavorite('${esc(id)}')" style="background:none;border:none;cursor:pointer;font-size:1rem;margin:4px 0;display:block;">${isFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris'}</button>`);
-      }
-
-      if (videos === null) return;
-      const url = videos[id];
-      if (url && desc) {
-        desc.insertAdjacentHTML('afterend',
-          `<button type="button" class="v-extra v-btn v-play" data-vplay="${esc(id)}">▶ Voir la vidéo</button>`);
-      }
-      if (del) {
-        del.insertAdjacentHTML('beforebegin',
-          `<button type="button" class="v-extra v-btn" data-vadd="${esc(id)}">🎬 ${url ? 'Changer la vidéo' : 'Ajouter une vidéo'}</button>`);
-      }
+      closeModal('authModal');
+      toast('Connexion réussie !');
+      setTimeout(() => location.reload(), 500);
     });
-    fixWa(grid);
   }
 
-  function showPlayer(id) {
-    const url = videos && videos[id];
-    if (!url) return;
-    openV('🎬 Vidéo',
-      `<video src="${esc(url)}" controls playsinline autoplay preload="metadata" style="width:100%;max-height:70vh;border-radius:12px;background:#000"></video>`);
-  }
-  function showUploader(id) {
-    const has = !!(videos && videos[id]);
-    openV(has ? '🎬 Changer la vidéo' : '🎬 Ajouter une vidéo',
-      `<p class="form-hint">Vidéo courte (15 secondes conseillées), ${MAX_MB} Mo maximum, format MP4.</p>
-       <div class="form-group"><input class="form-sheet-el" id="vFile" type="file" accept="video/mp4,video/webm,video/quicktime"></div>
-       <video id="vPrev" controls playsinline style="display:none;width:100%;max-height:45vh;border-radius:12px;background:#000;margin-bottom:12px"></video>
-       <button type="button" class="btn-submit-modal" id="vSend" data-id="${esc(id)}">Envoyer la vidéo</button>
-       ${has ? `<button type="button" class="btn-delete" id="vRemove" data-id="${esc(id)}" style="margin-top:10px">Supprimer la vidéo</button>` : ''}
-       <p class="form-error" id="vErr" role="alert"></p>`);
-  }
-
-  const pathOf = (url) => {
-    const i = String(url || '').indexOf('/' + VBUCKET + '/');
-    return i < 0 ? null : decodeURIComponent(url.slice(i + VBUCKET.length + 2).split('?')[0]);
-  };
-  async function removeFile(url) {
-    const p = pathOf(url);
-    if (!p) return;
-    try { await sb.storage.from(VBUCKET).remove([p]); } catch (e) {}
-  }
-
-  async function sendVideo(id) {
-    const fInput = $('vFile');
-    if (!fInput || !fInput.files[0]) { $('vErr').textContent = 'Choisissez une vidéo.'; return; }
-    const f = fInput.files[0], err = $('vErr'), btn =$('vSend');
-    err.textContent = '';
-    if (!TYPES.includes(f.type)) { err.textContent = 'Format non pris en charge. Utilisez une vidéo MP4.'; return; }
-    if (f.size > MAX_MB * 1048576) {
-      err.textContent = `Vidéo trop lourde (${(f.size / 1048576).toFixed(1)} Mo). Maximum ${MAX_MB} Mo.`;
-      return;
-    }
-    btn.disabled = true;
-    btn.textContent = 'Envoi en cours… patientez';
-    try {
-      const { data: s } = await sb.auth.getSession();
-      if (!s.session) throw new Error('session');
-      const ext = f.type === 'video/webm' ? 'webm' : f.type === 'video/quicktime' ? 'mov' : 'mp4';
-      const path = `${s.session.user.id}/${Date.now()}.${ext}`;
-      const up = await sb.storage.from(VBUCKET).upload(path, f, { contentType: f.type });
-      if (up.error) throw up.error;
-      const url = sb.storage.from(VBUCKET).getPublicUrl(path).data.publicUrl;
-      const r = await sb.from('annonces').update({ video_url: url }).eq('id', id).select('id');
-      if (r.error || !r.data || !r.data.length) {
-        await removeFile(url);
-        throw r.error || new Error('non autorisé');
-      }
-      const old = videos[id];
-      videos[id] = url;
-      if (old) removeFile(old);
-      closeV();
-      window.decorate();
-      toast('Vidéo ajoutée.');
-    } catch (ex) {
-      console.error(ex);
-      err.textContent = 'Envoi impossible. Vérifiez votre connexion et la taille (max 20 Mo), puis réessayez.';
-      btn.disabled = false;
-      btn.textContent = 'Envoyer la vidéo';
-    }
-  }
-
-  async function dropVideo(id) {
-    if (!confirm('Supprimer cette vidéo ?')) return;
-    const err = $('vErr');
-    const r = await sb.from('annonces').update({ video_url: null }).eq('id', id).select('id');
-    if (r.error || !r.data || !r.data.length) { if (err) err.textContent = 'Suppression impossible. Reconnectez-vous.'; return; }
-    removeFile(videos[id]);
-    delete videos[id];
-    closeV();
-    window.decorate();
-    toast('Vidéo supprimée.');
-  }
-
-  document.addEventListener('click', (e) => {
-    const play = e.target.closest('[data-vplay]');
-    if (play) { showPlayer(play.dataset.vplay); return; }
-    const add = e.target.closest('[data-vadd]');
-    if (add) { showUploader(add.dataset.vadd); return; }
-    const send = e.target.closest('#vSend');
-    if (send) { sendVideo(send.dataset.id); return; }
-    const rm = e.target.closest('#vRemove');
-    if (rm) dropVideo(rm.dataset.id);
-  });
-  document.addEventListener('change', (e) => {
-    if (e.target.id !== 'vFile') return;
-    const f = e.target.files[0], prev = $('vPrev');
-    if (!prev) return;
-    prev.style.display = f ? 'block' : 'none';
-    if (f) prev.src = URL.createObjectURL(f);
+  $('pubBtn').addEventListener('click', () => {
+    if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
+    openModal('publishModal');
   });
 
-  if (grid) new MutationObserver(window.decorate).observe(grid, { childList: true });
-  ['shopBody', 'xBody'].forEach((id) => {
-    const el = $(id);
-    if (el) new MutationObserver(() => fixWa(el)).observe(el, { childList: true });
-  });
-  window.decorate();
-  loadVideos().then(window.decorate);
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
+
+  // Lancement
+  loadData();
 })();
