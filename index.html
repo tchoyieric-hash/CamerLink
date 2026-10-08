@@ -442,7 +442,7 @@
       shopsByUser = {};
       shops.forEach((s) => { shopsByUser[s.user_id] = s; });
     } catch (e) {
-      console.warn('Impossible de charger les etablissements (table absente ou vide) :', e);
+      console.warn('Impossible de charger les etablissements :', e);
       shops = [];
     }
     renderShops();
@@ -936,7 +936,6 @@
     loadListings();
   });
 
-  // Lancement sécurisé et indépendant des charges
   loadListings();
   loadShops();
 })();
