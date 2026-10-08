@@ -38,10 +38,12 @@
     .logo-brand { font-family:var(--font-display); font-size:1.4rem; font-weight:700; }
     .logo-brand span { background:linear-gradient(90deg,var(--a1),var(--a2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
     .header-actions { display:flex; align-items:center; gap:6px; }
-    .btn-icon { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--color-surface); border:1px solid var(--color-border); }
+    .btn-icon { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--color-surface); border:1px solid var(--color-border); position:relative; }
     .btn-login { color:var(--color-text-muted); padding:8px 10px; font-size:0.85rem; font-weight:600; }
     .btn-pub { background:linear-gradient(90deg,var(--a1),var(--a2)); color:#fff; padding:9px 13px; border-radius:999px; font-weight:700; font-size:0.8rem; box-shadow:0 0 18px rgba(139,92,246,0.45); }
     .header-spacer { height:var(--header-height); }
+
+    #msgBadge { position: absolute; top: 4px; right: 4px; background: var(--color-danger); width: 8px; height: 8px; border-radius: 50%; display: none; }
 
     .hero { padding:34px var(--container-padding) 26px; text-align:center; border-bottom:1px solid var(--color-border); }
     .hero h1 { font-family:var(--font-display); font-size:2.1rem; font-weight:700; line-height:1.15; margin-bottom:10px; }
@@ -110,7 +112,7 @@
     .form-error { color:var(--color-danger); font-size:0.82rem; margin-top:10px; }
     .img-preview { margin-top:8px; width:100%; max-height:160px; object-fit:cover; border-radius:var(--radius-md); display:none; }
 
-    /* Styles pour le Chat */
+    /* Styles Chat et Inbox */
     .chat-messages-box { height: 260px; overflow-y: auto; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
     .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 0.88rem; word-break: break-word; }
     .chat-bubble.mine { background: var(--color-cta); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
@@ -119,6 +121,8 @@
     .chat-input-row input { flex-grow: 1; margin: 0; }
     .chat-input-row button { padding: 0 16px; background: var(--color-cta); color: #fff; border-radius: var(--radius-md); font-weight: 700; }
     .chat-btn-card { flex:1; padding:10px; text-align:center; background:var(--color-cta); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.85rem; }
+    .inbox-item { padding: 12px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; display: flex; flex-direction: column; gap: 4px; transition: 0.2s; }
+    .inbox-item:hover { border-color: var(--a1); }
 
     #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:var(--color-text-main); color:var(--color-bg); padding:11px 20px; border-radius:999px; font-weight:600; font-size:0.88rem; z-index:3000; opacity:0; pointer-events:none; transition:0.25s; }
     #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -134,6 +138,9 @@
 <header>
   <a href="#" class="logo-brand">Camer<span>Link</span></a>
   <div class="header-actions">
+    <button class="btn-icon" id="msgInboxBtn" aria-label="Messages">
+      💬 <span id="msgBadge"></span>
+    </button>
     <button class="btn-icon" id="themeBtn" aria-label="Changer le thème">🌓</button>
     <button class="btn-login" id="authBtn">Connexion</button>
     <button class="btn-pub" id="pubBtn">+ Publier</button>
@@ -260,6 +267,19 @@
   </div>
 </div>
 
+<!-- MODALE DE BOÎTE DE RÉCEPTION (INBOX) -->
+<div id="inboxModal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3>Mes Messages</h3>
+      <button class="modal-close" data-close="inboxModal">×</button>
+    </div>
+    <div id="inboxList" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
+      <div style="text-align: center; color: var(--color-text-muted); padding: 20px;">Chargement...</div>
+    </div>
+  </div>
+</div>
+
 <!-- MODALE DE CHAT INTERNE -->
 <div id="chatModal" class="modal-overlay">
   <div class="modal-sheet">
@@ -271,23 +291,6 @@
     <form id="chatForm" class="chat-input-row">
       <input type="text" id="chatInput" class="form-sheet-el" placeholder="Écrire un message..." required autocomplete="off">
       <button type="submit">Envoyer</button>
-    </form>
-  </div>
-</div>
-
-<!-- MODALE DE DEMANDE DE RATTACHEMENT -->
-<div id="claimModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header">
-      <h3>Récupérer mes annonces</h3>
-      <button class="modal-close" data-close="claimModal">×</button>
-    </div>
-    <form id="claimForm">
-      <p style="font-size:0.85rem; color:var(--color-text-muted); margin-bottom:14px;">Indique le numéro utilisé sur tes annonces. L'équipe CamerLink te contactera sur WhatsApp pour vérifier que c'est bien toi, puis rattachera tes annonces à ton compte.</p>
-      <div class="form-group"><label>Numéro de tes annonces</label><input class="form-sheet-el" id="claimPhone" type="tel" required placeholder="6 91 23 45 67"></div>
-      <div class="form-group"><label>Message (facultatif)</label><textarea class="form-sheet-el" id="claimNote" rows="2" maxlength="500" placeholder="Ex : je suis le menuisier de Bastos"></textarea></div>
-      <button type="submit" class="btn-submit-modal" id="claimSubmit">Envoyer ma demande</button>
-      <p class="form-error" id="claimError"></p>
     </form>
   </div>
 </div>
@@ -314,7 +317,7 @@
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let allListings = [], shops = [], shopsByUser = {}, currentShopId = null, currentUser = null, favorites = [];
-  let activeChatReceiverId = null, activeAdId = null, chatSubscription = null;
+  let activeChatReceiverId = null, activeAdId = null, chatSubscription = null, badgeSubscription = null;
   let currentCategory = '';
 
   try { favorites = JSON.parse(localStorage.getItem('cl-favs') || '[]'); } catch (e) {}
@@ -366,7 +369,6 @@
   $('searchInput').addEventListener('input', renderListings);$('cityFilter').addEventListener('change', renderListings);
   $('priceFilter').addEventListener('change', renderListings);$('sortFilter').addEventListener('change', renderListings);
 
-  // Fonction de chargement avec affichage d'erreur intégré à l'écran si un problème survient
   async function loadListings() {
     try {
       const { data, error } = await sb.from('annonces').select('*').order('created_at', { ascending: false });
@@ -467,7 +469,6 @@
     }).join('');
   }
 
-  // Gestion des Favoris
   document.addEventListener('click', (e) => {
     const favBtn = e.target.closest('[data-fav]');
     if (favBtn) {
@@ -480,7 +481,62 @@
     }
   });
 
-  // --- SYSTÈME DE DISCUSSION EN TEMPS RÉEL (SUPABASE REALTIME) ---
+  // Gestion de la boîte de réception (Inbox)
+  async function openInbox() {
+    if (!currentUser) {
+      toast('Connectez-vous pour voir vos messages');
+      openModal('authModal');
+      return;
+    }
+    openModal('inboxModal');
+    const box = $('inboxList');
+    box.innerHTML = '<div style="text-align: center; color: var(--color-text-muted); padding: 20px;">Chargement...</div>';
+
+    const { data, error } = await sb
+      .from('messages')
+      .select('*')
+      .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+      .order('created_at', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      box.innerHTML = '<div style="text-align: center; color: var(--color-text-muted); padding: 20px;">Aucune conversation pour le moment.</div>';
+      return;
+    }
+
+    const conversationsMap = {};
+    data.forEach(m => {
+      const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+      if (!conversationsMap[otherId]) {
+        conversationsMap[otherId] = m;
+      }
+    });
+
+    const interlocutors = Object.keys(conversationsMap);
+    box.innerHTML = interlocutors.map(otherId => {
+      const lastMsg = conversationsMap[otherId];
+      return `
+        <div class="inbox-item" data-other-id="${otherId}">
+          <div style="font-weight: 700; font-size: 0.9rem;">Discussion (${otherId.substring(0, 6)}...)</div>
+          <div style="font-size: 0.82rem; color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(lastMsg.content)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  $('msgInboxBtn').addEventListener('click', () => {
+    const badge = $('msgBadge');
+    if (badge) badge.style.display = 'none';
+    openInbox();
+  });
+
+  $('inboxList').addEventListener('click', (e) => {
+    const item = e.target.closest('[data-other-id]');
+    if (!item) return;
+    const otherId = item.dataset.otherId;
+    closeModal('inboxModal');
+    openChat(otherId, null, 'Discussion');
+  });
+
   async function openChat(receiverId, adId, adTitle) {
     if (!currentUser) {
       toast('Connectez-vous pour envoyer un message');
@@ -500,7 +556,6 @@
     closeModal('detailModal');
     openModal('chatModal');
 
-    // Charger l'historique des messages
     const { data, error } = await sb
       .from('messages')
       .select('*')
@@ -510,10 +565,9 @@
     if (!error && data) {
       renderMessages(data);
     } else {
-      $('chatMessages').innerHTML = '<div style="text-align:center; color:var(--color-danger); font-size:0.85rem; padding:20px;">Erreur de chargement (Vérifiez que la table messages existe).</div>';
+      $('chatMessages').innerHTML = '<div style="text-align:center; color:var(--color-danger); font-size:0.85rem; padding:20px;">Erreur de chargement.</div>';
     }
 
-    // Activer l'écoute en temps réel (Realtime)
     if (chatSubscription) {
       sb.removeChannel(chatSubscription);
     }
@@ -579,7 +633,24 @@
     }
   });
 
-  // Fermeture des modales et nettoyage du canal Realtime
+  function listenForNewMessages() {
+    if (!currentUser) return;
+    if (badgeSubscription) sb.removeChannel(badgeSubscription);
+
+    badgeSubscription = sb
+      .channel('public:messages:badge')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `receiver_id=eq.${currentUser.id}` },
+        () => {
+          const badge = $('msgBadge');
+          if (badge) badge.style.display = 'block';
+          toast('Nouveau message reçu ! 💬');
+        }
+      )
+      .subscribe();
+  }
+
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => {
     const modalId = b.dataset.close;
     closeModal(modalId);
@@ -598,17 +669,13 @@
       const ad = allListings.find(a => a.id === id);
       if (!ad) return;
 
-      const vuKey = 'cl-vu-' + id;
-      let dejaVu = false;
-      try { dejaVu = !!sessionStorage.getItem(vuKey); sessionStorage.setItem(vuKey, '1'); } catch (e) {}
-      if (!dejaVu) {
-        ad.views = (ad.views || 0) + 1;
-        sb.rpc('increment_views', { annonce_id: id }).then(() => {});
-      }
-      const newViews = ad.views || 0;
+      const newViews = (ad.views || 0) + 1;
+      ad.views = newViews;
+      sb.from('annonces').update({ views: newViews }).eq('id', id).then(() => {});
 
       const wa = waNumber(ad.contact);
       const locationText = ad.quartier ? `${ad.quartier}, ${ad.city}` : ad.city;
+      const isOwner = currentUser && currentUser.id === ad.user_id;
 
       $('detailBody').innerHTML = `
         ${ad.image_url ? `<img src="${esc(ad.image_url)}" style="width:100%; max-height:240px; object-fit:cover; border-radius:12px;">` : ''}
@@ -621,10 +688,12 @@
         <div style="font-size:0.88rem; color:var(--color-text-muted);">📍 ${esc(locationText)}</div>
         <p style="font-size:0.92rem; white-space:pre-line; background:var(--color-bg); padding:12px; border-radius:8px; border:1px solid var(--color-border);">${esc(ad.description)}</p>
         <div style="display:flex; gap:8px; margin-top:8px;">
-          ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Bonjour, je vous contacte suite à votre annonce « ' + ad.title + ' » sur CamerLink')}" target="_blank" style="flex:1; text-align:center; padding:12px;">WhatsApp</a>` : ''}
-          <button id="openChatBtn" class="chat-btn-card" style="flex:1; padding:12px; border-radius:var(--radius-md);">💬 Discuter</button>
+          ${isOwner ? 
+            `<div style="flex:1; text-align:center; padding:12px; font-size:0.85rem; color:var(--color-text-muted); background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-md);">C'est votre propre annonce</div>` :
+            `${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Bonjour, je vous contacte suite à votre annonce « ' + ad.title + ' » sur CamerLink')}" target="_blank" style="flex:1; text-align:center; padding:12px;">WhatsApp</a>` : ''}
+             <button id="openChatBtn" class="chat-btn-card" style="flex:1; padding:12px; border-radius:var(--radius-md);">💬 Discuter</button>`
+          }
         </div>
-        ${currentUser && currentUser.id === ad.user_id ? '' : `<button id="claimOpenBtn" data-phone="${esc(ad.contact)}" style="margin-top:4px; font-size:0.85rem; font-weight:600; color:var(--a1); text-align:center;">🙋 C'est mon annonce ? La récupérer</button>`}
       `;
 
       const chatBtn = $('openChatBtn');
@@ -643,11 +712,19 @@
     currentUser = session ? session.user : null;
     $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
     renderShops();
+    if (currentUser) {
+      listenForNewMessages();
+    }
   });
 
   $('authBtn').addEventListener('click', async () => {
-    if (currentUser) { await sb.auth.signOut(); toast('Déconnecté'); }
-    else openModal('authModal');
+    if (currentUser) {
+      if (badgeSubscription) sb.removeChannel(badgeSubscription);
+      await sb.auth.signOut();
+      toast('Déconnecté');
+    } else {
+      openModal('authModal');
+    }
   });
 
   $('phoneForm').addEventListener('submit', async (e) => {
@@ -693,43 +770,9 @@
     loadListings();
   });
 
-  // --- DEMANDE DE RATTACHEMENT D'ANNONCES ---
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('#claimOpenBtn');
-    if (!btn) return;
-    if (!currentUser) { toast('Connectez-vous pour récupérer vos annonces'); closeModal('detailModal'); openModal('authModal'); return; }
-    $('claimPhone').value = btn.dataset.phone || '';
-    $('claimError').textContent = '';
-    closeModal('detailModal');
-    openModal('claimModal');
-  });
-
-  $('claimForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    $('claimError').textContent = '';
-    const digits = $('claimPhone').value.replace(/\D/g, '');
-    if (digits.length < 9) { $('claimError').textContent = 'Entre un numéro à 9 chiffres.'; return; }
-    const btn = $('claimSubmit');
-    btn.disabled = true;
-    const { error } = await sb.from('claim_requests').insert({
-      phone: '+237' + digits.slice(-9),
-      note: $('claimNote').value.trim() || null
-    });
-    btn.disabled = false;
-    if (error) {
-      $('claimError').textContent = error.code === '23505'
-        ? 'Tu as déjà une demande en attente pour ce numéro.'
-        : 'Envoi impossible, réessaie dans un instant.';
-      return;
-    }
-    $('claimNote').value = '';
-    closeModal('claimModal');
-    toast('Demande envoyée ! Nous te contactons sur WhatsApp.');
-  });
-
   loadListings();
   loadShops();
 })();
 </script>
 </body>
-        </html>
+</html>
