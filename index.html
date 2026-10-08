@@ -298,6 +298,7 @@
       const isFav = favorites.includes(ad.id);
       const rating = Number(ad.note_moyenne || 0).toFixed(1);
       const reviewCount = ad.nb_avis || 0;
+      const cleanContact = esc(ad.contact || '');
 
       return `
       <article class="ad-card">
@@ -309,11 +310,19 @@
         <div class="card-body">
           <h3 class="ad-title">${esc(ad.title)}</h3>
           <p class="ad-desc">${esc(ad.description)}</p>
+          
           <div class="ad-rating">
             ⭐ ${rating} <span>(${reviewCount} avis)</span>
           </div>
+
           <div class="card-meta">
             <span class="ad-city">📍 ${esc(ad.city)}</span>
+            <div style="display:flex; gap:6px;">
+              ${cleanContact ? `
+                <a href="https://wa.me/237${cleanContact}" target="_blank" class="btn-icon" style="width:32px; height:32px; background:rgba(34,197,94,0.15); border-color:var(--color-whatsapp); font-size:0.9rem;" title="WhatsApp">💬</a>
+                <a href="tel:${cleanContact}" class="btn-icon" style="width:32px; height:32px; background:rgba(16,185,129,0.15); border-color:var(--color-call); font-size:0.9rem;" title="Appeler">📞</a>
+              ` : ''}
+            </div>
             <span class="ad-price">${Number(ad.price).toLocaleString('fr-FR')} FCFA</span>
           </div>
         </div>
