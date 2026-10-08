@@ -31,9 +31,6 @@
     button { border:none; background:none; cursor:pointer; font-family:inherit; color:inherit; }
     img, video { max-width:100%; display:block; }
 
-    #net-status { position:fixed; bottom:0; left:0; right:0; background:var(--color-danger); color:#fff; text-align:center; font-size:0.75rem; font-weight:700; padding:4px; z-index:4000; transition:transform 0.3s; transform:translateY(100%); }
-    #net-status.offline { transform:translateY(0); }
-
     header { position:fixed; top:0; left:0; right:0; height:var(--header-height); background:var(--color-surface-glass); backdrop-filter:blur(16px); border-bottom:1px solid var(--color-border); display:flex; align-items:center; justify-content:space-between; padding:0 var(--container-padding); z-index:1000; }
     .logo-brand { font-family:var(--font-display); font-size:1.4rem; font-weight:700; }
     .logo-brand span { background:linear-gradient(90deg,var(--a1),var(--a2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
@@ -42,8 +39,7 @@
     .btn-login { color:var(--color-text-muted); padding:8px 10px; font-size:0.85rem; font-weight:600; }
     .btn-pub { background:linear-gradient(90deg,var(--a1),var(--a2)); color:#fff; padding:9px 13px; border-radius:999px; font-weight:700; font-size:0.8rem; box-shadow:0 0 18px rgba(139,92,246,0.45); }
     .header-spacer { height:var(--header-height); }
-
-    #msgBadge { position: absolute; top: 4px; right: 4px; background: var(--color-danger); width: 8px; height: 8px; border-radius: 50%; display: none; }
+    #msgBadge { position:absolute; top:4px; right:4px; background:var(--color-danger); width:8px; height:8px; border-radius:50%; display:none; }
 
     .hero { padding:34px var(--container-padding) 26px; text-align:center; border-bottom:1px solid var(--color-border); }
     .hero h1 { font-family:var(--font-display); font-size:2.1rem; font-weight:700; line-height:1.15; margin-bottom:10px; }
@@ -55,21 +51,19 @@
     .search-input { flex:2; min-width:180px; }
     .city-select, .price-select { flex:1; min-width:130px; }
 
-    /* SECTION REELS / STATUTS ARTISANS */
-    .shops-section { padding:18px var(--container-padding) 6px; max-width:1200px; margin:0 auto; width: 100%; }
-    .shops-section h2 { font-family:var(--font-display); font-size:1.05rem; font-weight:700; margin-bottom:12px; display: flex; align-items:center; gap: 6px; }
-    .shops-container { display:flex; gap:14px; overflow-x:auto; scrollbar-width:none; padding-bottom:6px; min-height: 90px; }
+    .shops-section { padding:18px var(--container-padding) 6px; max-width:1200px; margin:0 auto; width:100%; }
+    .shops-section h2 { font-family:var(--font-display); font-size:1.05rem; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+    .shops-container { display:flex; gap:14px; overflow-x:auto; scrollbar-width:none; padding-bottom:6px; min-height:90px; }
     .shops-container::-webkit-scrollbar { display:none; }
     
-    .shop-story-card { display: flex; flex-direction: column; align-items: center; min-width: 76px; max-width: 76px; cursor: pointer; flex-shrink: 0; }
-    .story-ring { width: 70px; height: 70px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--a1), var(--a2)); display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 6px; box-shadow: 0 4px 14px rgba(139,92,246,0.3); }
-    .story-ring.has-video { background: linear-gradient(135deg, #FF3366, #FF9900, var(--a2)); }
-    .story-avatar-wrap { width: 100%; height: 100%; border-radius: 50%; background: var(--color-surface); border: 2px solid var(--color-bg); overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; color: var(--color-text-main); }
-    .story-avatar-wrap img, .story-avatar-wrap video { width: 100%; height: 100%; object-fit: cover; }
-    .shop-story-name { font-size: 0.75rem; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; color: var(--color-text-main); }
-    
-    .shop-story-card.cta-card .story-ring { background: dashed 2px var(--a1); padding: 0; background: var(--color-surface); }
-    .shop-story-card.cta-card .story-avatar-wrap { border: none; color: var(--a1); font-size: 1.5rem; }
+    .shop-story-card { display:flex; flex-direction:column; align-items:center; min-width:76px; max-width:76px; cursor:pointer; flex-shrink:0; }
+    .story-ring { width:70px; height:70px; border-radius:50%; padding:3px; background:linear-gradient(135deg, var(--a1), var(--a2)); display:flex; align-items:center; justify-content:center; position:relative; margin-bottom:6px; }
+    .story-ring.has-video { background:linear-gradient(135deg, #FF3366, #FF9900, var(--a2)); }
+    .story-avatar-wrap { width:100%; height:100%; border-radius:50%; background:var(--color-surface); border:2px solid var(--color-bg); overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; color:var(--color-text-main); }
+    .story-avatar-wrap img { width:100%; height:100%; object-fit:cover; }
+    .shop-story-name { font-size:0.75rem; font-weight:600; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; color:var(--color-text-main); }
+    .shop-story-card.cta-card .story-ring { background:var(--color-surface); border:2px dashed var(--a1); padding:0; }
+    .shop-story-card.cta-card .story-avatar-wrap { color:var(--a1); font-size:1.5rem; }
 
     .categories-scroll { padding:14px var(--container-padding); display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; max-width:1200px; margin:0 auto; }
     .categories-scroll::-webkit-scrollbar { display:none; }
@@ -82,26 +76,18 @@
     .fav-toggle-btn { font-size:0.85rem; font-weight:600; color:var(--a1); padding:6px 12px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:999px; }
 
     #listings-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; max-width:1200px; margin:0 auto; }
-    .ad-card { background:var(--color-surface); border-radius:var(--radius-xl); overflow:hidden; border:1px solid var(--color-border); display:flex; flex-direction:column; position:relative; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor:pointer; }
-    .ad-card:hover { border-color:var(--a1); box-shadow:0 0 30px rgba(34, 211, 238, 0.25); transform:translateY(-4px); }
+    .ad-card { background:var(--color-surface); border-radius:var(--radius-xl); overflow:hidden; border:1px solid var(--color-border); display:flex; flex-direction:column; position:relative; cursor:pointer; }
     .card-img-container { position:relative; width:100%; height:165px; background:var(--color-bg); }
     .card-img-container img { width:100%; height:100%; object-fit:cover; }
-    .card-badge-top { position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; text-transform:uppercase; z-index:2; }
-    .card-badge-views { position:absolute; bottom:8px; left:8px; padding:2px 8px; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); border-radius:999px; font-size:0.68rem; color:#fff; z-index:2; }
-    .btn-fav { position:absolute; top:8px; right:8px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.9rem; z-index:3; }
+    .card-badge-top { position:absolute; top:10px; left:10px; padding:3px 8px; background:rgba(0,0,0,0.7); border-radius:999px; font-size:0.68rem; font-weight:600; color:white; z-index:2; }
+    .btn-fav { position:absolute; top:8px; right:8px; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; color:#fff; z-index:3; }
     .btn-fav.active { color:var(--color-danger); background:rgba(255,255,255,0.9); }
-
     .card-body { padding:14px; display:flex; flex-direction:column; flex-grow:1; }
     .ad-title { font-size:1rem; font-weight:800; margin-bottom:4px; }
-    .ad-desc { font-size:0.85rem; color:var(--color-text-muted); margin-bottom:10px; flex-grow:1; white-space:pre-line; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
+    .ad-desc { font-size:0.85rem; color:var(--color-text-muted); margin-bottom:10px; flex-grow:1; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
     .card-meta { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:10px; border-top:1px solid var(--color-border); }
-    .ad-city { background:rgba(34,211,238,0.08); padding:3px 8px; border-radius:999px; border:1px solid rgba(34,211,238,0.2); font-size:0.75rem; font-weight:600; color:var(--a1); }
+    .ad-city { background:rgba(34,211,238,0.08); padding:3px 8px; border-radius:999px; font-size:0.75rem; color:var(--a1); font-weight:600; }
     .ad-price { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--color-accent); }
-    
-    .card-actions-row { display:flex; gap:6px; margin-top:12px; }
-    .whatsapp-link-card { flex:1; padding:10px; text-align:center; background:var(--color-whatsapp); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.8rem; }
-    .call-link-card { flex:1; padding:10px; text-align:center; background:var(--color-call); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.8rem; }
-    
     .state-msg { color:var(--color-text-muted); text-align:center; grid-column:1/-1; padding:40px 20px; }
 
     .modal-overlay { position:fixed; inset:0; background:rgba(2,3,10,0.85); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:var(--container-padding); z-index:2000; opacity:0; visibility:hidden; transition:0.2s; }
@@ -115,53 +101,20 @@
     .form-sheet-el { width:100%; padding:12px; background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); color:var(--color-text-main); font-size:0.95rem; }
     .btn-submit-modal { width:100%; padding:13px; background:linear-gradient(90deg,var(--a1),var(--a2)); color:white; border-radius:var(--radius-md); font-weight:700; margin-top:8px; }
     .form-error { color:var(--color-danger); font-size:0.82rem; margin-top:10px; }
-    .img-preview { margin-top:8px; width:100%; max-height:160px; object-fit:cover; border-radius:var(--radius-md); display:none; }
-
-    /* REEL / STORY VIEWER MODAL */
-    .reel-modal-sheet { background: #000; padding: 0; max-width: 400px; height: 80vh; max-height: 700px; border-radius: 24px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--color-border); }
-    .reel-video-container { width: 100%; height: 100%; position: relative; background: #111; display: flex; align-items: center; justify-content: center; }
-    .reel-video-container video { width: 100%; height: 100%; object-fit: cover; }
-    .reel-overlay-content { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 30%, transparent 50%, rgba(0,0,0,0.85) 100%); display: flex; flex-direction: column; justify-content: space-between; padding: 16px; z-index: 5; pointer-events: none; }
-    .reel-header-row { display: flex; justify-content: space-between; align-items: center; pointer-events: auto; }
-    .reel-shop-info { display: flex; align-items: center; gap: 10px; }
-    .reel-avatar { width: 38px; height: 38px; border-radius: 50%; overflow: hidden; border: 2px solid var(--a1); background: var(--color-surface); }
-    .reel-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .reel-shop-name { font-weight: 700; font-size: 0.9rem; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-    .reel-shop-city { font-size: 0.72rem; color: var(--color-text-muted); }
-    .reel-footer-actions { display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
-    .reel-desc { font-size: 0.85rem; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); margin-bottom: 4px; }
-    .reel-buttons { display: flex; gap: 8px; }
-
-    .chat-messages-box { height: 260px; overflow-y: auto; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-    .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 0.88rem; word-break: break-word; }
-    .chat-bubble.mine { background: var(--color-cta); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
-    .chat-bubble.theirs { background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-main); align-self: flex-start; border-bottom-left-radius: 2px; }
-    .chat-input-row { display: flex; gap: 8px; }
-    .chat-input-row input { flex-grow: 1; margin: 0; }
-    .chat-input-row button { padding: 0 16px; background: var(--color-cta); color: #fff; border-radius: var(--radius-md); font-weight: 700; }
-    .chat-btn-card { flex:1; padding:10px; text-align:center; background:var(--color-cta); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.8rem; }
-    .call-btn-card { flex:1; padding:10px; text-align:center; background:var(--color-call); color:white; border-radius:var(--radius-md); font-weight:700; font-size:0.8rem; }
-    .inbox-item { padding: 12px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; display: flex; flex-direction: column; gap: 4px; transition: 0.2s; }
-    .inbox-item:hover { border-color: var(--a1); }
-
+    
     #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:var(--color-text-main); color:var(--color-bg); padding:11px 20px; border-radius:999px; font-weight:600; font-size:0.88rem; z-index:3000; opacity:0; pointer-events:none; transition:0.25s; }
     #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
     footer { padding:24px var(--container-padding); text-align:center; border-top:1px solid var(--color-border); background:var(--color-surface); margin-top:auto; }
     footer p { font-size:0.8rem; color:var(--color-text-muted); margin-top:8px; }
   </style>
 </head>
 <body>
 
-<div id="net-status">⚠️ Connexion Internet perdue. Mode hors-ligne activé.</div>
-
 <header>
   <a href="#" class="logo-brand">Camer<span>Link</span></a>
   <div class="header-actions">
-    <button class="btn-icon" id="msgInboxBtn" aria-label="Messages">
-      💬 <span id="msgBadge"></span>
-    </button>
-    <button class="btn-icon" id="themeBtn" aria-label="Changer le thème">🌓</button>
+    <button class="btn-icon" id="msgInboxBtn">💬 <span id="msgBadge"></span></button>
+    <button class="btn-icon" id="themeBtn">🌓</button>
     <button class="btn-login" id="authBtn">Connexion</button>
     <button class="btn-pub" id="pubBtn">+ Publier</button>
   </div>
@@ -180,17 +133,10 @@
       <option value="10000">Max 10 000 FCFA</option>
       <option value="50000">Max 50 000 FCFA</option>
       <option value="250000">Max 250 000 FCFA</option>
-      <option value="1000000">Max 1 Million</option>
-    </select>
-    <select id="sortFilter" class="price-select form-el">
-      <option value="recent">Plus récentes</option>
-      <option value="price-asc">Prix : croissant</option>
-      <option value="price-desc">Prix : décroissant</option>
     </select>
   </div>
 </section>
 
-<!-- SECTION STATUTS / REELS DES ARTISANS -->
 <section class="shops-section">
   <h2>⚡ Statuts & Reels Artisans</h2>
   <div id="shops-container" class="shops-container"></div>
@@ -211,23 +157,13 @@
   <p>© 2026 CamerLink · L'élite du service digital au Cameroun.</p>
 </footer>
 
-<!-- MODALS -->
 <div id="authModal" class="modal-overlay">
   <div class="modal-sheet">
-    <div class="modal-header">
-      <h3>Connexion</h3>
-      <button class="modal-close" data-close="authModal">×</button>
-    </div>
+    <div class="modal-header"><h3>Connexion</h3><button class="modal-close" data-close="authModal">×</button></div>
     <form id="phoneForm">
-      <div class="form-group">
-        <label>Téléphone</label>
-        <input class="form-sheet-el" id="authPhone" type="tel" required placeholder="6 91 23 45 67">
-      </div>
-      <div class="form-group">
-        <label>Mot de passe</label>
-        <input class="form-sheet-el" id="phonePassword" type="password" required>
-      </div>
-      <button type="submit" class="btn-submit-modal" id="phoneSubmit">Se connecter</button>
+      <div class="form-group"><label>Téléphone</label><input class="form-sheet-el" id="authPhone" type="tel" required placeholder="6 91 23 45 67"></div>
+      <div class="form-group"><label>Mot de passe</label><input class="form-sheet-el" id="phonePassword" type="password" required></div>
+      <button type="submit" class="btn-submit-modal">Se connecter</button>
       <p class="form-error" id="phoneError"></p>
     </form>
   </div>
@@ -235,114 +171,16 @@
 
 <div id="publishModal" class="modal-overlay">
   <div class="modal-sheet">
-    <div class="modal-header">
-      <h3>Publier une offre</h3>
-      <button class="modal-close" data-close="publishModal">×</button>
-    </div>
+    <div class="modal-header"><h3>Publier une offre</h3><button class="modal-close" data-close="publishModal">×</button></div>
     <form id="adForm">
-      <div class="form-group" id="adShopWrap" hidden>
-        <label><input type="checkbox" id="adAsShop"> Publier au nom de mon établissement</label>
-      </div>
       <div class="form-group"><label>Catégorie</label><select class="form-sheet-el" id="adCategory"></select></div>
       <div class="form-group"><label>Titre</label><input class="form-sheet-el" id="adTitle" type="text" required></div>
       <div class="form-group"><label>Ville</label><select class="form-sheet-el" id="adCity"></select></div>
-      <div class="form-group">
-        <label>Quartier / Précision</label>
-        <input class="form-sheet-el" id="adQuartier" type="text" required placeholder="Ex: Bastos, Akwa, Bonapriso...">
-      </div>
       <div class="form-group"><label>Prix (FCFA)</label><input class="form-sheet-el" id="adPrice" type="number" required></div>
-      <div class="form-group"><label>Photo</label><input class="form-sheet-el" id="adImage" type="file" accept="image/*" required><img id="imgPreview" class="img-preview"></div>
+      <div class="form-group"><label>Photo</label><input class="form-sheet-el" id="adImage" type="file" accept="image/*" required></div>
       <div class="form-group"><label>Description</label><textarea class="form-sheet-el" id="adDesc" rows="3" required></textarea></div>
       <div class="form-group"><label>WhatsApp / Téléphone</label><input class="form-sheet-el" id="adContact" type="tel" required></div>
-      <button type="submit" class="btn-submit-modal" id="pubSubmit">Publier</button>
-      <p class="form-error" id="pubError"></p>
-    </form>
-  </div>
-</div>
-
-<div id="proModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header">
-      <h3>Mon établissement & Reel</h3>
-      <button class="modal-close" data-close="proModal">×</button>
-    </div>
-    <form id="proForm">
-      <div class="form-group"><label>Nom de l'entreprise / Artiste</label><input class="form-sheet-el" id="proName" type="text" required></div>
-      <div class="form-group"><label>Type</label><select class="form-sheet-el" id="proType"><option>Artisan / Service</option><option>Restaurant</option><option>Boutique</option></select></div>
-      <div class="form-group"><label>Ville</label><select class="form-sheet-el" id="proCity"></select></div>
-      <div class="form-group"><label>Téléphone / WhatsApp</label><input class="form-sheet-el" id="proContact" type="tel" required></div>
-      <div class="form-group"><label>Logo (Image)</label><input class="form-sheet-el" id="proLogo" type="file" accept="image/*"></div>
-      <div class="form-group"><label>🎬 Vidéo Reel / Statut (Court métrage de vos réalisations)</label><input class="form-sheet-el" id="proVideo" type="file" accept="video/*"></div>
-      <div class="form-group"><label>Légende de votre Reel</label><input class="form-sheet-el" id="proReelDesc" type="text" placeholder="Ex: Démonstration de notre savoir-faire..."></div>
-      <button type="submit" class="btn-submit-modal" id="proSubmit">Enregistrer le shop & Reel</button>
-      <p class="form-error" id="proError"></p>
-    </form>
-  </div>
-</div>
-
-<!-- MODALE DE LECTURE REEL / STATUT -->
-<div id="reelModal" class="modal-overlay">
-  <div class="reel-modal-sheet">
-    <div class="reel-video-container">
-      <video id="reelPlayer" autoplay playsinline loop></video>
-      <div class="reel-overlay-content">
-        <div class="reel-header-row">
-          <div class="reel-shop-info">
-            <div class="reel-avatar" id="reelAvatarWrap"></div>
-            <div>
-              <div class="reel-shop-name" id="reelShopName">Nom</div>
-              <div class="reel-shop-city" id="reelShopCity">Ville</div>
-            </div>
-          </div>
-          <button class="modal-close" data-close="reelModal" style="color:#fff; font-size:1.8rem; text-shadow:0 1px 3px rgba(0,0,0,0.8);">×</button>
-        </div>
-        <div class="reel-footer-actions">
-          <div class="reel-desc" id="reelDescText"></div>
-          <div class="reel-buttons">
-            <a id="reelWaBtn" class="whatsapp-link-card" href="#" target="_blank">WhatsApp</a>
-            <a id="reelCallBtn" class="call-link-card" href="#">📞 Appel</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODALE DE DÉTAIL D'UNE ANNONCE -->
-<div id="detailModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header">
-      <h3>Détails de l'offre</h3>
-      <button class="modal-close" data-close="detailModal">×</button>
-    </div>
-    <div id="detailBody" style="display: flex; flex-direction: column; gap: 12px;"></div>
-  </div>
-</div>
-
-<!-- MODALE DE BOÎTE DE RÉCEPTION (INBOX) -->
-<div id="inboxModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header">
-      <h3>Mes Messages</h3>
-      <button class="modal-close" data-close="inboxModal">×</button>
-    </div>
-    <div id="inboxList" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
-      <div style="text-align: center; color: var(--color-text-muted); padding: 20px;">Chargement...</div>
-    </div>
-  </div>
-</div>
-
-<!-- MODALE DE CHAT INTERNE -->
-<div id="chatModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header">
-      <h3 id="chatTitle">Discussion</h3>
-      <button class="modal-close" data-close="chatModal">×</button>
-    </div>
-    <div class="chat-messages-box" id="chatMessages"></div>
-    <form id="chatForm" class="chat-input-row">
-      <input type="text" id="chatInput" class="form-sheet-el" placeholder="Écrire un message..." required autocomplete="off">
-      <button type="submit">Envoyer</button>
+      <button type="submit" class="btn-submit-modal">Publier</button>
     </form>
   </div>
 </div>
@@ -360,20 +198,16 @@
     { value: 'Services', chip: '🛠 Services' },
     { value: 'Restaurants', chip: '🍽 Gastronomie' },
     { value: 'Boutiques', chip: '🛍 Boutiques' },
-    { value: 'Immobilier', chip: '🏠 Immobilier' },
-    { value: 'Véhicules', chip: '🚗 Véhicules' }
+    { value: 'Immobilier', chip: '🏠 Immobilier' }
   ];
-  const CITIES = ['Yaoundé', 'Douala', 'Kribi', 'Bafoussam', 'Garoua', 'Bamenda', 'Limbe', 'Autre'];
+  const CITIES = ['Yaoundé', 'Douala', 'Kribi', 'Bafoussam', 'Garoua'];
 
   const $ = (id) => document.getElementById(id);
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  let allListings = [], shops = [], shopsByUser = {}, currentShopId = null, currentUser = null, favorites = [];
-  let activeChatReceiverId = null, activeAdId = null, chatSubscription = null, badgeSubscription = null;
-  let currentCategory = '';
+  let allListings = [], shops = [], currentUser = null, favorites = [], currentCategory = '';
 
   try { favorites = JSON.parse(localStorage.getItem('cl-favs') || '[]'); } catch (e) {}
-
   function saveFavorites() {
     try { localStorage.setItem('cl-favs', JSON.stringify(favorites)); } catch (e) {}
     $('favCount').textContent = favorites.length;
@@ -381,262 +215,96 @@
   saveFavorites();
 
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]));
-  const waNumber = (contact) => {
-    let d = String(contact || '').replace(/\D/g, '');
-    if (d.length === 9) d = '237' + d;
-    return d;
-  };
-  const priceText = (p) => Number(p) > 0 ? Number(p).toLocaleString('fr-FR') + ' FCFA' : 'Prix à discuter';
-  function toast(msg) {
+  const toast = (msg) => {
     const t = $('toast'); t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3200);
-  }
-
+    setTimeout(() => t.classList.remove('show'), 3000);
+  };
   const openModal = (id) => $(id).classList.add('active');
   const closeModal = (id) => $(id).classList.remove('active');
 
   $('themeBtn').addEventListener('click', () => {
     const html = document.documentElement;
-    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', next);
+    html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
   });
 
-  const cityOptions = CITIES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
-  $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + cityOptions;
-  $('adCity').innerHTML = cityOptions;
-  $('proCity').innerHTML = cityOptions;
-  $('adCategory').innerHTML = CATEGORIES.map((c) => `<option value="${esc(c.value)}">${esc(c.value)}</option>`).join('');
+  const cityOpts = '<option value="">Toutes les villes</option>' + CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+  $('cityFilter').innerHTML = cityOpts;
+  $('adCity').innerHTML = CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+  $('adCategory').innerHTML = CATEGORIES.map(c => `<option value="${c.value}">${c.value}</option>`).join('');
   $('categoryChips').innerHTML = '<button class="cat-chip active" data-cat="">✨ Tout voir</button>' +
-    CATEGORIES.map((c) => `<button class="cat-chip" data-cat="${esc(c.value)}">${esc(c.chip)}</button>`).join('');
+    CATEGORIES.map(c => `<button class="cat-chip" data-cat="${c.value}">${c.chip}</button>`).join('');
 
   $('categoryChips').addEventListener('click', (e) => {
     const chip = e.target.closest('.cat-chip');
     if (!chip) return;
-    document.querySelectorAll('.cat-chip').forEach((c) => c.classList.remove('active'));
+    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
     currentCategory = chip.dataset.cat;
     renderListings();
   });
 
-  $('searchInput').addEventListener('input', renderListings);$('cityFilter').addEventListener('change', renderListings);
-  $('priceFilter').addEventListener('change', renderListings);$('sortFilter').addEventListener('change', renderListings);
+  $('searchInput').addEventListener('input', renderListings);
+  $('cityFilter').addEventListener('change', renderListings);$('priceFilter').addEventListener('change', renderListings);
 
-  async function loadListings() {
+  async function loadData() {
     try {
-      const { data, error } = await sb.from('annonces').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-      allListings = data || [];
-      renderListings();
+      const res = await sb.from('annonces').select('*').order('created_at', { ascending: false });
+      if (res.error) throw res.error;
+      allListings = res.data || [];
     } catch (err) {
-      console.error('Erreur chargement annonces:', err);
-      $('listings-grid').innerHTML = `<div class="state-msg" style="color:var(--color-danger);">Erreur Supabase : ${esc(err.message || err)}</div>`;
-      $('resultsCount').textContent = 'Erreur de chargement';
+      console.warn("Erreur chargement annonces:", err.message);
+      allListings = [];
     }
-  }
 
-  async function loadShops() {
     try {
-      const { data, error } = await sb.from('etablissements').select('*');
-      if (error) throw error;
-      shops = data || [];
-      shopsByUser = {};
-      shops.forEach((s) => { shopsByUser[s.user_id] = s; });
-    } catch (e) {
-      console.warn('Impossible de charger les etablissements :', e);
-      shops = [];
-    }
+      const resShop = await sb.from('etablissements').select('*');
+      if (!resShop.error) shops = resShop.data || [];
+    } catch (e) { shops = []; }
+
+    renderListings();
     renderShops();
   }
 
   function renderShops() {
-    const mine = currentUser && shopsByUser[currentUser.id];
-    currentShopId = mine ? mine.id : null;
-    
-    const cta = `<div class="shop-story-card cta-card" id="proCta">
-      <div class="story-ring">
-        <div class="story-avatar-wrap">${mine ? '✎' : '+'}</div>
-      </div>
-      <div class="shop-story-name">${mine ? 'Mon Shop' : 'Créer Reel'}</div>
-    </div>`;
-
-    const shopsHTML = shops.map((s) => {
-      const hasVideo = !!s.video_url;
-      const avatarContent = s.logo_url ? `<img src="${esc(s.logo_url)}">` : esc((s.name || 'S').charAt(0));
-      return `
-      <div class="shop-story-card" data-shop-id="${s.id}">
-        <div class="story-ring ${hasVideo ? 'has-video' : ''}">
-          <div class="story-avatar-wrap">
-            ${avatarContent}
-          </div>
-        </div>
-        <div class="shop-story-name">${esc(s.name)}</div>
-      </div>`;
-    }).join('');
-
-    $('shops-container').innerHTML = cta + shopsHTML;
-    if ($('adShopWrap'))$('adShopWrap').hidden = !mine;
+    $('shops-container').innerHTML = shops.length === 0 ? 
+      `<div style="font-size:0.8rem; color:var(--color-text-muted); padding:10px;">Aucun shop actif</div>` :
+      shops.map(s => `<div class="shop-story-card"><div class="story-ring"><div class="story-avatar-wrap">${esc((s.name||'S').charAt(0))}</div></div><div class="shop-story-name">${esc(s.name)}</div></div>`).join('');
   }
-
-  $('shops-container').addEventListener('click', (e) => {
-    const cta = e.target.closest('#proCta');
-    if (cta) {
-      if (!currentUser) { toast('Connectez-vous pour gérer votre shop'); openModal('authModal'); return; }
-      if (mineShopData()) {
-        const m = mineShopData();
-        $('proName').value = m.name || '';
-        $('proType').value = m.type \vert{}\vert{} 'Artisan / Service';$('proCity').value = m.city || 'Yaoundé';
-        $('proContact').value = m.contact \vert{}\vert{} '';$('proReelDesc').value = m.reel_desc || '';
-      }
-      openModal('proModal');
-      return;
-    }
-
-    const card = e.target.closest('[data-shop-id]');
-    if (card) {
-      const shopId = card.dataset.shopId;
-      const shop = shops.find(s => s.id == shopId);
-      if (!shop) return;
-
-      if (!shop.video_url) {
-        toast("Cet artisan n'a pas encore posté de Reel vidéo.");
-        return;
-      }
-
-      const player = $('reelPlayer');
-      player.src = shop.video_url;
-      $('reelShopName').textContent = shop.name;
-      $('reelShopCity').textContent = shop.city;
-      $('reelDescText').textContent = shop.reel_desc || shop.name + ' · CamerLink';
-      
-      const avatarHtml = shop.logo_url ? `<img src="${esc(shop.logo_url)}">` : `<span>${esc((shop.name || 'S').charAt(0))}</span>`;
-      $('reelAvatarWrap').innerHTML = avatarHtml;
-
-      const wa = waNumber(shop.contact);
-      $('reelWaBtn').href = `https://wa.me/${wa}?text=${encodeURIComponent('Bonjour, je vous contacte suite à votre Reel sur CamerLink')}`;
-      $('reelCallBtn').href = `tel:+${wa}`;
-
-      openModal('reelModal');
-      player.play().catch(() => {});
-    }
-  });
-
-  function mineShopData() {
-    return currentUser && shopsByUser[currentUser.id] ? shopsByUser[currentUser.id] : null;
-  }
-
-  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => {
-    const modalId = b.dataset.close;
-    closeModal(modalId);
-    if (modalId === 'reelModal') {
-      const player = $('reelPlayer');
-      player.pause();
-      player.src = '';
-    }
-    if (modalId === 'chatModal' && chatSubscription) {
-      sb.removeChannel(chatSubscription);
-      chatSubscription = null;
-    }
-  }));
-
-  $('proForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!currentUser) return;
-
-    let logoUrl = mineShopData()?.logo_url || null;
-    let videoUrl = mineShopData()?.video_url || null;
-
-    const logoFile = $('proLogo').files[0];
-    if (logoFile) {
-      const path = `${currentUser.id}/logo_${Date.now()}.jpg`;
-      await sb.storage.from(BUCKET).upload(path, logoFile);
-      logoUrl = sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
-    }
-
-    const videoFile = $('proVideo').files[0];
-    if (videoFile) {
-      const path = `${currentUser.id}/reel_${Date.now()}.mp4`;
-      await sb.storage.from(BUCKET).upload(path, videoFile);
-      videoUrl = sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
-    }
-
-    const payload = {
-      user_id: currentUser.id,
-      name: $('proName').value,
-      type: $('proType').value,
-      city: $('proCity').value,
-      contact: $('proContact').value,
-      logo_url: logoUrl,
-      video_url: videoUrl,
-      reel_desc: $('proReelDesc').value
-    };
-
-    const existing = mineShopData();
-    let error;
-    if (existing) {
-      const res = await sb.from('etablissements').update(payload).eq('id', existing.id);
-      error = res.error;
-    } else {
-      const res = await sb.from('etablissements').insert(payload);
-      error = res.error;
-    }
-
-    if (error) {
-      $('proError').textContent = "Erreur lors de l'enregistrement";
-      console.error(error);
-      return;
-    }
-
-    closeModal('proModal');
-    toast('Shop & Reel mis à jour !');
-    loadShops();
-  });
 
   function renderListings() {
     const grid = $('listings-grid');
     const term = $('searchInput').value.trim().toLowerCase();
     const city = $('cityFilter').value;
     const maxPrice = Number($('priceFilter').value) || 0;
-    const sortBy = $('sortFilter') ?$('sortFilter').value : 'recent';
 
-    let filtered = allListings.filter((ad) => {
+    let filtered = allListings.filter(ad => {
       return (!currentCategory || ad.category === currentCategory) &&
              (!city || ad.city === city) &&
              (!maxPrice || Number(ad.price) <= maxPrice) &&
              (!term || ad.title.toLowerCase().includes(term));
     });
 
-    filtered.sort((a, b) => {
-      if (sortBy === 'price-asc') return Number(a.price) - Number(b.price);
-      if (sortBy === 'price-desc') return Number(b.price) - Number(a.price);
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
-
     $('resultsCount').textContent = `${filtered.length} annonce(s)`;
-    if (filtered.length === 0) { grid.innerHTML = '<div class="state-msg">Aucune annonce trouvée.</div>'; return; }
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div class="state-msg">Aucune annonce disponible pour le moment.</div>';
+      return;
+    }
 
-    grid.innerHTML = filtered.map((ad) => {
-      const wa = waNumber(ad.contact);
+    grid.innerHTML = filtered.map(ad => {
       const isFav = favorites.includes(ad.id);
-      const locationText = ad.quartier ? `${ad.quartier} · ${ad.city}` : ad.city;
-      const viewsCount = ad.views || 0;
       return `
-      <article class="ad-card" data-detail-id="${ad.id}">
-        <div class="card-img-container" data-detail-id="${ad.id}">
+      <article class="ad-card">
+        <div class="card-img-container">
           <span class="card-badge-top">${esc(ad.category)}</span>
-          <span class="card-badge-views">👁️ ${viewsCount}</span>
           <button class="btn-fav ${isFav ? 'active' : ''}" data-fav="${ad.id}">❤️</button>
-          ${ad.image_url ? `<img src="${esc(ad.image_url)}" loading="lazy" data-detail-id="${ad.id}">` : ''}
+          ${ad.image_url ? `<img src="${esc(ad.image_url)}" loading="lazy">` : ''}
         </div>
-        <div class="card-body" data-detail-id="${ad.id}">
-          <h3 class="ad-title" data-detail-id="${ad.id}">${esc(ad.title)}</h3>
-          <p class="ad-desc" data-detail-id="${ad.id}">${esc(ad.description)}</p>
-          <div class="card-meta" data-detail-id="${ad.id}">
-            <span class="ad-city">📍 ${esc(locationText)}</span>
-            <span class="ad-price">${esc(priceText(ad.price))}</span>
-          </div>
-          <div class="card-actions-row" onclick="event.stopPropagation()">
-            ${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Intéressé par votre offre sur CamerLink')}" target="_blank">WhatsApp</a>` : ''}
-            ${wa ? `<a class="call-link-card" href="tel:+${wa}">📞 Appel</a>` : ''}
+        <div class="card-body">
+          <h3 class="ad-title">${esc(ad.title)}</h3>
+          <p class="ad-desc">${esc(ad.description)}</p>
+          <div class="card-meta">
+            <span class="ad-city">📍 ${esc(ad.city)}</span>
+            <span class="ad-price">${Number(ad.price).toLocaleString('fr-FR')} FCFA</span>
           </div>
         </div>
       </article>`;
@@ -644,9 +312,9 @@
   }
 
   document.addEventListener('click', (e) => {
-    const favBtn = e.target.closest('[data-fav]');
-    if (favBtn) {
-      const id = Number(favBtn.dataset.fav);
+    const fav = e.target.closest('[data-fav]');
+    if (fav) {
+      const id = Number(fav.dataset.fav);
       const idx = favorites.indexOf(id);
       if (idx > -1) favorites.splice(idx, 1);
       else favorites.push(id);
@@ -655,241 +323,21 @@
     }
   });
 
-  async function openInbox() {
-    if (!currentUser) {
-      toast('Connectez-vous pour voir vos messages');
-      openModal('authModal');
-      return;
-    }
-    openModal('inboxModal');
-    const box = $('inboxList');
-    box.innerHTML = '<div style="text-align: center; color: var(--color-text-muted); padding: 20px;">Chargement...</div>';
-
-    const { data, error } = await sb
-      .from('messages')
-      .select('*')
-      .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
-      .order('created_at', { ascending: false });
-
-    if (error || !data || data.length === 0) {
-      box.innerHTML = '<div style="text-align: center; color: var(--color-text-muted); padding: 20px;">Aucune conversation pour le moment.</div>';
-      return;
-    }
-
-    const conversationsMap = {};
-    data.forEach(m => {
-      const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
-      if (!conversationsMap[otherId]) {
-        conversationsMap[otherId] = m;
-      }
-    });
-
-    const interlocutors = Object.keys(conversationsMap);
-    box.innerHTML = interlocutors.map(otherId => {
-      const lastMsg = conversationsMap[otherId];
-      return `
-        <div class="inbox-item" data-other-id="${otherId}">
-          <div style="font-weight: 700; font-size: 0.9rem;">Discussion (${otherId.substring(0, 6)}...)</div>
-          <div style="font-size: 0.82rem; color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(lastMsg.content)}</div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  $('msgInboxBtn').addEventListener('click', () => {
-    const badge = $('msgBadge');
-    if (badge) badge.style.display = 'none';
-    openInbox();
+  $('pubBtn').addEventListener('click', () => {
+    if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
+    openModal('publishModal');
   });
 
-  $('inboxList').addEventListener('click', (e) => {
-    const item = e.target.closest('[data-other-id]');
-    if (!item) return;
-    const otherId = item.dataset.otherId;
-    closeModal('inboxModal');
-    openChat(otherId, null, 'Discussion');
-  });
-
-  async function openChat(receiverId, adId, adTitle) {
-    if (!currentUser) {
-      toast('Connectez-vous pour envoyer un message');
-      openModal('authModal');
-      return;
-    }
-    if (currentUser.id === receiverId) {
-      toast("Vous ne pouvez pas vous envoyer un message à vous-même.");
-      return;
-    }
-
-    activeChatReceiverId = receiverId;
-    activeAdId = adId;
-    $('chatTitle').textContent = `Chat : ${adTitle || 'Discussion'}`;
-    $('chatMessages').innerHTML = '<div style="text-align:center; color:var(--color-text-muted); font-size:0.85rem; padding:20px;">Chargement des messages...</div>';
-    
-    closeModal('detailModal');
-    openModal('chatModal');
-
-    const { data, error } = await sb
-      .from('messages')
-      .select('*')
-      .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${currentUser.id})`)
-      .order('created_at', { ascending: true });
-
-    if (!error && data) {
-      renderMessages(data);
-    } else {
-      $('chatMessages').innerHTML = '<div style="text-align:center; color:var(--color-danger); font-size:0.85rem; padding:20px;">Erreur de chargement.</div>';
-    }
-
-    if (chatSubscription) {
-      sb.removeChannel(chatSubscription);
-    }
-
-    chatSubscription = sb
-      .channel('public:messages')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload) => {
-          const msg = payload.new;
-          if (
-            (msg.sender_id === currentUser.id && msg.receiver_id === activeChatReceiverId) ||
-            (msg.sender_id === activeChatReceiverId && msg.receiver_id === currentUser.id)
-          ) {
-            appendMessageBubble(msg);
-          }
-        }
-      )
-      .subscribe();
-  }
-
-  function renderMessages(messages) {
-    const box = $('chatMessages');
-    if (messages.length === 0) {
-      box.innerHTML = '<div style="text-align:center; color:var(--color-text-muted); font-size:0.85rem; padding:20px;">Aucun message pour le moment. Démarrez la discussion !</div>';
-      return;
-    }
-    box.innerHTML = messages.map(m => {
-      const isMine = m.sender_id === currentUser.id;
-      return `<div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">${esc(m.content)}</div>`;
-    }).join('');
-    box.scrollTop = box.scrollHeight;
-  }
-
-  function appendMessageBubble(m) {
-    const box = $('chatMessages');
-    if (box.querySelector('div')?.textContent.includes('Aucun message') || box.querySelector('div')?.textContent.includes('Chargement')) {
-      box.innerHTML = '';
-    }
-    const isMine = m.sender_id === currentUser.id;
-    box.insertAdjacentHTML('beforeend', `<div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">${esc(m.content)}</div>`);
-    box.scrollTop = box.scrollHeight;
-  }
-
-  $('chatForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const input = $('chatInput');
-    const content = input.value.trim();
-    if (!content || !activeChatReceiverId || !currentUser) return;
-
-    input.value = '';
-    const { error } = await sb.from('messages').insert({
-      sender_id: currentUser.id,
-      receiver_id: activeChatReceiverId,
-      ad_id: activeAdId,
-      content: content
-    });
-
-    if (error) {
-      toast("Erreur lors de l'envoi du message");
-      console.error(error);
-    }
-  });
-
-  function listenForNewMessages() {
-    if (!currentUser) return;
-    if (badgeSubscription) sb.removeChannel(badgeSubscription);
-
-    badgeSubscription = sb
-      .channel('public:messages:badge')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages', filter: `receiver_id=eq.${currentUser.id}` },
-        () => {
-          const badge = $('msgBadge');
-          if (badge) badge.style.display = 'block';
-          toast('Nouveau message reçu ! 💬');
-        }
-      )
-      .subscribe();
-  }
-
-  document.addEventListener('click', async (e) => {
-    if (e.target.closest('[data-fav]') || e.target.closest('.whatsapp-link-card') || e.target.closest('.call-link-card') || e.target.closest('[data-shop-id]') || e.target.closest('#proCta')) return;
-
-    const card = e.target.closest('[data-detail-id]');
-    if (card) {
-      const id = Number(card.dataset.detailId);
-      const ad = allListings.find(a => a.id === id);
-      if (!ad) return;
-
-      const newViews = (ad.views || 0) + 1;
-      ad.views = newViews;
-      sb.from('annonces').update({ views: newViews }).eq('id', id).then(() => {});
-
-      const wa = waNumber(ad.contact);
-      const locationText = ad.quartier ? `${ad.quartier}, ${ad.city}` : ad.city;
-      const isOwner = currentUser && currentUser.id === ad.user_id;
-
-      $('detailBody').innerHTML = `
-        ${ad.image_url ? `<img src="${esc(ad.image_url)}" style="width:100%; max-height:240px; object-fit:cover; border-radius:12px;">` : ''}
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div style="font-size:0.8rem; color:var(--a1); font-weight:700; text-transform:uppercase;">${esc(ad.category)}</div>
-          <div style="font-size:0.75rem; color:var(--color-text-muted);">👁️ ${newViews} vues</div>
-        </div>
-        <h2 style="font-size:1.2rem; font-weight:800;">${esc(ad.title)}</h2>
-        <div style="font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:var(--color-accent);">${esc(priceText(ad.price))}</div>
-        <div style="font-size:0.88rem; color:var(--color-text-muted);">📍 ${esc(locationText)}</div>
-        <p style="font-size:0.92rem; white-space:pre-line; background:var(--color-bg); padding:12px; border-radius:8px; border:1px solid var(--color-border);">${esc(ad.description)}</p>
-        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-          ${isOwner ? 
-            `<div style="width:100%; text-align:center; padding:12px; font-size:0.85rem; color:var(--color-text-muted); background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-md);">C'est votre propre annonce</div>` :
-            `${wa ? `<a class="whatsapp-link-card" href="https://wa.me/${wa}?text=${encodeURIComponent('Bonjour, je vous contacte suite à votre annonce « ' + ad.title + ' » sur CamerLink')}" target="_blank" style="flex:1; text-align:center; padding:12px;">WhatsApp</a>` : ''}
-             ${wa ? `<a class="call-link-card" href="tel:+${wa}" style="flex:1; text-align:center; padding:12px;">📞 Appel</a>` : ''}
-             <button id="openChatBtn" class="chat-btn-card" style="flex:1; padding:12px; border-radius:var(--radius-md);">💬 Discuter</button>`
-          }
-        </div>
-      `;
-
-      const chatBtn = $('openChatBtn');
-      if (chatBtn) {
-        chatBtn.addEventListener('click', () => {
-          openChat(ad.user_id, ad.id, ad.title);
-        });
-      }
-
-      openModal('detailModal');
-      renderListings();
-    }
-  });
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
 
   sb.auth.onAuthStateChange((_, session) => {
     currentUser = session ? session.user : null;
     $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
-    renderShops();
-    if (currentUser) {
-      listenForNewMessages();
-    }
   });
 
   $('authBtn').addEventListener('click', async () => {
-    if (currentUser) {
-      if (badgeSubscription) sb.removeChannel(badgeSubscription);
-      await sb.auth.signOut();
-      toast('Déconnecté');
-    } else {
-      openModal('authModal');
-    }
+    if (currentUser) { await sb.auth.signOut(); toast('Déconnecté'); }
+    else { openModal('authModal'); }
   });
 
   $('phoneForm').addEventListener('submit', async (e) => {
@@ -899,45 +347,13 @@
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
       const signUp = await sb.auth.signUp({ email, password });
-      if (signUp.error) { $('phoneError').textContent = 'Erreur de connexion'; return; }
+      if (signUp.error) { $('phoneError').textContent = 'Erreur d’authentification'; return; }
     }
     closeModal('authModal');
-    toast('Connecté avec succès !');
+    toast('Connecté !');
   });
 
-  $('pubBtn').addEventListener('click', () => {
-    if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
-    openModal('publishModal');
-  });
-
-  $('adForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const file = $('adImage').files[0];
-    const path = `${currentUser.id}/${Date.now()}.jpg`;
-    await sb.storage.from(BUCKET).upload(path, file);
-    const imageUrl = sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
-
-    await sb.from('annonces').insert({
-      user_id: currentUser.id,
-      category: $('adCategory').value,
-      title: $('adTitle').value,
-      city: $('adCity').value,
-      quartier: $('adQuartier').value.trim(),
-      price: Number($('adPrice').value),
-      description: $('adDesc').value,
-      content: $('adDesc').value,
-      contact: $('adContact').value,
-      image_url: imageUrl,
-      views: 0,
-      etablissement_id: $('adAsShop').checked ? currentShopId : null
-    });
-    closeModal('publishModal');
-    toast('Offre publiée !');
-    loadListings();
-  });
-
-  loadListings();
-  loadShops();
+  loadData();
 })();
 </script>
 </body>
