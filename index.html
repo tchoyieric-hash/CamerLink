@@ -731,8 +731,8 @@
 
   $('phoneForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = $('authPhone'].value + '@phone.camerlink.app';
-    const password = $('phonePassword'].value;
+    const email = $('authPhone').value + '@phone.camerlink.app';
+    const password = $('phonePassword').value;
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
       const signUp = await sb.auth.signUp({ email, password });
@@ -748,7 +748,7 @@
   });
 
   $('adForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+    e.Item = e.target;
     const file = $('adImage').files[0];
     const path = `${currentUser.id}/${Date.now()}.jpg`;
     await sb.storage.from(BUCKET).upload(path, file);
