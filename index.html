@@ -84,7 +84,12 @@
     .btn-fav.active { color:var(--color-danger); background:rgba(255,255,255,0.9); }
     .card-body { padding:14px; display:flex; flex-direction:column; flex-grow:1; }
     .ad-title { font-size:1rem; font-weight:800; margin-bottom:4px; }
-    .ad-desc { font-size:0.85rem; color:var(--color-text-muted); margin-bottom:10px; flex-grow:1; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .ad-desc { font-size:0.85rem; color:var(--color-text-muted); margin-bottom:8px; flex-grow:1; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    
+    /* Styles pour la note et les avis */
+    .ad-rating { display:flex; align-items:center; gap:4px; font-size:0.82rem; font-weight:600; color:var(--color-accent); margin-bottom:10px; }
+    .ad-rating span { color:var(--color-text-muted); font-weight:normal; }
+
     .card-meta { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:10px; border-top:1px solid var(--color-border); }
     .ad-city { background:rgba(34,211,238,0.08); padding:3px 8px; border-radius:999px; font-size:0.75rem; color:var(--a1); font-weight:600; }
     .ad-price { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--color-accent); }
@@ -292,6 +297,10 @@
 
     grid.innerHTML = filtered.map(ad => {
       const isFav = favorites.includes(ad.id);
+      // Récupération sécurisée de la note moyenne et du nombre d'avis
+      const rating = Number(ad.note_moyenne || 0).toFixed(1);
+      const reviewCount = ad.nb_avis || 0;
+
       return `
       <article class="ad-card">
         <div class="card-img-container">
@@ -302,6 +311,12 @@
         <div class="card-body">
           <h3 class="ad-title">${esc(ad.title)}</h3>
           <p class="ad-desc">${esc(ad.description)}</p>
+          
+          <!-- Affichage de la note et des avis -->
+          <div class="ad-rating">
+            ⭐ ${rating} <span>(${reviewCount} avis)</span>
+          </div>
+
           <div class="card-meta">
             <span class="ad-city">📍 ${esc(ad.city)}</span>
             <span class="ad-price">${Number(ad.price).toLocaleString('fr-FR')} FCFA</span>
@@ -342,7 +357,7 @@
 
   $('phoneForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = $('authPhone').value + '@phone.camerlink.app';
+    const email = $('authPhone'].value + '@phone.camerlink.app';
     const password = $('phonePassword').value;
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
