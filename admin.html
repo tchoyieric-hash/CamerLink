@@ -1,0 +1,320 @@
+ <!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>CamerLink – Demandes de rattachement</title>
+<style>
+  :root {
+    --fond: #f4f7f5;
+    --carte: #ffffff;
+    --texte: #13241b;
+    --discret: #5b6b62;
+    --trait: #d9e2dc;
+    --vert: #0b6b3a;
+    --vert-clair: #e3f2e9;
+    --rouge: #b3261e;
+    --rouge-clair: #fbe9e7;
+    --jaune: #8a6100;
+    --jaune-clair: #fff3cf;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--fond);
+    color: var(--texte);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 640px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { font-size: 1.35rem; margin: 0 0 4px; }
+  .sous-titre { color: var(--discret); margin: 0 0 20px; font-size: .95rem; }
+  .panneau {
+    background: var(--carte);
+    border: 1px solid var(--trait);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  label { display: block; font-weight: 600; margin: 12px 0 4px; font-size: .95rem; }
+  input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--trait);
+    border-radius: 8px;
+    font: inherit;
+    background: #fff;
+    color: inherit;
+  }
+  input:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 3px solid #7cc4966b;
+    outline-offset: 2px;
+  }
+  button {
+    font: inherit;
+    font-weight: 600;
+    border: 0;
+    border-radius: 8px;
+    padding: 11px 16px;
+    cursor: pointer;
+    background: var(--vert);
+    color: #fff;
+  }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.secondaire { background: transparent; color: var(--texte); border: 1px solid var(--trait); }
+  button.danger { background: var(--rouge); }
+  .plein { width: 100%; margin-top: 16px; }
+  .barre { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .barre .actions { display: flex; gap: 8px; }
+  .message { margin: 12px 0 0; padding: 10px 12px; border-radius: 8px; font-size: .95rem; }
+  .message.erreur { background: var(--rouge-clair); color: var(--rouge); }
+  .message.ok { background: var(--vert-clair); color: var(--vert); }
+  .vide { text-align: center; color: var(--discret); padding: 28px 8px; }
+  .demande { margin-bottom: 12px; }
+  .demande .tete { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .demande .numero { font-weight: 700; font-size: 1.1rem; }
+  .puce { font-size: .8rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; }
+  .puce.pending { background: var(--jaune-clair); color: var(--jaune); }
+  .puce.approved { background: var(--vert-clair); color: var(--vert); }
+  .puce.rejected { background: var(--rouge-clair); color: var(--rouge); }
+  .meta { color: var(--discret); font-size: .9rem; margin: 2px 0 0; }
+  .note { margin: 10px 0 0; padding: 8px 10px; background: var(--fond); border-radius: 8px; font-size: .95rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .annonces { margin: 10px 0 0; padding-left: 18px; font-size: .95rem; overflow-wrap: anywhere; }
+  .alerte { margin: 10px 0 0; color: var(--jaune); font-size: .92rem; }
+  .boutons { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .boutons > * { flex: 1 1 130px; text-align: center; }
+  a.bouton-lien {
+    display: inline-block; padding: 11px 16px; border-radius: 8px; font-weight: 600;
+    text-decoration: none; color: var(--vert); border: 1px solid var(--vert); background: transparent;
+  }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Demandes de rattachement</h1>
+  <p class="sous-titre">Valide ou refuse les artisans qui réclament leurs annonces.</p>
+
+  <section id="connexion" class="panneau" hidden>
+    <form id="form-connexion" novalidate>
+      <label for="tel">Numéro de téléphone</label>
+      <input id="tel" type="tel" inputmode="tel" autocomplete="username" placeholder="6XX XXX XXX" required>
+      <label for="mdp">Mot de passe</label>
+      <input id="mdp" type="password" autocomplete="current-password" required>
+      <button class="plein" type="submit" id="btn-connexion">Se connecter</button>
+    </form>
+    <p id="msg-connexion" class="message erreur" hidden></p>
+  </section>
+
+  <section id="liste" hidden>
+    <div class="barre">
+      <span id="compteur" class="meta"></span>
+      <div class="actions">
+        <button class="secondaire" id="btn-actualiser" type="button">Actualiser</button>
+        <button class="secondaire" id="btn-deconnexion" type="button">Se déconnecter</button>
+      </div>
+    </div>
+    <p id="msg-liste" class="message" hidden></p>
+    <div id="demandes"></div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function () {
+  var SUPABASE_URL = "https://lviddipduhaelxcvyykc.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH";
+  var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function montrer(el, oui) { el.hidden = !oui; }
+
+  function message(el, texte, type) {
+    el.textContent = texte || "";
+    el.className = "message " + (type || "erreur");
+    montrer(el, !!texte);
+  }
+
+  // 656725369, +237 656 725 369, 237656725369 -> 237656725369
+  function normaliserTel(saisie) {
+    var chiffres = String(saisie || "").replace(/\D/g, "");
+    if (chiffres.length < 9) return null;
+    return "237" + chiffres.slice(-9);
+  }
+
+  function formaterTel(valeur) {
+    var c = String(valeur || "").replace(/\D/g, "");
+    if (c.length >= 9) {
+      var n = c.slice(-9);
+      return "+237 " + n.slice(0, 1) + " " + n.slice(1, 3) + " " + n.slice(3, 5) + " " + n.slice(5, 7) + " " + n.slice(7, 9);
+    }
+    return valeur;
+  }
+
+  function formaterDate(iso) {
+    try {
+      return new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+    } catch (e) { return iso; }
+  }
+
+  function el(tag, classe, texte) {
+    var n = document.createElement(tag);
+    if (classe) n.className = classe;
+    if (texte != null) n.textContent = texte;   // textContent : jamais de HTML injecté
+    return n;
+  }
+
+  var LIBELLES = { pending: "En attente", approved: "Validée", rejected: "Refusée" };
+
+  function carte(d) {
+    var c = el("article", "panneau demande");
+
+    var tete = el("div", "tete");
+    tete.appendChild(el("span", "numero", formaterTel(d.requested_phone)));
+    tete.appendChild(el("span", "puce " + d.status, LIBELLES[d.status] || d.status));
+    c.appendChild(tete);
+
+    c.appendChild(el("p", "meta", "Demande du " + formaterDate(d.created_at) + " · compte " + formaterTel(d.requester_login)));
+
+    if (d.note) c.appendChild(el("p", "note", d.note));
+
+    var n = d.matching_count || 0;
+    if (n > 0) {
+      c.appendChild(el("p", "meta", n + (n > 1 ? " annonces portent" : " annonce porte") + " ce numéro :"));
+      var ul = el("ul", "annonces");
+      (d.matching_titles || []).forEach(function (t) { ul.appendChild(el("li", null, t || "(sans titre)")); });
+      c.appendChild(ul);
+    } else if (d.status === "pending") {
+      c.appendChild(el("p", "alerte", "Aucune annonce ne porte ce numéro pour l'instant : il n'y a rien à rattacher."));
+    }
+
+    if (d.status === "pending") {
+      var boutons = el("div", "boutons");
+
+      var wa = el("a", "bouton-lien", "Écrire sur WhatsApp");
+      var tel = normaliserTel(d.requested_phone);
+      wa.href = "https://wa.me/" + tel;
+      wa.target = "_blank";
+      wa.rel = "noopener noreferrer";
+      boutons.appendChild(wa);
+
+      var oui = el("button", null, "Approuver");
+      oui.type = "button";
+      oui.disabled = n === 0;
+      oui.addEventListener("click", function () { traiter(d, "approve", oui, non); });
+      boutons.appendChild(oui);
+
+      var non = el("button", "danger", "Refuser");
+      non.type = "button";
+      non.addEventListener("click", function () { traiter(d, "reject", oui, non); });
+      boutons.appendChild(non);
+
+      c.appendChild(boutons);
+    }
+    return c;
+  }
+
+  async function traiter(d, action, btnOui, btnNon) {
+    var tel = formaterTel(d.requested_phone);
+    var question = action === "approve"
+      ? "Rattacher " + d.matching_count + " annonce(s) du " + tel + " à ce compte ?\n\nAs-tu bien vérifié que cette personne est l'artisan ?"
+      : "Refuser la demande du " + tel + " ?";
+    if (!window.confirm(question)) return;
+
+    btnOui.disabled = true;
+    btnNon.disabled = true;
+    message($("msg-liste"), "");
+
+    var res = action === "approve"
+      ? await db.rpc("admin_approve_claim", { request_id: d.id })
+      : await db.rpc("admin_reject_claim", { request_id: d.id });
+
+    if (res.error) {
+      message($("msg-liste"), "Action impossible : " + res.error.message, "erreur");
+      btnOui.disabled = d.matching_count === 0;
+      btnNon.disabled = false;
+      return;
+    }
+    message(
+      $("msg-liste"),
+      action === "approve" ? res.data + " annonce(s) rattachée(s)." : "Demande refusée.",
+      "ok"
+    );
+    await charger(true);
+  }
+
+  async function charger(garderMessage) {
+    if (!garderMessage) message($("msg-liste"), "");
+    var res = await db.rpc("admin_list_claims");
+    var zone = $("demandes");
+    zone.textContent = "";
+
+    if (res.error) {
+      message($("msg-liste"), "Impossible de charger les demandes : " + res.error.message, "erreur");
+      $("compteur").textContent = "";
+      return;
+    }
+
+    var liste = res.data || [];
+    var enAttente = liste.filter(function (d) { return d.status === "pending"; }).length;
+    $("compteur").textContent = enAttente + (enAttente > 1 ? " demandes en attente" : " demande en attente");
+
+    if (!liste.length) {
+      zone.appendChild(el("p", "vide", "Aucune demande pour le moment."));
+      return;
+    }
+    liste.forEach(function (d) { zone.appendChild(carte(d)); });
+  }
+
+  async function afficherSelonSession() {
+    var s = await db.auth.getSession();
+    if (!s.data.session) {
+      montrer($("liste"), false);
+      montrer($("connexion"), true);
+      return;
+    }
+    var admin = await db.rpc("is_admin");
+    if (admin.error || admin.data !== true) {
+      await db.auth.signOut();
+      montrer($("liste"), false);
+      montrer($("connexion"), true);
+      message($("msg-connexion"), "Ce compte n'a pas l'accès administrateur.", "erreur");
+      return;
+    }
+    montrer($("connexion"), false);
+    montrer($("liste"), true);
+    await charger();
+  }
+
+  $("form-connexion").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    message($("msg-connexion"), "");
+    var tel = normaliserTel($("tel").value);
+    var mdp = $("mdp").value;
+    if (!tel || !mdp) {
+      message($("msg-connexion"), "Saisis ton numéro (9 chiffres) et ton mot de passe.", "erreur");
+      return;
+    }
+    var bouton = $("btn-connexion");
+    bouton.disabled = true;
+    var res = await db.auth.signInWithPassword({ email: tel + "@phone.camerlink.app", password: mdp });
+    bouton.disabled = false;
+    if (res.error) {
+      message($("msg-connexion"), "Numéro ou mot de passe incorrect.", "erreur");
+      return;
+    }
+    $("mdp").value = "";
+    await afficherSelonSession();
+  });
+
+  $("btn-actualiser").addEventListener("click", function () { charger(); });
+  $("btn-deconnexion").addEventListener("click", async function () {
+    await db.auth.signOut();
+    await afficherSelonSession();
+  });
+
+  afficherSelonSession();
+})();
+</script>
+</body>
+</html>
