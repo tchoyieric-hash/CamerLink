@@ -299,8 +299,9 @@
 
   function activateCard(card) {
     if (!card) return;
-    if (card.dataset.action === 'add') window.openAddStoryModal();
-    else openViewer(Number(card.dataset.group));
+    if (card.dataset.action === 'add') { window.openAddStoryModal(); return; }
+    const g = storyGroups[Number(card.dataset.group)];
+    if (g) openArtisan(g.uid); // fiche de l'artisan, avec un bouton pour voir ses statuts
   }
   $('shops-container').addEventListener('click', (e) => activateCard(e.target.closest('.shop-story-card')));
   $('shops-container').addEventListener('keydown', (e) => {
@@ -341,7 +342,7 @@
     const avatar = $('viewerAvatar');
     if (logo) { avatar.src = logo; avatar.style.display = ''; }
     else { avatar.removeAttribute('src'); avatar.style.display = 'none'; }
-    $('viewerShopName').textContent = name;
+    $('viewerShopName').textContent = name + ' ›';
     $('viewerCaption').textContent = s.caption || '';
 
     const img = $('viewerMedia'), vid = getViewerVideo();
@@ -998,11 +999,14 @@
     const body = $('artisanBody');
     body.innerHTML = '<div class="state-msg">Chargement...</div>';
     openModal('artisanModal');
+    try {
     const shop = await fetchShop(uid);
     const ads = allListings.filter(a => a.user_id === uid);
     const wa = waNumber(shop && shop.contact);
     const reel = shop && shop.video_url && /^https:\/\//i.test(shop.video_url) ? shop.video_url : null;
     const mine = currentUser && currentUser.id === uid;
+    const gi = storyGroups.findIndex(g => g.uid === uid);
+    const nStories = gi >= 0 ? storyGroups[gi].items.length : 0;
 
     body.innerHTML = `
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
@@ -1020,6 +1024,7 @@
       </div>
       ${reel ? `<video src="${esc(reel)}" controls playsinline preload="metadata" style="width:100%;max-height:260px;border-radius:12px;margin-bottom:6px;background:#000;"></video>
         ${shop.reel_desc ? `<p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;">${esc(shop.reel_desc)}</p>` : '<div style="margin-bottom:12px;"></div>'}` : ''}
+      ${nStories ? `<button type="button" data-act="stories" data-gi="${gi}" style="${btnStyle}width:100%;margin-bottom:8px;background:linear-gradient(90deg,var(--a1),var(--a2));color:#fff;">▶ Voir ses statuts (${nStories})</button>` : ''}
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
         ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="${btnStyle}background:#22C55E;color:#fff;">WhatsApp</a>
         <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
@@ -1034,9 +1039,15 @@
         </button>`).join('') : '<div class="state-msg" style="padding:16px;">Aucune annonce pour le moment.</div>'}`;
 
     body.dataset.uid = uid;
+    } catch (err) {
+      console.error(err);
+      body.innerHTML = '<div class="state-msg">Impossible d’afficher la fiche. Réessayez.</div>';
+    }
   }
 
   $('artisanBody').addEventListener('click', (e) => {
+    const st = e.target.closest('[data-act="stories"]');
+    if (st) { closeModal('artisanModal'); openViewer(Number(st.dataset.gi)); return; }
     const ad = e.target.closest('[data-ad]');
     if (ad) { closeModal('artisanModal'); openAdDetail(ad.dataset.ad); return; }
     if (e.target.closest('[data-act="msg"]')) {
