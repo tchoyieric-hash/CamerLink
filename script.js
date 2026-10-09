@@ -116,13 +116,13 @@
 
   /* ===== 3) CHARGEMENT DONNEES SUPABASE ===== */
   async function loadData() {
-    // 1. Annonces (Prioritaire - s'exécute quoi qu'il arrive)
+    // 1. Annonces (Prioritaire absolue)
     try {
       const res = await sb.from('annonces').select('*').order('created_at', { ascending: false });
       if (!res.error) allListings = res.data || [];
     } catch (err) { allListings = []; }
 
-    // 2. Vidéos
+    // 2. Vidéos des annonces
     try {
       const resVid = await sb.from('annonces').select('id,video_url');
       if (!resVid.error) {
@@ -133,23 +133,27 @@
       }
     } catch (e) { videos = {}; }
 
-    // Rendu immédiat des annonces pour enlever le "Chargement..."
+    // Affichage immédiat des annonces (enlève le "Chargement...")
     renderListings();
 
-    // 3. Stories 24h (Chargé de manière totalement isolée en arrière-plan)
-    try {
-      const now = new Date().toISOString();
-      const resStories = await sb.from('artisan_stories')
-        .select(`id, media_url, caption, created_at, artisan_id`)
-        .gt('expires_at', now)
-        .order('created_at', { ascending: false });
-      
-      if (!resStories.error) stories = resStories.data || [];
-    } catch (e) { 
-      stories = []; 
-    }
-
-    renderShops();
+    // 3. Stories 24h (Chargement totalement isolé en arrière-plan)
+    setTimeout(async () => {
+      try {
+        const now = new Date().toISOString();
+        const resStories = await sb.from('artisan_stories')
+          .select(`id, media_url, caption, created_at, artisan_id`)
+          .gt('expires_at', now)
+          .order('created_at', { ascending: false });
+        
+        if (!resStories.error) {
+          stories = resStories.data || [];
+          renderShops();
+        }
+      } catch (e) { 
+        stories = []; 
+        renderShops();
+      }
+    }, 200);
   }
 
   /* ===== 4) AFFICHAGE ET GESTION DES STORIES (Reels 24h) ===== */
@@ -392,51 +396,3 @@
   // Lancement
   loadData();
 })();
-// ===== MODULE STATUTS 24H (NON BLOQUANT) =====
-async function initArtisanStoriesSafely() {
-  const container = document.getElementById('shops-container');
-  if (!container) return; // Sécurité : si l'élément n'existe pas, on s'arrête ici
-
-  // 1. On affiche le bouton de base "Mon statut" immédiatement
-  container.innerHTML = `
-    <div class="shop-story-card cta-card" onclick="openAddStoryModal()">
-      <div class="story-ring"><div class="story-avatar-wrap">+</div></div>
-      <div class="shop-story-name">Mon statut</div>
-    </div>
-  `;
-
-  // 2. Chargement des stories en arrière-plan avec un délai de 1 seconde pour laisser la page s'afficher
-  setTimeout(async () => {
-    try {
-      const sb = window.supabase;
-      if (!sb) return;
-
-      const now = new Date().toISOString();
-      const { data, error } = await sb.from('artisan_stories')
-        .select(`id, media_url, caption, created_at, artisan_id`)
-        .gt('expires_at', now)
-        .order('created_at', { ascending: false });
-
-      if (!error && data && data.length > 0) {
-        let html = container.innerHTML;
-        data.forEach(story => {
-          html += `
-            <div class="shop-story-card" onclick="window.open('${story.media_url}', '_blank')">
-              <div class="story-ring">
-                <div class="story-avatar-wrap">A</div>
-              </div>
-              <div class="shop-story-name">Artisan</div>
-            </div>
-          `;
-        });
-        container.innerHTML = html;
-      }
-    } catch (err) {
-      // Si la table ou le réseau pose un souci, on l'ignore silencieusement pour ne jamais bloquer le site
-      console.log("Module stories en attente.");
-    }
-  }, 1000);
-}
-
-// Lancement sécurisé après le chargement complet de la page
-window.addEventListener('load', initArtisanStoriesSafely);
