@@ -108,6 +108,26 @@
   </div>
 </div>
 
+<!-- Modale de publication de statut (Ajout propre pour les artisans) -->
+<div id="publishStoryModal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>Publier un statut (24h)</h3><button class="modal-close" data-close="publishStoryModal">×</button></div>
+    <form id="storyForm">
+      <div class="form-group">
+        <label>Média (Image ou Vidéo)</label>
+        <input class="form-sheet-el" id="storyFile" type="file" accept="image/jpeg,image/png,image/webp,video/mp4" required>
+        <small style="color:#888; font-size:0.8rem;">Max 50 Mo. Visible pendant 24 heures.</small>
+      </div>
+      <div class="form-group">
+        <label>Légende (max 200 caractères)</label>
+        <textarea class="form-sheet-el" id="storyCaption" rows="2" maxlength="200" placeholder="Décrivez votre statut..."></textarea>
+      </div>
+      <button type="submit" id="storySubmitBtn" class="btn-submit-modal">Publier le statut</button>
+      <p class="form-error" id="storyError"></p>
+    </form>
+  </div>
+</div>
+
 <div id="toast"></div>
 <script src="script.js"></script>
 </body>
