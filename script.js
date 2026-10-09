@@ -55,7 +55,44 @@
   }
 
   const openModal = (id) => $(id).classList.add('active');
-  const closeModal = (id) => $(id).classList.remove('active');
+  const closeModal = (id) => {
+    $(id).classList.remove('active');
+    if (id === 'adDetailModal' || id === 'artisanModal') resetUrl();
+  };
+
+  /* ===== LIENS PARTAGEABLES : /annonce/<id> et /artisan/<id> ===== */
+  const BASE_TITLE = 'CamerLink · Annonces et commerces locaux au Cameroun';
+  function setUrl(p, title) {
+    try { if (location.pathname !== p) history.replaceState(null, '', p); } catch (e) { /* ignoré */ }
+    document.title = title || BASE_TITLE;
+  }
+  function resetUrl() {
+    if (/^\/(annonce|artisan)\//.test(location.pathname)) setUrl('/');
+    else document.title = BASE_TITLE;
+  }
+
+  async function copyLink(p) {
+    const url = location.origin + p;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch (e2) { /* ignoré */ }
+      ta.remove();
+    }
+    toast('Lien copié !');
+  }
+
+  async function shareLink(title, text, p) {
+    const url = location.origin + p;
+    if (navigator.share) {
+      try { await navigator.share({ title, text, url }); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text + '\n' + url), '_blank', 'noopener');
+  }
 
   /* ===== THÈME ===== */
   $('themeBtn').addEventListener('click', () => {
@@ -225,6 +262,7 @@
 
   async function loadData() {
     await loadListings();
+    openRoute();
     loadLikeCounts();
     loadStoriesSafely(); // en arrière-plan, ne bloque jamais la page
   }
@@ -967,6 +1005,8 @@
         ${ad.user_id ? `<button type="button" data-act="msg" style="${softStyle}">💬 Message</button>` : ''}
         ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="${btnStyle}background:#22C55E;color:#fff;">WhatsApp</a>
         <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
+        <button type="button" data-act="share" style="${softStyle}">📤 Partager</button>
+        <button type="button" data-act="copy" style="${softStyle}">🔗 Copier le lien</button>
       </div>`;
   }
 
@@ -977,6 +1017,7 @@
     detail.shop = ad.user_id && shopCache[ad.user_id] ? shopCache[ad.user_id] : null;
     renderAdDetail();
     openModal('adDetailModal');
+    setUrl('/annonce/' + ad.id, ad.title + ' · CamerLink');
     registerView(ad.id);
     if (ad.user_id && !detail.shop) {
       const shop = await fetchShop(ad.user_id);
@@ -990,6 +1031,10 @@
     const ad = allListings.find(a => String(a.id) === String(detail.id));
     if (!ad) return;
     if (act.dataset.act === 'fav') window.toggleFavorite(ad.id);
+    else if (act.dataset.act === 'share') {
+      shareLink(ad.title, `${ad.title} — ${Number(ad.price || 0).toLocaleString('fr-FR')} FCFA${ad.city ? ' à ' + ad.city : ''} sur CamerLink`, '/annonce/' + ad.id);
+    }
+    else if (act.dataset.act === 'copy') copyLink('/annonce/' + ad.id);
     else if (act.dataset.act === 'msg') { closeModal('adDetailModal'); window.openChat(ad.user_id, ad.id); }
     else if (act.dataset.act === 'artisan') { closeModal('adDetailModal'); openArtisan(ad.user_id); }
   });
@@ -999,8 +1044,10 @@
     const body = $('artisanBody');
     body.innerHTML = '<div class="state-msg">Chargement...</div>';
     openModal('artisanModal');
+    setUrl('/artisan/' + uid, 'Artisan · CamerLink');
     try {
     const shop = await fetchShop(uid);
+    if (shop && shop.name && $('artisanModal').classList.contains('active')) document.title = shop.name + ' · CamerLink';
     const ads = allListings.filter(a => a.user_id === uid);
     const wa = waNumber(shop && shop.contact);
     const reel = shop && shop.video_url && /^https:\/\//i.test(shop.video_url) ? shop.video_url : null;
@@ -1029,6 +1076,8 @@
         ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="${btnStyle}background:#22C55E;color:#fff;">WhatsApp</a>
         <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
         ${!mine ? `<button type="button" data-act="msg" style="${softStyle}">💬 Message</button>` : ''}
+        <button type="button" data-act="share" style="${softStyle}">📤 Partager</button>
+        <button type="button" data-act="copy" style="${softStyle}">🔗 Copier le lien</button>
       </div>
       <h4 style="margin-bottom:8px;">Annonces (${ads.length})</h4>
       ${ads.length ? ads.map(a => `
@@ -1050,12 +1099,38 @@
     if (st) { closeModal('artisanModal'); openViewer(Number(st.dataset.gi)); return; }
     const ad = e.target.closest('[data-ad]');
     if (ad) { closeModal('artisanModal'); openAdDetail(ad.dataset.ad); return; }
+    const uid = $('artisanBody').dataset.uid;
+    if (e.target.closest('[data-act="share"]')) {
+      const shop = shopCache[uid];
+      const name = (shop && shop.name) || 'Artisan';
+      shareLink(name, `${name} sur CamerLink`, '/artisan/' + uid);
+      return;
+    }
+    if (e.target.closest('[data-act="copy"]')) { copyLink('/artisan/' + uid); return; }
     if (e.target.closest('[data-act="msg"]')) {
-      const uid = $('artisanBody').dataset.uid;
       closeModal('artisanModal');
       window.openChat(uid, null);
     }
   });
+
+  // Ouvre directement la page demandée par le lien (/annonce/<id> ou /artisan/<id>)
+  async function openRoute() {
+    const m = location.pathname.match(/^\/(annonce|artisan)\/([A-Za-z0-9-]+)\/?$/);
+    if (!m) return;
+    if (m[1] === 'annonce') {
+      if (!/^\d{1,12}$/.test(m[2])) { resetUrl(); return; }
+      if (!allListings.some(a => String(a.id) === m[2])) {
+        try { // la liste n'a pas chargé ou l'annonce est ancienne : on la demande seule
+          const r = await withTimeout(sb.from('annonces').select('*').eq('id', Number(m[2])).limit(1));
+          if (!r.error && r.data && r.data[0]) { allListings.push(r.data[0]); renderListings(); }
+        } catch (e) { /* ignoré */ }
+      }
+      if (allListings.some(a => String(a.id) === m[2])) openAdDetail(m[2]);
+      else { toast('Cette annonce n’existe plus.'); resetUrl(); }
+    } else if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(m[2])) {
+      openArtisan(m[2].toLowerCase());
+    } else { resetUrl(); }
+  }
 
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
 
@@ -1064,6 +1139,7 @@
     window.closeStoryViewer();
     window.closeVideoPlayer();
     document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    resetUrl();
   });
 
   loadData();
