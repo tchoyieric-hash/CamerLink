@@ -2,7 +2,6 @@
   'use strict';
   const SB_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
   const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2aWRkaXBkdWhhZWx4Y3Z5eWtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1ODExMzcsImV4cCI6MjEwNjE1NzEzN30.L5iaUIW0IQ0hX5uOiOuK-lo_zkf926Xs6CDjCjrpffk';
-  const VBUCKET = 'annonces-videos';
   const STORY_BUCKET = 'artisan-stories';
   const MAX_MB = 20;
   
@@ -117,24 +116,13 @@
 
   /* ===== 3) CHARGEMENT DONNEES SUPABASE ===== */
   async function loadData() {
-    // 1. Annonces
+    // 1. Annonces (Prioritaire - s'exécute quoi qu'il arrive)
     try {
       const res = await sb.from('annonces').select('*').order('created_at', { ascending: false });
       if (!res.error) allListings = res.data || [];
     } catch (err) { allListings = []; }
 
-    // 2. Stories 24h
-    try {
-      const now = new Date().toISOString();
-      const resStories = await sb.from('artisan_stories')
-        .select(`id, media_url, caption, created_at, artisan_id, profiles (full_name, avatar_url, shop_name)`)
-        .gt('expires_at', now)
-        .order('created_at', { ascending: false });
-      
-      if (!resStories.error) stories = resStories.data || [];
-    } catch (e) { stories = []; }
-
-    // 3. Vidéos
+    // 2. Vidéos
     try {
       const resVid = await sb.from('annonces').select('id,video_url');
       if (!resVid.error) {
@@ -145,15 +133,30 @@
       }
     } catch (e) { videos = {}; }
 
-    renderShops();
+    // Rendu immédiat des annonces pour enlever le "Chargement..."
     renderListings();
+
+    // 3. Stories 24h (Chargé de manière totalement isolée en arrière-plan)
+    try {
+      const now = new Date().toISOString();
+      const resStories = await sb.from('artisan_stories')
+        .select(`id, media_url, caption, created_at, artisan_id`)
+        .gt('expires_at', now)
+        .order('created_at', { ascending: false });
+      
+      if (!resStories.error) stories = resStories.data || [];
+    } catch (e) { 
+      stories = []; 
+    }
+
+    renderShops();
   }
 
   /* ===== 4) AFFICHAGE ET GESTION DES STORIES (Reels 24h) ===== */
-  window.viewStory = function(mediaUrl, caption, shopName, avatarUrl) {
+  window.viewStory = function(mediaUrl, caption, shopName) {
     $('viewerMedia').src = mediaUrl;
     $('viewerCaption').textContent = caption \vert{}\vert{} '';$('viewerShopName').textContent = shopName;
-    $('viewerAvatar').src = avatarUrl || 'https://via.placeholder.com/150';
+    $('viewerAvatar').src = 'https://via.placeholder.com/150';
     openModal('storyViewerModal');
   }
 
@@ -173,16 +176,13 @@
     `;
 
     stories.forEach(story => {
-      const shopName = story.profiles?.shop_name || story.profiles?.full_name || 'Artisan';
-      const avatar = story.profiles?.avatar_url || '';
-      const initial = esc(shopName.charAt(0));
+      const shopName = 'Artisan';
+      const initial = 'A';
 
       html += `
-        <div class="shop-story-card" onclick="viewStory('${esc(story.media_url)}', '${esc(story.caption || '')}', '${esc(shopName)}', '${esc(avatar)}')">
+        <div class="shop-story-card" onclick="viewStory('${esc(story.media_url)}', '${esc(story.caption || '')}', '${esc(shopName)}')">
           <div class="story-ring">
-            <div class="story-avatar-wrap">
-              ${avatar ? `<img src="${avatar}" alt="${esc(shopName)}">` : initial}
-            </div>
+            <div class="story-avatar-wrap">${initial}</div>
           </div>
           <div class="shop-story-name">${esc(shopName)}</div>
         </div>
@@ -228,17 +228,12 @@
         const fileExt = file.name.split('.').pop();
         const filePath = `${currentUser.id}/${Date.now()}.${fileExt}`;
 
-        // Upload dans Supabase Storage
         const { error: upErr } = await sb.storage.from(STORY_BUCKET).upload(filePath, file, { contentType: file.type });
         if (upErr) throw upErr;
 
-        // Récupération de l'URL publique
         const { data: { publicUrl } } = sb.storage.from(STORY_BUCKET).getPublicUrl(filePath);
-
-        // Date d'expiration à 24h
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-        // Insertion dans la table artisan_stories
         const { error: dbErr } = await sb.from('artisan_stories').insert({
           artisan_id: currentUser.id,
           media_url: publicUrl,
