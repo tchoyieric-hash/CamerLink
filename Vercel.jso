@@ -1,0 +1,10 @@
+{
+  "rewrites": [
+    { "source": "/annonce/:id", "destination": "/api/share?type=annonce&id=:id" },
+    { "source": "/artisan/:id", "destination": "/api/share?type=artisan&id=:id" },
+    { "source": "/sitemap.xml", "destination": "/api/share?type=sitemap" }
+  ],
+  "functions": {
+    "api/share.js": { "includeFiles": "index.html", "maxDuration": 10 }
+  }
+}
