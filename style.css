@@ -372,3 +372,12 @@ footer p { font-size:0.8rem; color:var(--color-text-muted); margin-top:8px; }
   .reels-feed { align-items: start; }
   .reel-card { max-width: 320px; width: 100%; }
 }
+
+/* Champ vidéo de publication : visible et facile à utiliser sur mobile */
+.video-upload-group { padding:12px; border:1px dashed var(--a1); border-radius:var(--radius-md); background:color-mix(in srgb, var(--a1) 5%, var(--color-surface)); }
+.video-upload-group > label { color:var(--color-text-main); font-size:.9rem; }
+.video-file-input { display:block; min-height:48px; cursor:pointer; border:1px solid var(--a1); }
+.video-file-input::file-selector-button { margin-right:10px; padding:8px 10px; border:0; border-radius:8px; background:var(--a1); color:#fff; font-weight:700; cursor:pointer; }
+.video-selected-name { margin-top:7px; font-size:.82rem; color:var(--color-text-muted); overflow-wrap:anywhere; }
+.video-upload-preview { width:100%; max-height:220px; margin-top:10px; border-radius:10px; background:#000; object-fit:contain; }
+.video-upload-preview[hidden] { display:none; }
