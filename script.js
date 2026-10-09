@@ -114,15 +114,15 @@
   }
   guardPhone('adForm', 'adContact', 'pubError');
 
-  /* ===== 3) CHARGEMENT DONNEES SUPABASE ===== */
+  /* ===== 3) CHARGEMENT DES DONNÉES PRINCIPALES ===== */
   async function loadData() {
-    // 1. Annonces (Prioritaire absolue)
+    // 1. Annonces (Prioritaire)
     try {
       const res = await sb.from('annonces').select('*').order('created_at', { ascending: false });
       if (!res.error) allListings = res.data || [];
     } catch (err) { allListings = []; }
 
-    // 2. Vidéos des annonces
+    // 2. Vidéos
     try {
       const resVid = await sb.from('annonces').select('id,video_url');
       if (!resVid.error) {
@@ -133,42 +133,39 @@
       }
     } catch (e) { videos = {}; }
 
-    // Affichage immédiat des annonces (enlève le "Chargement...")
+    // Affichage immédiat des annonces pour enlever le "Chargement..."
     renderListings();
 
-    // 3. Stories 24h (Chargement totalement isolé en arrière-plan)
-    setTimeout(async () => {
-      try {
-        const now = new Date().toISOString();
-        const resStories = await sb.from('artisan_stories')
-          .select(`id, media_url, caption, created_at, artisan_id`)
-          .gt('expires_at', now)
-          .order('created_at', { ascending: false });
-        
-        if (!resStories.error) {
-          stories = resStories.data || [];
-          renderShops();
-        }
-      } catch (e) { 
-        stories = []; 
-        renderShops();
+    // 3. Chargement des Stories en arrière-plan strict (non bloquant)
+    loadStoriesSafely();
+  }
+
+  /* ===== 4) GESTION DES STORIES (100% ISOLÉ) ===== */
+  async function loadStoriesSafely() {
+    const container = $('shops-container');
+    if (!container) return;
+
+    // Toujours afficher le bouton "Mon statut" par défaut
+    renderShopsHTML();
+
+    try {
+      const now = new Date().toISOString();
+      const { data, error } = await sb.from('artisan_stories')
+        .select(`id, media_url, caption, created_at, artisan_id`)
+        .gt('expires_at', now)
+        .order('created_at', { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        stories = data;
+        renderShopsHTML();
       }
-    }, 200);
+    } catch (e) {
+      // En cas d'erreur réseau ou autre, on laisse le bouton de base sans planter le site
+      console.log("Stories en attente.");
+    }
   }
 
-  /* ===== 4) AFFICHAGE ET GESTION DES STORIES (Reels 24h) ===== */
-  window.viewStory = function(mediaUrl, caption, shopName) {
-    $('viewerMedia').src = mediaUrl;
-    $('viewerCaption').textContent = caption \vert{}\vert{} '';$('viewerShopName').textContent = shopName;
-    $('viewerAvatar').src = 'https://via.placeholder.com/150';
-    openModal('storyViewerModal');
-  }
-
-  window.closeStoryViewer = function() {
-    closeModal('storyViewerModal');
-  }
-
-  function renderShops() {
+  function renderShopsHTML() {
     const container = $('shops-container');
     if (!container) return;
 
@@ -180,20 +177,28 @@
     `;
 
     stories.forEach(story => {
-      const shopName = 'Artisan';
-      const initial = 'A';
-
       html += `
-        <div class="shop-story-card" onclick="viewStory('${esc(story.media_url)}', '${esc(story.caption || '')}', '${esc(shopName)}')">
+        <div class="shop-story-card" onclick="viewStory('${esc(story.media_url)}', '${esc(story.caption || '')}', 'Artisan')">
           <div class="story-ring">
-            <div class="story-avatar-wrap">${initial}</div>
+            <div class="story-avatar-wrap">A</div>
           </div>
-          <div class="shop-story-name">${esc(shopName)}</div>
+          <div class="shop-story-name">Artisan</div>
         </div>
       `;
     });
 
     container.innerHTML = html;
+  }
+
+  window.viewStory = function(mediaUrl, caption, shopName) {
+    $('viewerMedia').src = mediaUrl;
+    $('viewerCaption').textContent = caption \vert{}\vert{} '';$('viewerShopName').textContent = shopName;
+    $('viewerAvatar').src = 'https://via.placeholder.com/150';
+    openModal('storyViewerModal');
+  }
+
+  window.closeStoryViewer = function() {
+    closeModal('storyViewerModal');
   }
 
   window.openAddStoryModal = function() {
@@ -251,7 +256,7 @@
         fileInput.value = '';
         if (captionInput) captionInput.value = '';
         toast('Statut publié avec succès ! (Visible 24h)');
-        loadData();
+        loadStoriesSafely();
       } catch (ex) {
         console.error(ex);
         if (errBox) errBox.textContent = 'Erreur lors de la publication.';
