@@ -854,6 +854,7 @@
     const prev = currentUser && currentUser.id;
     currentUser = session ? session.user : null;
     $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
+    $('claimBtn').style.display = currentUser ? '' : 'none';
     if (!authInit || prev !== (currentUser && currentUser.id)) {
       authInit = true;
       setTimeout(subscribeMessages, 0);
@@ -1131,6 +1132,101 @@
       openArtisan(m[2].toLowerCase());
     } else { resetUrl(); }
   }
+
+  /* ===== RÉCUPÉRATION DES ANNONCES PAR NUMÉRO (validation par l'administrateur) ===== */
+  const last9 = (v) => String(v || '').replace(/\D/g, '').slice(-9);
+  const CLAIM_LABEL = { pending: '⏳ En attente de validation', approved: '✅ Acceptée', rejected: '❌ Refusée' };
+
+  function updateClaimMatch() {
+    const el = $('claimMatch'); if (!el) return;
+    const n = normPhone($('claimPhone').value);
+    if (!n) { el.textContent = ''; return; }
+    const k = last9(n);
+    const ads = allListings.filter(a => last9(a.contact) === k).length;
+    el.textContent = ads
+      ? `📌 ${ads} annonce${ads > 1 ? 's' : ''} utilise${ads > 1 ? 'nt' : ''} ce numéro.`
+      : 'Aucune annonce trouvée avec ce numéro pour le moment.';
+  }
+
+  async function loadMyClaims() {
+    const box = $('claimMine'); if (!box || !currentUser) return;
+    try {
+      const { data } = await withTimeout(
+        sb.from('claim_requests').select('phone,status,created_at').order('created_at', { ascending: false }).limit(5), FETCH_TIMEOUT);
+      box.innerHTML = (data && data.length)
+        ? '<strong>Mes demandes</strong>' + data.map(c =>
+            `<div style="padding:6px 0;border-bottom:1px solid var(--color-border);">${esc(c.phone)} · ${CLAIM_LABEL[c.status] || esc(c.status)} <small>(${esc(fmtDate(c.created_at))})</small></div>`).join('')
+        : '';
+    } catch (e) { box.innerHTML = ''; }
+  }
+
+  async function loadAdminClaims() {
+    const box = $('claimAdmin'); if (!box) return;
+    box.innerHTML = '';
+    if (!currentUser) return;
+    try {
+      const { data, error } = await withTimeout(sb.rpc('admin_list_claims'), FETCH_TIMEOUT);
+      if (error || !Array.isArray(data)) return; // pas administrateur
+      const pend = data.filter(c => c.status === 'pending');
+      box.innerHTML = `<h4 style="margin-bottom:8px;">🛡️ Demandes à valider (${pend.length})</h4>` +
+        (pend.length ? pend.map(c => `
+          <div style="border:1px solid var(--color-border);border-radius:12px;padding:10px;margin-bottom:8px;">
+            <div><strong>${esc(c.requested_phone)}</strong> · compte ${esc(c.requester_login)}</div>
+            <div style="font-size:.82rem;opacity:.8;">${c.matching_count} annonce(s) : ${esc((c.matching_titles || []).slice(0, 4).join(', '))}</div>
+            ${c.note ? `<div style="font-size:.82rem;font-style:italic;">« ${esc(c.note)} »</div>` : ''}
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button type="button" data-claim="approve" data-id="${esc(c.id)}" class="btn-submit-modal" style="flex:1;">Accepter</button>
+              <button type="button" data-claim="reject" data-id="${esc(c.id)}" class="btn-submit-modal" style="flex:1;background:#666;">Refuser</button>
+            </div>
+          </div>`).join('') : '<p style="opacity:.7;">Aucune demande en attente.</p>');
+    } catch (e) { box.innerHTML = ''; }
+  }
+
+  $('claimBtn').addEventListener('click', () => {
+    if (!currentUser) { openModal('authModal'); return; }
+    const login = String((currentUser.email || '').split('@')[0]).replace(/\D/g, '');
+    if (!$('claimPhone').value && login) $('claimPhone').value = '+' + login;
+    $('claimError').textContent = '';
+    updateClaimMatch();
+    openModal('claimModal');
+    loadMyClaims();
+    loadAdminClaims();
+  });
+  $('claimPhone').addEventListener('input', updateClaimMatch);
+
+  $('claimForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const err = $('claimError'), btn = $('claimSubmit');
+    err.textContent = '';
+    const phone = normPhone($('claimPhone').value);
+    if (!phone) { err.textContent = 'Numéro invalide. Exemple : 6 91 23 45 67'; return; }
+    if (!currentUser) { err.textContent = 'Connectez-vous d’abord.'; return; }
+    btn.disabled = true;
+    try {
+      const { error } = await withTimeout(
+        sb.from('claim_requests').insert({ phone, note: $('claimNote').value.trim() || null }), FETCH_TIMEOUT);
+      if (error) throw error;
+      $('claimNote').value = '';
+      toast('Demande envoyée. Vous serez prévenu après validation.');
+      loadMyClaims();
+    } catch (ex) {
+      err.textContent = 'Envoi impossible pour le moment. Réessayez.';
+    } finally { btn.disabled = false; }
+  });
+
+  $('claimAdmin').addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-claim]'); if (!b) return;
+    b.disabled = true;
+    try {
+      const fn = b.dataset.claim === 'approve' ? 'admin_approve_claim' : 'admin_reject_claim';
+      const { data, error } = await withTimeout(sb.rpc(fn, { request_id: b.dataset.id }), FETCH_TIMEOUT);
+      if (error) throw error;
+      toast(b.dataset.claim === 'approve' ? `Transfert effectué (${data} élément(s)).` : 'Demande refusée.');
+      await loadListings();
+      renderListings();
+      loadAdminClaims();
+    } catch (ex) { toast('Action impossible.'); b.disabled = false; }
+  });
 
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
 
