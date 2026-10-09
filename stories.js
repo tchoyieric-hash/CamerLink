@@ -48,55 +48,28 @@
     `);
   }
 
-  // 3. Fonction principale de chargement
-  async function initStories() {
+  // 3. Fonction principale exécutée en arrière-plan sans bloquer
+  function initStories() {
     const container = document.getElementById('shops-container');
     if (!container) return;
 
-    // Toujours afficher le bouton "Mon statut" par défaut pour que la section ne soit jamais vide
-    let html = `
+    // Affichage immédiat du bouton "Mon statut" pour garantir que la section n'est jamais vide
+    container.innerHTML = `
       <div class="shop-story-card cta-card" id="triggerAddStory">
         <div class="story-ring"><div class="story-avatar-wrap">+</div></div>
         <div class="shop-story-name">Mon statut</div>
       </div>
     `;
 
-    // Tentative de récupération des stories depuis Supabase si l'objet est disponible
-    const sb = window.supabase;
-    if (sb) {
-      try {
-        const now = new Date().toISOString();
-        const { data, error } = await sb.from('artisan_stories')
-          .select(`id, media_url, caption, created_at, artisan_id, profiles (full_name)`)
-          .gt('expires_at', now)
-          .order('created_at', { ascending: false });
-
-        if (!error && data) {
-          data.forEach(story => {
-            const name = story.profiles?.full_name || 'Artisan';
-            const initial = name.charAt(0).toUpperCase();
-            html += `
-              <div class="shop-story-card" data-storyurl="${story.media_url}" data-caption="${encodeURIComponent(story.caption || '')}" data-shopname="${encodeURIComponent(name)}">
-                <div class="story-ring">
-                  <div class="story-avatar-wrap">${initial}</div>
-                </div>
-                <div class="shop-story-name">${name}</div>
-              </div>
-            `;
-          });
-        }
-      } catch (e) {
-        console.log("Module stories en attente de la table Supabase.");
-      }
-    }
-
-    container.innerHTML = html;
-
-    // Gestion du clic pour publier
+    // Gestion du clic pour ouvrir la modale de publication
     const triggerAddStory = document.getElementById('triggerAddStory');
     if (triggerAddStory) {
       triggerAddStory.addEventListener('click', async () => {
-        if (!sb) return;
+        const sb = window.supabase;
+        if (!sb) {
+          alert('Système non connecté.');
+          return;
+        }
         try {
           const { data: { session } } = await sb.auth.getSession();
           if (!session) {
@@ -120,31 +93,63 @@
       });
     }
 
-    // Clic pour visionner un statut
-    container.querySelectorAll('.shop-story-card:not(.cta-card)').forEach(card => {
-      card.addEventListener('click', () => {
-        const url = card.dataset.storyurl;
-        const cap = decodeURIComponent(card.dataset.caption);
-        const name = decodeURIComponent(card.dataset.shopname);
-        
-        const viewer = document.getElementById('storyViewerModal');
-        const vMedia = document.getElementById('viewerMedia');
-        const vShop = document.getElementById('viewerShopName');
-        const vCap = document.getElementById('viewerCaption');
+    // Chargement optionnel des stories en arrière-plan (sécurisé)
+    setTimeout(async () => {
+      const sb = window.supabase;
+      if (!sb) return;
+      try {
+        const now = new Date().toISOString();
+        const { data, error } = await sb.from('artisan_stories')
+          .select(`id, media_url, caption, created_at, artisan_id, profiles (full_name)`)
+          .gt('expires_at', now)
+          .order('created_at', { ascending: false });
 
-        if (viewer && vMedia) {
-          vMedia.src = url;
-          if (vShop) vShop.textContent = name;
-          if (vCap) vCap.textContent = cap;
-          viewer.classList.add('active');
-        } else {
-          window.open(url, '_blank');
+        if (!error && data && data.length > 0) {
+          let html = container.innerHTML;
+          data.forEach(story => {
+            const name = story.profiles?.full_name || 'Artisan';
+            const initial = name.charAt(0).toUpperCase();
+            html += `
+              <div class="shop-story-card" data-storyurl="${story.media_url}" data-caption="${encodeURIComponent(story.caption || '')}" data-shopname="${encodeURIComponent(name)}">
+                <div class="story-ring">
+                  <div class="story-avatar-wrap">${initial}</div>
+                </div>
+                <div class="shop-story-name">${name}</div>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+
+          // Réattacher les événements de clic sur les stories chargées
+          container.querySelectorAll('.shop-story-card:not(.cta-card)').forEach(card => {
+            card.addEventListener('click', () => {
+              const url = card.dataset.storyurl;
+              const cap = decodeURIComponent(card.dataset.caption);
+              const name = decodeURIComponent(card.dataset.shopname);
+              
+              const viewer = document.getElementById('storyViewerModal');
+              const vMedia = document.getElementById('viewerMedia');
+              const vShop = document.getElementById('viewerShopName');
+              const vCap = document.getElementById('viewerCaption');
+
+              if (viewer && vMedia) {
+                vMedia.src = url;
+                if (vShop) vShop.textContent = name;
+                if (vCap) vCap.textContent = cap;
+                viewer.classList.add('active');
+              } else {
+                window.open(url, '_blank');
+              }
+            });
+          });
         }
-      });
-    });
+      } catch (e) {
+        // Silencieux pour ne jamais perturber le site principal
+      }
+    }, 1000);
   }
 
-  // Soumission du formulaire
+  // Soumission du formulaire de publication
   const standaloneStoryForm = document.getElementById('standaloneStoryForm');
   if (standaloneStoryForm) {
     standaloneStoryForm.addEventListener('submit', async (e) => {
@@ -179,8 +184,6 @@
         if (upErr) throw upErr;
 
         const { data: { publicUrl } } = sb.storage.from(bucket).getPublicUrl(filePath);
-
-        // Calcul de l'expiration à 24h
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
         const { error: dbErr } = await sb.from('artisan_stories').insert({
@@ -207,8 +210,10 @@
     });
   }
 
-  // Lancement différé pour laisser le site charger en premier
-  window.addEventListener('load', () => {
-    setTimeout(initStories, 500);
-  });
+  // Lancement après que la page est entièrement chargée pour garantir zéro blocage
+  if (document.readyState === 'complete') {
+    initStories();
+  } else {
+    window.addEventListener('load', initStories);
+  }
 })();
