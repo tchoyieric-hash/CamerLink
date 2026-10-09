@@ -341,3 +341,34 @@ footer p { font-size:0.8rem; color:var(--color-text-muted); margin-top:8px; }
 /* Aide discrète pour le champ vidéo facultatif du formulaire d'annonce */
 .form-hint { display:block; margin-top:6px; color:var(--color-text-muted); font-size:.76rem; line-height:1.45; }
 .form-sheet-el:focus-visible, .form-el:focus-visible, button:focus-visible, a:focus-visible { outline:2px solid var(--a1); outline-offset:2px; }
+
+/* ===== Reels vertical façon flux mobile ===== */
+@media (max-width: 640px) {
+  .reels-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: min(78svh, 760px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 2px 2px 12px;
+    margin: 0;
+    scroll-snap-type: y mandatory;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+  }
+  .reel-card {
+    flex: 0 0 auto;
+    width: min(100%, 420px);
+    min-height: 0;
+    margin-inline: auto;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .reel-media { aspect-ratio: 9 / 16; }
+  .reels-placeholder,.reels-empty { min-width: 0; width: 100%; }
+}
+@media (min-width: 641px) {
+  .reels-feed { align-items: start; }
+  .reel-card { max-width: 320px; width: 100%; }
+}
