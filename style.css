@@ -192,3 +192,4 @@ footer p { font-size:0.8rem; color:var(--color-text-muted); margin-top:8px; }
   .listings-grid { grid-template-columns:1fr; gap:1rem; }
   .modal-sheet { padding:18px; }
 }
+.ad-card { cursor:pointer; }
