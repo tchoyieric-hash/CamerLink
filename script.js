@@ -32,6 +32,17 @@
 
   let allListings = [], videos = {}, currentUser = null, currentCategory = '', favOnly = false;
   let storyGroups = [];
+  let likeCounts = {};
+  const viewedNow = new Set();
+  const likeBusy = new Set();
+  const shopCache = {};
+  const detail = { id: null, shop: null };
+
+  const waNumber = (raw) => {
+    const d = String(raw || '').replace(/\D/g, '');
+    if (!d) return '';
+    return d.startsWith('237') ? d : '237' + d;
+  };
   const viewer = { g: 0, i: 0 };
 
   function toast(msg) {
@@ -77,17 +88,86 @@
     try { return JSON.parse(localStorage.getItem('camerlink_favorites')) || []; } catch (e) { return []; }
   };
 
-  window.toggleFavorite = function (id) {
+  function setFavs(arr) {
+    try { localStorage.setItem('camerlink_favorites', JSON.stringify(arr)); } catch (e) { /* stockage indisponible */ }
+    $('favCount').textContent = arr.length;
+  }
+
+  function bumpLike(id, d) {
+    likeCounts[id] = Math.max(0, (likeCounts[id] || 0) + d);
+  }
+
+  function refreshOpenDetail() {
+    if ($('adDetailModal') && $('adDetailModal').classList.contains('active')) renderAdDetail();
+  }
+
+  // "J'aime" : enregistré dans la table favoris (compte obligatoire), compteur public par annonce
+  window.toggleFavorite = async function (id) {
     id = String(id);
-    const favs = window.getFavorites();
-    const index = favs.indexOf(id);
-    if (index > -1) { favs.splice(index, 1); toast('Retiré de vos favoris'); }
-    else { favs.push(id); toast('Ajouté à vos favoris'); }
-    try { localStorage.setItem('camerlink_favorites', JSON.stringify(favs)); } catch (e) { /* stockage indisponible */ }
-    $('favCount').textContent = favs.length;
-    renderListings();
+    if (!currentUser) { toast('Connectez-vous pour aimer une annonce'); openModal('authModal'); return; }
+    if (likeBusy.has(id)) return;
+    likeBusy.add(id);
+
+    const before = window.getFavorites();
+    const had = before.includes(id);
+    setFavs(had ? before.filter(x => x !== id) : [...before, id]);
+    bumpLike(id, had ? -1 : 1);
+    renderListings(); refreshOpenDetail();
+
+    try {
+      const r = had
+        ? await sb.from('favoris').delete().eq('annonce_id', Number(id)).eq('user_id', currentUser.id)
+        : await sb.from('favoris').insert({ annonce_id: Number(id) });
+      if (r.error) {
+        if (r.error.code === '23505') { loadLikeCounts(); } // déjà aimé
+        else throw r.error;
+      }
+      toast(had ? 'Retiré de vos favoris' : 'Ajouté à vos favoris');
+    } catch (ex) {
+      const now = window.getFavorites();
+      setFavs(had ? [...now, id] : now.filter(x => x !== id));
+      bumpLike(id, had ? 1 : -1);
+      renderListings(); refreshOpenDetail();
+      toast('Action impossible : ' + (ex && ex.message ? ex.message : 'réessayez.'));
+    } finally {
+      likeBusy.delete(id);
+    }
   };
   $('favCount').textContent = window.getFavorites().length;
+
+  async function syncFavorites() {
+    if (!currentUser) { setFavs([]); renderListings(); return; }
+    try {
+      const { data, error } = await withTimeout(sb.from('favoris').select('annonce_id'));
+      if (error) throw error;
+      setFavs((data || []).map(r => String(r.annonce_id)));
+      renderListings(); refreshOpenDetail();
+    } catch (e) { /* on garde le cache local */ }
+  }
+
+  async function loadLikeCounts() {
+    try {
+      const { data, error } = await withTimeout(sb.rpc('get_like_counts'));
+      if (error) return;
+      likeCounts = {};
+      (data || []).forEach(r => { likeCounts[r.annonce_id] = Number(r.likes) || 0; });
+      renderListings(); refreshOpenDetail();
+    } catch (e) { /* silencieux */ }
+  }
+
+  // Compteur de vues : 1 vue par visiteur, par annonce et par heure (limite côté base)
+  async function registerView(id) {
+    id = String(id);
+    if (viewedNow.has(id)) return;
+    viewedNow.add(id);
+    try {
+      const { data, error } = await withTimeout(sb.rpc('increment_views', { annonce_id: Number(id) }));
+      if (!error && typeof data === 'number') {
+        const ad = allListings.find(a => String(a.id) === id);
+        if (ad) { ad.views = data; renderListings(); refreshOpenDetail(); }
+      }
+    } catch (e) { /* silencieux */ }
+  }
 
   $('favToggleBtn').addEventListener('click', () => {
     favOnly = !favOnly;
@@ -145,6 +225,7 @@
 
   async function loadData() {
     await loadListings();
+    loadLikeCounts();
     loadStoriesSafely(); // en arrière-plan, ne bloque jamais la page
   }
 
@@ -286,6 +367,18 @@
     else window.closeStoryViewer();
   }
   $('viewerMedia').addEventListener('click', nextStory);
+
+  // Clic sur le nom de l'artisan dans la visionneuse : ouvre sa fiche
+  const viewerHeader = document.querySelector('.story-header-info');
+  if (viewerHeader) {
+    viewerHeader.style.cursor = 'pointer';
+    viewerHeader.addEventListener('click', () => {
+      const g = storyGroups[viewer.g];
+      if (!g) return;
+      window.closeStoryViewer();
+      openArtisan(g.uid);
+    });
+  }
 
   window.closeStoryViewer = function () {
     const vid = $('viewerVideo');
@@ -445,18 +538,18 @@
       const isFav = favorites.includes(String(ad.id));
       const rating = Number(ad.note_moyenne || 0).toFixed(1);
       const reviewCount = ad.nb_avis || 0;
-      const rawContact = String(ad.contact || '');
-      const cleanContact = rawContact.replace(/\D/g, '');
-      const whatsappNumber = cleanContact.startsWith('237') ? cleanContact : '237' + cleanContact;
+      const cleanContact = String(ad.contact || '').replace(/\D/g, '');
+      const whatsappNumber = waNumber(ad.contact);
       const viewsCount = ad.views || ad.vues || 0;
+      const likes = likeCounts[ad.id] || 0;
       const vUrl = videos[ad.id];
 
       return `
-      <article class="ad-card">
+      <article class="ad-card" data-id="${esc(ad.id)}">
         <div class="card-img-container">
           <span class="card-badge-top">${esc(ad.category)}</span>
-          <span class="card-views">👁 ${viewsCount}</span>
-          <button type="button" class="btn-fav ${isFav ? 'active' : ''}" data-fav="${esc(ad.id)}" aria-label="Favori" style="position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; color:${isFav ? '#EF4444' : '#fff'}; z-index:3;">❤️</button>
+          <span class="card-views">👁 ${viewsCount} · ❤️ ${likes}</span>
+          <button type="button" class="btn-fav ${isFav ? 'active' : ''}" data-fav="${esc(ad.id)}" aria-label="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}" aria-pressed="${isFav}" style="position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:3;">${isFav ? '❤️' : '🤍'}</button>
           ${ad.image_url ? `<img src="${esc(ad.image_url)}" loading="lazy" alt="">` : ''}
         </div>
         <div class="card-body">
@@ -486,7 +579,10 @@
     const vid = e.target.closest('[data-video]');
     if (vid) { window.showVideoPlayer(vid.dataset.video); return; }
     const msg = e.target.closest('[data-msg]');
-    if (msg) window.openChat(msg.dataset.msg, msg.dataset.ad ? Number(msg.dataset.ad) : null);
+    if (msg) { window.openChat(msg.dataset.msg, msg.dataset.ad ? Number(msg.dataset.ad) : null); return; }
+    if (e.target.closest('a,button')) return;
+    const card = e.target.closest('.ad-card');
+    if (card) openAdDetail(card.dataset.id);
   });
 
   /* ===== LECTEUR VIDÉO DES ANNONCES ===== */
@@ -714,11 +810,16 @@
   }
 
   /* ===== AUTHENTIFICATION ===== */
+  let authInit = false;
   sb.auth.onAuthStateChange((_, session) => {
     const prev = currentUser && currentUser.id;
     currentUser = session ? session.user : null;
     $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
-    if (prev !== (currentUser && currentUser.id)) setTimeout(subscribeMessages, 0);
+    if (!authInit || prev !== (currentUser && currentUser.id)) {
+      authInit = true;
+      setTimeout(subscribeMessages, 0);
+      setTimeout(syncFavorites, 0); // charge (ou vide) les favoris du compte
+    }
   });
 
   $('authBtn').addEventListener('click', async () => {
@@ -782,6 +883,167 @@
   $('pubBtn').addEventListener('click', () => {
     if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
     openModal('publishModal');
+  });
+
+  /* ===== DÉTAILS D'UNE ANNONCE ET FICHE ARTISAN ===== */
+  document.body.insertAdjacentHTML('beforeend', `
+    <div id="adDetailModal" class="modal-overlay">
+      <div class="modal-sheet" style="max-width:520px;">
+        <div class="modal-header"><h3>Détails de l'annonce</h3><button type="button" class="modal-close" data-close="adDetailModal" aria-label="Fermer">×</button></div>
+        <div id="adDetailBody"></div>
+      </div>
+    </div>
+    <div id="artisanModal" class="modal-overlay">
+      <div class="modal-sheet" style="max-width:520px;">
+        <div class="modal-header"><h3>Fiche artisan</h3><button type="button" class="modal-close" data-close="artisanModal" aria-label="Fermer">×</button></div>
+        <div id="artisanBody"></div>
+      </div>
+    </div>`);
+
+  const btnStyle = 'flex:1;min-width:120px;padding:10px;border-radius:8px;font-weight:700;font-size:0.85rem;text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;';
+  const softStyle = btnStyle + 'background:rgba(127,127,127,0.2);';
+
+  async function fetchShop(uid) {
+    if (!uid) return null;
+    if (uid in shopCache) return shopCache[uid];
+    try {
+      const r = await withTimeout(sb.from('etablissements')
+        .select('user_id, name, type, city, address, contact, hours, description, logo_url, verified, video_url, reel_desc')
+        .eq('user_id', uid).limit(1));
+      shopCache[uid] = (!r.error && r.data && r.data[0]) || null;
+    } catch (e) { return null; }
+    return shopCache[uid];
+  }
+
+  const avatarHTML = (shop, size) => {
+    const name = (shop && shop.name) || 'A';
+    const base = `width:${size}px;height:${size}px;border-radius:50%;flex-shrink:0;`;
+    return shop && shop.logo_url
+      ? `<img src="${esc(shop.logo_url)}" alt="" style="${base}object-fit:cover;">`
+      : `<div style="${base}display:flex;align-items:center;justify-content:center;background:var(--color-bg);border:1px solid var(--color-border);font-weight:700;">${esc(name.charAt(0).toUpperCase())}</div>`;
+  };
+
+  function renderAdDetail() {
+    const body = $('adDetailBody');
+    const ad = allListings.find(a => String(a.id) === String(detail.id));
+    if (!body || !ad) return;
+    const shop = detail.shop;
+    const isFav = window.getFavorites().includes(String(ad.id));
+    const likes = likeCounts[ad.id] || 0;
+    const views = ad.views || ad.vues || 0;
+    const wa = waNumber(ad.contact);
+    const vUrl = videos[ad.id];
+    const rating = Number(ad.note_moyenne || 0).toFixed(1);
+    const place = [ad.quartier, ad.city].filter(Boolean).join(', ');
+
+    body.innerHTML = `
+      ${ad.image_url ? `<img src="${esc(ad.image_url)}" alt="" style="width:100%;max-height:300px;object-fit:cover;border-radius:12px;margin-bottom:12px;">` : ''}
+      ${vUrl ? `<video src="${esc(vUrl)}" controls playsinline preload="metadata" style="width:100%;max-height:300px;border-radius:12px;margin-bottom:12px;background:#000;"></video>` : ''}
+      <span style="display:inline-block;padding:3px 10px;border-radius:999px;background:rgba(34,211,238,0.12);color:var(--a1);font-size:0.75rem;font-weight:600;">${esc(ad.category)}</span>
+      <h3 style="font-size:1.25rem;margin:8px 0 4px;">${esc(ad.title)}</h3>
+      <div style="font-size:1.3rem;font-weight:800;color:#10b981;margin-bottom:8px;">${Number(ad.price || 0).toLocaleString('fr-FR')} FCFA</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;">
+        <span>📍 ${esc(place || '—')}</span>
+        <span>👁 ${views} vue(s)</span>
+        <span>❤️ ${likes} j'aime</span>
+        <span>⭐ ${rating} (${ad.nb_avis || 0} avis)</span>
+        ${ad.created_at ? `<span>🕒 ${fmtDate(ad.created_at)}</span>` : ''}
+      </div>
+      <p style="white-space:pre-wrap;line-height:1.5;margin-bottom:14px;">${esc(ad.description || 'Pas de description.')}</p>
+
+      ${ad.user_id ? `
+      <button type="button" data-act="artisan" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px;margin-bottom:12px;border-radius:12px;border:1px solid var(--color-border);cursor:pointer;">
+        ${avatarHTML(shop, 40)}
+        <span style="flex:1;min-width:0;">
+          <strong>${esc((shop && shop.name) || 'Annonceur')}${shop && shop.verified ? ' ✔️' : ''}</strong>
+          <small style="display:block;color:var(--color-text-muted);">${esc(shop ? [shop.type, shop.city].filter(Boolean).join(' · ') : 'Voir ses annonces')}</small>
+        </span>
+        <span style="color:var(--a1);font-weight:700;">Voir ›</span>
+      </button>` : ''}
+
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <button type="button" data-act="fav" style="${softStyle}">${isFav ? '❤️ Aimé' : '🤍 J’aime'} (${likes})</button>
+        ${ad.user_id ? `<button type="button" data-act="msg" style="${softStyle}">💬 Message</button>` : ''}
+        ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="${btnStyle}background:#22C55E;color:#fff;">WhatsApp</a>
+        <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
+      </div>`;
+  }
+
+  async function openAdDetail(id) {
+    const ad = allListings.find(a => String(a.id) === String(id));
+    if (!ad) return;
+    detail.id = String(ad.id);
+    detail.shop = ad.user_id && shopCache[ad.user_id] ? shopCache[ad.user_id] : null;
+    renderAdDetail();
+    openModal('adDetailModal');
+    registerView(ad.id);
+    if (ad.user_id && !detail.shop) {
+      const shop = await fetchShop(ad.user_id);
+      if (detail.id === String(ad.id)) { detail.shop = shop; renderAdDetail(); }
+    }
+  }
+
+  $('adDetailBody').addEventListener('click', (e) => {
+    const act = e.target.closest('[data-act]');
+    if (!act) return;
+    const ad = allListings.find(a => String(a.id) === String(detail.id));
+    if (!ad) return;
+    if (act.dataset.act === 'fav') window.toggleFavorite(ad.id);
+    else if (act.dataset.act === 'msg') { closeModal('adDetailModal'); window.openChat(ad.user_id, ad.id); }
+    else if (act.dataset.act === 'artisan') { closeModal('adDetailModal'); openArtisan(ad.user_id); }
+  });
+
+  async function openArtisan(uid) {
+    if (!uid) return;
+    const body = $('artisanBody');
+    body.innerHTML = '<div class="state-msg">Chargement...</div>';
+    openModal('artisanModal');
+    const shop = await fetchShop(uid);
+    const ads = allListings.filter(a => a.user_id === uid);
+    const wa = waNumber(shop && shop.contact);
+    const reel = shop && shop.video_url && /^https:\/\//i.test(shop.video_url) ? shop.video_url : null;
+    const mine = currentUser && currentUser.id === uid;
+
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        ${avatarHTML(shop, 64)}
+        <div style="min-width:0;">
+          <h3 style="font-size:1.2rem;">${esc((shop && shop.name) || 'Artisan')}${shop && shop.verified ? ' ✔️' : ''}</h3>
+          <small style="color:var(--color-text-muted);">${esc(shop ? [shop.type, shop.city].filter(Boolean).join(' · ') : '')}</small>
+        </div>
+      </div>
+      ${shop && shop.description ? `<p style="white-space:pre-wrap;line-height:1.5;margin-bottom:10px;">${esc(shop.description)}</p>` : ''}
+      <div style="font-size:0.88rem;color:var(--color-text-muted);margin-bottom:12px;display:grid;gap:4px;">
+        ${shop && shop.address ? `<span>📍 ${esc(shop.address)}</span>` : ''}
+        ${shop && shop.hours ? `<span>🕒 ${esc(shop.hours)}</span>` : ''}
+        ${shop && shop.contact ? `<span>📞 ${esc(shop.contact)}</span>` : ''}
+      </div>
+      ${reel ? `<video src="${esc(reel)}" controls playsinline preload="metadata" style="width:100%;max-height:260px;border-radius:12px;margin-bottom:6px;background:#000;"></video>
+        ${shop.reel_desc ? `<p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;">${esc(shop.reel_desc)}</p>` : '<div style="margin-bottom:12px;"></div>'}` : ''}
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="${btnStyle}background:#22C55E;color:#fff;">WhatsApp</a>
+        <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
+        ${!mine ? `<button type="button" data-act="msg" style="${softStyle}">💬 Message</button>` : ''}
+      </div>
+      <h4 style="margin-bottom:8px;">Annonces (${ads.length})</h4>
+      ${ads.length ? ads.map(a => `
+        <button type="button" data-ad="${esc(a.id)}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px;margin-bottom:6px;border-radius:10px;background:rgba(127,127,127,0.12);cursor:pointer;">
+          ${a.image_url ? `<img src="${esc(a.image_url)}" alt="" style="width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;">` : ''}
+          <span style="flex:1;min-width:0;"><strong style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(a.title)}</strong>
+          <small style="color:#10b981;font-weight:700;">${Number(a.price || 0).toLocaleString('fr-FR')} FCFA</small></span>
+        </button>`).join('') : '<div class="state-msg" style="padding:16px;">Aucune annonce pour le moment.</div>'}`;
+
+    body.dataset.uid = uid;
+  }
+
+  $('artisanBody').addEventListener('click', (e) => {
+    const ad = e.target.closest('[data-ad]');
+    if (ad) { closeModal('artisanModal'); openAdDetail(ad.dataset.ad); return; }
+    if (e.target.closest('[data-act="msg"]')) {
+      const uid = $('artisanBody').dataset.uid;
+      closeModal('artisanModal');
+      window.openChat(uid, null);
+    }
   });
 
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
