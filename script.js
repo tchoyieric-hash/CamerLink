@@ -3,8 +3,8 @@
   const SB_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
   const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2aWRkaXBkdWhhZWx4Y3Z5eWtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1ODExMzcsImV4cCI6MjEwNjE1NzEzN30.L5iaUIW0IQ0hX5uOiOuK-lo_zkf926Xs6CDjCjrpffk';
   const VBUCKET = 'annonces-videos';
+  const STORY_BUCKET = 'artisan-stories';
   const MAX_MB = 20;
-  const TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
   
   const CATEGORIES = [
     { value: 'Services', chip: '🛠 Services' },
@@ -123,7 +123,7 @@
       if (!res.error) allListings = res.data || [];
     } catch (err) { allListings = []; }
 
-    // 2. Stories 24h (Table artisan_stories validée dans le dashboard)
+    // 2. Stories 24h
     try {
       const now = new Date().toISOString();
       const resStories = await sb.from('artisan_stories')
@@ -149,15 +149,16 @@
     renderListings();
   }
 
-  /* ===== 4) AFFICHAGE DES STORIES (Établissements) ===== */
+  /* ===== 4) AFFICHAGE ET GESTION DES STORIES (Reels 24h) ===== */
   window.viewStory = function(mediaUrl, caption, shopName, avatarUrl) {
     $('viewerMedia').src = mediaUrl;
     $('viewerCaption').textContent = caption \vert{}\vert{} '';$('viewerShopName').textContent = shopName;
-    $('viewerAvatar').src = avatarUrl \vert{}\vert{} 'https://via.placeholder.com/150';$('storyViewerModal').classList.add('active');
+    $('viewerAvatar').src = avatarUrl || 'https://via.placeholder.com/150';
+    openModal('storyViewerModal');
   }
 
   window.closeStoryViewer = function() {
-    $('storyViewerModal').classList.remove('active');
+    closeModal('storyViewerModal');
   }
 
   function renderShops() {
@@ -170,11 +171,6 @@
         <div class="shop-story-name">Mon statut</div>
       </div>
     `;
-
-    if (stories.length === 0) {
-      container.innerHTML = html;
-      return;
-    }
 
     stories.forEach(story => {
       const shopName = story.profiles?.shop_name || story.profiles?.full_name || 'Artisan';
@@ -197,8 +193,73 @@
   }
 
   window.openAddStoryModal = function() {
-    if (!currentUser) { toast('Connectez-vous pour publier un statut'); openModal('authModal'); return; }
-    toast("Fonctionnalité de publication de story active.");
+    if (!currentUser) { 
+      toast('Connectez-vous pour publier un statut'); 
+      openModal('authModal'); 
+      return; 
+    }
+    openModal('publishStoryModal');
+  }
+
+  // Soumission du formulaire de statut
+  const storyForm = $('storyForm');
+  if (storyForm) {
+    storyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) { toast('Non connecté'); return; }
+
+      const fileInput = $('storyFile');
+      const captionInput = $('storyCaption');
+      const errBox = $('storyError');
+      const submitBtn = $('storySubmitBtn');
+
+      const file = fileInput.files[0];
+      if (!file) { if (errBox) errBox.textContent = 'Veuillez choisir un fichier.'; return; }
+
+      if (file.size > MAX_MB * 1024 * 1024) {
+        if (errBox) errBox.textContent = `Fichier trop lourd (Max ${MAX_MB} Mo).`;
+        return;
+      }
+
+      if (errBox) errBox.textContent = '';
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Publication...'; }
+
+      try {
+        const fileExt = file.name.split('.').pop();
+        const filePath = `${currentUser.id}/${Date.now()}.${fileExt}`;
+
+        // Upload dans Supabase Storage
+        const { error: upErr } = await sb.storage.from(STORY_BUCKET).upload(filePath, file, { contentType: file.type });
+        if (upErr) throw upErr;
+
+        // Récupération de l'URL publique
+        const { data: { publicUrl } } = sb.storage.from(STORY_BUCKET).getPublicUrl(filePath);
+
+        // Date d'expiration à 24h
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+        // Insertion dans la table artisan_stories
+        const { error: dbErr } = await sb.from('artisan_stories').insert({
+          artisan_id: currentUser.id,
+          media_url: publicUrl,
+          caption: captionInput ? captionInput.value.trim() : '',
+          expires_at: expiresAt
+        });
+
+        if (dbErr) throw dbErr;
+
+        closeModal('publishStoryModal');
+        fileInput.value = '';
+        if (captionInput) captionInput.value = '';
+        toast('Statut publié avec succès ! (Visible 24h)');
+        loadData();
+      } catch (ex) {
+        console.error(ex);
+        if (errBox) errBox.textContent = 'Erreur lors de la publication.';
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Publier le statut'; }
+      }
+    });
   }
 
   /* ===== 5) AFFICHAGE DES ANNONCES & CARTES PRO ===== */
