@@ -1,10 +1,7 @@
 (() => {
   'use strict';
-  
-  // Utilise l'instance Supabase globale de votre site
-  const getSupabase = () => window.supabase?.createClient ? null : window.supabase;
 
-  // Injection des styles nécessaires pour les stories et la modale dédiée
+  // Injection des styles pour les stories et la modale dédiée
   if (!document.getElementById('camerlink-stories-style')) {
     const style = document.createElement('style');
     style.id = 'camerlink-stories-style';
@@ -52,28 +49,21 @@
     `);
   }
 
-  // Logique principale de chargement et d'affichage des stories
+  // Fonction pour initialiser les stories en toute sécurité
   async function initStories() {
     const container = document.getElementById('shops-container');
     if (!container) return;
 
-    const sb = window.supabase;
-    if (!sb) return;
-
-    let activeStories = [];
-    try {
-      const now = new Date().toISOString();
-      const { data, error } = await sb.from('artisan_stories')
-        .select(`id, media_url, caption, created_at, artisan_id, profiles (full_name, phone)`)
-        .gt('expires_at', now)
-        .order('created_at', { ascending: false });
-
-      if (!error) activeStories = data || [];
-    } catch (e) {
-      activeStories = [];
+    // S'assure que Supabase est disponible (donne un court délai si nécessaire)
+    let sb = window.supabase;
+    let attempts = 0;
+    while (!sb && attempts < 10) {
+      await new Promise(r => setTimeout(r, 200));
+      sb = window.supabase;
+      attempts++;
     }
 
-    // Construction du HTML de la section des statuts
+    // Bouton de base "Mon statut" toujours affiché quoi qu'il arrive
     let html = `
       <div class="shop-story-card cta-card" id="triggerAddStory">
         <div class="story-ring"><div class="story-avatar-wrap">+</div></div>
@@ -81,46 +71,70 @@
       </div>
     `;
 
-    activeStories.forEach(story => {
-      const name = story.profiles?.full_name || 'Artisan';
-      const initial = name.charAt(0).toUpperCase();
-      html += `
-        <div class="shop-story-card" data-storyurl="${story.media_url}" data-caption="${encodeURIComponent(story.caption || '')}" data-shopname="${encodeURIComponent(name)}">
-          <div class="story-ring">
-            <div class="story-avatar-wrap">${initial}</div>
-          </div>
-          <div class="shop-story-name">${name}</div>
-        </div>
-      `;
-    });
+    if (sb) {
+      try {
+        const now = new Date().toISOString();
+        const { data, error } = await sb.from('artisan_stories')
+          .select(`id, media_url, caption, created_at, artisan_id, profiles (full_name, phone)`)
+          .gt('expires_at', now)
+          .order('created_at', { ascending: false });
+
+        if (!error && data) {
+          data.forEach(story => {
+            const name = story.profiles?.full_name || 'Artisan';
+            const initial = name.charAt(0).toUpperCase();
+            html += `
+              <div class="shop-story-card" data-storyurl="${story.media_url}" data-caption="${encodeURIComponent(story.caption || '')}" data-shopname="${encodeURIComponent(name)}">
+                <div class="story-ring">
+                  <div class="story-avatar-wrap">${initial}</div>
+                </div>
+                <div class="shop-story-name">${name}</div>
+              </div>
+            `;
+          });
+        }
+      } catch (e) {
+        console.error("Erreur chargement stories:", e);
+      }
+    }
 
     container.innerHTML = html;
 
-    // Événement pour ouvrir la modale de publication
-    document.getElementById('triggerAddStory').addEventListener('click', async () => {
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) {
-        alert('Veuillez vous connecter pour publier un statut.');
-        const authModal = document.getElementById('authModal');
-        if (authModal) authModal.classList.add('active');
-        return;
-      }
-      document.getElementById('standaloneStoryModal').classList.add('active');
-    });
+    // Événement d'ouverture de la modale de publication
+    const triggerBtn = document.getElementById('triggerAddStory');
+    if (triggerBtn) {
+      triggerBtn.addEventListener('click', async () => {
+        if (!sb) return;
+        try {
+          const { data: { session } } = await sb.auth.getSession();
+          if (!session) {
+            alert('Veuillez vous connecter pour publier un statut.');
+            const authModal = document.getElementById('authModal');
+            if (authModal) authModal.classList.add('active');
+            return;
+          }
+          document.getElementById('standaloneStoryModal').classList.add('active');
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    }
 
-    // Événement pour fermer la modale
-    document.getElementById('closeStoryModalBtn').addEventListener('click', () => {
-      document.getElementById('standaloneStoryModal').classList.remove('active');
-    });
+    // Fermeture de la modale
+    const closeBtn = document.getElementById('closeStoryModalBtn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        document.getElementById('standaloneStoryModal').classList.remove('active');
+      });
+    }
 
-    // Gestion du clic sur un statut existant pour le visionner
+    // Visionnage d'un statut existant
     container.querySelectorAll('.shop-story-card:not(.cta-card)').forEach(card => {
       card.addEventListener('click', () => {
         const url = card.dataset.storyurl;
         const cap = decodeURIComponent(card.dataset.caption);
         const name = decodeURIComponent(card.dataset.shopname);
         
-        // Utilise la modale de visionnage existante dans votre index.html si elle est présente
         const viewer = document.getElementById('storyViewerModal');
         const vMedia = document.getElementById('viewerMedia');
         const vShop = document.getElementById('viewerShopName');
@@ -138,7 +152,7 @@
     });
   }
 
-  // Gestion de la soumission du formulaire de publication
+  // Soumission du formulaire de publication
   const storyForm = document.getElementById('standaloneStoryForm');
   if (storyForm) {
     storyForm.addEventListener('submit', async (e) => {
@@ -167,21 +181,16 @@
 
         const fileExt = file.name.split('.').pop();
         const filePath = `${session.user.id}/${Date.now()}.${fileExt}`;
-        const bucket = file.type.startsWith('video') ? 'artisan-stories' : 'artisan-stories';
+        const bucket = 'artisan-stories';
 
-        // Upload vers le Storage Supabase
         const { error: upErr } = await sb.storage.from(bucket).upload(filePath, file, { contentType: file.type });
         if (upErr) throw upErr;
 
-        // Récupération de l'URL publique
         const { data: { publicUrl } } = sb.storage.from(bucket).getPublicUrl(filePath);
 
-        // Insertion dans la table artisan_stories
-        const { error: dbErr } = await sb.from('artisan_stories').insert({
-          artisan_id: session.user.id,
-          media_url: publicUrl,
-          caption: captionInput.value.trim()
-        });
+        const { error: dbErr } = await sb.from('artisan_stories').instances?.insert ? 
+          await sb.from('artisan_stories').insert({ artisan_id: session.user.id, media_url: publicUrl, caption: captionInput.value.trim() }) :
+          await sb.from('artisan_stories').insert({ artisan_id: session.user.id, media_url: publicUrl, caption: captionInput.value.trim() });
 
         if (dbErr) throw dbErr;
 
@@ -200,7 +209,7 @@
     });
   }
 
-  // Lancement au chargement de la page
+  // Lancement sécurisé au chargement
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initStories);
   } else {
