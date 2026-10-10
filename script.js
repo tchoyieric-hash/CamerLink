@@ -414,11 +414,21 @@
   /* ===== CHARGEMENT DES ANNONCES ===== */
   async function loadListings() {
     let failed = false;
+    let loadError = '';
     try {
       const res = await withTimeout(sb.from('annonces').select('*').order('created_at', { ascending: false }));
-      if (res.error) failed = true;
-      else allListings = res.data || [];
-    } catch (err) { failed = true; /* on garde la liste actuelle */ }
+      if (res.error) {
+        failed = true;
+        loadError = res.error.message || res.error.code || 'Erreur Supabase inconnue';
+        console.error('[CamerLink] Impossible de charger les annonces:', res.error);
+      } else {
+        allListings = res.data || [];
+      }
+    } catch (err) {
+      failed = true;
+      loadError = err && err.message ? err.message : 'Vérifiez votre connexion Internet.';
+      console.error('[CamerLink] Échec du chargement des annonces:', err);
+    }
 
     videos = {};
     allListings.forEach(a => {
@@ -427,6 +437,20 @@
     refreshQuartierFilter();
     fillQuartierSuggestions();
     renderListings();
+    if (failed && allListings.length === 0) {
+      const grid = $('listings-grid');
+      if (grid) {
+        grid.innerHTML = `<div class="state-msg" role="alert" style="padding:20px;text-align:center;">
+          <strong>Impossible de charger les annonces.</strong>
+          <p style="margin:8px 0;color:var(--color-text-muted);">La connexion au service d’annonces a échoué. Vérifiez Internet puis réessayez.</p>
+          <button type="button" id="cl-retry-listings" style="padding:10px 16px;border-radius:10px;background:var(--a1);color:#07111b;font-weight:700;">Réessayer</button>
+        </div>`;
+        const retry = $('cl-retry-listings');
+        if (retry) retry.addEventListener('click', () => { retry.disabled = true; retry.textContent = 'Chargement…'; loadListings(); });
+      }
+      const count = $('resultsCount');
+      if (count) count.textContent = 'Chargement en échec';
+    }
     renderReels(failed);
   }
 
