@@ -645,3 +645,40 @@ object-fit: cover !important;
     scroll-snap-align: start !important;
   }
 }
+/* CamerLink — correctif Reels mobile */
+@media (max-width: 700px) {
+  section.reels-section #reels-feed.reels-feed {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    max-height: 78vh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scroll-snap-type: y mandatory !important;
+  }
+
+  section.reels-section #reels-feed.reels-feed > article.reel-card {
+    display: block !important;
+    box-sizing: border-box !important;
+    flex: 0 0 72vh !important;
+    width: 100% !important;
+    max-width: 420px !important;
+    min-width: 0 !important;
+    height: 72vh !important;
+    max-height: 640px !important;
+    margin: 0 auto 12px !important;
+    scroll-snap-align: start !important;
+  }
+
+  section.reels-section #reels-feed.reels-feed > article.reel-card video {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+}
