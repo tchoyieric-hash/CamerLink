@@ -1077,10 +1077,44 @@
     });
   }
 
+ 
+  // ===== BOUTON AJOUTER UNE VIDÉO DANS REELS =====
+  const addVideoBtn = $('addVideoBtn');
+
+  if (addVideoBtn) {
+    addVideoBtn.addEventListener('click', () => {
+      if (!currentUser) {
+        toast('Connectez-vous pour ajouter une vidéo');
+        openModal('authModal');
+        return;
+      }
+
+      openModal('publishModal');
+
+      const videoInput = $('adVideoFile');
+      if (videoInput) {
+        videoInput.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+
+      toast('Ajoutez une photo et votre vidéo, puis cliquez sur Publier.');
+    });
+  }
+
   $('pubBtn').addEventListener('click', () => {
-    if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
+    if (!currentUser) {
+      toast('Connectez-vous pour publier');
+      openModal('authModal');
+      return;
+    }
     openModal('publishModal');
   });
+ 
+    
+    
+  
 
   /* ===== DÉTAILS D'UNE ANNONCE ET FICHE ARTISAN ===== */
   document.body.insertAdjacentHTML('beforeend', `
