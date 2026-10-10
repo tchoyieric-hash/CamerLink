@@ -537,13 +537,24 @@
       data.forEach(s => {
         if (!map.has(s.artisan_id)) map.set(s.artisan_id, []);
         map.get(s.artisan_id).push(s);
-      });
-      storyGroups = [...map.entries()].map(([uid, items]) => ({
-        uid,
-        shop: shops[uid] || null,
-        items: items.slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-      }));
-      renderShopsHTML();
+      storyGroups = [...map.entries()]
+  .map(([uid, items]) => ({
+    uid,
+    shop: shops[uid] || null,
+    items: items.slice().sort(
+      (a, b) => new Date(a.created_at) - new Date(b.created_at)
+    )
+  }))
+  .filter(
+    g => String(g.shop && g.shop.name || '')
+      .trim()
+      .toLowerCase() !== 'barbara shop'
+  );
+    renderShopsHTML();    
+       
+        
+    
+      
     } catch (e) {
       console.warn('Statuts indisponibles pour le moment.', e && e.message);
     }
