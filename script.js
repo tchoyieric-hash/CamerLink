@@ -1404,37 +1404,119 @@
     const nStories = gi >= 0 ? storyGroups[gi].items.length : 0;
 
     body.innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-        ${avatarHTML(shop, 64)}
-        <div style="min-width:0;">
-          <h3 style="font-size:1.2rem;">${esc((shop && shop.name) || 'Artisan')}${shop && shop.verified ? ' ✔️' : ''}</h3>
-          <small style="color:var(--color-text-muted);">${esc(shop ? [shop.type, shop.city].filter(Boolean).join(' · ') : '')}</small>
+  <div class="cl-artisan-profile">
+
+    <div class="cl-artisan-cover">
+      <div class="cl-profile-kicker">CAMERLINK • ARTISAN</div>
+      <div class="cl-profile-identity">
+        <div class="cl-profile-avatar">
+          ${avatarHTML(shop, 76)}
+        </div>
+        <div class="cl-profile-name">
+          <h3>${esc((shop && shop.name) || 'Artisan')}${shop && shop.verified ? ' ✓' : ''}</h3>
+          <p>${esc(shop ? [shop.type, shop.city].filter(Boolean).join(' • ') : '')}</p>
         </div>
       </div>
-      ${shop && shop.description ? `<p style="white-space:pre-wrap;line-height:1.5;margin-bottom:10px;">${esc(shop.description)}</p>` : ''}
-      <div style="font-size:0.88rem;color:var(--color-text-muted);margin-bottom:12px;display:grid;gap:4px;">
-        ${shop && shop.address ? `<span>📍 ${esc(shop.address)}</span>` : ''}
-        ${shop && shop.hours ? `<span>🕒 ${esc(shop.hours)}</span>` : ''}
-        ${shop && shop.contact ? `<span>📞 ${esc(shop.contact)}</span>` : ''}
+      <div class="cl-profile-stats">
+        <div><strong>${ads.length}</strong><span>Annonces</span></div>
+        <div><strong>${nStories}</strong><span>Statuts</span></div>
+        <div><strong>${reel ? '1' : '0'}</strong><span>Vidéo</span></div>
       </div>
-      ${reel ? `<video src="${esc(reel)}" controls playsinline preload="metadata" style="width:100%;max-height:260px;border-radius:12px;margin-bottom:6px;background:#000;"></video>
-        ${shop.reel_desc ? `<p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;">${esc(shop.reel_desc)}</p>` : '<div style="margin-bottom:12px;"></div>'}` : ''}
-      ${nStories ? `<button type="button" data-act="stories" data-gi="${gi}" style="${btnStyle}width:100%;margin-bottom:8px;background:linear-gradient(90deg,var(--a1),var(--a2));color:#fff;">▶ Voir ses statuts (${nStories})</button>` : ''}
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-        ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="${btnStyle}background:#22C55E;color:#fff;">WhatsApp</a>
-        <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
-        ${!mine ? `<button type="button" data-act="msg" style="${softStyle}">💬 Message</button>` : ''}
-        <button type="button" data-act="share" style="${softStyle}">📤 Partager</button>
-        <button type="button" data-act="copy" style="${softStyle}">🔗 Copier le lien</button>
-      </div>
-      <h4 style="margin-bottom:8px;">Annonces (${ads.length})</h4>
-      ${ads.length ? ads.map(a => `
-        <button type="button" data-ad="${esc(a.id)}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px;margin-bottom:6px;border-radius:10px;background:rgba(127,127,127,0.12);cursor:pointer;">
-          ${a.image_url ? `<img src="${esc(a.image_url)}" alt="" style="width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;">` : ''}
-          <span style="flex:1;min-width:0;"><strong style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(a.title)}</strong>
-          <small style="color:#10b981;font-weight:700;">${Number(a.price || 0).toLocaleString('fr-FR')} FCFA</small></span>
-        </button>`).join('') : '<div class="state-msg" style="padding:16px;">Aucune annonce pour le moment.</div>'}`;
+    </div>
 
+    ${shop && shop.description ? `
+      <section class="cl-profile-section">
+        <div class="cl-profile-label">À PROPOS</div>
+        <p class="cl-profile-description">${esc(shop.description)}</p>
+      </section>
+    ` : ''}
+
+    <section class="cl-profile-section cl-profile-details">
+      ${shop && shop.address ? `<div>📍 <span>${esc(shop.address)}</span></div>` : ''}
+      ${shop && shop.city ? `<div>🌍 <span>${esc(shop.city)}</span></div>` : ''}
+      ${shop && shop.hours ? `<div>🕒 <span>${esc(shop.hours)}</span></div>` : ''}
+      ${shop && shop.contact ? `<div>📞 <span>${esc(shop.contact)}</span></div>` : ''}
+    </section>
+
+    ${reel ? `
+      <section class="cl-profile-section">
+        <div class="cl-profile-label">VIDÉO DE L'ARTISAN</div>
+        <video class="cl-profile-reel"
+          src="${esc(reel)}"
+          controls
+          playsinline
+          preload="metadata"></video>
+        ${shop && shop.reel_desc ? `<p class="cl-profile-description">${esc(shop.reel_desc)}</p>` : ''}
+      </section>
+    ` : ''}
+
+    ${nStories ? `
+      <button type="button"
+        class="cl-profile-button cl-primary"
+        data-act="stories"
+        data-gi="${gi}">
+        ▶ Voir ses statuts (${nStories})
+      </button>
+    ` : ''}
+
+    <section class="cl-profile-actions">
+      ${wa ? `
+        <a class="cl-profile-button cl-whatsapp"
+          href="https://api.whatsapp.com/send?phone=${esc(wa)}"
+          target="_blank" rel="noopener">
+          WhatsApp
+        </a>
+        <a class="cl-profile-button cl-call"
+          href="tel:+${esc(wa)}">
+          Appeler
+        </a>
+      ` : ''}
+
+      ${!mine ? `
+        <button type="button"
+          class="cl-profile-button cl-primary"
+          data-act="msg">
+          💬 Message
+        </button>
+      ` : ''}
+
+      <button type="button"
+        class="cl-profile-button"
+        data-act="share">
+        📤 Partager
+      </button>
+
+      <button type="button"
+        class="cl-profile-button"
+        data-act="copy">
+        🔗 Copier le lien
+      </button>
+    </section>
+
+    <section class="cl-profile-section">
+      <div class="cl-profile-label">ANNONCES (${ads.length})</div>
+      <div class="cl-profile-grid">
+        ${ads.length ? ads.map(a => `
+          <button type="button"
+            class="cl-profile-listing"
+            data-ad="${esc(a.id)}">
+            ${a.image_url ? `
+              <img src="${esc(a.image_url)}" alt=""
+                loading="lazy">
+            ` : `<div class="cl-profile-no-image">CAMERLINK</div>`}
+            <span class="cl-profile-listing-info">
+              <strong>${esc(a.title || 'Annonce')}</strong>
+              <small>${Number(a.price || 0).toLocaleString('fr-FR')} FCFA</small>
+            </span>
+          </button>
+        `).join('') : `
+          <div class="state-msg">Aucune annonce pour le moment.</div>
+        `}
+      </div>
+    </section>
+
+  </div>
+`;
     body.dataset.uid = uid;
     } catch (err) {
       console.error(err);
