@@ -1258,15 +1258,90 @@
 
   /* ===== AUTHENTIFICATION ===== */
   let authInit = false;
+  /* CAMERLINK PRO — espace artisan lié au compte connecté */
+  const spaceMoney = value => Number(value || 0).toLocaleString('fr-FR') + ' FCFA';
+  async function renderArtisanSpace() {
+    const body = $('artisanSpaceBody');
+    if (!body) return;
+    if (!currentUser) { body.innerHTML = '<div class="state-msg">Connectez-vous pour accéder à votre espace artisan.</div>'; return; }
+    body.innerHTML = '<div class="state-msg">Chargement de votre espace…</div>';
+    const uid = currentUser.id;
+    const shop = await fetchShop(uid);
+    const mine = allListings.filter(ad => String(ad.user_id) === String(uid));
+    const totalViews = mine.reduce((sum, ad) => sum + Number(ad.views || ad.vues || 0), 0);
+    body.innerHTML = `
+      <section class="cl-space-welcome">
+        <div class="cl-space-avatar">${avatarHTML(shop, 58)}</div>
+        <div class="cl-space-welcome-copy"><span class="cl-space-eyebrow">VOTRE VITRINE</span><h4>${esc(shop?.name || currentUser.user_metadata?.full_name || 'Mon activité')}</h4><p>${esc([shop?.type, shop?.city].filter(Boolean).join(' · ') || 'Complétez vos informations professionnelles')}</p></div>
+        <button type="button" class="cl-space-share" id="cl-space-share">Partager ma page</button>
+      </section>
+      <div class="cl-space-stats">
+        <article><span>Offres publiées</span><strong>${mine.length}</strong></article>
+        <article><span>Vues enregistrées</span><strong>${totalViews}</strong></article>
+        <article><span>Favoris reçus</span><strong>—</strong><small>Statistique à connecter</small></article>
+      </div>
+      <section class="cl-space-section">
+        <div class="cl-space-section-head"><div><span class="cl-space-eyebrow">BOUTIQUE NUMÉRIQUE</span><h4>Informations professionnelles</h4></div><span class="cl-space-lock">🔒 Votre compte</span></div>
+        <form id="cl-space-profile-form" class="cl-space-form">
+          <label>Nom de l’activité<input name="name" maxlength="100" required value="${esc(shop?.name || '')}" placeholder="Ex. Atelier Eric"></label>
+          <label>Métier / type d’activité<input name="type" maxlength="80" value="${esc(shop?.type || '')}" placeholder="Ex. Électricien, couturière…"></label>
+          <label>Ville<input name="city" maxlength="80" value="${esc(shop?.city || '')}" placeholder="Ex. Douala"></label>
+          <label>Adresse ou quartier<input name="address" maxlength="180" value="${esc(shop?.address || '')}" placeholder="Ex. Bonamoussadi (pas obligatoire)"></label>
+          <label>Contact professionnel<input name="contact" maxlength="30" type="tel" value="${esc(shop?.contact || '')}" placeholder="Téléphone / WhatsApp"></label>
+          <label>Horaires<input name="hours" maxlength="120" value="${esc(shop?.hours || '')}" placeholder="Ex. Lun–sam, 8h–18h"></label>
+          <label class="cl-space-wide">Présentation<textarea name="description" rows="3" maxlength="800" placeholder="Présentez votre activité, votre expérience et vos services…">${esc(shop?.description || '')}</textarea></label>
+          <label class="cl-space-wide">Lien vidéo de présentation (URL HTTPS)<input name="video_url" type="url" maxlength="500" value="${esc(shop?.video_url || '')}" placeholder="https://…"></label>
+          <label class="cl-space-wide">Description de la vidéo<input name="reel_desc" maxlength="180" value="${esc(shop?.reel_desc || '')}" placeholder="Une courte phrase pour votre Reel"></label>
+          <p class="cl-space-hint cl-space-wide">Le logo pourra être ajouté dans une prochaine étape avec un téléversement sécurisé. Les champs utilisent les colonnes existantes de la table des établissements.</p>
+          <p id="cl-space-error" class="form-error cl-space-wide" role="status"></p>
+          <button type="submit" class="btn-submit-modal cl-space-wide" id="cl-space-save">Enregistrer ma vitrine</button>
+        </form>
+      </section>
+      <section class="cl-space-section">
+        <div class="cl-space-section-head"><div><span class="cl-space-eyebrow">VOTRE CATALOGUE</span><h4>Mes offres (${mine.length})</h4></div><button type="button" class="cl-space-publish" id="cl-space-publish">＋ Ajouter une offre</button></div>
+        <div class="cl-space-offers">${mine.length ? mine.map(ad => `<article class="cl-space-offer"><div class="cl-space-offer-thumb">${ad.image_url ? `<img src="${esc(ad.image_url)}" alt="" loading="lazy">` : '🏷️'}</div><div class="cl-space-offer-info"><strong>${esc(ad.title || 'Offre sans titre')}</strong><span>${spaceMoney(ad.price)}</span><small>${esc([ad.category, ad.city].filter(Boolean).join(' · '))}</small></div><button type="button" class="cl-space-open-offer" data-space-ad="${esc(ad.id)}">Voir</button></article>`).join('') : '<div class="cl-space-empty">Votre catalogue est vide. Publiez votre première offre pour être découvert par les clients.</div>'}</div>
+      </section>
+      <p class="cl-space-footer">Votre espace est lié à votre compte connecté. Seules les offres associées à votre identifiant de compte sont affichées ici.</p>`;
+    $('cl-space-share')?.addEventListener('click', () => shareLink(shop?.name || 'Mon artisan CamerLink', 'Découvrez ma vitrine sur CamerLink', '/artisan/' + encodeURIComponent(uid)));
+    $('cl-space-publish')?.addEventListener('click', () => { closeModal('artisanSpaceModal'); $('pubBtn').click(); });
+    body.querySelectorAll('[data-space-ad]').forEach(button => button.addEventListener('click', () => { closeModal('artisanSpaceModal'); openAdDetail(button.dataset.spaceAd); }));
+    $('cl-space-profile-form')?.addEventListener('submit', async event => {
+      event.preventDefault();
+      const form = event.currentTarget, button = $('cl-space-save'), error = $('cl-space-error');
+      if (!currentUser || currentUser.id !== uid) { error.textContent = 'Votre session a changé. Rechargez la page et reconnectez-vous.'; return; }
+      const data = Object.fromEntries(new FormData(form).entries());
+      for (const key of Object.keys(data)) data[key] = String(data[key] || '').trim();
+      if (!data.name) { error.textContent = 'Le nom de votre activité est obligatoire.'; return; }
+      if (data.video_url && (!/^https:\/\//i.test(data.video_url))) { error.textContent = 'Le lien vidéo doit commencer par https://'; return; }
+      button.disabled = true; button.textContent = 'Enregistrement…'; error.textContent = '';
+      try {
+        const payload = { user_id: uid, name: data.name, type: data.type, city: data.city, address: data.address, contact: data.contact, hours: data.hours, description: data.description, video_url: data.video_url || null, reel_desc: data.reel_desc };
+        const result = await withTimeout(sb.from('etablissements').upsert(payload, { onConflict: 'user_id' }).select('user_id,name,type,city,address,contact,hours,description,logo_url,verified,video_url,reel_desc').single(), 12000);
+        if (result.error) throw result.error;
+        shopCache[uid] = result.data;
+        toast('Votre vitrine a été enregistrée.');
+        renderArtisanSpace();
+      } catch (ex) {
+        error.textContent = /row-level security|permission|policy|42501/i.test(String(ex.message || ex))
+          ? 'Enregistrement refusé par les règles de sécurité Supabase. Il faut autoriser chaque utilisateur à modifier uniquement sa propre fiche.'
+          : 'Impossible d’enregistrer. Vérifiez la connexion et réessayez. (' + String(ex.message || 'erreur').slice(0,120) + ')';
+        button.disabled = false; button.textContent = 'Réessayer';
+      }
+    });
+  }
+  $('artisanSpaceBtn')?.addEventListener('click', () => { openModal('artisanSpaceModal'); renderArtisanSpace(); });
+
   sb.auth.onAuthStateChange((_, session) => {
     const prev = currentUser && currentUser.id;
     currentUser = session ? session.user : null;
     $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
+    $('artisanSpaceBtn').style.display = currentUser ? '' : 'none';
     $('claimBtn').style.display = currentUser ? '' : 'none';
     if (!authInit || prev !== (currentUser && currentUser.id)) {
       authInit = true;
       setTimeout(subscribeMessages, 0);
       setTimeout(syncFavorites, 0); // charge (ou vide) les favoris du compte
+      if (currentUser && $('artisanSpaceModal')?.classList.contains('active')) setTimeout(renderArtisanSpace, 0);
     }
   });
 
