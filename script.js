@@ -570,7 +570,7 @@
       </div>`;
 
     storyGroups.forEach((g, gi) => {
-      const name = (g.shop && g.shop.name) || 'Artisan';
+      const name = (g.shop && g.shop.name) || 'Artisan CamerLink';
       const logo = g.shop && g.shop.logo_url;
       const avatar = logo
         ? `<img src="${esc(logo)}" alt="" loading="lazy" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
