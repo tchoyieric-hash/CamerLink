@@ -289,14 +289,45 @@
   }
 
   async function loadLikeCounts() {
-    try {
-      const { data, error } = await withTimeout(sb.rpc('get_like_counts'));
-      if (error) return;
+  try {
+    const ids = [...new Set(
+      (allListings || [])
+        .map(ad => Number(ad.id))
+        .filter(id => Number.isSafeInteger(id) && id > 0)
+    )];
+
+    if (!ids.length) {
       likeCounts = {};
-      (data || []).forEach(r => { likeCounts[r.annonce_id] = Number(r.likes) || 0; });
-      renderListings(); refreshOpenDetail();
-    } catch (e) { /* silencieux */ }
+      renderListings();
+      refreshOpenDetail();
+      return;
+    }
+
+    const { data, error } = await withTimeout(
+      sb.rpc('reel_likes_count', {
+        p_annonce_ids: ids
+      })
+    );
+
+    if (error) return;
+
+    likeCounts = {};
+
+    (data || []).forEach(r => {
+      likeCounts[r.annonce_id] = Number(r.nb) || 0;
+    });
+
+    renderListings();
+    refreshOpenDetail();
+  } catch (e) {
+    console.error('Erreur chargement des likes :', e);
   }
+  }
+   
+      
+     
+    
+  
 
   // Compteur de vues : 1 vue par visiteur, par annonce et par heure (limite côté base)
   async function registerView(id) {
