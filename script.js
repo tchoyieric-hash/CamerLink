@@ -1329,7 +1329,7 @@
       }
     });
   }
-  $('artisanSpaceBtn')?.addEventListener('click', () => { openModal('artisanSpaceModal'); renderArtisanSpace(); });
+  $('artisanSpaceBtn')?.addEventListener('click', () => { if (!currentUser) { toast('Connectez-vous pour accéder à votre espace artisan et à votre catalogue.'); openModal('authModal'); return; } openModal('artisanSpaceModal'); renderArtisanSpace(); });
 
   sb.auth.onAuthStateChange((_, session) => {
     const prev = currentUser && currentUser.id;
