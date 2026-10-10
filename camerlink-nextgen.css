@@ -91,3 +91,14 @@
   .cl-reel-action { transition:none; }
   .cl-reel-status .cl-spinner { animation:none; }
 }
+
+/* CamerLink Nearby — progressive enhancement */
+.cl-nearby-panel{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 18px;padding:16px;border:1px solid rgba(34,211,238,.24);border-radius:18px;background:linear-gradient(120deg,rgba(8,145,178,.12),rgba(124,58,237,.10));box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.cl-nearby-panel>div{flex:1;min-width:190px}
+.cl-nearby-panel strong{display:block;font-weight:850;color:var(--color-text-main,#f8fafc)}
+.cl-nearby-panel p{margin:5px 0 0;font-size:.84rem;line-height:1.45;color:var(--color-text-muted,#aab3c8)}
+.cl-nearby-panel button{border:1px solid rgba(34,211,238,.28);border-radius:999px;padding:10px 14px;background:linear-gradient(110deg,#0891b2,#7c3aed);color:#fff;font-weight:800;cursor:pointer}
+.cl-nearby-panel button:disabled{opacity:.65;cursor:wait}
+.cl-nearby-panel button[hidden]{display:none}
+.cl-distance{display:inline-flex;margin-left:6px;padding:3px 7px;border-radius:999px;background:rgba(34,211,238,.12);color:var(--cl-cyan,#22d3ee);font-size:.75rem;font-weight:800}
+@media(max-width:520px){.cl-nearby-panel{align-items:stretch}.cl-nearby-panel button{width:100%}}
