@@ -444,3 +444,22 @@ header {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; }
 }
+
+
+/* CamerLink Reels: correctifs mobile et zone de sélection vidéo */
+.video-upload-highlight {
+  border-color: var(--a1) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--a1) 18%, transparent), 0 12px 32px rgba(34,211,238,.12);
+  animation: videoFieldPulse 1.6s ease-in-out 2;
+}
+@keyframes videoFieldPulse { 0%,100% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--a1) 10%, transparent); } 50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--a1) 25%, transparent); } }
+.video-file-input { width:100%; max-width:100%; min-height:54px; padding:8px; background:var(--color-surface); color:var(--color-text-main); }
+.video-file-input::file-selector-button { min-height:38px; }
+@media (max-width: 700px) {
+  .reels-section { width:calc(100% - 20px); margin:22px auto; padding:16px; border-radius:22px; }
+  .reels-heading { align-items:flex-start; flex-direction:column; gap:12px; }
+  .reels-heading-actions { width:100%; align-items:flex-start; flex-wrap:wrap; }
+  .reels-feed { display:flex !important; gap:12px; overflow-x:auto; overflow-y:hidden; padding:2px 2px 14px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
+  .reel-card { flex:0 0 min(72vw,260px); width:min(72vw,260px); scroll-snap-align:start; }
+}
+@media (prefers-reduced-motion: reduce) { .video-upload-highlight { animation:none; } }
