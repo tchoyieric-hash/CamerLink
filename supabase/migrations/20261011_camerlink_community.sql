@@ -82,8 +82,21 @@ begin
  end if;
  return new;
 end; $$;
-drop trigger if exists camerlink_message_notification on public.messages;
-create trigger camerlink_message_notification after insert on public.messages for each row execute function public.camerlink_notify_new_message();
+-- N'installer le trigger que si le schéma réel de messages est compatible.
+-- Cela évite de casser l'envoi des messages sur les installations utilisant d'autres noms de colonnes.
+do $migration$
+begin
+ if to_regclass('public.messages') is not null
+    and exists (select 1 from information_schema.columns where table_schema='public' and table_name='messages' and column_name='sender_id')
+    and exists (select 1 from information_schema.columns where table_schema='public' and table_name='messages' and column_name='receiver_id')
+    and exists (select 1 from information_schema.columns where table_schema='public' and table_name='messages' and column_name='content') then
+   execute 'drop trigger if exists camerlink_message_notification on public.messages';
+   execute 'create trigger camerlink_message_notification after insert on public.messages for each row execute function public.camerlink_notify_new_message()';
+ else
+   raise notice 'CamerLink : trigger de notification non installé, schéma public.messages absent ou incompatible. Les messages existants ne sont pas modifiés.';
+ end if;
+end
+$migration$;
 
 create or replace function public.camerlink_notify_review()
 returns trigger language plpgsql security definer set search_path=public as $$
@@ -98,6 +111,8 @@ create trigger camerlink_review_notification after insert on public.artisan_revi
 grant select on public.artisan_reviews,public.reel_comments,public.camerlink_notifications,public.artisan_plan_requests to anon,authenticated;
 grant insert,update on public.artisan_reviews to authenticated;
 grant insert,select,delete on public.reel_comments to authenticated;
-grant select,update on public.camerlink_notifications to authenticated;
+-- Les utilisateurs peuvent uniquement marquer leurs notifications comme lues.
+revoke update on public.camerlink_notifications from anon,authenticated;
+grant update(read_at) on public.camerlink_notifications to authenticated;
 grant insert,select on public.artisan_plan_requests to authenticated;
 commit;
