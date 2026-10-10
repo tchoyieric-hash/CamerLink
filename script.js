@@ -22,7 +22,21 @@
     { value: 'Boutiques', chip: '🛍 Boutiques' },
     { value: 'Immobilier', chip: '🏠 Immobilier' }
   ];
-  const CITIES = ['Yaoundé', 'Douala', 'Kribi', 'Bafoussam', 'Garoua'];
+  // Villes principales : les 10 chefs-lieux de région du Cameroun, plus Kribi.
+  // "value" est enregistré dans l'annonce ; "label" indique la région dans les listes.
+  const CITIES = [
+    { value: 'Yaoundé', label: 'Yaoundé (Centre)' },
+    { value: 'Douala', label: 'Douala (Littoral)' },
+    { value: 'Bafoussam', label: 'Bafoussam (Ouest)' },
+    { value: 'Bamenda', label: 'Bamenda (Nord-Ouest)' },
+    { value: 'Buea', label: 'Buea (Sud-Ouest)' },
+    { value: 'Garoua', label: 'Garoua (Nord)' },
+    { value: 'Maroua', label: 'Maroua (Extrême-Nord)' },
+    { value: 'Ngaoundéré', label: 'Ngaoundéré (Adamaoua)' },
+    { value: 'Bertoua', label: 'Bertoua (Est)' },
+    { value: 'Ebolowa', label: 'Ebolowa (Sud)' },
+    { value: 'Kribi', label: 'Kribi (Sud)' }
+  ];
 
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
@@ -108,8 +122,8 @@
   });
 
   /* ===== FILTRES ===== */
-  $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
-  $('adCity').innerHTML = CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+  $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + CITIES.map(c => `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join('');
+  $('adCity').innerHTML = CITIES.map(c => `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join('');
   $('adCategory').innerHTML = CATEGORIES.map(c => `<option value="${c.value}">${c.value}</option>`).join('');
   $('categoryChips').innerHTML = '<button class="cat-chip active" data-cat="">✨ Tout voir</button>' +
     CATEGORIES.map(c => `<button class="cat-chip" data-cat="${c.value}">${c.chip}</button>`).join('');
