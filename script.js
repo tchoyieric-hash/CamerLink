@@ -38,6 +38,20 @@
     { value: 'Kribi', label: 'Kribi (Sud)' }
   ];
 
+  // Suggestions de quartiers (le vendeur peut aussi écrire librement un autre quartier)
+  const QUARTIERS = {
+    'Yaoundé': ['Bastos', 'Biyem-Assi', 'Briqueterie', 'Efoulan', 'Ekounou', 'Elig-Essono', 'Emana', 'Essos', 'Etoudi', 'Melen', 'Mendong', 'Messa', 'Mfandena', 'Mimboman', 'Mokolo', 'Mvan', 'Mvog-Ada', 'Mvog-Mbi', 'Ngousso', 'Nkolbisson', 'Nlongkak', 'Nsimeyong', 'Obili', 'Odza', 'Omnisports', 'Simbock', 'Tsinga'],
+    'Douala': ['Akwa', 'Bali', 'Bassa', 'Bepanda', 'Bonabéri', 'Bonamoussadi', 'Bonanjo', 'Bonapriso', 'Cité des Palmiers', 'Deido', 'Japoma', 'Kotto', 'Logbessou', 'Logpom', 'Makepe', 'Ndokoti', 'New Bell', 'Nyalla', 'PK8', 'PK14', 'Yassa'],
+    'Bafoussam': ['Banengo', 'Djeleng', 'Famla', 'Kamkop', 'Tamdja'],
+    'Bamenda': ['Commercial Avenue', 'Mankon', 'Nkwen', 'Ntarikon', 'Up Station'],
+    'Buea': ['Bonduma', 'Great Soppo', 'Molyko', 'Muea']
+  };
+  const MAX_QUARTIER = 80;
+  // clé de comparaison : sans accents, sans majuscules (Bonabéri = bonaberi)
+  const qKey = (v) => String(v || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const normQuartier = (v) => String(v || '').trim().replace(/\s+/g, ' ')
+    .replace(/(^|[\s'’-])([a-zà-ÿ])/g, (m, p, c) => p + c.toUpperCase());
+
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]
@@ -125,6 +139,77 @@
   $('cityFilter').innerHTML = '<option value="">Toutes les villes</option>' + CITIES.map(c => `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join('');
   $('adCity').innerHTML = CITIES.map(c => `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join('');
   $('adCategory').innerHTML = CATEGORIES.map(c => `<option value="${c.value}">${c.value}</option>`).join('');
+
+  /* ===== QUARTIER : filtre et champ de publication (ajoutés ici, sans modifier le HTML) ===== */
+  let currentQuartier = '';
+
+  function quartierSuggestions(city) {
+    const m = new Map();
+    [...(QUARTIERS[city] || []), ...allListings.filter(a => a.city === city && a.quartier).map(a => a.quartier)]
+      .forEach(q => { const k = qKey(q); if (k && !m.has(k)) m.set(k, q); });
+    return m;
+  }
+
+  function fillQuartierSuggestions() {
+    const dl = $('quartiersList');
+    if (!dl) return;
+    const list = [...quartierSuggestions($('adCity') ? $('adCity').value : '').values()]
+      .sort((a, b) => a.localeCompare(b, 'fr'));
+    dl.innerHTML = list.map(q => `<option value="${esc(q)}"></option>`).join('');
+  }
+
+  // si le quartier existe déjà (même sans accents/majuscules), on garde son orthographe
+  function canonicalQuartier(city, input) {
+    const k = qKey(input);
+    if (!k) return '';
+    const known = quartierSuggestions(city).get(k);
+    return (known || normQuartier(input)).slice(0, MAX_QUARTIER);
+  }
+
+  function refreshQuartierFilter() {
+    const sel = $('quartierFilter');
+    if (!sel) return;
+    const city = $('cityFilter').value;
+    const m = new Map();
+    allListings.forEach(a => {
+      if (a.quartier && (!city || a.city === city)) {
+        const k = qKey(a.quartier);
+        if (k && !m.has(k)) m.set(k, a.quartier);
+      }
+    });
+    if (m.size === 0) { sel.style.display = 'none'; sel.innerHTML = ''; currentQuartier = ''; return; }
+    if (currentQuartier && !m.has(currentQuartier)) currentQuartier = '';
+    const list = [...m.entries()].sort((x, y) => x[1].localeCompare(y[1], 'fr'));
+    sel.innerHTML = '<option value="">Tous les quartiers</option>' +
+      list.map(([k, label]) => `<option value="${esc(k)}"${k === currentQuartier ? ' selected' : ''}>${esc(label)}</option>`).join('');
+    sel.style.display = '';
+  }
+
+  (function injectQuartierUi() {
+    const cf = $('cityFilter');
+    if (cf && !$('quartierFilter')) {
+      const sel = document.createElement('select');
+      sel.id = 'quartierFilter';
+      sel.className = 'city-select form-el';
+      sel.style.display = 'none';
+      sel.setAttribute('aria-label', 'Quartier');
+      cf.insertAdjacentElement('afterend', sel);
+      sel.addEventListener('change', () => { currentQuartier = sel.value; renderListings(); });
+    }
+    const adCity = $('adCity');
+    if (adCity && !$('adQuartier')) {
+      const grp = document.createElement('div');
+      grp.className = 'form-group';
+      grp.innerHTML = '<label for="adQuartier">Quartier (facultatif)</label>' +
+        '<input class="form-sheet-el" id="adQuartier" type="text" maxlength="' + MAX_QUARTIER + '" list="quartiersList" placeholder="Ex : Bastos, Akwa…" autocomplete="off">' +
+        '<datalist id="quartiersList"></datalist>' +
+        '<small class="form-hint">Aide les acheteurs à vous trouver. N’indiquez pas votre adresse exacte.</small>';
+      const holder = adCity.closest('.form-group');
+      if (holder) holder.insertAdjacentElement('afterend', grp);
+      adCity.addEventListener('change', fillQuartierSuggestions);
+    }
+    fillQuartierSuggestions();
+  })();
   $('categoryChips').innerHTML = '<button class="cat-chip active" data-cat="">✨ Tout voir</button>' +
     CATEGORIES.map(c => `<button class="cat-chip" data-cat="${c.value}">${c.chip}</button>`).join('');
 
@@ -138,7 +223,7 @@
   });
 
   $('searchInput').addEventListener('input', () => renderListings());
-  $('cityFilter').addEventListener('change', () => renderListings());
+  $('cityFilter').addEventListener('change', () => { refreshQuartierFilter(); renderListings(); });
   $('priceFilter').addEventListener('change', () => renderListings());
 
   /* ===== FAVORIS ===== */
@@ -280,6 +365,8 @@
     allListings.forEach(a => {
       if (a.video_url && /^https:\/\//i.test(a.video_url)) videos[a.id] = a.video_url;
     });
+    refreshQuartierFilter();
+    fillQuartierSuggestions();
     renderListings();
     renderReels(failed);
   }
@@ -351,7 +438,7 @@
         <button type="button" data-reel-sound aria-label="Activer ou couper le son" style="position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;font-size:1.1rem;cursor:pointer;">🔇</button>
         <div style="position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,0.85));color:#fff;">
           <strong style="display:block;font-size:1.05rem;">${esc(ad.title)}</strong>
-          <div style="margin:2px 0 10px;font-size:0.9rem;"><span style="color:#34d399;font-weight:800;">${price} FCFA</span>${ad.city ? ' · 📍 ' + esc(ad.city) : ''}</div>
+          <div style="margin:2px 0 10px;font-size:0.9rem;"><span style="color:#34d399;font-weight:800;">${price} FCFA</span>${(ad.quartier || ad.city) ? ' · 📍 ' + esc([ad.quartier, ad.city].filter(Boolean).join(', ')) : ''}</div>
           <div style="display:flex;gap:8px;">
             <button type="button" data-reel-open style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">Voir l’annonce</button>
             ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="flex:1;padding:10px;border-radius:8px;background:#22C55E;color:#fff;font-weight:700;font-size:0.85rem;text-align:center;">WhatsApp</a>` : ''}
@@ -672,12 +759,14 @@
       const description = $('adDesc').value.trim();
       const price = Math.round(Number($('adPrice').value));
       const contact = $('adContact').value.trim();
+      const quartier = canonicalQuartier($('adCity').value, $('adQuartier') ? $('adQuartier').value : '');
       const file = $('adImage').files[0];
       const vFile = adVideoInput ? adVideoInput.files[0] : null;
 
       if (title.length < 3 || title.length > 120) return setErr('Le titre doit faire entre 3 et 120 caractères.');
       if (description.length > 2000) return setErr('La description est trop longue (2000 caractères max).');
       if (!Number.isFinite(price) || price < 0) return setErr('Prix invalide.');
+      if ($('adQuartier') && $('adQuartier').value.trim().length > MAX_QUARTIER) return setErr(`Le quartier est trop long (${MAX_QUARTIER} caractères max).`);
       if (!file) return setErr('Ajoutez une photo.');
       if (!AD_IMG_TYPES.includes(file.type)) return setErr('Photo : jpg, png ou webp uniquement.');
       if (file.size > MAX_AD_IMG_MB * 1024 * 1024) return setErr(`Photo trop lourde (max ${MAX_AD_IMG_MB} Mo).`);
@@ -721,6 +810,7 @@
           image_url: publicUrl
         };
         if (videoUrl) row.video_url = videoUrl;
+        if (quartier) row.quartier = quartier;
 
         const { error } = await sb.from('annonces').insert(row);
         if (error) throw error;
@@ -760,8 +850,9 @@
       (!favOnly || favorites.includes(String(ad.id))) &&
       (!currentCategory || ad.category === currentCategory) &&
       (!city || ad.city === city) &&
+      (!currentQuartier || qKey(ad.quartier) === currentQuartier) &&
       (!maxPrice || Number(ad.price) <= maxPrice) &&
-      (!term || String(ad.title || '').toLowerCase().includes(term))
+      (!term || String(ad.title || '').toLowerCase().includes(term) || qKey(ad.quartier).includes(qKey(term)))
     );
 
     $('resultsCount').textContent = `${filtered.length} annonce(s)`;
@@ -794,7 +885,7 @@
           <div class="ad-price">${Number(ad.price || 0).toLocaleString('fr-FR')} FCFA</div>
           <p class="ad-desc">${esc(ad.description)}</p>
           <div class="ad-rating">⭐ ${rating} <span>(${reviewCount} avis)</span></div>
-          <div class="card-meta"><span class="ad-city">📍 ${esc(ad.city)}</span></div>
+          <div class="card-meta"><span class="ad-city">📍 ${esc([ad.quartier, ad.city].filter(Boolean).join(', '))}</span></div>
 
           ${vUrl ? `<button type="button" data-video="${esc(vUrl)}" style="width:100%; margin-bottom:8px; padding:8px; background:var(--a1); color:#05060D; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer;">▶ Voir la vidéo</button>` : ''}
 
