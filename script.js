@@ -1471,6 +1471,7 @@
     openModal('artisanModal');
     setUrl('/artisan/' + uid, 'Artisan · CamerLink');
     try {
+    profileCategory = 'all';
     const shop = await fetchShop(uid);
     if (shop && shop.name && $('artisanModal').classList.contains('active')) document.title = shop.name + ' · CamerLink';
     const ads = allListings.filter(a => String(a.user_id) === String(uid));
