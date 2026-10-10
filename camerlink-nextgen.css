@@ -102,3 +102,15 @@
 .cl-nearby-panel button[hidden]{display:none}
 .cl-distance{display:inline-flex;margin-left:6px;padding:3px 7px;border-radius:999px;background:rgba(34,211,238,.12);color:var(--cl-cyan,#22d3ee);font-size:.75rem;font-weight:800}
 @media(max-width:520px){.cl-nearby-panel{align-items:stretch}.cl-nearby-panel button{width:100%}}
+
+
+/* CamerLink Smart Discovery — recherche utile sur mobile, sans service externe */
+.cl-smart-discovery{margin:10px auto 22px;max-width:1100px;padding:13px 15px;border:1px solid rgba(34,211,238,.18);border-radius:16px;background:linear-gradient(120deg,rgba(8,145,178,.09),rgba(124,58,237,.08))}
+.cl-smart-discovery-heading{display:flex;flex-wrap:wrap;align-items:center;gap:7px 12px;margin-bottom:10px}
+.cl-smart-discovery-heading span{font-size:.68rem;font-weight:900;letter-spacing:.12em;color:var(--cl-cyan,#22d3ee)}
+.cl-smart-discovery-heading small{font-size:.78rem;color:var(--color-text-muted,#9ca3af)}
+.cl-smart-chips{display:flex;flex-wrap:wrap;gap:8px}
+.cl-smart-chips button{min-height:38px;padding:8px 12px;border:1px solid rgba(148,163,255,.22);border-radius:999px;background:rgba(8,12,27,.62);color:var(--color-text-main,#f8fafc);font:600 .8rem/1.2 system-ui,sans-serif;cursor:pointer}
+.cl-smart-chips button:focus-visible{outline:2px solid var(--cl-cyan,#22d3ee);outline-offset:2px}
+.cl-smart-chips button:active{transform:scale(.98)}
+@media(max-width:600px){.cl-smart-discovery{margin:8px 12px 18px;padding:12px}.cl-smart-chips{gap:7px}.cl-smart-chips button{font-size:.76rem;padding:8px 10px}}
