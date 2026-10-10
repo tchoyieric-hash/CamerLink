@@ -1,0 +1,93 @@
+/* CamerLink NextGen — couche visuelle additive, sans remplacer les styles existants */
+:root {
+  --cl-glass: rgba(8, 12, 27, .72);
+  --cl-line: rgba(148, 163, 255, .18);
+  --cl-cyan: #22d3ee;
+  --cl-violet: #8b5cf6;
+}
+.reels-section { position: relative; }
+.reels-heading { gap: 14px; }
+.reels-heading h2 span {
+  background: linear-gradient(110deg, var(--cl-cyan), #a78bfa 58%, #f0abfc);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.reels-live {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--cl-line); border-radius: 999px;
+  padding: 6px 10px; background: var(--cl-glass); backdrop-filter: blur(14px);
+}
+.reels-live i { box-shadow: 0 0 12px #34d399; }
+#reels-feed .reel-card {
+  isolation: isolate; border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 18px 55px rgba(0,0,0,.28);
+  background: radial-gradient(ellipse at 50% 0%, rgba(34,211,238,.1), transparent 55%), #05060d;
+  transform: translateZ(0);
+}
+#reels-feed .reel-card video { background: #080a14; }
+.cl-reel-topline {
+  position:absolute; z-index:3; top:12px; left:12px; right:58px;
+  display:flex; align-items:center; gap:8px; pointer-events:none;
+}
+.cl-reel-brand {
+  display:inline-flex; align-items:center; gap:6px; padding:7px 11px;
+  color:#f8fafc; font-size:.75rem; font-weight:850; letter-spacing:.03em;
+  border:1px solid rgba(255,255,255,.18); border-radius:999px;
+  background:rgba(5,8,20,.52); backdrop-filter:blur(16px);
+}
+.cl-reel-brand::before {
+  content:""; width:7px; height:7px; border-radius:50%; background:var(--cl-cyan);
+  box-shadow:0 0 13px var(--cl-cyan);
+}
+.cl-reel-actions {
+  position:absolute; z-index:4; right:10px; bottom:120px;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+}
+.cl-reel-action {
+  width:44px; height:44px; display:grid; place-items:center;
+  border:1px solid rgba(255,255,255,.22); border-radius:50%;
+  color:#fff; background:rgba(8,12,27,.62); backdrop-filter:blur(14px);
+  box-shadow:0 8px 22px rgba(0,0,0,.22); cursor:pointer; font-size:1.05rem;
+  transition:transform .18s ease, background .18s ease, border-color .18s ease;
+}
+.cl-reel-action:active { transform:scale(.92); }
+.cl-reel-action:focus-visible { outline:2px solid var(--cl-cyan); outline-offset:3px; }
+.cl-reel-action small { font-size:.64rem; line-height:1; font-weight:800; }
+.cl-reel-progress {
+  position:absolute; z-index:5; left:0; right:0; bottom:0; height:3px;
+  background:rgba(255,255,255,.2); pointer-events:none;
+}
+.cl-reel-progress span {
+  display:block; width:0; height:100%;
+  background:linear-gradient(90deg,var(--cl-cyan),#a78bfa);
+  box-shadow:0 0 12px rgba(34,211,238,.7);
+}
+.cl-reel-status {
+  position:absolute; z-index:6; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:10px; padding:24px;
+  color:#fff; text-align:center; background:rgba(3,6,16,.72); backdrop-filter:blur(8px);
+}
+.cl-reel-status[hidden] { display:none !important; }
+.cl-reel-status strong { font-size:1rem; }
+.cl-reel-status p { margin:0; max-width:260px; color:rgba(255,255,255,.78); font-size:.85rem; }
+.cl-reel-status button {
+  border:1px solid rgba(255,255,255,.28); border-radius:999px; padding:10px 16px;
+  background:linear-gradient(110deg,#0891b2,#7c3aed); color:#fff; font-weight:800; cursor:pointer;
+}
+.cl-reel-status .cl-spinner {
+  width:26px; height:26px; border:2px solid rgba(255,255,255,.25);
+  border-top-color:var(--cl-cyan); border-radius:50%; animation:cl-spin .8s linear infinite;
+}
+@keyframes cl-spin { to { transform:rotate(360deg); } }
+@media (min-width: 900px) {
+  #reels-feed { gap:18px; }
+  #reels-feed .reel-card { max-width:430px; margin-left:auto; margin-right:auto; }
+}
+@media (max-width:700px) {
+  .cl-reel-actions { right:8px; bottom:112px; gap:8px; }
+  .cl-reel-action { width:40px; height:40px; }
+  .cl-reel-brand { font-size:.7rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cl-reel-action { transition:none; }
+  .cl-reel-status .cl-spinner { animation:none; }
+}
