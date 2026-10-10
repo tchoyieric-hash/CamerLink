@@ -880,6 +880,73 @@
   }
 
   /* ===== AFFICHAGE DES ANNONCES ===== */
+  /* CAMERLINK_NEARBY_V1 — localisation facultative, conservée uniquement en mémoire */
+  let nearbyPosition = null;
+  let nearbyNotice = '';
+  const getAdCoordinates = (ad) => {
+    const lat = Number(ad.latitude ?? ad.lat ?? ad.latitud);
+    const lon = Number(ad.longitude ?? ad.lng ?? ad.lon ?? ad.longitud);
+    return Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180
+      ? { lat, lon } : null;
+  };
+  const distanceKm = (a, b) => {
+    const rad = n => n * Math.PI / 180;
+    const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
+    const x = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
+    return 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(Math.max(0, 1 - x)));
+  };
+  const ensureNearbyPanel = () => {
+    const grid = $('listings-grid');
+    if (!grid || $('cl-nearby-panel')) return;
+    const panel = document.createElement('section');
+    panel.id = 'cl-nearby-panel';
+    panel.className = 'cl-nearby-panel';
+    panel.innerHTML = '<div><strong>📍 CamerLink Autour de moi</strong><p id="cl-nearby-status">Trouvez des artisans à proximité. Votre position ne sera pas publiée.</p></div><button id="cl-nearby-enable" type="button">Trouver près de moi</button><button id="cl-nearby-map" type="button" hidden>Explorer la carte</button>';
+    grid.parentNode.insertBefore(panel, grid);
+    $('cl-nearby-enable').addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        nearbyNotice = 'La géolocalisation n’est pas prise en charge par ce navigateur.';
+        updateNearbyStatus();
+        return;
+      }
+      const button = $('cl-nearby-enable');
+      button.disabled = true;
+      button.textContent = 'Localisation…';
+      navigator.geolocation.getCurrentPosition(position => {
+        nearbyPosition = { lat: position.coords.latitude, lon: position.coords.longitude };
+        button.disabled = false;
+        button.textContent = 'Actualiser ma position';
+        const count = allListings.filter(ad => getAdCoordinates(ad)).length;
+        nearbyNotice = count
+          ? 'Position activée. Les annonces avec coordonnées sont classées par distance. Votre position reste dans cet onglet.'
+          : 'Position activée. Les annonces actuelles ne contiennent pas de coordonnées GPS vérifiables ; utilisez la carte pour explorer les artisans près de vous.';
+        updateNearbyStatus();
+        renderListings();
+      }, error => {
+        button.disabled = false;
+        button.textContent = 'Réessayer';
+        nearbyNotice = error.code === 1
+          ? 'Autorisation refusée. Autorisez la localisation dans les paramètres du navigateur pour utiliser cette fonction.'
+          : 'Position indisponible. Vérifiez le GPS et réessayez.';
+        updateNearbyStatus();
+      }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 });
+    });
+    $('cl-nearby-map').addEventListener('click', () => {
+      if (!nearbyPosition) return;
+      const url = 'https://www.google.com/maps/search/' + encodeURIComponent('artisan près de moi') +
+        '/@' + nearbyPosition.lat + ',' + nearbyPosition.lon + ',13z';
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
+    updateNearbyStatus();
+  };
+  function updateNearbyStatus() {
+    const status = $('cl-nearby-status');
+    const mapButton = $('cl-nearby-map');
+    if (status) status.textContent = nearbyNotice || 'Activez la localisation pour rechercher les services proches. Votre position ne sera pas publiée.';
+    if (mapButton) mapButton.hidden = !nearbyPosition;
+  }
+  ensureNearbyPanel();
+
   function renderListings() {
     const grid = $('listings-grid');
     if (!grid) return;
@@ -897,6 +964,15 @@
       (!maxPrice || Number(ad.price) <= maxPrice) &&
       (!term || String(ad.title || '').toLowerCase().includes(term) || qKey(ad.quartier).includes(qKey(term)))
     );
+    if (nearbyPosition) {
+      filtered.sort((a, b) => {
+        const ca = getAdCoordinates(a), cb = getAdCoordinates(b);
+        if (ca && cb) return distanceKm(nearbyPosition, ca) - distanceKm(nearbyPosition, cb);
+        if (ca) return -1;
+        if (cb) return 1;
+        return 0;
+      });
+    }
 
     $('resultsCount').textContent = `${filtered.length} annonce(s)`;
     if (filtered.length === 0) {
@@ -928,7 +1004,7 @@
           <div class="ad-price">${Number(ad.price || 0).toLocaleString('fr-FR')} FCFA</div>
           <p class="ad-desc">${esc(ad.description)}</p>
           <div class="ad-rating">⭐ ${rating} <span>(${reviewCount} avis)</span></div>
-          <div class="card-meta"><span class="ad-city">📍 ${esc([ad.quartier, ad.city].filter(Boolean).join(', '))}</span></div>
+          <div class="card-meta"><span class="ad-city">📍 ${esc([ad.quartier, ad.city].filter(Boolean).join(', '))}</span>${nearbyPosition && getAdCoordinates(ad) ? `<span class="cl-distance">${distanceKm(nearbyPosition, getAdCoordinates(ad)).toFixed(1)} km</span>` : ''}</div>
 
           ${vUrl ? `<button type="button" data-video="${esc(vUrl)}" style="width:100%; margin-bottom:8px; padding:8px; background:var(--a1); color:#05060D; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer;">▶ Voir la vidéo</button>` : ''}
 
