@@ -7,15 +7,15 @@ Cette évolution ajoute l'interface des avis, l'engagement des Reels, les notifi
 1. Ouvrir le projet Supabase de CamerLink.
 2. Aller dans **SQL Editor** puis **New query**.
 3. Copier le contenu complet de [supabase/migrations/20261011_camerlink_community.sql](supabase/migrations/20261011_camerlink_community.sql), puis exécuter la requête une seule fois.
-4. Exécuter aussi le contenu de [supabase/migrations/20261011_camerlink_reel_likes_count.sql](supabase/migrations/20261011_camerlink_reel_likes_count.sql) pour que le compteur des likes appelé par l'application fonctionne.
+4. **Ne pas exécuter** `20261011_camerlink_reel_likes_count.sql` : ce fichier est désormais une note explicative, car la table et la fonction existent déjà dans Supabase.
 5. Actualiser l'aperçu Vercel de la branche et se connecter avec un compte de test.
 
-La migration active Row Level Security (RLS), limite à un avis par client et artisan et garde les avis/commentaires en attente jusqu'à validation. Elle suppose que `annonces.id` est un `bigint` et que `messages` contient `sender_id`, `receiver_id` et `content` ; vérifier ces colonnes dans Supabase avant l'exécution. Les notifications de nouveaux messages sont créées par un trigger SQL. Ne jamais ajouter la clé Supabase `service_role` au navigateur.
+La migration communautaire ne crée ni ne modifie `public.reel_likes` ou `public.reel_likes_count`, qui existent déjà dans Supabase. Les likes utilisent `annonce_id`; les totaux sont lus via la fonction existante `reel_likes_count(bigint[])` en mode `SECURITY DEFINER`. La migration active RLS sur les autres tables communautaires, limite à un avis par client et artisan et garde les avis/commentaires en attente jusqu'à validation. Elle suppose que `annonces.id` est un `bigint` et que `messages` contient `sender_id`, `receiver_id` et `content` ; vérifier ces colonnes dans Supabase avant l'exécution. Les notifications de nouveaux messages sont créées par un trigger SQL. Ne jamais ajouter la clé Supabase `service_role` au navigateur.
 
 ## Fonctions ajoutées
 
 - **Avis clients** : note sur 5 et commentaire sur le profil artisan; les avis ne s'affichent publiquement qu'après validation.
-- **Reels** : likes persistants et commentaires soumis à validation.
+- **Reels** : likes persistants stockés avec `annonce_id`, compteurs calculés via la fonction Supabase existante, et commentaires soumis à validation.
 - **Notifications** : bouton d'alertes, compteur et liste; notification automatique à la réception d'un message.
 - **Espace artisan** : statistiques calculées à partir des annonces, messages, avis approuvés et likes enregistrés.
 - **Offres Pro** : demandes de renseignements et de vérification. Ce n'est pas un système de paiement; aucun paiement n'est prélevé.
