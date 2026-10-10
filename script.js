@@ -59,7 +59,7 @@
   const withTimeout = (p, ms = FETCH_TIMEOUT) => Promise.race([
     p, new Promise((_, rej) => setTimeout(() => rej(new Error('Délai dépassé, vérifiez votre connexion.')), ms))
   ]);
-  const isVideo = (url) => /\.(mp4|webm|mov)(\?|$)/i.test(String(url || ''));
+  const isVideo = (url) => /\.(mp4|webm|mov)(?:[?#].*)?$/i.test(String(url || '').trim());
   const fmtDate = (d) => new Date(d).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
   const sb = window.supabase.createClient(SB_URL, SB_KEY);
