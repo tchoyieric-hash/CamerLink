@@ -457,7 +457,7 @@ header {
 .video-file-input::file-selector-button { min-height:38px; }
 @media (max-width: 700px) {
   
-@media (max-width: 700px) {
+
   .reels-section {
     overflow: hidden;
   }
