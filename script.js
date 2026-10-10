@@ -537,6 +537,7 @@
       data.forEach(s => {
         if (!map.has(s.artisan_id)) map.set(s.artisan_id, []);
         map.get(s.artisan_id).push(s);
+      });
       storyGroups = [...map.entries()]
   .map(([uid, items]) => ({
     uid,
