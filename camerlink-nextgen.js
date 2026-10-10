@@ -163,4 +163,78 @@
       } catch (_) { /* partage annulé par l'utilisateur */ }
     }
   }, true);
+
+  // CamerLink Pulse: installation native-like, état réseau et retour en ligne.
+  // Aucun accès aux données privées; les invites d'installation restent déclenchées par l'utilisateur.
+  let installPrompt = null;
+  const pulseStyle = document.createElement('style');
+  pulseStyle.textContent = `
+    .cl-pulse-bar{position:fixed;z-index:9998;left:12px;right:12px;bottom:12px;display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid rgba(34,211,238,.28);border-radius:16px;background:rgba(5,8,20,.94);color:#f8fafc;box-shadow:0 12px 40px rgba(0,0,0,.35);backdrop-filter:blur(18px);font:500 13px/1.35 system-ui,sans-serif}
+    .cl-pulse-bar[hidden]{display:none!important}.cl-pulse-copy{flex:1}.cl-pulse-bar button{border:0;border-radius:999px;padding:9px 12px;background:linear-gradient(110deg,#0891b2,#7c3aed);color:#fff;font-weight:800;white-space:nowrap}.cl-pulse-dismiss{background:transparent!important;padding:6px!important;font-size:18px}
+    @media(min-width:700px){.cl-pulse-bar{left:auto;right:22px;bottom:22px;max-width:420px}}
+    @media(prefers-reduced-motion:no-preference){.cl-pulse-bar{animation:cl-pulse-in .22s ease-out}@keyframes cl-pulse-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}}
+  `;
+  document.head.appendChild(pulseStyle);
+  const pulse = document.createElement('aside');
+  pulse.className = 'cl-pulse-bar';
+  pulse.hidden = true;
+  pulse.setAttribute('role','status');
+  pulse.innerHTML = '<span aria-hidden="true">✦</span><span class="cl-pulse-copy"></span><button type="button" class="cl-pulse-primary" hidden></button><button type="button" class="cl-pulse-dismiss" aria-label="Fermer">×</button>';
+  document.body.appendChild(pulse);
+  const pulseCopy = pulse.querySelector('.cl-pulse-copy');
+  const pulsePrimary = pulse.querySelector('.cl-pulse-primary');
+  const pulseDismiss = pulse.querySelector('.cl-pulse-dismiss');
+  let pulseKind = '';
+  const showPulse = (kind, message, actionLabel) => {
+    pulseKind = kind;
+    pulseCopy.textContent = message;
+    pulsePrimary.hidden = !actionLabel;
+    pulsePrimary.textContent = actionLabel || '';
+    pulse.hidden = false;
+  };
+  const hidePulse = () => { pulse.hidden = true; pulseKind = ''; };
+  pulseDismiss.addEventListener('click', hidePulse);
+  pulsePrimary.addEventListener('click', async () => {
+    if (pulseKind === 'install' && installPrompt) {
+      try {
+        installPrompt.prompt();
+        await installPrompt.userChoice;
+      } catch (_) { /* L'installation reste facultative. */ }
+      installPrompt = null;
+      hidePulse();
+    } else if (pulseKind === 'retry') {
+      hidePulse();
+      window.location.reload();
+    }
+  });
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    installPrompt = event;
+    if (!window.matchMedia('(display-mode: standalone)').matches) {
+      showPulse('install','Installez CamerLink comme une vraie application pour un accès plus rapide.','Installer');
+    }
+  });
+  window.addEventListener('appinstalled', () => {
+    installPrompt = null;
+    showPulse('installed','CamerLink est installée sur votre appareil.','');
+    window.setTimeout(hidePulse, 4500);
+  });
+  const updateNetworkState = () => {
+    if (!navigator.onLine) {
+      showPulse('offline','Vous êtes hors connexion. Certaines données et vidéos nécessitent Internet.','');
+    } else if (pulseKind === 'offline') {
+      showPulse('retry','Connexion rétablie. Actualisez pour récupérer les dernières annonces.','Actualiser');
+    }
+  };
+  window.addEventListener('offline', updateNetworkState);
+  window.addEventListener('online', updateNetworkState);
+  if (!navigator.onLine) updateNetworkState();
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch((error) => {
+        console.warn('[CamerLink] Service worker non disponible:', error);
+      });
+    }, { once: true });
+  }
+
 })();
