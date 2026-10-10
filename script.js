@@ -1473,7 +1473,7 @@
     try {
     const shop = await fetchShop(uid);
     if (shop && shop.name && $('artisanModal').classList.contains('active')) document.title = shop.name + ' · CamerLink';
-    const ads = allListings.filter(a => a.user_id === uid);
+    const ads = allListings.filter(a => String(a.user_id) === String(uid));
     const wa = waNumber(shop && shop.contact);
     const reel = shop && shop.video_url && /^https:\/\//i.test(shop.video_url) ? shop.video_url : null;
     const mine = currentUser && currentUser.id === uid;
@@ -1570,26 +1570,52 @@
       </button>
     </section>
 
-    <section class="cl-profile-section">
-      <div class="cl-profile-label">ANNONCES (${ads.length})</div>
-      <div class="cl-profile-grid">
+    <section class="cl-profile-section cl-profile-catalogue">
+      <div class="cl-profile-catalogue-head">
+        <div>
+          <div class="cl-profile-label">CATALOGUE PROFESSIONNEL</div>
+          <h4 class="cl-profile-catalogue-title">Les offres de cet artisan <span>${ads.length}</span></h4>
+        </div>
+        <label class="cl-profile-sort-label">Trier
+          <select class="cl-profile-sort" id="cl-profile-sort">
+            <option value="recent">Récentes</option>
+            <option value="price-asc">Prix croissant</option>
+            <option value="price-desc">Prix décroissant</option>
+            <option value="name">Nom A–Z</option>
+          </select>
+        </label>
+      </div>
+      ${ads.length ? `
+        <label class="cl-profile-search-label" for="cl-profile-search">Rechercher dans son catalogue</label>
+        <input id="cl-profile-search" class="cl-profile-search" type="search" placeholder="Ex. réparation, coiffure, livraison…" autocomplete="off">
+        <div class="cl-profile-category-list" id="cl-profile-categories" aria-label="Filtrer par catégorie">
+          <button type="button" class="is-active" data-profile-category="all">Tout</button>
+          ${[...new Set(ads.map(a => String(a.category || '').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr')).map(category => `<button type="button" data-profile-category="${esc(category)}">${esc(category)}</button>`).join('')}
+        </div>
+      ` : ''}
+      <div class="cl-profile-grid" id="cl-profile-grid">
         ${ads.length ? ads.map(a => `
           <button type="button"
             class="cl-profile-listing"
-            data-ad="${esc(a.id)}">
+            data-ad="${esc(a.id)}"
+            data-title="${esc(a.title || '')}"
+            data-category="${esc(a.category || '')}"
+            data-price="${Number(a.price || 0)}"
+            data-created="${esc(a.created_at || '')}">
             ${a.image_url ? `
-              <img src="${esc(a.image_url)}" alt=""
-                loading="lazy">
+              <img src="${esc(a.image_url)}" alt="${esc(a.title || 'Photo de l’offre')}" loading="lazy">
             ` : `<div class="cl-profile-no-image">CAMERLINK</div>`}
             <span class="cl-profile-listing-info">
               <strong>${esc(a.title || 'Annonce')}</strong>
               <small>${Number(a.price || 0).toLocaleString('fr-FR')} FCFA</small>
+              <em>${esc(a.category || 'Service')}</em>
             </span>
           </button>
         `).join('') : `
-          <div class="state-msg">Aucune annonce pour le moment.</div>
+          <div class="state-msg">Ce professionnel prépare encore son catalogue. Revenez bientôt ou contactez-le directement.</div>
         `}
       </div>
+      ${ads.length ? '<p id="cl-profile-empty" class="state-msg" hidden>Aucune offre ne correspond à votre recherche.</p>' : ''}
     </section>
 
   </div>
@@ -1601,7 +1627,46 @@
     }
   }
 
+  // Catalogue interactif : recherche, filtres et tri sans requête supplémentaire ni modification des annonces.
+  let profileCategory = 'all';
+  const filterProfileCatalog = () => {
+    const grid = $('cl-profile-grid');
+    if (!grid) return;
+    const query = String($('cl-profile-search')?.value || '').trim().toLocaleLowerCase('fr');
+    const sort = $('cl-profile-sort')?.value || 'recent';
+    const cards = [...grid.querySelectorAll('[data-ad]')];
+    const visible = cards.filter(card => {
+      const matchesQuery = !query || (card.dataset.title + ' ' + card.dataset.category).toLocaleLowerCase('fr').includes(query);
+      const matchesCategory = profileCategory === 'all' || card.dataset.category === profileCategory;
+      card.hidden = !(matchesQuery && matchesCategory);
+      return !card.hidden;
+    });
+    visible.sort((a, b) => {
+      if (sort === 'price-asc') return Number(a.dataset.price) - Number(b.dataset.price);
+      if (sort === 'price-desc') return Number(b.dataset.price) - Number(a.dataset.price);
+      if (sort === 'name') return a.dataset.title.localeCompare(b.dataset.title, 'fr');
+      return String(b.dataset.created || '').localeCompare(String(a.dataset.created || ''));
+    }).forEach(card => grid.appendChild(card));
+    const empty = $('cl-profile-empty');
+    if (empty) empty.hidden = visible.length > 0;
+  };
+  $('artisanBody').addEventListener('input', (e) => {
+    if (e.target.id === 'cl-profile-search') filterProfileCatalog();
+  });
+  $('artisanBody').addEventListener('change', (e) => {
+    if (e.target.id === 'cl-profile-sort') filterProfileCatalog();
+  });
   $('artisanBody').addEventListener('click', (e) => {
+    const category = e.target.closest('[data-profile-category]');
+    if (category) {
+      profileCategory = category.dataset.profileCategory || 'all';
+      $('cl-profile-categories')?.querySelectorAll('[data-profile-category]').forEach(button => {
+        button.classList.toggle('is-active', button === category);
+        button.setAttribute('aria-pressed', button === category ? 'true' : 'false');
+      });
+      filterProfileCatalog();
+      return;
+    }
     const st = e.target.closest('[data-act="stories"]');
     if (st) { closeModal('artisanModal'); openViewer(Number(st.dataset.gi)); return; }
     const ad = e.target.closest('[data-ad]');
