@@ -381,3 +381,66 @@ footer p { font-size:0.8rem; color:var(--color-text-muted); margin-top:8px; }
 .video-selected-name { margin-top:7px; font-size:.82rem; color:var(--color-text-muted); overflow-wrap:anywhere; }
 .video-upload-preview { width:100%; max-height:220px; margin-top:10px; border-radius:10px; background:#000; object-fit:contain; }
 .video-upload-preview[hidden] { display:none; }
+
+
+/* ===== Finition futuriste CamerLink : amélioration visuelle sans remplacer les composants ===== */
+header {
+  background: color-mix(in srgb, var(--color-bg) 78%, transparent);
+  box-shadow: 0 8px 36px rgba(0,0,0,.14);
+}
+.logo-brand { letter-spacing: -.055em; }
+.btn-icon, .form-el, .cat-chip, .fav-toggle-btn {
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease, background-color .2s ease;
+}
+.btn-icon:hover, .fav-toggle-btn:hover, .cat-chip:hover {
+  border-color: color-mix(in srgb, var(--a1) 65%, var(--color-border));
+  box-shadow: 0 0 18px color-mix(in srgb, var(--a1) 15%, transparent);
+}
+.btn-pub, .reels-upload-btn {
+  background: linear-gradient(115deg, var(--a1), #6488ff 48%, var(--a2));
+  background-size: 180% 180%;
+  box-shadow: 0 7px 24px rgba(92, 106, 255, .22), inset 0 1px 0 rgba(255,255,255,.24);
+  transition: transform .2s ease, box-shadow .2s ease, background-position .3s ease;
+}
+.btn-pub:hover, .reels-upload-btn:hover {
+  transform: translateY(-1px);
+  background-position: 100% 0;
+  box-shadow: 0 10px 28px rgba(92, 106, 255, .34);
+}
+.hero h1 { letter-spacing: -.045em; }
+.search-filter-bar .form-el:focus {
+  border-color: var(--a1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--a1) 12%, transparent);
+}
+.reels-section {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--a1) 18%, var(--color-border));
+  background: linear-gradient(145deg, color-mix(in srgb, var(--color-surface) 94%, var(--a2)), var(--color-surface));
+  box-shadow: 0 20px 60px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.035);
+}
+.reels-section::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--a1), var(--a2), transparent); opacity: .8;
+}
+.reels-heading-actions { display:flex; flex-direction:column; align-items:flex-end; gap:12px; }
+.reels-upload-btn {
+  min-height:44px; padding:11px 17px; border:1px solid rgba(255,255,255,.18); border-radius:999px;
+  color:#fff; font-weight:800; font-size:.85rem; white-space:nowrap; cursor:pointer;
+}
+.reels-live { display:inline-flex; align-items:center; gap:8px; }
+.reels-live i { box-shadow: 0 0 12px rgba(34,197,94,.7); }
+.reel-card, .ad-card {
+  box-shadow: 0 10px 30px rgba(0,0,0,.13);
+}
+.reel-card { border:1px solid rgba(255,255,255,.1); }
+.reel-card:hover { border-color: color-mix(in srgb, var(--a1) 45%, transparent); }
+.video-upload-group { box-shadow: inset 0 0 25px color-mix(in srgb, var(--a1) 4%, transparent); }
+@media (max-width: 640px) {
+  .reels-heading-actions { width:100%; flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  .reels-upload-btn { min-height:42px; padding:10px 13px; }
+  .hero h1 { font-size:clamp(1.65rem, 7vw, 2.1rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; }
+}

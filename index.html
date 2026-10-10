@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=futuriste-20261010">
 </head>
 <body>
 <!--SEO_BODY-->
@@ -70,7 +70,10 @@
       <h2 id="reels-title">CamerLink <span>Reels</span></h2>
       <p>Faites défiler verticalement les vidéos des vendeurs et contactez-les directement.</p>
     </div>
-    <span class="reels-live"><i></i> Vidéos des vendeurs</span>
+    <div class="reels-heading-actions">
+      <span class="reels-live"><i></i> Vidéos des vendeurs</span>
+      <button type="button" class="reels-upload-btn" id="addVideoBtn" aria-label="Ajouter une vidéo aux CamerLink Reels">＋ Ajouter une vidéo</button>
+    </div>
   </div>
   <div id="reels-feed" class="reels-feed" aria-live="polite">
     <div class="reels-placeholder"><span class="reels-placeholder-icon">▶</span><span>Chargement des vidéos…</span></div>
@@ -178,6 +181,6 @@
 </div>
 
 <div id="toast"></div>
-<script src="/script.js?v=reels-fix-20261009"></script>
+<script src="/script.js?v=futuriste-20261010"></script>
 </body>
 </html>
