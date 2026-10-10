@@ -1,0 +1,3 @@
+Test temporaire d'accès en écriture via l'intégration GitHub.
+Branche cible : feature/reel-likes
+Aucun changement demandé sur main.
