@@ -1141,3 +1141,38 @@ transition: none;
 .cl-profile-listing-info em{font-size:.72rem;font-style:normal;color:var(--cl-muted,#a6b2cb)}
 .cl-profile-listing:focus-visible,.cl-profile-category-list button:focus-visible{outline:2px solid var(--cl-cyan,#43e8ff);outline-offset:3px}
 @media(max-width:420px){.cl-profile-catalogue-head{align-items:stretch;flex-direction:column}.cl-profile-sort{max-width:none;flex:1}.cl-profile-sort-label{justify-content:space-between}}
+
+
+/* CamerLink Pro — artisan dashboard */
+.cl-space-sheet{max-width:760px!important}
+.cl-space-eyebrow{display:block;font-size:.68rem;font-weight:900;letter-spacing:.15em;color:var(--cl-cyan,#43e8ff)}
+.cl-space-welcome{display:flex;align-items:center;gap:13px;flex-wrap:wrap;padding:16px;margin-bottom:14px;border:1px solid rgba(67,232,255,.22);border-radius:18px;background:linear-gradient(125deg,rgba(8,145,178,.15),rgba(124,58,237,.12))}
+.cl-space-avatar img,.cl-space-avatar>div{width:58px!important;height:58px!important}
+.cl-space-welcome-copy{flex:1;min-width:150px}
+.cl-space-welcome-copy h4,.cl-space-section-head h4{margin:4px 0;font-size:1.05rem}
+.cl-space-welcome-copy p{margin:3px 0;color:var(--cl-muted,#a6b2cb);font-size:.82rem}
+.cl-space-share,.cl-space-publish{border:1px solid rgba(67,232,255,.35);border-radius:999px;padding:9px 13px;background:rgba(67,232,255,.1);color:var(--cl-cyan,#43e8ff);font-weight:800;cursor:pointer}
+.cl-space-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:20px}
+.cl-space-stats article{padding:13px;border:1px solid var(--color-border,rgba(127,127,127,.2));border-radius:14px;background:var(--color-card,rgba(127,127,127,.05));min-width:0}
+.cl-space-stats article span,.cl-space-stats article small{display:block;font-size:.72rem;color:var(--cl-muted,#a6b2cb)}
+.cl-space-stats article strong{display:block;font-size:1.35rem;margin:5px 0;overflow-wrap:anywhere}
+.cl-space-section{padding:17px 0;border-top:1px solid var(--color-border,rgba(127,127,127,.18))}
+.cl-space-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.cl-space-lock{font-size:.72rem;color:var(--cl-muted,#a6b2cb)}
+.cl-space-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.cl-space-form label{display:flex;flex-direction:column;gap:6px;font-size:.8rem;font-weight:750;color:var(--cl-muted,#a6b2cb);min-width:0}
+.cl-space-form input,.cl-space-form textarea{width:100%;min-width:0;border:1px solid rgba(111,153,220,.25);border-radius:11px;padding:11px;background:rgba(5,9,20,.65);color:var(--cl-text,#f4f7ff);font:inherit}
+.cl-space-form input:focus,.cl-space-form textarea:focus{outline:2px solid rgba(67,232,255,.35);border-color:var(--cl-cyan,#43e8ff)}
+.cl-space-wide{grid-column:1/-1}
+.cl-space-hint,.cl-space-footer{font-size:.75rem;line-height:1.5;color:var(--cl-muted,#a6b2cb)}
+.cl-space-offers{display:grid;gap:9px}
+.cl-space-offer{display:flex;align-items:center;gap:11px;padding:10px;border:1px solid var(--color-border,rgba(127,127,127,.2));border-radius:14px}
+.cl-space-offer-thumb{width:58px;height:58px;flex:0 0 58px;display:grid;place-items:center;overflow:hidden;border-radius:10px;background:rgba(67,232,255,.08)}
+.cl-space-offer-thumb img{width:100%;height:100%;object-fit:cover}
+.cl-space-offer-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.cl-space-offer-info strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-space-offer-info span{font-weight:850;color:var(--cl-cyan,#43e8ff);font-size:.86rem}
+.cl-space-offer-info small{font-size:.72rem;color:var(--cl-muted,#a6b2cb)}
+.cl-space-open-offer{border:1px solid var(--color-border,rgba(127,127,127,.25));border-radius:9px;padding:8px 10px;background:transparent;color:inherit}
+.cl-space-empty{padding:18px;border:1px dashed var(--color-border,rgba(127,127,127,.25));border-radius:13px;color:var(--cl-muted,#a6b2cb);text-align:center;font-size:.85rem}
+@media(max-width:480px){.cl-space-stats{gap:6px}.cl-space-stats article{padding:10px}.cl-space-stats article strong{font-size:1.1rem}.cl-space-form{grid-template-columns:1fr}.cl-space-wide{grid-column:auto}.cl-space-welcome{align-items:flex-start}.cl-space-share{width:100%}}
