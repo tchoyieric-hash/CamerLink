@@ -454,8 +454,46 @@
     renderReels(failed);
   }
 
+
+  /* ===== VITRINE DES ARTISANS VÉRIFIÉS ===== */
+  async function loadVerifiedArtisans() {
+    const grid = $('verified-artisans-grid');
+    const section = $('verified-artisans');
+    if (!grid || !section) return;
+    try {
+      const result = await withTimeout(
+        sb.from('etablissements').select('user_id, name, type, city, description, logo_url, verified').eq('verified', true).limit(8), 10000
+      );
+      if (result.error) throw result.error;
+      const profiles = (result.data || []).filter(p => p && p.user_id && p.verified);
+      if (!profiles.length) { section.hidden = true; return; }
+      section.hidden = false;
+      grid.innerHTML = profiles.map((p) => {
+        const name = p.name || 'Artisan CamerLink';
+        const avatar = p.logo_url
+          ? '<img src="' + esc(p.logo_url) + '" alt="" loading="lazy">'
+          : '<span class="cl-verified-initial">' + esc(name.trim().charAt(0).toUpperCase() || 'C') + '</span>';
+        return '<button type="button" class="cl-verified-card" data-verified-uid="' + esc(p.user_id) + '" aria-label="Voir le profil vérifié de ' + esc(name) + '">' +
+          '<span class="cl-verified-avatar">' + avatar + '<span class="cl-verified-check" aria-label="Profil vérifié" title="Profil vérifié">✓</span></span>' +
+          '<span class="cl-verified-name">' + esc(name) + ' <span class="cl-verified-inline-check" title="Profil vérifié">✓</span></span>' +
+          '<span class="cl-verified-meta">' + esc([p.type, p.city].filter(Boolean).join(' · ') || 'Professionnel CamerLink') + '</span>' +
+          '<span class="cl-verified-description">' + esc(p.description || 'Découvrez ses services et ses réalisations.') + '</span>' +
+          '<span class="cl-verified-cta">Voir le profil <span aria-hidden="true">↗</span></span>' +
+        '</button>';
+      }).join('');
+    } catch (error) {
+      console.warn('Profils vérifiés indisponibles pour le moment.', error && error.message);
+      section.hidden = true;
+    }
+  }
+  $('verified-artisans-grid')?.addEventListener('click', (event) => {
+    const card = event.target.closest('[data-verified-uid]');
+    if (card) openArtisan(card.dataset.verifiedUid);
+  });
+
   async function loadData() {
     await loadListings();
+    loadVerifiedArtisans();
     openRoute();
     loadLikeCounts();
     loadStoriesSafely(); // en arrière-plan, ne bloque jamais la page
@@ -1635,7 +1673,7 @@
           ${avatarHTML(shop, 76)}
         </div>
         <div class="cl-profile-name">
-          <h3>${esc((shop && shop.name) || 'Artisan')}${shop && shop.verified ? ' ✓' : ''}</h3>
+          <h3>${esc((shop && shop.name) || 'Artisan')}${shop && shop.verified ? ' <span class="cl-profile-verified-badge" title="Profil vérifié par CamerLink">✓ Vérifié</span>' : ''}</h3>
           <p>${esc(shop ? [shop.type, shop.city].filter(Boolean).join(' • ') : '')}</p>
         </div>
       </div>
