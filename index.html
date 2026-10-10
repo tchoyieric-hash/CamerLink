@@ -37,6 +37,7 @@
   <div class="header-actions">
     <button class="btn-icon" id="msgInboxBtn">💬 <span id="msgBadge"></span></button>
     <button class="btn-icon" id="claimBtn" title="Récupérer mes annonces" aria-label="Récupérer mes annonces" style="display:none">🔑</button>
+    <button class="btn-icon" id="artisanSpaceBtn" title="Mon espace artisan" aria-label="Mon espace artisan" style="display:none">🏪</button>
     <button class="btn-icon" id="themeBtn">🌓</button>
     <button class="btn-login" id="authBtn">Connexion</button>
     <button class="btn-pub" id="pubBtn">+ Publier</button>
@@ -144,6 +145,14 @@
       <button type="submit" class="btn-submit-modal">Publier</button>
       <p class="form-error" id="pubError"></p>
     </form>
+  </div>
+</div>
+
+<!-- Espace professionnel artisan -->
+<div id="artisanSpaceModal" class="modal-overlay">
+  <div class="modal-sheet cl-space-sheet">
+    <div class="modal-header"><div><span class="cl-space-eyebrow">CAMERLINK PRO</span><h3>Mon espace artisan</h3></div><button class="modal-close" data-close="artisanSpaceModal" aria-label="Fermer">×</button></div>
+    <div id="artisanSpaceBody"><div class="state-msg">Chargement de votre espace…</div></div>
   </div>
 </div>
 
