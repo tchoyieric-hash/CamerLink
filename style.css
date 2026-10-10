@@ -682,3 +682,15 @@ object-fit: cover !important;
     object-fit: cover !important;
   }
 }
+/* Mobile : une annonce par ligne */
+@media screen and (max-width: 700px) {
+  #listings-grid.listings-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  #listings-grid .ad-card {
+    width: 100%;
+    min-width: 0;
+  }
+}
