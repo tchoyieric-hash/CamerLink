@@ -7,9 +7,10 @@ Cette évolution ajoute l'interface des avis, l'engagement des Reels, les notifi
 1. Ouvrir le projet Supabase de CamerLink.
 2. Aller dans **SQL Editor** puis **New query**.
 3. Copier le contenu complet de [supabase/migrations/20261011_camerlink_community.sql](supabase/migrations/20261011_camerlink_community.sql), puis exécuter la requête une seule fois.
-4. Actualiser l'aperçu Vercel de la branche et se connecter avec un compte de test.
+4. Exécuter aussi le contenu de [supabase/migrations/20261011_camerlink_reel_likes_count.sql](supabase/migrations/20261011_camerlink_reel_likes_count.sql) pour que le compteur des likes appelé par l'application fonctionne.
+5. Actualiser l'aperçu Vercel de la branche et se connecter avec un compte de test.
 
-La migration active Row Level Security (RLS), limite les avis/commentaires à un envoi par utilisateur (avis) et garde les avis/commentaires en attente jusqu'à validation. Les notifications de nouveaux messages sont créées par un trigger SQL. Ne jamais ajouter la clé Supabase `service_role` au navigateur.
+La migration active Row Level Security (RLS), limite à un avis par client et artisan et garde les avis/commentaires en attente jusqu'à validation. Elle suppose que `annonces.id` est un `bigint` et que `messages` contient `sender_id`, `receiver_id` et `content` ; vérifier ces colonnes dans Supabase avant l'exécution. Les notifications de nouveaux messages sont créées par un trigger SQL. Ne jamais ajouter la clé Supabase `service_role` au navigateur.
 
 ## Fonctions ajoutées
 
