@@ -694,3 +694,27 @@ object-fit: cover !important;
     min-width: 0;
   }
 }
+/* CamerLink — lisibilité des annonces sur Android */
+@media screen and (max-width: 700px) {
+#listings-grid .card-img-container {
+height: 230px;
+}
+
+#listings-grid .card-body {
+padding: 16px;
+}
+
+#listings-grid .ad-title {
+font-size: 1.1rem;
+line-height: 1.4;
+}
+
+#listings-grid .ad-price {
+font-size: 1.3rem;
+}
+
+#listings-grid .ad-desc {
+font-size: 0.9rem;
+line-height: 1.5;
+}
+}
