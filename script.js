@@ -1539,7 +1539,7 @@
 
       <div style="display:flex;flex-wrap:wrap;gap:8px;">
         <button type="button" data-act="fav" style="${softStyle}">${isFav ? '❤️ Aimé' : '🤍 J’aime'} (${likes})</button>
-        ${ad.user_id ? `<button type="button" data-act="msg" style="${softStyle}">💬 Message</button>` : ''}
+        ${ad.user_id ? `<button type="button" data-act="msg" style="${softStyle}">💬 Message</button><button type="button" data-act="quote" style="${softStyle}background:linear-gradient(100deg,#67e8f9,#a5b4fc);color:#07111b;border-color:transparent;">🧾 Demander un devis</button>` : ''}
         ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="${btnStyle}background:#22C55E;color:#fff;">WhatsApp</a>
         <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
         <button type="button" data-act="share" style="${softStyle}">📤 Partager</button>
@@ -1573,6 +1573,14 @@
     }
     else if (act.dataset.act === 'copy') copyLink('/annonce/' + ad.id);
     else if (act.dataset.act === 'msg') { closeModal('adDetailModal'); window.openChat(ad.user_id, ad.id); }
+    else if (act.dataset.act === 'quote') {
+      closeModal('adDetailModal');
+      window.openChat(ad.user_id, ad.id);
+      const input = $('chatInput');
+      if (input) input.value = `Bonjour, je souhaite demander un devis pour : ${ad.title}.\\n\\nTravail souhaité : \\nVille/quartier : ${[ad.quartier, ad.city].filter(Boolean).join(', ') || 'à préciser'}\\nBudget prévu : à préciser\\nDélai souhaité : à préciser\\n\\nPouvez-vous me donner une estimation et vos disponibilités ?`;
+      if (input) input.focus();
+      toast('Demande de devis préparée : vérifiez le message puis envoyez-le.');
+    }
     else if (act.dataset.act === 'artisan') { closeModal('adDetailModal'); openArtisan(ad.user_id); }
   });
 
