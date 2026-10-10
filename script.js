@@ -226,6 +226,34 @@
   $('cityFilter').addEventListener('change', () => { refreshQuartierFilter(); renderListings(); });
   $('priceFilter').addEventListener('change', () => renderListings());
 
+  // CamerLink Smart Discovery: raccourcis de recherche légers, sans dépendance IA payante.
+  function ensureSmartDiscovery() {
+    if (document.getElementById('cl-smart-discovery')) return;
+    const bar = document.querySelector('.search-filter-bar');
+    if (!bar) return;
+    const panel = document.createElement('section');
+    panel.id = 'cl-smart-discovery';
+    panel.className = 'cl-smart-discovery';
+    panel.setAttribute('aria-label', 'Suggestions de recherche');
+    panel.innerHTML = '<div class="cl-smart-discovery-heading"><span>✦ RECHERCHE INTELLIGENTE</span><small>Essayez une recherche ou choisissez un raccourci</small></div><div class="cl-smart-chips"><button type="button" data-smart-search="Services">🛠 Services</button><button type="button" data-smart-city="Douala">📍 Douala</button><button type="button" data-smart-city="Yaoundé">📍 Yaoundé</button><button type="button" data-smart-price="10000">💰 Moins de 10 000 FCFA</button><button type="button" data-smart-search="coiffure">💇 Coiffure</button><button type="button" data-smart-search="électricité">⚡ Électricité</button></div>';
+    bar.insertAdjacentElement('afterend', panel);
+    panel.addEventListener('click', event => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      if (button.dataset.smartCity) {
+        $('cityFilter').value = button.dataset.smartCity;
+        refreshQuartierFilter();
+      } else if (button.dataset.smartPrice) {
+        $('priceFilter').value = button.dataset.smartPrice;
+      } else if (button.dataset.smartSearch) {
+        $('searchInput').value = button.dataset.smartSearch;
+      }
+      renderListings();
+      document.getElementById('listings-grid')?.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  }
+  ensureSmartDiscovery();
+
   /* ===== FAVORIS ===== */
   window.getFavorites = function () {
     try { return JSON.parse(localStorage.getItem('camerlink_favorites')) || []; } catch (e) { return []; }
@@ -951,19 +979,28 @@
     const grid = $('listings-grid');
     if (!grid) return;
 
-    const term = $('searchInput').value.trim().toLowerCase();
+    const term = $('searchInput').value.trim();
     const city = $('cityFilter').value;
     const maxPrice = Number($('priceFilter').value) || 0;
     const favorites = window.getFavorites();
-
-    const filtered = allListings.filter(ad =>
-      (!favOnly || favorites.includes(String(ad.id))) &&
-      (!currentCategory || ad.category === currentCategory) &&
-      (!city || ad.city === city) &&
-      (!currentQuartier || qKey(ad.quartier) === currentQuartier) &&
-      (!maxPrice || Number(ad.price) <= maxPrice) &&
-      (!term || String(ad.title || '').toLowerCase().includes(term) || qKey(ad.quartier).includes(qKey(term)))
-    );
+    // Recherche tolérante : accents, casse et mots-clés métier/localisation.
+    const normalizeSearch = value => String(value ?? '').normalize('NFD')
+      .replace(/[\\u0300-\\u036f]/g, '').toLowerCase().trim();
+    const ignoredWords = new Set(['a','au','aux','de','des','du','la','le','les','un','une','pour','dans','avec','et','en','sur','moi','je','cherche','trouve','besoin','aide','svp','s il','il']);
+    const queryWords = normalizeSearch(term).split(/[^a-z0-9]+/).filter(word => word.length > 1 && !ignoredWords.has(word));
+    const filtered = allListings.filter(ad => {
+      const haystack = normalizeSearch([
+        ad.title, ad.description, ad.category, ad.city, ad.quartier,
+        ad.type, ad.metier, ad.name, ad.contact
+      ].filter(Boolean).join(' '));
+      const matchesWords = !queryWords.length || queryWords.every(word => haystack.includes(word));
+      return (!favOnly || favorites.includes(String(ad.id))) &&
+        (!currentCategory || ad.category === currentCategory) &&
+        (!city || ad.city === city) &&
+        (!currentQuartier || qKey(ad.quartier) === currentQuartier) &&
+        (!maxPrice || Number(ad.price) <= maxPrice) &&
+        matchesWords;
+    });
     if (nearbyPosition) {
       filtered.sort((a, b) => {
         const ca = getAdCoordinates(a), cb = getAdCoordinates(b);
