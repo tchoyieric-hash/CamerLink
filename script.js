@@ -4,11 +4,17 @@
   const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2aWRkaXBkdWhhZWx4Y3Z5eWtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1ODExMzcsImV4cCI6MjEwNjE1NzEzN30.L5iaUIW0IQ0hX5uOiOuK-lo_zkf926Xs6CDjCjrpffk';
   const STORY_BUCKET = 'artisan-stories';
   const AD_BUCKET = 'annonces-images';
+  const VIDEO_BUCKET = 'annonces-videos';
   const MAX_STORY_MB = 50;
   const MAX_AD_IMG_MB = 2;
+  const MAX_AD_VIDEO_MB = 50;
+  const REELS_MAX = 12;
   const FETCH_TIMEOUT = 8000;
   const STORY_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm', 'video/quicktime'];
   const AD_IMG_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  const AD_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
+  const VIDEO_EXT_TYPE = { mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime' };
+  const VIDEO_TYPE_EXT = { 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov' };
 
   const CATEGORIES = [
     { value: 'Services', chip: '🛠 Services' },
@@ -33,6 +39,7 @@
   let allListings = [], videos = {}, currentUser = null, currentCategory = '', favOnly = false;
   let storyGroups = [];
   let likeCounts = {};
+  let reelObserver = null;
   const viewedNow = new Set();
   const likeBusy = new Set();
   const shopCache = {};
@@ -248,16 +255,19 @@
 
   /* ===== CHARGEMENT DES ANNONCES ===== */
   async function loadListings() {
+    let failed = false;
     try {
       const res = await withTimeout(sb.from('annonces').select('*').order('created_at', { ascending: false }));
-      if (!res.error) allListings = res.data || [];
-    } catch (err) { /* on garde la liste actuelle */ }
+      if (res.error) failed = true;
+      else allListings = res.data || [];
+    } catch (err) { failed = true; /* on garde la liste actuelle */ }
 
     videos = {};
     allListings.forEach(a => {
       if (a.video_url && /^https:\/\//i.test(a.video_url)) videos[a.id] = a.video_url;
     });
     renderListings();
+    renderReels(failed);
   }
 
   async function loadData() {
@@ -265,6 +275,86 @@
     openRoute();
     loadLikeCounts();
     loadStoriesSafely(); // en arrière-plan, ne bloque jamais la page
+  }
+
+  /* ===== REELS : fil vertical des annonces qui ont une vidéo ===== */
+  function reelsMessage(text) {
+    return '<div class="reels-placeholder"><span class="reels-placeholder-icon">▶</span><span>' + esc(text) + '</span></div>';
+  }
+
+  function renderReels(failed) {
+    const feed = $('reels-feed');
+    if (!feed) return;
+    if (reelObserver) { reelObserver.disconnect(); reelObserver = null; }
+
+    const list = allListings.filter(a => videos[a.id]).slice(0, REELS_MAX);
+    if (list.length === 0) {
+      feed.innerHTML = reelsMessage(failed
+        ? 'Vidéos indisponibles pour le moment. Réessayez plus tard.'
+        : 'Aucune vidéo pour le moment. Publiez une annonce avec vidéo !');
+      return;
+    }
+
+    // défilement vertical, une vidéo à la fois
+    feed.style.maxHeight = '78vh';
+    feed.style.overflowY = 'auto';
+    feed.style.scrollSnapType = 'y mandatory';
+
+    feed.innerHTML = list.map(ad => {
+      const wa = waNumber(ad.contact);
+      const price = Number(ad.price || 0).toLocaleString('fr-FR');
+      const poster = ad.image_url ? ` poster="${esc(ad.image_url)}"` : '';
+      return `
+      <article class="reel-card" data-reel="${esc(ad.id)}" style="position:relative;scroll-snap-align:start;background:#000;border-radius:16px;overflow:hidden;margin-bottom:12px;height:72vh;max-height:640px;">
+        <video src="${esc(videos[ad.id])}"${poster} muted loop playsinline preload="none" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+        <button type="button" data-reel-sound aria-label="Activer ou couper le son" style="position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;font-size:1.1rem;cursor:pointer;">🔇</button>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,0.85));color:#fff;">
+          <strong style="display:block;font-size:1.05rem;">${esc(ad.title)}</strong>
+          <div style="margin:2px 0 10px;font-size:0.9rem;"><span style="color:#34d399;font-weight:800;">${price} FCFA</span>${ad.city ? ' · 📍 ' + esc(ad.city) : ''}</div>
+          <div style="display:flex;gap:8px;">
+            <button type="button" data-reel-open style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">Voir l’annonce</button>
+            ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="flex:1;padding:10px;border-radius:8px;background:#22C55E;color:#fff;font-weight:700;font-size:0.85rem;text-align:center;">WhatsApp</a>` : ''}
+          </div>
+        </div>
+      </article>`;
+    }).join('');
+
+    // lecture automatique (sans son) de la vidéo visible, pause des autres
+    if ('IntersectionObserver' in window) {
+      reelObserver = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          const v = en.target.querySelector('video');
+          if (!v) return;
+          if (en.isIntersecting && en.intersectionRatio >= 0.6) {
+            const p = v.play();
+            if (p && p.catch) p.catch(() => {});
+          } else {
+            v.pause();
+          }
+        });
+      }, { threshold: [0, 0.6, 1] });
+      feed.querySelectorAll('.reel-card').forEach(c => reelObserver.observe(c));
+    }
+  }
+
+  const reelsFeed = $('reels-feed');
+  if (reelsFeed) {
+    reelsFeed.addEventListener('click', (e) => {
+      const card = e.target.closest('.reel-card');
+      if (!card) return;
+      const v = card.querySelector('video');
+      const snd = e.target.closest('[data-reel-sound]');
+      if (snd) {
+        if (v) { v.muted = !v.muted; snd.textContent = v.muted ? '🔇' : '🔊'; }
+        return;
+      }
+      if (e.target.closest('[data-reel-open]')) { openAdDetail(card.dataset.reel); return; }
+      if (e.target.closest('a')) return;
+      if (v) {
+        if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+        else v.pause();
+      }
+    });
   }
 
   /* ===== STATUTS DES ARTISANS ===== */
@@ -459,12 +549,14 @@
       if (errBox) errBox.textContent = '';
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Publication...'; }
 
+      let uploadedPath = null, saved = false;
       try {
         const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
         const filePath = `${currentUser.id}/${Date.now()}.${ext}`;
 
         const { error: upErr } = await sb.storage.from(STORY_BUCKET).upload(filePath, file, { contentType: file.type });
         if (upErr) throw upErr;
+        uploadedPath = filePath;
 
         const { data: { publicUrl } } = sb.storage.from(STORY_BUCKET).getPublicUrl(filePath);
         const caption = captionInput ? captionInput.value.trim() : '';
@@ -476,6 +568,7 @@
           caption: caption || null
         });
         if (dbErr) throw dbErr;
+        saved = true;
 
         closeModal('publishStoryModal');
         fileInput.value = '';
@@ -486,12 +579,43 @@
         console.error(ex);
         if (errBox) errBox.textContent = 'Erreur lors de la publication : ' + (ex && ex.message ? ex.message : 'réessayez.');
       } finally {
+        // fichier envoyé mais statut non enregistré : on le supprime pour ne pas laisser d'orphelin
+        if (uploadedPath && !saved) { try { await sb.storage.from(STORY_BUCKET).remove([uploadedPath]); } catch (e) { /* ignoré */ } }
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Publier le statut'; }
       }
     });
   }
 
-  /* ===== PUBLICATION D'UNE ANNONCE ===== */
+  /* ===== PUBLICATION D'UNE ANNONCE (photo + vidéo facultative) ===== */
+  let videoPreviewUrl = null;
+  function resetVideoPreview() {
+    if (videoPreviewUrl) { URL.revokeObjectURL(videoPreviewUrl); videoPreviewUrl = null; }
+    const pv = $('adVideoPreview'), nm = $('adVideoSelected');
+    if (pv) { pv.pause(); pv.removeAttribute('src'); pv.hidden = true; }
+    if (nm) nm.textContent = 'Aucune vidéo sélectionnée (optionnel).';
+  }
+
+  const adVideoInput = $('adVideoFile');
+  if (adVideoInput) {
+    adVideoInput.addEventListener('change', () => {
+      resetVideoPreview();
+      const f = adVideoInput.files[0];
+      if (!f) return;
+      const nm = $('adVideoSelected'), pv = $('adVideoPreview');
+      const mb = (f.size / (1024 * 1024)).toFixed(1);
+      if (f.size > MAX_AD_VIDEO_MB * 1024 * 1024) {
+        if (nm) nm.textContent = `Vidéo trop lourde (${mb} Mo, max ${MAX_AD_VIDEO_MB} Mo).`;
+        return;
+      }
+      if (nm) nm.textContent = `${f.name} (${mb} Mo)`;
+      if (pv) {
+        videoPreviewUrl = URL.createObjectURL(f);
+        pv.src = videoPreviewUrl;
+        pv.hidden = false;
+      }
+    });
+  }
+
   const adForm = $('adForm');
   if (adForm) {
     adForm.addEventListener('submit', async (e) => {
@@ -508,6 +632,7 @@
       const price = Math.round(Number($('adPrice').value));
       const contact = $('adContact').value.trim();
       const file = $('adImage').files[0];
+      const vFile = adVideoInput ? adVideoInput.files[0] : null;
 
       if (title.length < 3 || title.length > 120) return setErr('Le titre doit faire entre 3 et 120 caractères.');
       if (description.length > 2000) return setErr('La description est trop longue (2000 caractères max).');
@@ -516,15 +641,36 @@
       if (!AD_IMG_TYPES.includes(file.type)) return setErr('Photo : jpg, png ou webp uniquement.');
       if (file.size > MAX_AD_IMG_MB * 1024 * 1024) return setErr(`Photo trop lourde (max ${MAX_AD_IMG_MB} Mo).`);
 
+      let vType = '';
+      if (vFile) {
+        const rawExt = (vFile.name.split('.').pop() || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        vType = vFile.type || VIDEO_EXT_TYPE[rawExt] || '';
+        if (!AD_VIDEO_TYPES.includes(vType)) return setErr('Vidéo : mp4, webm ou mov uniquement.');
+        if (vFile.size > MAX_AD_VIDEO_MB * 1024 * 1024) return setErr(`Vidéo trop lourde (max ${MAX_AD_VIDEO_MB} Mo).`);
+      }
+
       if (btn) { btn.disabled = true; btn.textContent = 'Publication...'; }
+      const uploaded = []; // fichiers envoyés : [bucket, chemin]
+      let saved = false;
       try {
         const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
         const path = `${currentUser.id}/${Date.now()}.${ext}`;
         const up = await sb.storage.from(AD_BUCKET).upload(path, file, { contentType: file.type });
         if (up.error) throw up.error;
+        uploaded.push([AD_BUCKET, path]);
         const { data: { publicUrl } } = sb.storage.from(AD_BUCKET).getPublicUrl(path);
 
-        const { error } = await sb.from('annonces').insert({
+        let videoUrl = null;
+        if (vFile) {
+          if (btn) btn.textContent = 'Envoi de la vidéo...';
+          const vPath = `${currentUser.id}/${Date.now()}.${VIDEO_TYPE_EXT[vType]}`;
+          const vu = await sb.storage.from(VIDEO_BUCKET).upload(vPath, vFile, { contentType: vType });
+          if (vu.error) throw vu.error;
+          uploaded.push([VIDEO_BUCKET, vPath]);
+          videoUrl = sb.storage.from(VIDEO_BUCKET).getPublicUrl(vPath).data.publicUrl;
+        }
+
+        const row = {
           title,
           category: $('adCategory').value,
           city: $('adCity').value,
@@ -532,17 +678,28 @@
           description,
           contact,
           image_url: publicUrl
-        });
+        };
+        if (videoUrl) row.video_url = videoUrl;
+
+        const { error } = await sb.from('annonces').insert(row);
         if (error) throw error;
+        saved = true;
 
         closeModal('publishModal');
         adForm.reset();
-        toast('Annonce publiée !');
+        resetVideoPreview();
+        toast(videoUrl ? 'Annonce publiée avec sa vidéo !' : 'Annonce publiée !');
         await loadListings();
       } catch (ex) {
         console.error(ex);
         setErr('Erreur : ' + (ex && ex.message ? ex.message : 'réessayez.'));
       } finally {
+        // échec après envoi : on supprime les fichiers pour ne pas laisser d'orphelins
+        if (!saved && uploaded.length) {
+          for (const [bucket, p] of uploaded) {
+            try { await sb.storage.from(bucket).remove([p]); } catch (e) { /* ignoré */ }
+          }
+        }
         if (btn) { btn.disabled = false; btn.textContent = 'Publier'; }
       }
     });
@@ -1223,7 +1380,6 @@
       if (error) throw error;
       toast(b.dataset.claim === 'approve' ? `Transfert effectué (${data} élément(s)).` : 'Demande refusée.');
       await loadListings();
-      renderListings();
       loadAdminClaims();
     } catch (ex) { toast('Action impossible.'); b.disabled = false; }
   });
