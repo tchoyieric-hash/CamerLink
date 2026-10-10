@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'camerlink-shell-v2';
+const CACHE_NAME = 'camerlink-shell-v3';
 const SHELL = ['/', '/manifest.json', '/camerlink-icon.svg', '/camerlink-nextgen.css', '/camerlink-nextgen.js'];
 
 self.addEventListener('install', (event) => {
