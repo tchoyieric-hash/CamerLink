@@ -456,10 +456,42 @@ header {
 .video-file-input { width:100%; max-width:100%; min-height:54px; padding:8px; background:var(--color-surface); color:var(--color-text-main); }
 .video-file-input::file-selector-button { min-height:38px; }
 @media (max-width: 700px) {
-  .reels-section { width:calc(100% - 20px); margin:22px auto; padding:16px; border-radius:22px; }
-  .reels-heading { align-items:flex-start; flex-direction:column; gap:12px; }
-  .reels-heading-actions { width:100%; align-items:flex-start; flex-wrap:wrap; }
-  .reels-feed { display:flex !important; gap:12px; overflow-x:auto; overflow-y:hidden; padding:2px 2px 14px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
-  .reel-card { flex:0 0 min(72vw,260px); width:min(72vw,260px); scroll-snap-align:start; }
+  
+@media (max-width: 700px) {
+  .reels-section {
+    overflow: hidden;
+  }
+
+  .reels-feed {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scroll-snap-type: y mandatory !important;
+    max-height: 78vh;
+    padding: 0 8px 12px;
+  }
+
+  .reels-feed .reel-card {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 420px;
+    min-height: 55vh;
+    margin: 0 auto 12px;
+    scroll-snap-align: start;
+  }
+
+  .reels-feed .reel-card video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+  
+  
+  
+  
 }
 @media (prefers-reduced-motion: reduce) { .video-upload-highlight { animation:none; } }
