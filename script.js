@@ -277,6 +277,33 @@
     loadStoriesSafely(); // en arrière-plan, ne bloque jamais la page
   }
 
+  /* ===== CSS REELS VERTICAUX (mobile) : injecté ici pour ne déployer qu'un seul fichier ===== */
+  (function injectReelsCss() {
+    if (document.getElementById('reels-vertical-fix')) return;
+    const st = document.createElement('style');
+    st.id = 'reels-vertical-fix';
+    st.textContent = `
+@media screen and (max-width: 700px) {
+  .reels-section { width: 100%; min-width: 0; overflow: hidden; }
+  #reels-feed, #reels-feed.reels-feed {
+    display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
+    align-items: stretch !important; justify-content: flex-start !important;
+    width: 100% !important; max-width: 100% !important; max-height: 78vh !important;
+    overflow-x: hidden !important; overflow-y: auto !important; scroll-snap-type: y mandatory !important;
+  }
+  #reels-feed > .reel-card {
+    display: block !important; position: relative !important; flex: 0 0 72vh !important;
+    width: 100% !important; max-width: 420px !important; min-width: 0 !important;
+    height: 72vh !important; max-height: 640px !important; margin: 0 auto 12px !important;
+    scroll-snap-align: start !important;
+  }
+  #reels-feed > .reel-card video {
+    display: block !important; width: 100% !important; height: 100% !important; object-fit: cover !important;
+  }
+}`;
+    document.head.appendChild(st);
+  })();
+
   /* ===== REELS : fil vertical des annonces qui ont une vidéo ===== */
   function reelsMessage(text) {
     return '<div class="reels-placeholder"><span class="reels-placeholder-icon">▶</span><span>' + esc(text) + '</span></div>';
@@ -586,56 +613,14 @@
     });
   }
 
- 
-/* CORRECTION DEFINITIVE : REELS VERTICAUX */
-@media screen and (max-width: 700px) {
-  .reels-section {
-    width: 100%;
-    min-width: 0;
-    overflow: hidden;
+  /* ===== PUBLICATION D'UNE ANNONCE (photo + vidéo facultative) ===== */
+  let videoPreviewUrl = null;
+  function resetVideoPreview() {
+    if (videoPreviewUrl) { URL.revokeObjectURL(videoPreviewUrl); videoPreviewUrl = null; }
+    const pv = $('adVideoPreview'), nm = $('adVideoSelected');
+    if (pv) { pv.pause(); pv.removeAttribute('src'); pv.hidden = true; }
+    if (nm) nm.textContent = 'Aucune vidéo sélectionnée (optionnel).';
   }
-
-  #reels-feed,
-  #reels-feed.reels-feed {
-    display: flex !important;
-    flex-direction: column !important;
-    flex-wrap: nowrap !important;
-    align-items: stretch !important;
-    justify-content: flex-start !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    max-height: 78vh !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    scroll-snap-type: y mandatory !important;
-  }
-
-  #reels-feed > .reel-card {
-    display: block !important;
-    position: relative !important;
-    flex: 0 0 72vh !important;
-    width: 100% !important;
-    max-width: 420px !important;
-    min-width: 0 !important;
-    height: 72vh !important;
-    max-height: 640px !important;
-    margin: 0 auto 12px !important;
-    scroll-snap-align: start !important;
-  }
-
-  #reels-feed > .reel-card video {
-    display: block !important;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-}
-
-  
- 
- 
-    
-  
 
   const adVideoInput = $('adVideoFile');
   if (adVideoInput) {
@@ -1119,10 +1104,8 @@
     });
   }
 
- 
-  // ===== BOUTON AJOUTER UNE VIDÉO DANS REELS =====
+  // ===== BOUTON « AJOUTER UNE VIDÉO » (zone Reels) =====
   const addVideoBtn = $('addVideoBtn');
-
   if (addVideoBtn) {
     addVideoBtn.addEventListener('click', () => {
       if (!currentUser) {
@@ -1130,33 +1113,17 @@
         openModal('authModal');
         return;
       }
-
       openModal('publishModal');
-
       const videoInput = $('adVideoFile');
-      if (videoInput) {
-        videoInput.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-      }
-
+      if (videoInput) videoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
       toast('Ajoutez une photo et votre vidéo, puis cliquez sur Publier.');
     });
   }
 
   $('pubBtn').addEventListener('click', () => {
-    if (!currentUser) {
-      toast('Connectez-vous pour publier');
-      openModal('authModal');
-      return;
-    }
+    if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
     openModal('publishModal');
   });
- 
-    
-    
-  
 
   /* ===== DÉTAILS D'UNE ANNONCE ET FICHE ARTISAN ===== */
   document.body.insertAdjacentHTML('beforeend', `
