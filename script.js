@@ -1682,6 +1682,12 @@
         <div><strong>${nStories}</strong><span>Statuts</span></div>
         <div><strong>${reel ? '1' : '0'}</strong><span>Vidéo</span></div>
       </div>
+      <div class="cl-profile-trust-row">
+        ${shop && shop.verified ? '<span class="cl-profile-trust-chip is-verified">✓ Profil vérifié</span>' : '<span class="cl-profile-trust-chip">Profil professionnel</span>'}
+        ${shop && shop.city ? '<span class="cl-profile-trust-chip">📍 ' + esc(shop.city) + '</span>' : ''}
+        ${shop && shop.type ? '<span class="cl-profile-trust-chip">✦ ' + esc(shop.type) + '</span>' : ''}
+      </div>
+      <p class="cl-profile-cover-note">${shop && shop.verified ? 'Un profil vérifié par CamerLink : découvrez ses services et contactez-le en toute confiance.' : 'Découvrez les services, les réalisations et les offres de ce professionnel.'}</p>
     </div>
 
     ${shop && shop.description ? `
