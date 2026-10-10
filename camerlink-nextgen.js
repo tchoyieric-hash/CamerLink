@@ -27,7 +27,7 @@
       const actions = document.createElement('div');
       actions.className = 'cl-reel-actions';
       actions.innerHTML = `
-        <button class="cl-reel-action" type="button" data-cl-action="like" aria-label="Ajouter aux favoris" title="J’aime / Favori">♡</button>
+        <button class="cl-reel-action" type="button" data-cl-action="like" aria-label="Ajouter aux favoris" title="Favori">♡</button>
         <button class="cl-reel-action" type="button" data-cl-action="share" aria-label="Partager cette vidéo" title="Partager">↗</button>
         <button class="cl-reel-action" type="button" data-cl-action="fullscreen" aria-label="Plein écran" title="Plein écran">⛶</button>
       `;
@@ -124,8 +124,9 @@
       const id = card.dataset.reel;
       if (typeof window.toggleFavorite === 'function') await window.toggleFavorite(id);
       else if (typeof window.toast === 'function') window.toast('Connectez-vous pour ajouter cette annonce aux favoris.');
-      button.textContent = '♥';
-      button.setAttribute('aria-label', 'Annonce ajoutée aux favoris');
+      const isFavorite = typeof window.getFavorites === 'function' && window.getFavorites().map(String).includes(String(id));
+      button.textContent = isFavorite ? '♥' : '♡';
+      button.setAttribute('aria-label', isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris');
       return;
     }
     if (action === 'retry') {
@@ -152,7 +153,7 @@
     }
     if (action === 'share') {
       const title = card.querySelector('strong')?.textContent?.trim() || 'CamerLink Reels';
-      const url = location.origin + '/#reels';
+      const url = location.origin + '/#reels-section';
       try {
         if (navigator.share) await navigator.share({ title, text: 'Découvre cette vidéo sur CamerLink', url });
         else if (navigator.clipboard && navigator.clipboard.writeText) {
