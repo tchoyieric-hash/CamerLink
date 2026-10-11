@@ -1398,9 +1398,52 @@
       </section>
       <section class="cl-space-section">
         <div class="cl-space-section-head"><div><span class="cl-space-eyebrow">VOTRE CATALOGUE</span><h4>Mes offres (${mine.length})</h4></div><button type="button" class="cl-space-publish" id="cl-space-publish">＋ Ajouter une offre</button></div>
-        <div class="cl-space-offers">${mine.length ? mine.map(ad => `<article class="cl-space-offer"><div class="cl-space-offer-thumb">${ad.image_url ? `<img src="${esc(ad.image_url)}" alt="" loading="lazy">` : '🏷️'}</div><div class="cl-space-offer-info"><strong>${esc(ad.title || 'Offre sans titre')}</strong><span>${spaceMoney(ad.price)}</span><small>${esc([ad.category, ad.city].filter(Boolean).join(' · '))}</small></div><button type="button" class="cl-space-open-offer" data-space-ad="${esc(ad.id)}">Voir</button></article>`).join('') : '<div class="cl-space-empty">Votre catalogue est vide. Publiez votre première offre pour être découvert par les clients.</div>'}</div>
+        <div class="cl-space-offers">${mine.length ? mine.map(ad => `<article class="cl-space-offer"><div class="cl-space-offer-thumb">${ad.image_url ? `<img src="${esc(ad.image_url)}" alt="" loading="lazy">` : '🏷️'}</div><div class="cl-space-offer-info"><strong>${esc(ad.title || 'Offre sans titre')}</strong><span>${spaceMoney(ad.price)}</span><small>${esc([ad.category, ad.city].filter(Boolean).join(' · '))}</small></div><button type="button" class="cl-space-open-offer" data-space-ad="${esc(ad.id)}">Voir</button><button type="button" class="cl-space-delete-offer" data-delete-ad="${esc(ad.id)}" aria-label="Supprimer cette publication" title="Supprimer cette publication">🗑️ Supprimer</button></article>`).join('') : '<div class="cl-space-empty">Votre catalogue est vide. Publiez votre première offre pour être découvert par les clients.</div>'}</div>
       </section>
-      <p class="cl-space-footer">Votre espace est lié à votre compte connecté. Seules les offres associées à votre identifiant de compte sont affichées ici.</p>`;
+      <section class="cl-space-section cl-space-danger"><div class="cl-space-section-head"><div><span class="cl-space-eyebrow">ZONE DE GESTION</span><h4>Supprimer ma vitrine</h4></div></div><p>Cette action retire votre fiche professionnelle de CamerLink. Elle ne supprime pas votre compte de connexion ni vos publications.</p><button type="button" id="cl-space-delete-profile" style="padding:12px 16px;border:1px solid #ef4444;border-radius:10px;background:rgba(239,68,68,.12);color:#ef4444;font-weight:800;cursor:pointer;">🗑️ Supprimer mon profil professionnel</button><p id="cl-space-delete-error" class="form-error" role="status"></p></section><p class="cl-space-footer">Votre espace est lié à votre compte connecté. Seules les offres associées à votre identifiant de compte sont affichées ici.</p>`;
+    body.querySelectorAll('[data-delete-ad]').forEach(button => button.addEventListener('click', async () => {
+      const id = String(button.dataset.deleteAd || '');
+      const ad = allListings.find(item => String(item.id) === id);
+      if (!currentUser || currentUser.id !== uid || !ad || String(ad.user_id) !== String(uid)) {
+        toast('Suppression refusée : cette publication ne vous appartient pas.'); return;
+      }
+      if (!window.confirm('Supprimer définitivement cette publication ? Cette action est irréversible.')) return;
+      button.disabled = true; button.textContent = 'Suppression…';
+      try {
+        const result = await withTimeout(sb.from('annonces').delete().eq('id', ad.id).eq('user_id', uid).select('id'), 12000);
+        if (result.error) throw result.error;
+        if (!result.data || !result.data.length) throw new Error('Suppression refusée par les règles de sécurité Supabase.');
+        allListings = allListings.filter(item => String(item.id) !== id);
+        delete videos[id]; delete likeCounts[id];
+        if (String(detail.id) === id) closeModal('adDetailModal');
+        renderListings(); renderReels(false); await renderArtisanSpace();
+        toast('Publication supprimée.');
+      } catch (error) {
+        toast(/row-level security|permission|policy|42501/i.test(String(error.message || error))
+          ? 'Suppression bloquée par Supabase. Vérifiez la migration de sécurité CamerLink.'
+          : 'Impossible de supprimer cette publication. Réessayez.');
+        button.disabled = false; button.textContent = '🗑️ Supprimer';
+      }
+    }));
+    $('cl-space-delete-profile')?.addEventListener('click', async () => {
+      const error = $('cl-space-delete-error');
+      if (!currentUser || currentUser.id !== uid) { if (error) error.textContent = 'Session expirée. Reconnectez-vous.'; return; }
+      if (!window.confirm('Supprimer votre fiche professionnelle de CamerLink ? Vos publications et votre compte de connexion seront conservés.')) return;
+      const button = $('cl-space-delete-profile'); button.disabled = true; button.textContent = 'Suppression…';
+      if (error) error.textContent = '';
+      try {
+        const result = await withTimeout(sb.from('etablissements').delete().eq('user_id', uid).select('user_id'), 12000);
+        if (result.error) throw result.error;
+        delete shopCache[uid];
+        toast(result.data && result.data.length ? 'Profil professionnel supprimé.' : 'Aucune fiche professionnelle à supprimer.');
+        await renderArtisanSpace();
+      } catch (ex) {
+        if (error) error.textContent = /row-level security|permission|policy|42501/i.test(String(ex.message || ex))
+          ? 'Supabase bloque la suppression. Vérifiez la migration de sécurité CamerLink.'
+          : 'Suppression impossible. Réessayez.';
+        button.disabled = false; button.textContent = '🗑️ Supprimer mon profil professionnel';
+      }
+    });
     $('cl-space-share')?.addEventListener('click', () => shareLink(shop?.name || 'Mon artisan CamerLink', 'Découvrez ma vitrine sur CamerLink', '/artisan/' + encodeURIComponent(uid)));
     $('cl-space-publish')?.addEventListener('click', () => { closeModal('artisanSpaceModal'); $('pubBtn').click(); });
     body.querySelectorAll('[data-space-ad]').forEach(button => button.addEventListener('click', () => { closeModal('artisanSpaceModal'); openAdDetail(button.dataset.spaceAd); }));
