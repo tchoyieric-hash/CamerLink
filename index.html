@@ -29,6 +29,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css?v=futuriste-20261011">
   <link rel="stylesheet" href="/camerlink-nextgen.css?v=20261011">
+  <style id="camerlink-mobile-input-fix">
+    input, textarea, [contenteditable="true"] {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+      -webkit-user-modify: read-write !important;
+      pointer-events: auto !important;
+      caret-color: #22d3ee !important;
+    }
+    #authModal .modal-sheet, #phoneForm, #phoneForm input {
+      pointer-events: auto !important;
+      touch-action: manipulation;
+    }
+    #authModal .modal-sheet { position: relative; z-index: 1; }
+  </style>
 </head>
 <body>
 <!--SEO_BODY-->
@@ -213,7 +227,7 @@ document.addEventListener('click',function(event){
     <div id="claimAdmin" style="margin-top:18px;"></div>
   </div>
 </div>
-<script src="/script.js?v=20261011-4"></script>
-<script src="/camerlink-community.js?v=20261011-4"></script>
-<script src="/camerlink-nextgen.js?v=20261011-4"></script>
-<script src="/camerlink-reel-social-fix.js?v=20261011-4"></script>
+<script src="/script.js?v=20261011-5"></script>
+<script src="/camerlink-community.js?v=20261011-5"></script>
+<script src="/camerlink-nextgen.js?v=20261011-5"></script>
+<script src="/camerlink-reel-social-fix.js?v=20261011-5"></script>
