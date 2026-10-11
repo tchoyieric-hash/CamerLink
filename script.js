@@ -39,37 +39,37 @@
   ];
   const normalizeEstablishmentType = value => {
     const raw = String(value || '').trim();
-    const fold = text => String(text || '').normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const fold = text => String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
     const key = fold(raw);
     const aliases = [
-      [/\\b(electricien|electricite|plombier|plomberie)\\b/, 'Électricité / Plomberie'],
-      [/\\b(couturier|couturiere|couture|styliste)\\b/, 'Couture / Mode'],
-      [/\\b(coiffeur|coiffeuse|salon de coiffure|barbier)\\b/, 'Salon de coiffure'],
-      [/\\b(pharmacien|pharmacie)\\b/, 'Pharmacie'],
-      [/\\b(hotel|hotellerie)\\b/, 'Hôtellerie'],
-      [/\\b(restaurant|restauration|cuisinier)\\b/, 'Restaurant'],
-      [/\\b(boutique|vendeur|vente)\\b/, 'Boutique'],
-      [/\\b(informaticien|informatique|telephone|telephonie|reparateur de telephone)\\b/, 'Informatique / Téléphonie'],
-      [/\\b(mecanicien|mecanique|garage)\\b/, 'Garage / Mécanique'],
-      [/\\b(chauffeur|transport|livraison|moto taxi)\\b/, 'Transport / Livraison'],
-      [/\\b(infirmier|medecin|clinique|sante)\\b/, 'Santé / Clinique'],
-      [/\\b(banque|microfinance)\\b/, 'Banque / Microfinance'],
-      [/\\b(agriculteur|agriculture|eleveur|elevage)\\b/, 'Agriculture / Élevage'],
-      [/\\b(menuisier|menuiserie)\\b/, 'Menuiserie'],
-      [/\\b(boulanger|boulangere|patisserie|patisserie)\\b/, 'Boulangerie / Pâtisserie'],
-      [/\\b(pressing|blanchisserie)\\b/, 'Pressing / Blanchisserie'],
-      [/\\b(photographe|photographie|evenementiel)\\b/, 'Photographie / Événementiel'],
-      [/\\b(immobilier|agent immobilier)\\b/, 'Immobilier'],
-      [/\\b(enseignant|ecole|education|formation|formateur)\\b/, 'Éducation / Formation'],
-      [/\\b(beauty|beaute|estheticien|estheticienne|institut)\\b/, 'Institut de beauté'],
-      [/\\b(supermarche|alimentation|epicerie)\\b/, 'Supermarché / Alimentation'],
-      [/\\b(quincaillerie|materiaux)\\b/, 'Quincaillerie / Matériaux'],
-      [/\\b(bar|snack|debit de boisson)\\b/, 'Bar / Snack']
+      [/\b(electricien|electricite|plombier|plomberie)\b/, 'Électricité / Plomberie'],
+      [/\b(couturier|couturiere|couture|styliste)\b/, 'Couture / Mode'],
+      [/\b(coiffeur|coiffeuse|salon de coiffure|barbier)\b/, 'Salon de coiffure'],
+      [/\b(pharmacien|pharmacie)\b/, 'Pharmacie'],
+      [/\b(hotel|hotellerie)\b/, 'Hôtellerie'],
+      [/\b(restaurant|restauration|cuisinier)\b/, 'Restaurant'],
+      [/\b(boutique|vendeur|vente)\b/, 'Boutique'],
+      [/\b(informaticien|informatique|telephone|telephonie|reparateur de telephone)\b/, 'Informatique / Téléphonie'],
+      [/\b(mecanicien|mecanique|garage)\b/, 'Garage / Mécanique'],
+      [/\b(chauffeur|transport|livraison|moto taxi)\b/, 'Transport / Livraison'],
+      [/\b(infirmier|medecin|clinique|sante)\b/, 'Santé / Clinique'],
+      [/\b(banque|microfinance)\b/, 'Banque / Microfinance'],
+      [/\b(agriculteur|agriculture|eleveur|elevage)\b/, 'Agriculture / Élevage'],
+      [/\b(menuisier|menuiserie)\b/, 'Menuiserie'],
+      [/\b(boulanger|boulangere|patisserie|patisserie)\b/, 'Boulangerie / Pâtisserie'],
+      [/\b(pressing|blanchisserie)\b/, 'Pressing / Blanchisserie'],
+      [/\b(photographe|photographie|evenementiel)\b/, 'Photographie / Événementiel'],
+      [/\b(immobilier|agent immobilier)\b/, 'Immobilier'],
+      [/\b(enseignant|ecole|education|formation|formateur)\b/, 'Éducation / Formation'],
+      [/\b(beauty|beaute|estheticien|estheticienne|institut)\b/, 'Institut de beauté'],
+      [/\b(supermarche|alimentation|epicerie)\b/, 'Supermarché / Alimentation'],
+      [/\b(quincaillerie|materiaux)\b/, 'Quincaillerie / Matériaux'],
+      [/\b(bar|snack|debit de boisson)\b/, 'Bar / Snack']
     ];
     for (const [pattern, category] of aliases) if (pattern.test(key)) return category;
     const exact = ESTABLISHMENT_TYPES.find(type => fold(type) === key);
     if (exact) return exact;
-    if (/\\b(service|services|artisan|artisanal|prestataire)\\b/.test(key)) return 'Services';
+    if (/\b(service|services|artisan|artisanal|prestataire)\b/.test(key)) return 'Services';
     return raw ? 'Autre service professionnel' : 'Autre';
   };
   // Villes principales : les 10 chefs-lieux de région du Cameroun, plus Kribi.
