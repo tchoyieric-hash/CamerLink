@@ -616,7 +616,7 @@
     const wrap = document.createElement('div');
     wrap.id = 'camerlink-reel-comments';
     wrap.style.cssText = 'display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.65);align-items:flex-end;justify-content:center;';
-    wrap.innerHTML = '<section role="dialog" aria-modal="true" aria-label="Commentaires du Reel" style="width:100%;max-width:620px;max-height:78vh;background:#111827;color:#fff;border-radius:18px 18px 0 0;padding:16px;display:flex;flex-direction:column;gap:12px;"><div style="display:flex;justify-content:space-between;align-items:center;"><strong>Commentaires</strong><button type="button" data-comments-close aria-label="Fermer" style="background:transparent;color:#fff;font-size:24px;border:0;">×</button></div><div data-comments-list style="overflow:auto;min-height:100px;max-height:48vh;"></div><form data-comments-form style="display:flex;gap:8px;"><input name="content" maxlength="1000" required placeholder="Écrire un commentaire…" style="flex:1;min-width:0;padding:12px;border-radius:10px;color:#111;"><button type="submit" style="padding:10px 14px;border-radius:10px;background:#16a34a;color:white;font-weight:700;">Envoyer</button></form><small style="color:#cbd5e1;">Votre commentaire sera visible après validation.</small></section>';
+    wrap.innerHTML = '<section role="dialog" aria-modal="true" aria-label="Commentaires du Reel" style="width:100%;max-width:620px;max-height:78vh;background:#111827;color:#fff;border-radius:18px 18px 0 0;padding:16px;display:flex;flex-direction:column;gap:12px;"><div style="display:flex;justify-content:space-between;align-items:center;"><strong>Commentaires</strong><button type="button" data-comments-close aria-label="Fermer" style="background:transparent;color:#fff;font-size:24px;border:0;">×</button></div><div data-comments-list style="overflow:auto;min-height:100px;max-height:48vh;"></div><form data-comments-form style="display:flex;gap:8px;"><input name="content" maxlength="1000" required placeholder="Écrire un commentaire…" style="flex:1;min-width:0;padding:12px;border-radius:10px;color:#111;"><button type="submit" style="padding:10px 14px;border-radius:10px;background:#16a34a;color:white;font-weight:700;">Envoyer</button></form><small style="color:#cbd5e1;">Votre commentaire est publié immédiatement.</small></section>';
     document.body.appendChild(wrap);
     wrap.addEventListener('click', function(e) { if (e.target === wrap || e.target.closest('[data-comments-close]')) wrap.style.display = 'none'; });
     wrap.querySelector('[data-comments-form]').addEventListener('submit', submitReelComment);
@@ -669,9 +669,9 @@
     if (!content || !reelId) return;
     const button = modal.querySelector('button[type="submit"]'); button.disabled = true;
     try {
-      const result = await withTimeout(sb.from('reel_comments').insert({ reel_id: reelId, user_id: currentUser.id, content: content, status: 'pending' }));
+      const result = await withTimeout(sb.from('reel_comments').insert({ reel_id: reelId, user_id: currentUser.id, content: content, status: 'approved' }));
       if (result.error) throw result.error;
-      input.value = ''; toast('Commentaire envoyé. Il sera publié après validation.');
+      input.value = ''; toast('Commentaire publié !'); await openReelComments(reelId);
     } catch (err) { console.error('CamerLink envoi commentaire:', err); toast('Envoi impossible : ' + (err && err.message ? err.message : 'réessayez.')); }
     finally { button.disabled = false; }
   }
