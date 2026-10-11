@@ -301,8 +301,8 @@
 
     try {
       const r = had
-        ? await sb.from('favoris').delete().eq('annonce_id', Number(id)).eq('user_id', currentUser.id)
-        : await sb.from('favoris').insert({ annonce_id: Number(id), user_id: currentUser.id });
+        ? await sb.from('favoris').delete().eq('annonce_id', Number(id)).eq('user_id', actorId)
+        : await sb.from('favoris').insert({ annonce_id: Number(id), user_id: actorId });
       if (r.error) {
         if (r.error.code === '23505') { loadLikeCounts(); } // déjà aimé
         else throw r.error;
