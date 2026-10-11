@@ -52,17 +52,16 @@
         if (original) { original.click(); b.disabled = true; setTimeout(() => { b.disabled = false; sync(); }, 500); }
         else if (typeof window.toast === 'function') window.toast('Like indisponible. Actualisez la page.');
       } else if (type === 'comment') {
-        const original = card.querySelector('.cl-reel-community [data-cl-comments]');
+        // Utiliser le gestionnaire de commentaires principal de script.js :
+        // il charge les commentaires approuvés et recharge la liste après publication.
+        const original = card.querySelector('[data-reel-comments]');
         if (original) original.click();
         else if (typeof window.toast === 'function') window.toast('Commentaires indisponibles. Actualisez la page.');
       } else if (type === 'share') {
-        const title = card.querySelector('strong')?.textContent?.trim() || 'CamerLink Reels';
-        const url = location.origin + '/#reels-section';
-        try {
-          if (navigator.share) await navigator.share({title, text:'Découvre et repartage ce Reel sur CamerLink', url});
-          else if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(url); alert('Lien du Reel copié. Vous pouvez le repartager.'); }
-          else prompt('Copiez le lien pour repartager ce Reel :', url);
-        } catch (err) { if (err?.name !== 'AbortError') console.warn('[CamerLink] Partage impossible', err); }
+        // Réutiliser le partage natif de l'annonce afin de garder le lien correct.
+        const original = card.querySelector('[data-reel-share]');
+        if (original) original.click();
+        else if (typeof window.toast === 'function') window.toast('Partage indisponible. Actualisez la page.');
       }
     });
     const observer = new MutationObserver(sync);
