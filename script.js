@@ -649,8 +649,14 @@
         <div style="position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,0.85));color:#fff;">
           <strong style="display:block;font-size:1.05rem;">${esc(ad.title)}</strong>
           <div style="margin:2px 0 10px;font-size:0.9rem;"><span style="color:#34d399;font-weight:800;">${price} FCFA</span>${(ad.quartier || ad.city) ? ' · 📍 ' + esc([ad.quartier, ad.city].filter(Boolean).join(', ')) : ''}</div>
-          <div style="display:flex;gap:8px;">
-            <button type="button" data-reel-comments data-reel-id="${esc(ad.id)}" style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">💬 Commentaires</button><button type="button" data-reel-open style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">Voir l’annonce</button>
+          <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px;">
+            <button type="button" data-reel-like style="flex:1;min-width:90px;padding:9px 7px;border-radius:9px;background:rgba(255,255,255,.18);color:#fff;font-weight:700;font-size:.85rem;cursor:pointer;">❤️ J’aime (${Number(likeCounts[ad.id] || 0)})</button>
+            <span data-reel-views style="flex:1;min-width:70px;padding:9px 7px;border-radius:9px;background:rgba(255,255,255,.12);text-align:center;font-size:.85rem;">👁️ ${Number(ad.views || 0)} vues</span>
+            <button type="button" data-reel-share style="flex:1;min-width:90px;padding:9px 7px;border-radius:9px;background:rgba(255,255,255,.18);color:#fff;font-weight:700;font-size:.85rem;cursor:pointer;">↗ Partager</button>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button type="button" data-reel-comments data-reel-id="${esc(ad.id)}" style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">💬 Commentaires</button>
+            <button type="button" data-reel-open style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">Voir l’annonce</button>
             ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="flex:1;padding:10px;border-radius:8px;background:#22C55E;color:#fff;font-weight:700;font-size:0.85rem;text-align:center;">WhatsApp</a>` : ''}
           </div>
         </div>
@@ -664,6 +670,7 @@
           const v = en.target.querySelector('video');
           if (!v) return;
           if (en.isIntersecting && en.intersectionRatio >= 0.6) {
+            registerView(en.target.dataset.reel);
             const p = v.play();
             if (p && p.catch) p.catch(() => {});
           } else {
@@ -687,6 +694,20 @@
         return;
       }
       if (e.target.closest('[data-reel-comments]')) { openReelComments(card.dataset.reel); return; }
+      if (e.target.closest('[data-reel-like]')) {
+        const id = String(card.dataset.reel);
+        if (!currentUser) { toast('Connectez-vous pour aimer un Reel'); openModal('authModal'); return; }
+        const before = window.getFavorites().includes(id);
+        window.toggleFavorite(id);
+        const likeBtn = card.querySelector('[data-reel-like]');
+        if (likeBtn) likeBtn.textContent = (before ? '🤍 J’aime' : '❤️ J’aime') + ' (' + Math.max(0, Number(likeCounts[id] || 0) + (before ? -1 : 1)) + ')';
+        return;
+      }
+      if (e.target.closest('[data-reel-share]')) {
+        const ad = allListings.find(item => String(item.id) === String(card.dataset.reel));
+        if (ad) shareLink(ad.title || 'CamerLink', 'Découvrez cette annonce sur CamerLink : ' + (ad.title || ''), '/?annonce=' + encodeURIComponent(ad.id));
+        return;
+      }
       if (e.target.closest('[data-reel-open]')) { openAdDetail(card.dataset.reel); return; }
       if (e.target.closest('a')) return;
       if (v) {
