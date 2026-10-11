@@ -118,13 +118,31 @@
   <p>© 2026 CamerLink · L'élite du service digital au Cameroun.</p>
 </footer>
 
-<!-- Modale Authentification -->
+<style>
+.auth-input-row{display:flex;align-items:stretch;gap:7px;width:100%}
+.auth-input-row .form-sheet-el{flex:1;min-width:0}
+.auth-clear-input{flex:0 0 auto;padding:0 10px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);color:var(--color-text-main);font-size:.78rem;touch-action:manipulation}
+.auth-clear-input:focus-visible{outline:2px solid var(--a1);outline-offset:2px}
+</style>
+<script>
+document.addEventListener('click',function(event){
+  const button=event.target.closest('[data-clear-input]');
+  if(!button)return;
+  const input=document.getElementById(button.dataset.clearInput);
+  if(!input)return;
+  input.value='';
+  input.dispatchEvent(new Event('input',{bubbles:true}));
+  input.dispatchEvent(new Event('change',{bubbles:true}));
+  input.focus({preventScroll:true});
+});
+</script>
+\n<!-- Modale Authentification -->
 <div id="authModal" class="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-header"><h3>Connexion / Inscription</h3><button class="modal-close" data-close="authModal">×</button></div>
-    <form id="phoneForm">
-      <div class="form-group"><label>Téléphone WhatsApp</label><input class="form-sheet-el" id="authPhone" type="tel" required placeholder="6 91 23 45 67"></div>
-      <div class="form-group"><label>Mot de passe</label><input class="form-sheet-el" id="phonePassword" type="password" name="password" required autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="go"></div>
+    <form id="phoneForm" autocomplete="off">
+      <div class="form-group"><label for="authPhone">Téléphone WhatsApp</label><div class="auth-input-row"><input class="form-sheet-el" id="authPhone" type="text" inputmode="tel" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required placeholder="6 91 23 45 67"><button type="button" class="auth-clear-input" data-clear-input="authPhone" aria-label="Effacer le numéro">Effacer</button></div></div>
+      <div class="form-group"><label for="phonePassword">Mot de passe</label><div class="auth-input-row"><input class="form-sheet-el" id="phonePassword" type="password" name="password" required autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="go"><button type="button" class="auth-clear-input" data-clear-input="phonePassword" aria-label="Effacer le mot de passe">Effacer</button></div></div>
       <button type="submit" id="phoneSubmit" class="btn-submit-modal">Se connecter</button>
       <p class="form-error" id="phoneError"></p>
       <p style="font-size:.8rem;opacity:.75;margin-top:10px;">Des annonces ont été publiées pour vous ? Connectez-vous avec votre numéro, puis cliquez sur 🔑 pour les récupérer.</p>
@@ -195,7 +213,7 @@
     <div id="claimAdmin" style="margin-top:18px;"></div>
   </div>
 </div>
-<script src="/script.js?v=20261011-3"></script>
-<script src="/camerlink-community.js?v=20261011-3"></script>
-<script src="/camerlink-nextgen.js?v=20261011-3"></script>
-<script src="/camerlink-reel-social-fix.js?v=20261011-3"></script>
+<script src="/script.js?v=20261011-4"></script>
+<script src="/camerlink-community.js?v=20261011-4"></script>
+<script src="/camerlink-nextgen.js?v=20261011-4"></script>
+<script src="/camerlink-reel-social-fix.js?v=20261011-4"></script>
