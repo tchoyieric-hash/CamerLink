@@ -21,6 +21,17 @@ create table if not exists public.business_spaces (
   updated_at timestamptz not null default now()
 );
 
+-- Accepte uniquement les URL HTTPS ou les champs vides (également sur tables existantes).
+alter table public.business_spaces drop constraint if exists business_spaces_logo_url_https;
+alter table public.business_spaces add constraint business_spaces_logo_url_https
+  check (logo_url = '' or logo_url ~* '^https://');
+alter table public.business_spaces drop constraint if exists business_spaces_cover_url_https;
+alter table public.business_spaces add constraint business_spaces_cover_url_https
+  check (cover_url = '' or cover_url ~* '^https://');
+alter table public.business_spaces drop constraint if exists business_spaces_website_url_https;
+alter table public.business_spaces add constraint business_spaces_website_url_https
+  check (website_url = '' or website_url ~* '^https://');
+
 create index if not exists business_spaces_public_idx
   on public.business_spaces (status, created_at desc);
 create index if not exists business_spaces_owner_idx
@@ -51,6 +62,10 @@ create table if not exists public.business_catalog_items (
   is_available boolean not null default true,
   created_at timestamptz not null default now()
 );
+alter table public.business_catalog_items drop constraint if exists business_catalog_items_image_url_https;
+alter table public.business_catalog_items add constraint business_catalog_items_image_url_https
+  check (image_url = '' or image_url ~* '^https://');
+
 create index if not exists business_catalog_business_idx on public.business_catalog_items (business_id, created_at desc);
 alter table public.business_catalog_items enable row level security;
 drop policy if exists "catalog is public for published businesses" on public.business_catalog_items;
@@ -70,7 +85,21 @@ create policy "owners add catalog items"
   );
 drop policy if exists "owners update catalog items" on public.business_catalog_items;
 create policy "owners update catalog items"
-  on public.business_catalog_items for update to authenticated using (auth.uid() = owner_id) with check (auth.uid() = owner_id);
+  on public.business_catalog_items for update to authenticated
+  using (
+    auth.uid() = owner_id
+    and exists (
+      select 1 from public.business_spaces b
+      where b.id = business_id and b.owner_id = auth.uid()
+    )
+  )
+  with check (
+    auth.uid() = owner_id
+    and exists (
+      select 1 from public.business_spaces b
+      where b.id = business_id and b.owner_id = auth.uid()
+    )
+  );
 drop policy if exists "owners delete catalog items" on public.business_catalog_items;
 create policy "owners delete catalog items"
   on public.business_catalog_items for delete to authenticated using (auth.uid() = owner_id);
