@@ -17,7 +17,7 @@
       `;
 
       try {
-        const sb = window.supabase;
+        const sb = window.camerlinkSupabase;
 
         if (sb) {
           const now = new Date().toISOString();
