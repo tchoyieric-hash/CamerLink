@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for file in script.js camerlink-community.js camerlink-nextgen.js stories-shops.js sw.js; do
+          for file in script.js camerlink-community.js camerlink-nextgen.js camerlink-reel-social-fix.js stories-shops.js stories.js extras.js modifier.js password.js sw.js api/share.js; do
             if [ -f "$file" ]; then
               echo "Checking $file"
               node --check "$file"
