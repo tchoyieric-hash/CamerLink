@@ -255,13 +255,26 @@
   ensureSmartDiscovery();
 
   /* ===== FAVORIS ===== */
+  // Cache local séparé par compte : un utilisateur ne voit jamais les favoris
+  // laissés en cache par un autre compte sur le même téléphone.
+  function favoritesStorageKey() {
+    return currentUser && currentUser.id
+      ? 'camerlink_favorites:' + currentUser.id
+      : 'camerlink_favorites:guest';
+  }
+
   window.getFavorites = function () {
-    try { return JSON.parse(localStorage.getItem('camerlink_favorites')) || []; } catch (e) { return []; }
+    try {
+      const value = JSON.parse(localStorage.getItem(favoritesStorageKey()));
+      return Array.isArray(value) ? value.map(String) : [];
+    } catch (e) { return []; }
   };
 
   function setFavs(arr) {
-    try { localStorage.setItem('camerlink_favorites', JSON.stringify(arr)); } catch (e) { /* stockage indisponible */ }
-    $('favCount').textContent = arr.length;
+    try {
+      localStorage.setItem(favoritesStorageKey(), JSON.stringify([...new Set((arr || []).map(String))]));
+    } catch (e) { /* stockage indisponible */ }
+    $('favCount').textContent = window.getFavorites().length;
   }
 
   function bumpLike(id, d) {
@@ -288,7 +301,7 @@
     try {
       const r = had
         ? await sb.from('favoris').delete().eq('annonce_id', Number(id)).eq('user_id', currentUser.id)
-        : await sb.from('favoris').insert({ annonce_id: Number(id) });
+        : await sb.from('favoris').insert({ annonce_id: Number(id), user_id: currentUser.id });
       if (r.error) {
         if (r.error.code === '23505') { loadLikeCounts(); } // déjà aimé
         else throw r.error;
@@ -309,7 +322,9 @@
   async function syncFavorites() {
     if (!currentUser) { setFavs([]); renderListings(); return; }
     try {
-      const { data, error } = await withTimeout(sb.from('favoris').select('annonce_id'));
+      const { data, error } = await withTimeout(
+        sb.from('favoris').select('annonce_id').eq('user_id', currentUser.id)
+      );
       if (error) throw error;
       setFavs((data || []).map(r => String(r.annonce_id)));
       renderListings(); refreshOpenDetail();
