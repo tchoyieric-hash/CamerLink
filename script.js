@@ -1413,6 +1413,32 @@
         const result = await withTimeout(sb.from('annonces').delete().eq('id', ad.id).eq('user_id', uid).select('id'), 12000);
         if (result.error) throw result.error;
         if (!result.data || !result.data.length) throw new Error('Suppression refusée par les règles de sécurité Supabase.');
+
+        // Nettoyage best-effort des médias de cette annonce, uniquement dans le dossier du propriétaire.
+        // La suppression en base reste prioritaire ; un échec du stockage ne restaure pas l'annonce.
+        const ownedStoragePath = (url, bucket) => {
+          try {
+            const parsed = new URL(String(url || ''));
+            const marker = '/storage/v1/object/public/' + bucket + '/';
+            const at = parsed.pathname.indexOf(marker);
+            if (at < 0) return null;
+            const path = decodeURIComponent(parsed.pathname.slice(at + marker.length));
+            return path.startsWith(uid + '/') && !path.split('/').includes('..') ? path : null;
+          } catch (e) { return null; }
+        };
+        const mediaToRemove = [
+          [AD_BUCKET, ownedStoragePath(ad.image_url, AD_BUCKET)],
+          [VIDEO_BUCKET, ownedStoragePath(ad.video_url, VIDEO_BUCKET)]
+        ].filter((item) => item[1]);
+        for (const [bucket, path] of mediaToRemove) {
+          try {
+            const cleanup = await withTimeout(sb.storage.from(bucket).remove([path]), 10000);
+            if (cleanup.error) console.warn('[CamerLink] Média non supprimé du stockage :', bucket, cleanup.error.message);
+          } catch (cleanupError) {
+            console.warn('[CamerLink] Nettoyage du média échoué :', bucket, cleanupError);
+          }
+        }
+
         allListings = allListings.filter(item => String(item.id) !== id);
         delete videos[id]; delete likeCounts[id];
         if (String(detail.id) === id) closeModal('adDetailModal');
