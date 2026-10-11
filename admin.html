@@ -80,6 +80,10 @@
   .note { margin: 10px 0 0; padding: 8px 10px; background: var(--fond); border-radius: 8px; font-size: .95rem; white-space: pre-wrap; overflow-wrap: anywhere; }
   .annonces { margin: 10px 0 0; padding-left: 18px; font-size: .95rem; overflow-wrap: anywhere; }
   .alerte { margin: 10px 0 0; color: var(--jaune); font-size: .92rem; }
+  .onglets { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 14px; }
+  .onglets button.actif { background:var(--vert); color:#fff; }
+  .commentaire-texte { white-space:pre-wrap; overflow-wrap:anywhere; margin:10px 0; }
+  .commentaire-id { font-size:.78rem; overflow-wrap:anywhere; color:var(--discret); }
   .boutons { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
   .boutons > * { flex: 1 1 130px; text-align: center; }
   a.bouton-lien {
@@ -91,8 +95,8 @@
 </head>
 <body>
 <main>
-  <h1>Demandes de rattachement</h1>
-  <p class="sous-titre">Valide ou refuse les artisans qui réclament leurs annonces.</p>
+  <h1>Administration CamerLink</h1>
+  <p class="sous-titre">Demandes de rattachement et modération des commentaires Reels.</p>
 
   <section id="connexion" class="panneau" hidden>
     <form id="form-connexion" novalidate>
@@ -113,8 +117,16 @@
         <button class="secondaire" id="btn-deconnexion" type="button">Se déconnecter</button>
       </div>
     </div>
+    <div class="onglets" role="tablist" aria-label="Sections administration">
+      <button type="button" id="onglet-rattachements" class="actif">Rattachements</button>
+      <button type="button" id="onglet-commentaires" class="secondaire">Commentaires Reels</button>
+    </div>
     <p id="msg-liste" class="message" hidden></p>
-    <div id="demandes"></div>
+    <section id="panneau-rattachements"><div id="demandes"></div></section>
+    <section id="panneau-commentaires" hidden>
+      <p id="compteur-commentaires" class="meta"></p>
+      <div id="commentaires"></div>
+    </section>
   </section>
 </main>
 
@@ -266,6 +278,88 @@
     liste.forEach(function (d) { zone.appendChild(carte(d)); });
   }
 
+  function afficherOnglet(nom) {
+    var ratt = nom === "rattachements";
+    montrer($("panneau-rattachements"), ratt);
+    montrer($("panneau-commentaires"), !ratt);
+    $("onglet-rattachements").classList.toggle("actif", ratt);
+    $("onglet-commentaires").classList.toggle("actif", !ratt);
+    $("onglet-rattachements").classList.toggle("secondaire", !ratt);
+    $("onglet-commentaires").classList.toggle("secondaire", ratt);
+    if (!ratt) chargerCommentaires();
+  }
+
+  function carteCommentaire(c) {
+    var card = el("article", "panneau demande");
+    var head = el("div", "tete");
+    head.appendChild(el("span", "numero", "Commentaire du Reel"));
+    head.appendChild(el("span", "puce " + c.status,
+      c.status === "pending" ? "En attente" : c.status === "approved" ? "Approuvé" : "Refusé"));
+    card.appendChild(head);
+    card.appendChild(el("p", "meta", "Vidéo / Reel ID : " + c.reel_id + " · " + formaterDate(c.created_at)));
+    card.appendChild(el("p", "commentaire-texte", c.content));
+    card.appendChild(el("p", "commentaire-id", "Commentaire : " + c.id + " · Auteur : " + c.user_id));
+    if (c.status !== "pending") {
+      var actions = el("div", "boutons");
+      var back = el("button", "secondaire", "Remettre en attente impossible");
+      back.disabled = true;
+      actions.appendChild(back);
+      card.appendChild(actions);
+      return card;
+    }
+    var buttons = el("div", "boutons");
+    var approve = el("button", null, "Approuver");
+    approve.type = "button";
+    approve.addEventListener("click", function () { modererCommentaire(c, "approved", approve, reject); });
+    var reject = el("button", "danger", "Refuser");
+    reject.type = "button";
+    reject.addEventListener("click", function () { modererCommentaire(c, "rejected", approve, reject); });
+    buttons.appendChild(approve);
+    buttons.appendChild(reject);
+    card.appendChild(buttons);
+    return card;
+  }
+
+  async function modererCommentaire(c, statut, oui, non) {
+    var verbe = statut === "approved" ? "approuver et rendre public" : "refuser";
+    if (!window.confirm("Confirmer : " + verbe + " ce commentaire ?")) return;
+    oui.disabled = true;
+    non.disabled = true;
+    message($("msg-liste"), "");
+    var res = await db.rpc("admin_set_reel_comment_status", {
+      comment_id: c.id,
+      new_status: statut
+    });
+    if (res.error) {
+      message($("msg-liste"), "Modération impossible : " + res.error.message, "erreur");
+      oui.disabled = false;
+      non.disabled = false;
+      return;
+    }
+    message($("msg-liste"), statut === "approved" ? "Commentaire approuvé." : "Commentaire refusé.", "ok");
+    await chargerCommentaires();
+  }
+
+  async function chargerCommentaires() {
+    var zone = $("commentaires");
+    zone.textContent = "";
+    $("compteur-commentaires").textContent = "Chargement des commentaires…";
+    var res = await db.rpc("admin_list_reel_comments");
+    if (res.error) {
+      $("compteur-commentaires").textContent = "";
+      message($("msg-liste"), "Impossible de charger les commentaires : " + res.error.message, "erreur");
+      return;
+    }
+    var rows = res.data || [];
+    var pending = rows.filter(function (c) { return c.status === "pending"; }).length;
+    $("compteur-commentaires").textContent = pending + " en attente · " + rows.length + " au total (500 maximum)";
+    if (!rows.length) {
+      zone.appendChild(el("p", "vide", "Aucun commentaire pour le moment."));
+      return;
+    }
+    rows.forEach(function (c) { zone.appendChild(carteCommentaire(c)); });
+  }
+
   async function afficherSelonSession() {
     var s = await db.auth.getSession();
     if (!s.data.session) {
@@ -307,7 +401,12 @@
     await afficherSelonSession();
   });
 
-  $("btn-actualiser").addEventListener("click", function () { charger(); });
+  $("btn-actualiser").addEventListener("click", function () {
+    if (!$("panneau-commentaires").hidden) chargerCommentaires();
+    else charger();
+  });
+  $("onglet-rattachements").addEventListener("click", function () { afficherOnglet("rattachements"); });
+  $("onglet-commentaires").addEventListener("click", function () { afficherOnglet("commentaires"); });
   $("btn-deconnexion").addEventListener("click", async function () {
     await db.auth.signOut();
     await afficherSelonSession();
