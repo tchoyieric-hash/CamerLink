@@ -290,6 +290,7 @@
     id = String(id);
     if (!currentUser) { toast('Connectez-vous pour aimer une annonce'); openModal('authModal'); return; }
     if (likeBusy.has(id)) return;
+    const actorId = currentUser.id;
     likeBusy.add(id);
 
     const before = window.getFavorites();
@@ -308,11 +309,14 @@
       }
       toast(had ? 'Retiré de vos favoris' : 'Ajouté à vos favoris');
     } catch (ex) {
-      const now = window.getFavorites();
-      setFavs(had ? [...now, id] : now.filter(x => x !== id));
-      bumpLike(id, had ? 1 : -1);
-      renderListings(); refreshOpenDetail();
-      toast('Action impossible : ' + (ex && ex.message ? ex.message : 'réessayez.'));
+      // Ne jamais modifier le cache du compte qui s'est connecté entre-temps.
+      if (currentUser && currentUser.id === actorId) {
+        const now = window.getFavorites();
+        setFavs(had ? [...now, id] : now.filter(x => x !== id));
+        bumpLike(id, had ? 1 : -1);
+        renderListings(); refreshOpenDetail();
+        toast('Action impossible : ' + (ex && ex.message ? ex.message : 'réessayez.'));
+      }
     } finally {
       likeBusy.delete(id);
     }
@@ -321,11 +325,14 @@
 
   async function syncFavorites() {
     if (!currentUser) { setFavs([]); renderListings(); return; }
+    const actorId = currentUser.id;
     try {
       const { data, error } = await withTimeout(
-        sb.from('favoris').select('annonce_id').eq('user_id', currentUser.id)
+        sb.from('favoris').select('annonce_id').eq('user_id', actorId)
       );
       if (error) throw error;
+      // Une réponse réseau tardive ne doit pas remplacer les favoris d'un autre compte.
+      if (!currentUser || currentUser.id !== actorId) return;
       setFavs((data || []).map(r => String(r.annonce_id)));
       renderListings(); refreshOpenDetail();
     } catch (e) { /* on garde le cache local */ }
