@@ -22,6 +22,56 @@
     { value: 'Boutiques', chip: '🛍 Boutiques' },
     { value: 'Immobilier', chip: '🏠 Immobilier' }
   ];
+
+  // Valeurs strictement autorisées par public.etablissements_type_check dans Supabase.
+  // Le champ métier libre est normalisé vers l'une de ces valeurs avant l'enregistrement.
+  const ESTABLISHMENT_TYPES = [
+    'Restaurant', 'Boutique', 'Supermarché', 'Hôtel', 'Services', 'Autre',
+    'Pharmacie', 'Salon de coiffure', 'Institut de beauté',
+    'Boulangerie / Pâtisserie', 'Bar / Snack', 'Hôtellerie',
+    'Hôtellerie-Restauration', 'Électricité / Plomberie', 'Menuiserie',
+    'Couture / Mode', 'Informatique / Téléphonie', 'Transport / Livraison',
+    'Immobilier', 'Garage / Mécanique', 'Agriculture / Élevage',
+    'Banque / Microfinance', 'Éducation / Formation', 'Santé / Clinique',
+    'Quincaillerie / Matériaux', 'Pressing / Blanchisserie',
+    'Photographie / Événementiel', 'Supermarché / Alimentation',
+    'Autre service professionnel'
+  ];
+  const normalizeEstablishmentType = value => {
+    const raw = String(value || '').trim();
+    const fold = text => String(text || '').normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const key = fold(raw);
+    const aliases = [
+      [/\\b(electricien|electricite|plombier|plomberie)\\b/, 'Électricité / Plomberie'],
+      [/\\b(couturier|couturiere|couture|styliste)\\b/, 'Couture / Mode'],
+      [/\\b(coiffeur|coiffeuse|salon de coiffure|barbier)\\b/, 'Salon de coiffure'],
+      [/\\b(pharmacien|pharmacie)\\b/, 'Pharmacie'],
+      [/\\b(hotel|hotellerie)\\b/, 'Hôtellerie'],
+      [/\\b(restaurant|restauration|cuisinier)\\b/, 'Restaurant'],
+      [/\\b(boutique|vendeur|vente)\\b/, 'Boutique'],
+      [/\\b(informaticien|informatique|telephone|telephonie|reparateur de telephone)\\b/, 'Informatique / Téléphonie'],
+      [/\\b(mecanicien|mecanique|garage)\\b/, 'Garage / Mécanique'],
+      [/\\b(chauffeur|transport|livraison|moto taxi)\\b/, 'Transport / Livraison'],
+      [/\\b(infirmier|medecin|clinique|sante)\\b/, 'Santé / Clinique'],
+      [/\\b(banque|microfinance)\\b/, 'Banque / Microfinance'],
+      [/\\b(agriculteur|agriculture|eleveur|elevage)\\b/, 'Agriculture / Élevage'],
+      [/\\b(menuisier|menuiserie)\\b/, 'Menuiserie'],
+      [/\\b(boulanger|boulangere|patisserie|patisserie)\\b/, 'Boulangerie / Pâtisserie'],
+      [/\\b(pressing|blanchisserie)\\b/, 'Pressing / Blanchisserie'],
+      [/\\b(photographe|photographie|evenementiel)\\b/, 'Photographie / Événementiel'],
+      [/\\b(immobilier|agent immobilier)\\b/, 'Immobilier'],
+      [/\\b(enseignant|ecole|education|formation|formateur)\\b/, 'Éducation / Formation'],
+      [/\\b(beauty|beaute|estheticien|estheticienne|institut)\\b/, 'Institut de beauté'],
+      [/\\b(supermarche|alimentation|epicerie)\\b/, 'Supermarché / Alimentation'],
+      [/\\b(quincaillerie|materiaux)\\b/, 'Quincaillerie / Matériaux'],
+      [/\\b(bar|snack|debit de boisson)\\b/, 'Bar / Snack']
+    ];
+    for (const [pattern, category] of aliases) if (pattern.test(key)) return category;
+    const exact = ESTABLISHMENT_TYPES.find(type => fold(type) === key);
+    if (exact) return exact;
+    if (/\\b(service|services|artisan|artisanal|prestataire)\\b/.test(key)) return 'Services';
+    return raw ? 'Autre service professionnel' : 'Autre';
+  };
   // Villes principales : les 10 chefs-lieux de région du Cameroun, plus Kribi.
   // "value" est enregistré dans l'annonce ; "label" indique la région dans les listes.
   const CITIES = [
@@ -1500,7 +1550,7 @@
         <form id="cl-space-profile-form" class="cl-space-form">
           <div class="cl-space-photo-editor cl-space-wide"><div class="cl-space-photo-preview" id="cl-space-photo-preview">${shop?.logo_url ? '<img src="' + esc(shop.logo_url) + '" alt="Photo de profil artisan">': '<span>' + esc((shop?.name || currentUser.user_metadata?.full_name || 'A').trim().charAt(0).toUpperCase()) + '</span>'}</div><div><strong>Photo de profil professionnelle</strong><p class="cl-space-hint">Choisissez une photo nette de vous ou de votre logo (JPG, PNG ou WebP, 3 Mo maximum).</p><input id="cl-space-photo" name="profile_photo" type="file" accept="image/jpeg,image/png,image/webp"><button type="button" class="cl-space-photo-clear" id="cl-space-photo-clear">Retirer la nouvelle sélection</button></div></div>
           <label>Nom de l’activité<input name="name" maxlength="100" required value="${esc(shop?.name || '')}" placeholder="Ex. Atelier Eric"></label>
-          <label>Métier / type d’activité<input name="type" maxlength="80" value="${esc(shop?.type || '')}" placeholder="Ex. Électricien, couturière…"></label>
+          <label>Métier / type d’activité<select name="type" required>${ESTABLISHMENT_TYPES.map(type => '<option value="' + esc(type) + '"' + (normalizeEstablishmentType(shop?.type) === type ? ' selected' : '') + '>' + esc(type) + '</option>').join('')}</select></label>
           <label>Ville<input name="city" maxlength="80" value="${esc(shop?.city || '')}" placeholder="Ex. Douala"></label>
           <label>Adresse ou quartier<input name="address" maxlength="180" value="${esc(shop?.address || '')}" placeholder="Ex. Bonamoussadi (pas obligatoire)"></label>
           <label>Contact professionnel<input name="contact" maxlength="30" type="tel" value="${esc(shop?.contact || '')}" placeholder="Téléphone / WhatsApp"></label>
@@ -1633,7 +1683,7 @@
           profilePhotoUrl = publicUrl?.data?.publicUrl || null;
           if (!profilePhotoUrl) throw new Error('URL publique de la photo indisponible.');
         }
-        const payload = { user_id: uid, name: data.name, type: data.type, city: data.city, address: data.address, contact: data.contact, hours: data.hours, description: data.description, video_url: data.video_url || null, reel_desc: data.reel_desc, logo_url: profilePhotoUrl };
+        const payload = { user_id: uid, name: data.name, type: normalizeEstablishmentType(data.type), city: data.city, address: data.address, contact: data.contact, hours: data.hours, description: data.description, video_url: data.video_url || null, reel_desc: data.reel_desc, logo_url: profilePhotoUrl };
         const result = await withTimeout(sb.from('etablissements').upsert(payload, { onConflict: 'user_id' }).select('user_id,name,type,city,address,contact,hours,description,logo_url,verified,video_url,reel_desc').single(), 12000);
         if (result.error) throw result.error;
         shopCache[uid] = result.data;
