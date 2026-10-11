@@ -479,6 +479,11 @@
   }
 
 
+  /* Photo de profil artisan */
+  const artisanPhotoCss = document.createElement('style');
+  artisanPhotoCss.textContent = '.cl-space-photo-editor{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid #22d3ee44;border-radius:16px;background:linear-gradient(120deg,#22d3ee12,#8b5cf612)}.cl-space-photo-preview{width:92px;height:92px;flex:0 0 92px;border-radius:50%;overflow:hidden;border:3px solid #22d3ee;display:grid;place-items:center;background:#e2e8f0;color:#334155;font-size:2rem;font-weight:800}.cl-space-photo-preview img{width:100%;height:100%;object-fit:cover}.cl-space-photo-editor input{display:block;max-width:100%;margin-top:8px}.cl-space-photo-clear{margin-top:8px;border:1px solid #94a3b855;border-radius:8px;padding:6px 9px;background:transparent;color:inherit;cursor:pointer;font-size:.8rem}';
+  document.head.appendChild(artisanPhotoCss);
+
   /* ===== VITRINE DES ARTISANS VÉRIFIÉS ===== */
   async function loadVerifiedArtisans() {
     const grid = $('verified-artisans-grid');
@@ -1493,6 +1498,7 @@
       <section class="cl-space-section">
         <div class="cl-space-section-head"><div><span class="cl-space-eyebrow">BOUTIQUE NUMÉRIQUE</span><h4>Informations professionnelles</h4></div><span class="cl-space-lock">🔒 Votre compte</span></div>
         <form id="cl-space-profile-form" class="cl-space-form">
+          <div class="cl-space-photo-editor cl-space-wide"><div class="cl-space-photo-preview" id="cl-space-photo-preview">${shop?.logo_url ? '<img src="' + esc(shop.logo_url) + '" alt="Photo de profil artisan">': '<span>' + esc((shop?.name || currentUser.user_metadata?.full_name || 'A').trim().charAt(0).toUpperCase()) + '</span>'}</div><div><strong>Photo de profil professionnelle</strong><p class="cl-space-hint">Choisissez une photo nette de vous ou de votre logo (JPG, PNG ou WebP, 3 Mo maximum).</p><input id="cl-space-photo" name="profile_photo" type="file" accept="image/jpeg,image/png,image/webp"><button type="button" class="cl-space-photo-clear" id="cl-space-photo-clear">Retirer la nouvelle sélection</button></div></div>
           <label>Nom de l’activité<input name="name" maxlength="100" required value="${esc(shop?.name || '')}" placeholder="Ex. Atelier Eric"></label>
           <label>Métier / type d’activité<input name="type" maxlength="80" value="${esc(shop?.type || '')}" placeholder="Ex. Électricien, couturière…"></label>
           <label>Ville<input name="city" maxlength="80" value="${esc(shop?.city || '')}" placeholder="Ex. Douala"></label>
@@ -1502,7 +1508,7 @@
           <label class="cl-space-wide">Présentation<textarea name="description" rows="3" maxlength="800" placeholder="Présentez votre activité, votre expérience et vos services…">${esc(shop?.description || '')}</textarea></label>
           <label class="cl-space-wide">Lien vidéo de présentation (URL HTTPS)<input name="video_url" type="url" maxlength="500" value="${esc(shop?.video_url || '')}" placeholder="https://…"></label>
           <label class="cl-space-wide">Description de la vidéo<input name="reel_desc" maxlength="180" value="${esc(shop?.reel_desc || '')}" placeholder="Une courte phrase pour votre Reel"></label>
-          <p class="cl-space-hint cl-space-wide">Le logo pourra être ajouté dans une prochaine étape avec un téléversement sécurisé. Les champs utilisent les colonnes existantes de la table des établissements.</p>
+          <p class="cl-space-hint cl-space-wide">Votre photo sera enregistrée dans votre fiche professionnelle et affichée sur votre vitrine publique.</p>
           <p id="cl-space-error" class="form-error cl-space-wide" role="status"></p>
           <button type="submit" class="btn-submit-modal cl-space-wide" id="cl-space-save">Enregistrer ma vitrine</button>
         </form>
@@ -1584,6 +1590,28 @@
     $('cl-space-share')?.addEventListener('click', () => shareLink(shop?.name || 'Mon artisan CamerLink', 'Découvrez ma vitrine sur CamerLink', '/artisan/' + encodeURIComponent(uid)));
     $('cl-space-publish')?.addEventListener('click', () => { closeModal('artisanSpaceModal'); $('pubBtn').click(); });
     body.querySelectorAll('[data-space-ad]').forEach(button => button.addEventListener('click', () => { closeModal('artisanSpaceModal'); openAdDetail(button.dataset.spaceAd); }));
+    const photoInput = $('cl-space-photo');
+    const photoPreview = $('cl-space-photo-preview');
+    let selectedProfilePhoto = null;
+    photoInput?.addEventListener('change', () => {
+      const file = photoInput.files && photoInput.files[0];
+      selectedProfilePhoto = null;
+      if (!file) return;
+      if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 3 * 1024 * 1024) {
+        photoInput.value = '';
+        const error = $('cl-space-error');
+        if (error) error.textContent = 'Choisissez une image JPG, PNG ou WebP de 3 Mo maximum.';
+        return;
+      }
+      selectedProfilePhoto = file;
+      if (photoPreview) photoPreview.innerHTML = '<img src="' + URL.createObjectURL(file) + '" alt="Aperçu de la photo de profil">';
+      const error = $('cl-space-error'); if (error) error.textContent = '';
+    });
+    $('cl-space-photo-clear')?.addEventListener('click', () => {
+      selectedProfilePhoto = null;
+      if (photoInput) photoInput.value = '';
+      if (photoPreview) photoPreview.innerHTML = shop?.logo_url ? '<img src="' + esc(shop.logo_url) + '" alt="Photo de profil artisan">' : '<span>' + esc((shop?.name || currentUser.user_metadata?.full_name || 'A').trim().charAt(0).toUpperCase()) + '</span>';
+    });
     $('cl-space-profile-form')?.addEventListener('submit', async event => {
       event.preventDefault();
       const form = event.currentTarget, button = $('cl-space-save'), error = $('cl-space-error');
@@ -1594,7 +1622,18 @@
       if (data.video_url && (!/^https:\/\//i.test(data.video_url))) { error.textContent = 'Le lien vidéo doit commencer par https://'; return; }
       button.disabled = true; button.textContent = 'Enregistrement…'; error.textContent = '';
       try {
-        const payload = { user_id: uid, name: data.name, type: data.type, city: data.city, address: data.address, contact: data.contact, hours: data.hours, description: data.description, video_url: data.video_url || null, reel_desc: data.reel_desc };
+        let profilePhotoUrl = shop?.logo_url || null;
+        if (selectedProfilePhoto) {
+          button.textContent = 'Envoi de la photo…';
+          const ext = selectedProfilePhoto.type === 'image/png' ? 'png' : selectedProfilePhoto.type === 'image/webp' ? 'webp' : 'jpg';
+          const path = uid + '/profile/avatar-' + Date.now() + '.' + ext;
+          const upload = await withTimeout(sb.storage.from(AD_BUCKET).upload(path, selectedProfilePhoto, { upsert: false, contentType: selectedProfilePhoto.type, cacheControl: '3600' }), 15000);
+          if (upload.error) throw upload.error;
+          const publicUrl = sb.storage.from(AD_BUCKET).getPublicUrl(path);
+          profilePhotoUrl = publicUrl?.data?.publicUrl || null;
+          if (!profilePhotoUrl) throw new Error('URL publique de la photo indisponible.');
+        }
+        const payload = { user_id: uid, name: data.name, type: data.type, city: data.city, address: data.address, contact: data.contact, hours: data.hours, description: data.description, video_url: data.video_url || null, reel_desc: data.reel_desc, logo_url: profilePhotoUrl };
         const result = await withTimeout(sb.from('etablissements').upsert(payload, { onConflict: 'user_id' }).select('user_id,name,type,city,address,contact,hours,description,logo_url,verified,video_url,reel_desc').single(), 12000);
         if (result.error) throw result.error;
         shopCache[uid] = result.data;
