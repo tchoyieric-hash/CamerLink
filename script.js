@@ -555,6 +555,71 @@
     return '<div class="reels-placeholder"><span class="reels-placeholder-icon">▶</span><span>' + esc(text) + '</span></div>';
   }
 
+  let reelCommentsModal = null;
+  function ensureReelCommentsModal() {
+    if (reelCommentsModal) return reelCommentsModal;
+    const wrap = document.createElement('div');
+    wrap.id = 'camerlink-reel-comments';
+    wrap.style.cssText = 'display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.65);align-items:flex-end;justify-content:center;';
+    wrap.innerHTML = '<section role="dialog" aria-modal="true" aria-label="Commentaires du Reel" style="width:100%;max-width:620px;max-height:78vh;background:#111827;color:#fff;border-radius:18px 18px 0 0;padding:16px;display:flex;flex-direction:column;gap:12px;"><div style="display:flex;justify-content:space-between;align-items:center;"><strong>Commentaires</strong><button type="button" data-comments-close aria-label="Fermer" style="background:transparent;color:#fff;font-size:24px;border:0;">×</button></div><div data-comments-list style="overflow:auto;min-height:100px;max-height:48vh;"></div><form data-comments-form style="display:flex;gap:8px;"><input name="content" maxlength="1000" required placeholder="Écrire un commentaire…" style="flex:1;min-width:0;padding:12px;border-radius:10px;color:#111;"><button type="submit" style="padding:10px 14px;border-radius:10px;background:#16a34a;color:white;font-weight:700;">Envoyer</button></form><small style="color:#cbd5e1;">Votre commentaire sera visible après validation.</small></section>';
+    document.body.appendChild(wrap);
+    wrap.addEventListener('click', function(e) { if (e.target === wrap || e.target.closest('[data-comments-close]')) wrap.style.display = 'none'; });
+    wrap.querySelector('[data-comments-form]').addEventListener('submit', submitReelComment);
+    reelCommentsModal = wrap;
+    return wrap;
+  }
+  async function fetchApprovedReelComments(reelId) {
+    const result = await withTimeout(sb.from('reel_comments').select('id,reel_id,user_id,content,status,created_at').eq('reel_id', Number(reelId)).eq('status', 'approved').order('created_at', { ascending: true }).limit(200));
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+  async function updateReelCommentCount(reelId) {
+    try {
+      const rows = await fetchApprovedReelComments(reelId);
+      document.querySelectorAll('[data-reel-comments][data-reel-id="' + String(reelId) + '"]').forEach(function(btn) { btn.textContent = '💬 Commentaires (' + rows.length + ')'; });
+    } catch (err) { console.warn('CamerLink: chargement compteur commentaires impossible', err); }
+  }
+  async function openReelComments(reelId) {
+    const modal = ensureReelCommentsModal();
+    modal.dataset.reelId = String(reelId);
+    modal.style.display = 'flex';
+    const list = modal.querySelector('[data-comments-list]');
+    list.textContent = 'Chargement des commentaires…';
+    try {
+      const rows = await fetchApprovedReelComments(reelId);
+      if (!rows.length) { list.innerHTML = '<p style="color:#cbd5e1;text-align:center;padding:18px;">Aucun commentaire publié pour le moment.</p>'; }
+      else {
+        list.innerHTML = '';
+        rows.forEach(function(row) {
+          const item = document.createElement('div');
+          item.style.cssText = 'padding:10px 0;border-bottom:1px solid #374151;overflow-wrap:anywhere;';
+          const body = document.createElement('div'); body.textContent = row.content || '';
+          const date = document.createElement('small'); date.style.color = '#9ca3af'; date.textContent = row.created_at ? new Date(row.created_at).toLocaleString('fr-FR') : '';
+          item.append(body, date); list.appendChild(item);
+        });
+      }
+      modal.querySelector('[data-comments-form] input').focus();
+      modal.querySelector('[data-comments-form] button[type="submit"]').disabled = !currentUser;
+      modal.querySelector('[data-comments-form] input').placeholder = currentUser ? 'Écrire un commentaire…' : 'Connectez-vous pour commenter';
+      await updateReelCommentCount(reelId);
+    } catch (err) { list.textContent = 'Impossible de charger les commentaires. Réessayez plus tard.'; console.error('CamerLink commentaires:', err); }
+  }
+  async function submitReelComment(event) {
+    event.preventDefault();
+    const modal = ensureReelCommentsModal();
+    const input = modal.querySelector('[name="content"]');
+    const content = String(input.value || '').trim();
+    const reelId = Number(modal.dataset.reelId);
+    if (!currentUser || !currentUser.id) { toast('Connectez-vous pour commenter.'); return; }
+    if (!content || !reelId) return;
+    const button = modal.querySelector('button[type="submit"]'); button.disabled = true;
+    try {
+      const result = await withTimeout(sb.from('reel_comments').insert({ reel_id: reelId, user_id: currentUser.id, content: content, status: 'pending' }));
+      if (result.error) throw result.error;
+      input.value = ''; toast('Commentaire envoyé. Il sera publié après validation.');
+    } catch (err) { console.error('CamerLink envoi commentaire:', err); toast('Envoi impossible : ' + (err && err.message ? err.message : 'réessayez.')); }
+    finally { button.disabled = false; }
+  }
   function renderReels(failed) {
     const feed = $('reels-feed');
     if (!feed) return;
@@ -585,7 +650,7 @@
           <strong style="display:block;font-size:1.05rem;">${esc(ad.title)}</strong>
           <div style="margin:2px 0 10px;font-size:0.9rem;"><span style="color:#34d399;font-weight:800;">${price} FCFA</span>${(ad.quartier || ad.city) ? ' · 📍 ' + esc([ad.quartier, ad.city].filter(Boolean).join(', ')) : ''}</div>
           <div style="display:flex;gap:8px;">
-            <button type="button" data-reel-open style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">Voir l’annonce</button>
+            <button type="button" data-reel-comments data-reel-id="${esc(ad.id)}" style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">💬 Commentaires</button><button type="button" data-reel-open style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">Voir l’annonce</button>
             ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="flex:1;padding:10px;border-radius:8px;background:#22C55E;color:#fff;font-weight:700;font-size:0.85rem;text-align:center;">WhatsApp</a>` : ''}
           </div>
         </div>
@@ -621,6 +686,7 @@
         if (v) { v.muted = !v.muted; snd.textContent = v.muted ? '🔇' : '🔊'; }
         return;
       }
+      if (e.target.closest('[data-reel-comments]')) { openReelComments(card.dataset.reel); return; }
       if (e.target.closest('[data-reel-open]')) { openAdDetail(card.dataset.reel); return; }
       if (e.target.closest('a')) return;
       if (v) {
