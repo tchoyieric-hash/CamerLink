@@ -32,6 +32,27 @@ create table if not exists public.camerlink_notifications (
   created_at timestamptz not null default now()
 );
 
+-- Mise à niveau d'une ancienne table de notifications déjà existante :
+-- élargit la contrainte de type sans dépendre du nom historique du CHECK.
+do $migration$
+declare c record;
+begin
+  for c in
+    select conname
+      from pg_constraint
+     where conrelid = 'public.camerlink_notifications'::regclass
+       and contype = 'c'
+       and pg_get_constraintdef(oid) ilike '%type%'
+  loop
+    execute format('alter table public.camerlink_notifications drop constraint %I', c.conname);
+  end loop;
+end
+$migration$;
+
+alter table public.camerlink_notifications
+  add constraint camerlink_notifications_type_check
+  check (type in ('message','review','reel_comment','plan_request','system','avis','like','premium'));
+
 create index if not exists camerlink_notifications_user_idx
   on public.camerlink_notifications (user_id, created_at desc);
 create index if not exists camerlink_notifications_actor_idx
