@@ -1614,7 +1614,7 @@
     const prev = currentUser && currentUser.id;
     currentUser = session ? session.user : null;
     $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
-    $('artisanSpaceBtn').style.display = currentUser ? '' : 'none';
+    $('artisanSpaceBtn').style.display = ''; // Le bouton reste visible même déconnecté : il ouvre la connexion si nécessaire.
     $('claimBtn').style.display = currentUser ? '' : 'none';
     if (!authInit || prev !== (currentUser && currentUser.id)) {
       authInit = true;
