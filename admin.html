@@ -299,14 +299,7 @@
     card.appendChild(el("p", "meta", "Vidéo / Reel ID : " + c.reel_id + " · " + formaterDate(c.created_at)));
     card.appendChild(el("p", "commentaire-texte", c.content));
     card.appendChild(el("p", "commentaire-id", "Commentaire : " + c.id + " · Auteur : " + c.user_id));
-    if (c.status !== "pending") {
-      var actions = el("div", "boutons");
-      var back = el("button", "secondaire", "Remettre en attente impossible");
-      back.disabled = true;
-      actions.appendChild(back);
-      card.appendChild(actions);
-      return card;
-    }
+    if (c.status !== "pending") return card;
     var buttons = el("div", "boutons");
     var approve = el("button", null, "Approuver");
     approve.type = "button";
