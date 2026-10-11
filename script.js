@@ -63,6 +63,8 @@
   const fmtDate = (d) => new Date(d).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
   const sb = window.supabase.createClient(SB_URL, SB_KEY);
+  // Expose le client unique aux modules complémentaires chargés après script.js.
+  window.camerlinkSupabase = sb;
 
   let allListings = [], videos = {}, currentUser = null, currentCategory = '', favOnly = false;
   let storyGroups = [];
