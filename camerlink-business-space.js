@@ -30,6 +30,29 @@ css.textContent = `
 #businessSpaceModal .bs-option strong{display:block;margin-bottom:5px}
 `;
 document.head.appendChild(css);
+function mountPublicShowcase(){
+ if(document.getElementById('business-public-showcase'))return;
+ const section=document.createElement('section');
+ section.id='business-public-showcase';
+ section.setAttribute('aria-labelledby','business-public-title');
+ section.style.cssText='padding:24px 16px;max-width:1180px;margin:0 auto;width:100%;box-sizing:border-box;';
+ section.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px"><div><p style="margin:0;color:#22d3ee;font-size:.78rem;font-weight:800;letter-spacing:.12em">COMMERCES LOCAUX</p><h2 id="business-public-title" style="margin:4px 0;font-size:1.45rem">🍽️ Restaurants & vitrines</h2><p style="margin:0;opacity:.75">Découvrez les restaurants, boutiques et entreprises sur CamerLink.</p></div><button type="button" id="business-showcase-open" class="btn-icon" style="width:auto;padding:10px 14px">🏢 Ouvrir Business Space</button></div><div id="business-public-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px"><p style="opacity:.75">Chargement des vitrines…</p></div>';
+ const hero=document.querySelector('.hero');
+ if(hero)hero.insertAdjacentElement('afterend',section);else document.body.prepend(section);
+ section.querySelector('#business-showcase-open').addEventListener('click',open);
+ loadPublicShowcase();
+}
+async function loadPublicShowcase(){
+ const root=document.getElementById('business-public-cards');if(!root)return;
+ try{
+  const r=await db.from('business_spaces').select('id,name,category,description,city,address,phone,whatsapp,opening_hours,logo_url,website_url').eq('status','published').order('created_at',{ascending:false}).limit(12);
+  if(r.error)throw r.error;
+  const rows=r.data||[];
+  if(!rows.length){root.innerHTML='<p style="opacity:.75">Aucune vitrine publiée pour le moment. Les restaurants et entreprises pourront apparaître ici dès leur publication.</p>';return}
+  root.innerHTML=rows.map(v=>'<article style="border:1px solid #22d3ee33;border-radius:16px;padding:14px;background:var(--color-surface,rgba(15,23,42,.6));min-width:0">'+(v.logo_url?'<img src="'+esc(v.logo_url)+'" alt="" loading="lazy" style="width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:10px">':'')+'<p style="margin:0 0 5px;color:#22d3ee;font-size:.78rem;font-weight:800">'+esc(v.category||'Entreprise')+'</p><h3 style="margin:0 0 6px;font-size:1.05rem">'+esc(v.name)+'</h3>'+(v.city?'<p style="margin:0 0 6px;opacity:.75">📍 '+esc(v.city)+'</p>':'')+'<p style="margin:0 0 10px;opacity:.85;overflow-wrap:anywhere">'+esc((v.description||'').slice(0,180))+'</p>'+(v.opening_hours?'<p style="margin:0 0 8px;font-size:.86rem">🕒 '+esc(v.opening_hours)+'</p>':'')+(v.whatsapp?'<a target="_blank" rel="noopener noreferrer" style="display:inline-block;margin:0 8px 8px 0" href="https://wa.me/'+esc(String(v.whatsapp).replace(/\\D/g,''))+'">WhatsApp</a>':'')+'<button type="button" data-business-open="'+esc(v.id)+'" style="display:block;border:1px solid #22d3ee66;border-radius:10px;padding:9px 12px;background:transparent;color:inherit;cursor:pointer">Voir les vitrines</button></article>').join('');
+  root.querySelectorAll('[data-business-open]').forEach(el=>el.addEventListener('click',open));
+ }catch(e){root.innerHTML='<p style="opacity:.75">Les vitrines sont momentanément indisponibles. Réessayez après actualisation.</p>';console.warn('[CamerLink Business Space] vitrine publique:',e)}
+}
 function mount(){
  if(document.getElementById('businessSpaceModal'))return;
  const btn=document.createElement('button');btn.type='button';btn.id='businessSpaceBtn';btn.className='btn-icon';btn.title='CamerLink Business Space';btn.setAttribute('aria-label','CamerLink Business Space');btn.textContent='🏢';
@@ -78,6 +101,6 @@ async function requestVisibility(option,b){
  if(!me||!ownBusiness){status('Connectez-vous et créez d’abord votre vitrine.');return}
  b.disabled=true;try{const r=await db.from('business_visibility_requests').insert({business_id:ownBusiness.id,owner_id:me.id,option,message:''});if(r.error)throw r.error;status('Demande enregistrée. L’équipe pourra vous contacter après mise en place du suivi administratif. Aucun paiement effectué.')}catch(x){status('Demande non envoyée : '+(x.message||'migration SQL à vérifier.').slice(0,180))}finally{b.disabled=false}
 }
-async function start(){mount();await auth();db.auth.onAuthStateChange(async()=>{await auth();if(document.getElementById('businessSpaceModal')?.classList.contains('active'))render()})}
+async function start(){mount();mountPublicShowcase();await auth();db.auth.onAuthStateChange(async()=>{await auth();if(document.getElementById('businessSpaceModal')?.classList.contains('active'))render()})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
