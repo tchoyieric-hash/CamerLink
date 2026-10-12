@@ -821,8 +821,13 @@
     const out = {};
     if (!ids.length) return out;
     try {
-      const r = await withTimeout(sb.from('etablissements').select('user_id, name, logo_url').in('user_id', ids));
+      const r = await withTimeout(sb.from('etablissements').select('user_id, name, logo_url, owner_name').in('user_id', ids));
       if (!r.error) (r.data || []).forEach(e => { out[e.user_id] = e; });
+      else {
+        // Compatibilité temporaire si la migration owner_name n'est pas encore appliquée.
+        const legacy = await withTimeout(sb.from('etablissements').select('user_id, name, logo_url').in('user_id', ids));
+        if (!legacy.error) (legacy.data || []).forEach(e => { out[e.user_id] = e; });
+      }
     } catch (e) { /* on garde "Artisan" */ }
     return out;
   }
@@ -838,7 +843,7 @@
       </div>`;
 
     storyGroups.forEach((g, gi) => {
-      const name = (g.shop && g.shop.name) || 'Artisan CamerLink';
+      const name = (g.shop && g.shop.owner_name && g.shop.owner_name.trim()) || 'Compte CamerLink';
       const logo = g.shop && g.shop.logo_url;
       const latest = g.items && g.items[g.items.length - 1];
       const media = latest && latest.media_url ? latest.media_url : '';
@@ -900,7 +905,7 @@
     const s = g && g.items[viewer.i];
     if (!s) { window.closeStoryViewer(); return; }
 
-    const name = (g.shop && g.shop.name) || 'Artisan';
+    const name = (g.shop && g.shop.owner_name && g.shop.owner_name.trim()) || 'Compte CamerLink';
     const logo = g.shop && g.shop.logo_url;
     const avatar = $('viewerAvatar');
     if (logo) { avatar.src = logo; avatar.style.display = ''; }
