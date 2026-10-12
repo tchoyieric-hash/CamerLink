@@ -313,3 +313,50 @@ main { padding-top:16px; }
  .cl-story-ring,.shop-story-card.cta-card .story-ring { width:64px!important;height:64px!important; }
 }
 @media(prefers-reduced-motion:reduce){.cl-story-ring{transition:none}.shop-story-card:hover .cl-story-ring{transform:none}}
+
+
+/* CamerLink — artisan profile as a real, spacious public page */
+.cl-artisan-page-overlay { padding:clamp(8px,2vw,24px); }
+.cl-artisan-page-sheet {
+  width:min(100%,1040px)!important; max-width:1040px!important; max-height:min(94dvh,1000px);
+  padding:clamp(14px,2.4vw,28px); border-radius:24px; overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.cl-artisan-page-sheet > .modal-header {
+  position:sticky; top:calc(-1 * clamp(14px,2.4vw,28px)); z-index:20;
+  margin:calc(-1 * clamp(14px,2.4vw,28px)) calc(-1 * clamp(14px,2.4vw,28px)) 18px;
+  padding:14px clamp(14px,2.4vw,28px); background:rgba(8,10,20,.94);
+  backdrop-filter:blur(16px); border-bottom:1px solid rgba(148,163,184,.16);
+}
+.cl-artisan-profile { max-width:900px; }
+.cl-artisan-cover { min-height:230px; display:flex; flex-direction:column; justify-content:flex-end; }
+.cl-profile-identity { gap:18px; }
+.cl-profile-avatar { width:104px; height:104px; }
+.cl-profile-actions { position:relative; }
+.cl-profile-button { min-height:44px; }
+.cl-profile-catalogue { margin-top:18px; }
+@media(max-width:600px) {
+  .cl-artisan-page-overlay { padding:0!important; align-items:stretch; }
+  .cl-artisan-page-sheet {
+    width:100%!important; max-width:none!important; height:100dvh; max-height:100dvh;
+    min-height:100dvh; border-radius:0; border:0; padding:12px 12px calc(18px + env(safe-area-inset-bottom));
+  }
+  .cl-artisan-page-sheet > .modal-header {
+    top:-12px; margin:-12px -12px 14px; padding:13px 14px;
+  }
+  .cl-artisan-page-sheet > .modal-header h3 { font-size:1rem; }
+  .cl-artisan-profile { max-width:none; }
+  .cl-artisan-cover { min-height:0; padding:22px 18px; border-radius:22px; }
+  .cl-profile-identity { gap:13px; align-items:center; }
+  .cl-profile-avatar { width:78px; height:78px; }
+  .cl-profile-stats { gap:7px; margin-top:20px; }
+  .cl-profile-stats>div { padding:10px 5px; }
+  .cl-profile-stats strong { font-size:1.15rem; }
+  .cl-profile-trust-row { gap:6px; flex-wrap:wrap; }
+  .cl-profile-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .cl-profile-actions > * { min-width:0!important; }
+  .cl-profile-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .cl-artisan-page-sheet { scroll-behavior:auto; }
+}
