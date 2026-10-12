@@ -1,3 +1,19 @@
+storiesContainer.innerHTML = stories.map(story => {
+  // Récupération des infos du profil
+  const userName = story.profiles?.full_name || 'Utilisateur';
+  const userAvatar = story.profiles?.avatar_url || 'https://via.placeholder.com/150';
+  const userRole = story.profiles?.role_or_title || '1 contenu · 24 h';
+
+  return `
+    <div class="status-item" onclick="viewStory('${story.id}')">
+      <div class="status-ring unviewed">
+        <img src="${userAvatar}" alt="${userName}" class="status-avatar">
+      </div>
+      <span class="status-name">${userName}</span>
+      <small class="status-sub">${userRole}</small>
+    </div>
+  `;
+}).join('');
 (() => {
   'use strict';
   const SB_URL = 'https://lviddipduhaelxcvyykc.supabase.co';
