@@ -1,236 +1,144 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!--SEO-->
-  <title>CamerLink · Annonces et commerces locaux au Cameroun</title>
-  <meta name="description" content="CamerLink · La plateforme de référence des annonces, services et commerces au Cameroun. Contactez les artisans en un clic sur WhatsApp.">
-  <link rel="canonical" href="https://camer-link.vercel.app/">
-  <meta property="og:site_name" content="CamerLink">
-  <meta property="og:locale" content="fr_CM">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="CamerLink · Annonces et commerces locaux au Cameroun">
-  <meta property="og:description" content="Annonces, services, restaurants et boutiques du Cameroun, à contacter en un clic.">
-  <meta property="og:url" content="https://camer-link.vercel.app/">
-  <meta property="og:image" content="https://camer-link.vercel.app/og-default.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"CamerLink","url":"https://camer-link.vercel.app/","inLanguage":"fr","description":"Annonces, services et commerces locaux au Cameroun."}</script>
-  <!--/SEO-->
-  <meta name="theme-color" content="#050609">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23050609%27/%3E%3Ctext x=%2732%27 y=%2744%27 font-size=%2738%27 font-weight=%27700%27 text-anchor=%27middle%27 fill=%27%2322D3EE%27 font-family=%27Arial%27%3EC%3C/text%3E%3C/svg%3E">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css?v=futuriste-20261011">
-  <link rel="stylesheet" href="/camerlink-nextgen.css?v=20261012-immersive1">
-  <style id="camerlink-mobile-input-fix">
-    input, textarea, [contenteditable="true"] {
-      -webkit-user-select: text !important;
-      user-select: text !important;
-      -webkit-user-modify: read-write !important;
-      pointer-events: auto !important;
-      caret-color: #22d3ee !important;
-    }
-    #authModal .modal-sheet, #phoneForm, #phoneForm input {
-      pointer-events: auto !important;
-      touch-action: manipulation;
-    }
-    #authModal .modal-sheet { position: relative; z-index: 1; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CamerLink - Annonces et commerces locaux</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<!--SEO_BODY-->
 
-<header>
-  <a href="/" class="logo-brand">Camer<span>Link</span></a>
-  <div class="header-actions">
-    <button class="btn-icon" id="msgInboxBtn">💬 <span id="msgBadge"></span></button>
-    <button class="btn-icon" id="claimBtn" title="Récupérer mes annonces" aria-label="Récupérer mes annonces" style="display:none">🔑</button>
-    <button class="btn-icon" id="artisanSpaceBtn" title="Mon espace artisan" aria-label="Mon espace artisan">🏪</button>
-    <button class="btn-icon" id="themeBtn">🌓</button>
-    <button class="btn-login" id="authBtn">Connexion</button>
-    <button class="btn-pub" id="pubBtn">+ Publier</button>
-  </div>
-</header>
+    <!-- En-tête -->
+    <header class="app-header">
+        <div class="logo-area">
+            <h1>CamerLink</h1>
+            <span class="subtitle">Annonces et commerces locaux</span>
+        </div>
+        <div class="header-icons">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <div class="notification-badge">
+                <i class="fa-regular fa-bell"></i>
+                <span class="badge">2</span>
+            </div>
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="Profil" class="profile-thumb">
+        </div>
+    </header>
 
-<div class="header-spacer"></div>
+    <!-- Navigation des onglets -->
+    <nav class="app-nav">
+        <button class="tab-btn active">Reels</button>
+        <button class="tab-btn">Statuts</button>
+        <button class="tab-btn">Annonces</button>
+        <button class="tab-btn">Découvrir</button>
+    </nav>
 
-<section class="hero">
-  <h1>L'Excellence au Cameroun<br><span>à portée de clic.</span></h1>
-  <p>Annonces, restaurants et boutiques du Cameroun, à contacter en un clic.</p>
-  <div class="search-filter-bar">
-    <input id="searchInput" type="search" placeholder="Que recherchez-vous..." class="search-input form-el">
-    <select id="cityFilter" class="city-select form-el"></select>
-    <select id="priceFilter" class="price-select form-el">
-      <option value="">Tous les prix</option>
-      <option value="10000">Max 10 000 FCFA</option>
-      <option value="50000">Max 50 000 FCFA</option>
-      <option value="250000">Max 250 000 FCFA</option>
-    </select>
-  </div>
-</section>
+    <!-- Contenu Principal : Flux Reels & Statuts -->
+    <main class="main-container">
+        
+        <!-- Section des Statuts / Stories en haut -->
+        <section class="stories-section">
+            <div class="story-item create-story">
+                <div class="story-ring plus">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <span>Mon statut</span>
+            </div>
+            <div class="story-item">
+                <div class="story-ring active">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" alt="Statut">
+                </div>
+                <span>Tchoyi Eric</span>
+            </div>
+            <div class="story-item">
+                <div class="story-ring active">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" alt="Statut">
+                </div>
+                <span>Moussa T.</span>
+            </div>
+            <div class="story-item">
+                <div class="story-ring active">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" alt="Statut">
+                </div>
+                <span>Aminata Food</span>
+            </div>
+        </section>
 
-<!-- Section Statuts / Stories 24h Artisans -->
-<section class="cl-verified-section" id="verified-artisans" aria-labelledby="verified-artisans-title"><div class="cl-section-heading"><div><span class="cl-section-eyebrow">CONFIANCE & SAVOIR-FAIRE</span><h2 id="verified-artisans-title">Artisans <span>vérifiés</span></h2><p>Découvrez les professionnels dont le profil a été vérifié sur CamerLink.</p></div><span class="cl-trust-mark" aria-hidden="true">✓ Identité contrôlée</span></div><div id="verified-artisans-grid" class="cl-verified-grid"><div class="cl-verified-loading">Recherche des profils vérifiés…</div></div></section>
+        <!-- Flux Principal Reel / Vidéo -->
+        <div class="reel-card">
+            <div class="reel-media-wrapper">
+                <div class="location-tag"><i class="fa-solid fa-location-dot"></i> Yaoundé</div>
+                <div class="pagination-dots">1/3</div>
+                <!-- Vidéo ou Image du Reel -->
+                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600" alt="Plat camerounais" class="reel-img">
+                
+                <!-- Actions latérales (Like, Commentaires, Partage) -->
+                <div class="reel-actions">
+                    <button class="action-btn"><i class="fa-solid fa-heart"></i><span>1.2k</span></button>
+                    <button class="action-btn"><i class="fa-solid fa-comment"></i><span>89</span></button>
+                    <button class="action-btn"><i class="fa-solid fa-share"></i><span>Partager</span></button>
+                    <button class="action-btn whatsapp"><i class="fa-brands fa-whatsapp"></i></button>
+                </div>
+            </div>
 
-<section class="shops-section">
-  <h2>⚡ Statuts & Reels Artisans</h2>
-  <div id="shops-container" class="shops-container"></div>
-</section>
+            <!-- Infos de l'auteur et légende -->
+            <div class="reel-footer">
+                <div class="author-info">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100" alt="Chef Patrick">
+                    <div>
+                        <h4>Chef Patrick Cuisine <i class="fa-solid fa-circle-check verified"></i></h4>
+                    </div>
+                    <button class="follow-btn">S'abonner</button>
+                </div>
+                <p class="reel-description">
+                    Un bon plat, c'est du bonheur ! 😋 Spécialité camerounaise 🇨🇲<br>
+                    <span class="tags">#CuisineLocale #Yaoundé #BonGoût #CamerLink</span>
+                </p>
+                <div class="audio-info">
+                    <i class="fa-solid fa-music"></i> Son original - Chef Patrick Cuisine
+                </div>
+            </div>
 
-<!-- Fil Reels vertical : alimenté par les vidéos des annonces -->
-<section class="reels-section" id="reels-section" aria-labelledby="reels-title">
-  <div class="reels-heading">
-    <div>
-      <span class="eyebrow">À découvrir en vidéo</span>
-      <h2 id="reels-title">CamerLink <span>Reels</span></h2>
-      <p>Faites défiler verticalement les vidéos des vendeurs et contactez-les directement.</p>
-    </div>
-    <div class="reels-heading-actions">
-      <span class="reels-live"><i></i> Vidéos des vendeurs</span>
-      <button type="button" class="reels-upload-btn" id="addVideoBtn" aria-label="Ajouter une vidéo aux CamerLink Reels">＋ Ajouter une vidéo</button>
-    </div>
-  </div>
-  <div id="reels-feed" class="reels-feed" aria-live="polite">
-    <div class="reels-placeholder"><span class="reels-placeholder-icon">▶</span><span>Chargement des vidéos…</span></div>
-  </div>
-</section>
+            <!-- Section des Commentaires -->
+            <div class="comments-section">
+                <h3>Commentaires (89)</h3>
+                <div class="comment-list">
+                    <div class="comment-item">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100" alt="Avatar">
+                        <div class="comment-content">
+                            <div class="comment-user">Moussa Traoré <span class="time">Il y a 1 h</span></div>
+                            <p>Franchement c'est top ! Ça donne envie 😋</p>
+                            <div class="comment-actions"><span><i class="fa-solid fa-heart"></i> 12</span> <span>Répondre</span></div>
+                        </div>
+                    </div>
+                    <div class="comment-item">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="Avatar">
+                        <div class="comment-content">
+                            <div class="comment-user">Aminata Diallo <span class="time">Il y a 45 min</span></div>
+                            <p>Très bonne cuisine, continuez ! 👌</p>
+                            <div class="comment-actions"><span><i class="fa-solid fa-heart"></i> 8</span> <span>Répondre</span></div>
+                        </div>
+                    </div>
+                </div>
 
-<!-- Modal Visionneuse de Story (24h) -->
-<div id="storyViewerModal" class="story-modal">
-  <div class="story-modal-content">
-    <button class="close-story-btn" onclick="closeStoryViewer()">&times;</button>
-    <div class="story-header-info">
-      <img id="viewerAvatar" src="" alt="" class="viewer-avatar">
-      <span id="viewerShopName">Nom de l'artisan</span>
-    </div>
-    <div class="story-media-container">
-      <img id="viewerMedia" src="" alt="Statut artisan">
-    </div>
-    <p id="viewerCaption" class="story-caption"></p>
-  </div>
-</div>
+                <!-- Input pour poster un commentaire -->
+                <div class="comment-input-box">
+                    <input type="text" placeholder="Écrire un commentaire...">
+                    <button><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
 
-<div class="categories-scroll" id="categoryChips"></div>
+    </main>
 
-<main>
-  <div class="filter-tabs-row">
-    <span class="results-count" id="resultsCount">Chargement...</span>
-    <button class="fav-toggle-btn" id="favToggleBtn">❤️ Favoris (<span id="favCount">0</span>)</button>
-  </div>
-  <div id="listings-grid" class="listings-grid"></div>
-</main>
+    <!-- Barre de Navigation Inférieure -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i><span>Accueil</span></a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-clapperboard"></i><span>Reels</span></a>
+        <a href="#" class="nav-item plus-btn"><i class="fa-solid fa-plus"></i></a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-comment-dots"></i><span>Messages</span></a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-user"></i><span>Profil</span></a>
+    </nav>
 
-<footer>
-  <a href="/" class="logo-brand">Camer<span>Link</span></a>
-  <p>© 2026 CamerLink · L'élite du service digital au Cameroun.</p>
-</footer>
-
-<style>
-.auth-input-row{display:flex;align-items:stretch;gap:7px;width:100%}
-.auth-input-row .form-sheet-el{flex:1;min-width:0}
-.auth-clear-input{flex:0 0 auto;padding:0 10px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);color:var(--color-text-main);font-size:.78rem;touch-action:manipulation}
-.auth-clear-input:focus-visible{outline:2px solid var(--a1);outline-offset:2px}
-</style>
-<script>
-document.addEventListener('click',function(event){
-  const button=event.target.closest('[data-clear-input]');
-  if(!button)return;
-  const input=document.getElementById(button.dataset.clearInput);
-  if(!input)return;
-  input.value='';
-  input.dispatchEvent(new Event('input',{bubbles:true}));
-  input.dispatchEvent(new Event('change',{bubbles:true}));
-  input.focus({preventScroll:true});
-});
-</script>
-\n<!-- Modale Authentification -->
-<div id="authModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header"><h3>Connexion / Inscription</h3><button class="modal-close" data-close="authModal">×</button></div>
-    <form id="phoneForm" autocomplete="off">
-      <div class="form-group"><label for="authPhone">Téléphone WhatsApp</label><div class="auth-input-row"><input class="form-sheet-el" id="authPhone" type="text" inputmode="tel" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required placeholder="6 91 23 45 67"><button type="button" class="auth-clear-input" data-clear-input="authPhone" aria-label="Effacer le numéro">Effacer</button></div></div>
-      <div class="form-group"><label for="phonePassword">Mot de passe</label><div class="auth-input-row"><input class="form-sheet-el" id="phonePassword" type="password" name="password" required autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="go"><button type="button" class="auth-clear-input" data-clear-input="phonePassword" aria-label="Effacer le mot de passe">Effacer</button></div></div>
-      <button type="submit" id="phoneSubmit" class="btn-submit-modal">Se connecter</button>
-      <p class="form-error" id="phoneError"></p>
-      <p style="font-size:.8rem;opacity:.75;margin-top:10px;">Des annonces ont été publiées pour vous ? Connectez-vous avec votre numéro, puis cliquez sur 🔑 pour les récupérer.</p>
-    </form>
-  </div>
-</div>
-
-<!-- Modale Publication -->
-<div id="publishModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header"><h3>Publier une offre</h3><button class="modal-close" data-close="publishModal">×</button></div>
-    <form id="adForm">
-      <div class="form-group"><label>Catégorie</label><select class="form-sheet-el" id="adCategory"></select></div>
-      <div class="form-group"><label>Titre</label><input class="form-sheet-el" id="adTitle" type="text" required></div>
-      <div class="form-group"><label>Ville</label><select class="form-sheet-el" id="adCity"></select></div>
-      <div class="form-group"><label>Prix (FCFA)</label><input class="form-sheet-el" id="adPrice" type="number" required></div>
-      <div class="form-group"><label>Photo principale</label><input class="form-sheet-el" id="adImage" type="file" accept="image/jpeg,image/png,image/webp" required></div>
-      <div class="form-group video-upload-group"><label for="adVideoFile">🎬 Ajouter une vidéo à votre Reel (facultatif)</label><input class="form-sheet-el video-file-input" id="adVideoFile" name="adVideoFile" type="file" accept="video/*,.mp4,.webm,.mov,.quicktime" aria-describedby="adVideoHint adVideoSelected"><small class="form-hint" id="adVideoHint">Touchez le bouton « Choisir un fichier » pour ouvrir la galerie de votre téléphone. MP4 recommandé · maximum 50 Mo. La vidéo sera publiée dans CamerLink Reels.</small><p id="adVideoSelected" class="video-selected-name" aria-live="polite">Aucune vidéo sélectionnée (optionnel).</p><video id="adVideoPreview" class="video-upload-preview" controls playsinline hidden></video></div>
-      <div class="form-group"><label>Description</label><textarea class="form-sheet-el" id="adDesc" rows="3" required></textarea></div>
-      <div class="form-group"><label>WhatsApp / Téléphone</label><input class="form-sheet-el" id="adContact" type="tel" required></div>
-      <button type="submit" class="btn-submit-modal">Publier</button>
-      <p class="form-error" id="pubError"></p>
-    </form>
-  </div>
-</div>
-
-<!-- Espace professionnel artisan -->
-<div id="artisanSpaceModal" class="modal-overlay">
-  <div class="modal-sheet cl-space-sheet">
-    <div class="modal-header"><div><span class="cl-space-eyebrow">CAMERLINK PRO</span><h3>Mon espace artisan</h3></div><button class="modal-close" data-close="artisanSpaceModal" aria-label="Fermer">×</button></div>
-    <div id="artisanSpaceBody"><div class="state-msg">Chargement de votre espace…</div></div>
-  </div>
-</div>
-
-<!-- Modale de publication de statut (Ajout propre pour les artisans) -->
-<div id="publishStoryModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header"><h3>Publier un statut (24h)</h3><button class="modal-close" data-close="publishStoryModal">×</button></div>
-    <form id="storyForm">
-      <div class="form-group">
-        <label>Média (Image ou Vidéo)</label>
-        <input class="form-sheet-el" id="storyFile" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" required>
-        <small style="color:#888; font-size:0.8rem;">Max 50 Mo. Visible pendant 24 heures.</small>
-      </div>
-      <div class="form-group">
-        <label>Légende (max 200 caractères)</label>
-        <textarea class="form-sheet-el" id="storyCaption" rows="2" maxlength="200" placeholder="Décrivez votre statut..."></textarea>
-      </div>
-      <button type="submit" id="storySubmitBtn" class="btn-submit-modal">Publier le statut</button>
-      <p class="form-error" id="storyError"></p>
-    </form>
-  </div>
-</div>
-
-<!-- Modale Récupération des annonces par numéro -->
-<div id="claimModal" class="modal-overlay">
-  <div class="modal-sheet">
-    <div class="modal-header"><h3>🔑 Récupérer mes annonces</h3><button class="modal-close" data-close="claimModal">×</button></div>
-    <p style="font-size:.9rem;opacity:.85;margin-bottom:12px;">Vos annonces ont été publiées pour vous ? Indiquez le numéro utilisé dans ces annonces. Après vérification, elles seront transférées sur votre compte.</p>
-    <form id="claimForm">
-      <div class="form-group"><label>Numéro utilisé dans vos annonces</label><input class="form-sheet-el" id="claimPhone" type="tel" required placeholder="6 91 23 45 67"></div>
-      <p id="claimMatch" style="font-size:.85rem;margin:-4px 0 10px;"></p>
-      <div class="form-group"><label>Message (facultatif)</label><textarea class="form-sheet-el" id="claimNote" rows="2" maxlength="500" placeholder="Ex : je suis le gérant, mon WhatsApp est le même numéro"></textarea></div>
-      <button type="submit" id="claimSubmit" class="btn-submit-modal">Envoyer la demande</button>
-      <p class="form-error" id="claimError"></p>
-    </form>
-    <div id="claimMine" style="margin-top:14px;font-size:.88rem;"></div>
-    <div id="claimAdmin" style="margin-top:18px;"></div>
-  </div>
-</div>
-<script src="/script.js?v=20261012-stories-comments2"></script>
-<script src="/camerlink-community.js?v=20261012-2"></script>
-<script src="/camerlink-nextgen.js?v=20261011-5"></script>
-<script src="/camerlink-reel-social-fix.js?v=20261011-6"></script>
-
-<script src="/camerlink-my-content.js?v=20261011-1"></script>
-<script src="/camerlink-business-space.js?v=20261011-1"></script>
+</body>
+</html>
