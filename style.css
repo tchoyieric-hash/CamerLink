@@ -6,8 +6,8 @@
 }
 
 body {
-    background-color: #0b111e;
-    color: #ffffff;
+    background-color: #111b21; /* Fond sombre inspiré de WhatsApp Dark Mode */
+    color: #e9edef;
     padding-bottom: 70px;
 }
 
@@ -17,21 +17,21 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    background-color: #0b111e;
+    background-color: #202c33;
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
 .logo-area h1 {
-    font-size: 22px;
-    color: #00d2ff;
-    font-weight: 800;
+    font-size: 20px;
+    color: #00a884; /* Vert WhatsApp */
+    font-weight: 700;
 }
 
 .subtitle {
     font-size: 10px;
-    color: #94a3b8;
+    color: #8696a0;
 }
 
 .header-icons {
@@ -39,6 +39,7 @@ body {
     align-items: center;
     gap: 20px;
     font-size: 18px;
+    color: #8696a0;
 }
 
 .notification-badge {
@@ -49,8 +50,10 @@ body {
     position: absolute;
     top: -5px;
     right: -5px;
-    background: #ef4444;
+    background: #00a884;
+    color: #111b21;
     font-size: 10px;
+    font-weight: bold;
     padding: 2px 5px;
     border-radius: 50%;
 }
@@ -66,98 +69,120 @@ body {
 .app-nav {
     display: flex;
     justify-content: space-around;
-    padding: 10px 0;
-    background: #0b111e;
-    border-bottom: 1px solid #1e293b;
+    padding: 12px 0;
+    background: #202c33;
+    border-bottom: 1px solid #222d34;
 }
 
 .tab-btn {
     background: none;
     border: none;
-    color: #94a3b8;
+    color: #8696a0;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    padding-bottom: 5px;
 }
 
 .tab-btn.active {
-    color: #ffffff;
-    border-bottom: 2px solid #00d2ff;
+    color: #00a884;
+    border-bottom: 3px solid #00a884;
+    padding-bottom: 4px;
 }
 
-/* Section des Statuts */
-.stories-section {
+/* BARRE DE STATUTS STYLE WHATSAPP */
+.whatsapp-status-bar {
     display: flex;
     gap: 15px;
     padding: 15px 20px;
     overflow-x: auto;
-    background: #111827;
-    border-bottom: 1px solid #1e293b;
+    background: #202c33;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #222d34;
 }
 
-.stories-section::-webkit-scrollbar {
+.whatsapp-status-bar::-webkit-scrollbar {
     display: none;
 }
 
-.story-item {
+.status-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     cursor: pointer;
-    min-width: 60px;
+    min-width: 65px;
 }
 
-.story-ring {
-    width: 60px;
-    height: 60px;
+.status-ring {
+    width: 62px;
+    height: 62px;
     border-radius: 50%;
-    padding: 2px;
+    padding: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
-.story-ring.active {
-    background: linear-gradient(45deg, #f59e0b, #ec4899);
+/* Anneau non vu (Vert WhatsApp) */
+.status-ring.unviewed {
+    border: 2px solid #00a884;
 }
 
-.story-ring.plus {
-    background: #1e293b;
-    border: 2px dashed #00d2ff;
-    color: #00d2ff;
+/* Anneau déjà vu (Gris discret) */
+.status-ring.viewed {
+    border: 2px solid #8696a0;
 }
 
-.story-ring img {
+/* Mon statut avec icône plus */
+.status-ring.plus {
+    border: 2px dashed #00a884;
+}
+
+.status-ring img {
     width: 100%;
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #111827;
 }
 
-.story-item span {
+.add-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #00a884;
+    color: #111b21;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    border: 2px solid #202c33;
+}
+
+.status-item span {
     font-size: 11px;
-    color: #cbd5e1;
+    color: #e9edef;
     max-width: 65px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-/* Carte Reel */
+/* CARTE REEL IMMERSIF */
 .reel-card {
-    background: #111827;
-    margin: 15px;
-    border-radius: 16px;
+    background: #202c33;
+    margin: 0 15px 15px 15px;
+    border-radius: 12px;
     overflow: hidden;
-    border: 1px solid #1e293b;
+    border: 1px solid #222d34;
 }
 
 .reel-media-wrapper {
     position: relative;
-    height: 400px;
+    height: 420px;
     background: #000;
 }
 
@@ -171,9 +196,9 @@ body {
     position: absolute;
     top: 15px;
     left: 15px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 5px 10px;
-    border-radius: 20px;
+    background: rgba(17, 27, 33, 0.7);
+    padding: 5px 12px;
+    border-radius: 15px;
     font-size: 12px;
     backdrop-filter: blur(5px);
 }
@@ -182,9 +207,9 @@ body {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(17, 27, 33, 0.7);
     padding: 5px 10px;
-    border-radius: 20px;
+    border-radius: 15px;
     font-size: 12px;
 }
 
@@ -199,11 +224,11 @@ body {
 }
 
 .action-btn {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(17, 27, 33, 0.6);
     border: none;
     color: white;
-    width: 45px;
-    height: 45px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     display: flex;
     flex-direction: column;
@@ -220,7 +245,7 @@ body {
 }
 
 .action-btn.whatsapp {
-    background: #25d366;
+    background: #00a884;
 }
 
 /* Pied de page du Reel */
@@ -236,8 +261,8 @@ body {
 }
 
 .author-info img {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -250,15 +275,15 @@ body {
 }
 
 .verified {
-    color: #3b82f6;
+    color: #53bdeb;
     font-size: 12px;
 }
 
 .follow-btn {
     margin-left: auto;
     background: transparent;
-    border: 1px solid #00d2ff;
-    color: #00d2ff;
+    border: 1px solid #00a884;
+    color: #00a884;
     padding: 5px 15px;
     border-radius: 20px;
     font-size: 12px;
@@ -268,87 +293,87 @@ body {
 
 .reel-description {
     font-size: 13px;
-    color: #e2e8f0;
+    color: #e9edef;
     line-height: 1.4;
     margin-bottom: 10px;
 }
 
 .tags {
-    color: #38bdf8;
+    color: #53bdeb;
 }
 
 .audio-info {
     font-size: 12px;
-    color: #94a3b8;
+    color: #8696a0;
 }
 
 /* Commentaires */
 .comments-section {
     padding: 15px;
-    border-top: 1px solid #1e293b;
+    border-top: 1px solid #222d34;
 }
 
 .comments-section h3 {
-    font-size: 14px;
-    margin-bottom: 15px;
-    color: #cbd5e1;
+    font-size: 13px;
+    margin-bottom: 12px;
+    color: #8696a0;
 }
 
 .comment-item {
     display: flex;
     gap: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .comment-item img {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     object-fit: cover;
 }
 
 .comment-content {
-    background: #1e293b;
-    padding: 10px;
-    border-radius: 12px;
+    background: #2a3942;
+    padding: 8px 12px;
+    border-radius: 8px;
     flex-grow: 1;
 }
 
 .comment-user {
     font-size: 12px;
     font-weight: bold;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 .comment-user .time {
     font-weight: normal;
-    color: #94a3b8;
+    color: #8696a0;
     margin-left: 5px;
     font-size: 10px;
 }
 
 .comment-content p {
     font-size: 12px;
-    color: #e2e8f0;
+    color: #e9edef;
 }
 
 .comment-actions {
     display: flex;
     gap: 15px;
     font-size: 10px;
-    color: #94a3b8;
-    margin-top: 5px;
+    color: #8696a0;
+    margin-top: 4px;
 }
 
 .comment-input-box {
     display: flex;
     gap: 10px;
-    margin-top: 15px;
+    margin-top: 12px;
 }
 
 .comment-input-box input {
     flex-grow: 1;
-    background: #1e293b;
+    background: #2a3942;
     border: none;
     padding: 10px 15px;
     border-radius: 20px;
@@ -357,12 +382,12 @@ body {
 }
 
 .comment-input-box button {
-    background: #00d2ff;
+    background: #00a884;
     border: none;
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    color: #0b111e;
+    color: #111b21;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -375,8 +400,8 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    background: #0b111e;
-    border-top: 1px solid #1e293b;
+    background: #202c33;
+    border-top: 1px solid #222d34;
     display: flex;
     justify-content: space-around;
     padding: 10px 0;
@@ -387,7 +412,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #94a3b8;
+    color: #8696a0;
     text-decoration: none;
     font-size: 10px;
     gap: 3px;
@@ -398,12 +423,12 @@ body {
 }
 
 .nav-item.active {
-    color: #00d2ff;
+    color: #00a884;
 }
 
 .nav-item.plus-btn {
-    background: #00d2ff;
-    color: #0b111e;
+    background: #00a884;
+    color: #111b21;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -411,8 +436,4 @@ body {
     align-items: center;
     justify-content: center;
     margin-top: -5px;
-}
-
-.nav-item.plus-btn i {
-    font-size: 20px;
-}
+        }
