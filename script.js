@@ -726,6 +726,12 @@
       </article>`;
     }).join('');
 
+    // Afficher immédiatement le nombre de commentaires publics de chaque Reel.
+    // Les commentaires restent filtrés côté serveur sur status='approved'.
+    list.forEach(function(ad) {
+      updateReelCommentCount(ad.id);
+    });
+
     // lecture automatique (sans son) de la vidéo visible, pause des autres
     if ('IntersectionObserver' in window) {
       reelObserver = new IntersectionObserver((entries) => {
