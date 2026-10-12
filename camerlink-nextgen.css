@@ -415,3 +415,41 @@ main { padding-top:16px; }
 section.reels-section #reels-feed > .reel-card .cl-reel-actions {
   z-index: 8;
 }
+
+
+/* Hotfix mobile: la carte Reel utilise toute la largeur utile du conteneur */
+@media (max-width: 900px) {
+  #reels-section { width: calc(100% - 24px) !important; max-width: none !important; box-sizing: border-box !important; }
+  #reels-section #reels-feed,
+  #reels-section #reels-feed.reels-feed {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+    gap: 14px !important;
+    overflow-x: hidden !important;
+  }
+  #reels-section #reels-feed > article.reel-card {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: min(100%, 460px) !important;
+    min-width: 0 !important;
+    max-width: 460px !important;
+    height: min(76svh, 720px) !important;
+    min-height: 440px !important;
+    max-height: 720px !important;
+    margin: 0 auto 14px !important;
+    box-sizing: border-box !important;
+  }
+  #reels-section #reels-feed > article.reel-card > video {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
+  }
+}
