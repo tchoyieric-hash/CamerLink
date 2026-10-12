@@ -840,13 +840,21 @@
     storyGroups.forEach((g, gi) => {
       const name = (g.shop && g.shop.name) || 'Artisan CamerLink';
       const logo = g.shop && g.shop.logo_url;
-      const avatar = logo
-        ? `<img src="${esc(logo)}" alt="" loading="lazy" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
-        : esc(name.charAt(0).toUpperCase());
+      const latest = g.items && g.items[g.items.length - 1];
+      const media = latest && latest.media_url ? latest.media_url : '';
+      const videoStory = media && isVideo(media);
+      const avatar = videoStory
+        ? '<span class="cl-story-video-icon" aria-hidden="true">▶</span>'
+        : media
+          ? `<img src="${esc(media)}" alt="" loading="lazy" class="cl-story-preview">`
+          : logo
+            ? `<img src="${esc(logo)}" alt="" loading="lazy" class="cl-story-preview">`
+            : esc(name.charAt(0).toUpperCase());
       html += `
-        <div class="shop-story-card" data-group="${gi}" role="button" tabindex="0">
-          <div class="story-ring"><div class="story-avatar-wrap">${avatar}</div></div>
+        <div class="shop-story-card cl-story-card" data-group="${gi}" role="button" tabindex="0" aria-label="Voir les statuts de ${esc(name)}">
+          <div class="story-ring cl-story-ring"><div class="story-avatar-wrap cl-story-avatar-wrap">${avatar}</div><span class="cl-story-count">${g.items.length}</span></div>
           <div class="shop-story-name">${esc(name)}</div>
+          <div class="cl-story-kind">${videoStory ? '▶ Vidéo' : '▧ Photo'} · 24 h</div>
         </div>`;
     });
     container.innerHTML = html;
@@ -856,7 +864,7 @@
     if (!card) return;
     if (card.dataset.action === 'add') { window.openAddStoryModal(); return; }
     const g = storyGroups[Number(card.dataset.group)];
-    if (g) openArtisan(g.uid); // fiche de l'artisan, avec un bouton pour voir ses statuts
+    if (g) openViewer(Number(card.dataset.group));
   }
   $('shops-container').addEventListener('click', (e) => activateCard(e.target.closest('.shop-story-card')));
   $('shops-container').addEventListener('keydown', (e) => {
