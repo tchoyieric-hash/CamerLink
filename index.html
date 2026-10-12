@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CamerLink - Annonces et commerces locaux</title>
+    <title>Adlict - Statuts & Reels</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,8 +12,8 @@
     <!-- En-tête -->
     <header class="app-header">
         <div class="logo-area">
-            <h1>CamerLink</h1>
-            <span class="subtitle">Annonces et commerces locaux</span>
+            <h1>Adlict</h1>
+            <span class="subtitle">Espace multimédia et statuts</span>
         </div>
         <div class="header-icons">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -27,52 +27,50 @@
 
     <!-- Navigation des onglets -->
     <nav class="app-nav">
-        <button class="tab-btn active">Reels</button>
-        <button class="tab-btn">Statuts</button>
-        <button class="tab-btn">Annonces</button>
-        <button class="tab-btn">Découvrir</button>
+        <button class="tab-btn active" onclick="switchTab('reels')">Reels</button>
+        <button class="tab-btn" onclick="switchTab('status')">Statuts</button>
     </nav>
 
-    <!-- Contenu Principal : Flux Reels & Statuts -->
+    <!-- Contenu Principal -->
     <main class="main-container">
         
-        <!-- Section des Statuts / Stories en haut -->
-        <section class="stories-section">
-            <div class="story-item create-story">
-                <div class="story-ring plus">
-                    <i class="fa-solid fa-plus"></i>
+        <!-- SECTION STATUTS (Style WhatsApp Status) -->
+        <section id="status-section" class="whatsapp-status-bar">
+            <div class="status-item my-status">
+                <div class="status-ring plus">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="Mon statut">
+                    <div class="add-badge"><i class="fa-solid fa-plus"></i></div>
                 </div>
                 <span>Mon statut</span>
             </div>
-            <div class="story-item">
-                <div class="story-ring active">
+            <div class="status-item" onclick="openStoryViewer('Tchoyi Eric')">
+                <div class="status-ring unviewed">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" alt="Statut">
                 </div>
                 <span>Tchoyi Eric</span>
             </div>
-            <div class="story-item">
-                <div class="story-ring active">
+            <div class="status-item" onclick="openStoryViewer('Moussa T.')">
+                <div class="status-ring unviewed">
                     <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" alt="Statut">
                 </div>
                 <span>Moussa T.</span>
             </div>
-            <div class="story-item">
-                <div class="story-ring active">
+            <div class="status-item" onclick="openStoryViewer('Aminata Food')">
+                <div class="status-ring viewed">
                     <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" alt="Statut">
                 </div>
                 <span>Aminata Food</span>
             </div>
         </section>
 
-        <!-- Flux Principal Reel / Vidéo -->
-        <div class="reel-card">
+        <!-- SECTION REELS (Style WhatsApp Video / TikTok immersif) -->
+        <section id="reels-section" class="reel-card">
             <div class="reel-media-wrapper">
                 <div class="location-tag"><i class="fa-solid fa-location-dot"></i> Yaoundé</div>
                 <div class="pagination-dots">1/3</div>
-                <!-- Vidéo ou Image du Reel -->
                 <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600" alt="Plat camerounais" class="reel-img">
                 
-                <!-- Actions latérales (Like, Commentaires, Partage) -->
+                <!-- Actions latérales -->
                 <div class="reel-actions">
                     <button class="action-btn"><i class="fa-solid fa-heart"></i><span>1.2k</span></button>
                     <button class="action-btn"><i class="fa-solid fa-comment"></i><span>89</span></button>
@@ -81,7 +79,7 @@
                 </div>
             </div>
 
-            <!-- Infos de l'auteur et légende -->
+            <!-- Infos de l'auteur -->
             <div class="reel-footer">
                 <div class="author-info">
                     <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100" alt="Chef Patrick">
@@ -92,14 +90,14 @@
                 </div>
                 <p class="reel-description">
                     Un bon plat, c'est du bonheur ! 😋 Spécialité camerounaise 🇨🇲<br>
-                    <span class="tags">#CuisineLocale #Yaoundé #BonGoût #CamerLink</span>
+                    <span class="tags">#CuisineLocale #Yaoundé #BonGoût #Adlict</span>
                 </p>
                 <div class="audio-info">
                     <i class="fa-solid fa-music"></i> Son original - Chef Patrick Cuisine
                 </div>
             </div>
 
-            <!-- Section des Commentaires -->
+            <!-- Commentaires -->
             <div class="comments-section">
                 <h3>Commentaires (89)</h3>
                 <div class="comment-list">
@@ -111,23 +109,14 @@
                             <div class="comment-actions"><span><i class="fa-solid fa-heart"></i> 12</span> <span>Répondre</span></div>
                         </div>
                     </div>
-                    <div class="comment-item">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="Avatar">
-                        <div class="comment-content">
-                            <div class="comment-user">Aminata Diallo <span class="time">Il y a 45 min</span></div>
-                            <p>Très bonne cuisine, continuez ! 👌</p>
-                            <div class="comment-actions"><span><i class="fa-solid fa-heart"></i> 8</span> <span>Répondre</span></div>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Input pour poster un commentaire -->
                 <div class="comment-input-box">
                     <input type="text" placeholder="Écrire un commentaire...">
                     <button><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
             </div>
-        </div>
+        </section>
 
     </main>
 
@@ -140,5 +129,18 @@
         <a href="#" class="nav-item"><i class="fa-solid fa-user"></i><span>Profil</span></a>
     </nav>
 
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if(tab === 'reels') {
+                event.target.classList.add('active');
+            } else {
+                event.target.classList.add('active');
+            }
+        }
+        function openStoryViewer(name) {
+            alert("Ouverture du statut WhatsApp de " + name);
+        }
+    </script>
 </body>
 </html>
