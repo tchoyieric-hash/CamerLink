@@ -585,21 +585,29 @@
     st.id = 'reels-vertical-fix';
     st.textContent = `
 @media screen and (max-width: 700px) {
-  .reels-section { width: 100%; min-width: 0; overflow: hidden; }
+  .reels-section, .reels-section > * { box-sizing: border-box !important; }
+  .reels-section {
+    display: block !important; width: 100% !important; max-width: 100% !important;
+    min-width: 0 !important; overflow: visible !important; padding-left: 12px !important; padding-right: 12px !important;
+  }
   #reels-feed, #reels-feed.reels-feed {
     display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
     align-items: stretch !important; justify-content: flex-start !important;
-    width: 100% !important; max-width: 100% !important; max-height: 78vh !important;
+    width: 100% !important; max-width: none !important; min-width: 0 !important;
+    max-height: 78svh !important; box-sizing: border-box !important;
     overflow-x: hidden !important; overflow-y: auto !important; scroll-snap-type: y mandatory !important;
+    margin: 0 !important; padding: 0 !important;
   }
-  #reels-feed > .reel-card {
-    display: block !important; position: relative !important; flex: 0 0 72vh !important;
-    width: 100% !important; max-width: 420px !important; min-width: 0 !important;
-    height: 72vh !important; max-height: 640px !important; margin: 0 auto 12px !important;
-    scroll-snap-align: start !important;
+  #reels-feed > article.reel-card, #reels-feed > .reel-card {
+    display: block !important; position: relative !important; flex: 0 0 72svh !important;
+    width: 100% !important; max-width: none !important; min-width: 0 !important;
+    height: 72svh !important; min-height: 420px !important; max-height: 760px !important;
+    margin: 0 0 12px !important; box-sizing: border-box !important;
+    scroll-snap-align: start !important; border-radius: 16px !important; overflow: hidden !important;
   }
-  #reels-feed > .reel-card video {
-    display: block !important; width: 100% !important; height: 100% !important; object-fit: cover !important;
+  #reels-feed > article.reel-card > video, #reels-feed > .reel-card > video {
+    display: block !important; width: 100% !important; height: 100% !important; max-width: none !important;
+    object-fit: cover !important;
   }
 }`;
     document.head.appendChild(st);
