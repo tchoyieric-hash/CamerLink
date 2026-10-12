@@ -653,12 +653,28 @@
       if (!rows.length) { list.innerHTML = '<p style="color:#cbd5e1;text-align:center;padding:18px;">Aucun commentaire publié pour le moment.</p>'; }
       else {
         list.innerHTML = '';
+        const authorIds = [...new Set(rows.map(row => row.user_id).filter(Boolean))];
+        const authors = await shopInfo(authorIds);
         rows.forEach(function(row) {
           const item = document.createElement('div');
-          item.style.cssText = 'padding:10px 0;border-bottom:1px solid #374151;overflow-wrap:anywhere;';
-          const body = document.createElement('div'); body.textContent = row.content || '';
-          const date = document.createElement('small'); date.style.color = '#9ca3af'; date.textContent = row.created_at ? new Date(row.created_at).toLocaleString('fr-FR') : '';
-          item.append(body, date); list.appendChild(item);
+          item.style.cssText = 'display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #26364b;overflow-wrap:anywhere;';
+          const author = authors[row.user_id] || null;
+          const authorName = (author && author.owner_name && author.owner_name.trim())
+            || (author && author.name && author.name.trim())
+            || (currentUser && currentUser.id === row.user_id ? 'Vous' : 'Utilisateur CamerLink');
+          const avatar = document.createElement('div');
+          avatar.style.cssText = 'width:34px;height:34px;flex:0 0 34px;border-radius:50%;overflow:hidden;background:#123047;color:#67e8f9;display:grid;place-items:center;font-weight:800;';
+          if (author && author.logo_url) {
+            const img = document.createElement('img');
+            img.src = author.logo_url; img.alt = ''; img.loading = 'lazy';
+            img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+            avatar.appendChild(img);
+          } else avatar.textContent = authorName.charAt(0).toUpperCase();
+          const detail = document.createElement('div'); detail.style.minWidth = '0';
+          const heading = document.createElement('strong'); heading.style.cssText = 'display:block;font-size:.9rem;color:#e2e8f0;'; heading.textContent = authorName;
+          const body = document.createElement('div'); body.style.cssText = 'margin:3px 0;color:#f8fafc;'; body.textContent = row.content || '';
+          const date = document.createElement('small'); date.style.color = '#94a3b8'; date.textContent = row.created_at ? new Date(row.created_at).toLocaleString('fr-FR') : '';
+          detail.append(heading, body, date); item.append(avatar, detail); list.appendChild(item);
         });
       }
       modal.querySelector('[data-comments-form] input').focus();
@@ -857,17 +873,20 @@
       </div>`;
 
     storyGroups.forEach((g, gi) => {
-      const name = (g.shop && g.shop.owner_name && g.shop.owner_name.trim()) || 'Compte CamerLink';
+      const name = (g.shop && g.shop.owner_name && g.shop.owner_name.trim())
+        || (g.shop && g.shop.name && g.shop.name.trim())
+        || 'Artisan CamerLink';
       const logo = g.shop && g.shop.logo_url;
       const latest = g.items && g.items[g.items.length - 1];
       const media = latest && latest.media_url ? latest.media_url : '';
       const videoStory = media && isVideo(media);
-      const avatar = videoStory
-        ? '<span class="cl-story-video-icon" aria-hidden="true">▶</span>'
-        : media
+      // Le cercle représente d'abord le propriétaire, pas le média du statut.
+      const avatar = logo
+        ? `<img src="${esc(logo)}" alt="Photo de ${esc(name)}" loading="lazy" class="cl-story-preview">`
+        : (!videoStory && media)
           ? `<img src="${esc(media)}" alt="" loading="lazy" class="cl-story-preview">`
-          : logo
-            ? `<img src="${esc(logo)}" alt="" loading="lazy" class="cl-story-preview">`
+          : videoStory
+            ? `<span class="cl-story-initial" aria-hidden="true">${esc(name.charAt(0).toUpperCase())}</span>`
             : esc(name.charAt(0).toUpperCase());
       html += `
         <div class="shop-story-card cl-story-card" data-group="${gi}" role="button" tabindex="0" aria-label="Voir les statuts de ${esc(name)}">
@@ -919,7 +938,9 @@
     const s = g && g.items[viewer.i];
     if (!s) { window.closeStoryViewer(); return; }
 
-    const name = (g.shop && g.shop.owner_name && g.shop.owner_name.trim()) || 'Compte CamerLink';
+    const name = (g.shop && g.shop.owner_name && g.shop.owner_name.trim())
+      || (g.shop && g.shop.name && g.shop.name.trim())
+      || 'Artisan CamerLink';
     const logo = g.shop && g.shop.logo_url;
     const avatar = $('viewerAvatar');
     if (logo) { avatar.src = logo; avatar.style.display = ''; }
