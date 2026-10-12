@@ -1534,6 +1534,15 @@
     const shop = await fetchShop(uid);
     const mine = allListings.filter(ad => String(ad.user_id) === String(uid));
     const totalViews = mine.reduce((sum, ad) => sum + Number(ad.views || ad.vues || 0), 0);
+    let receivedLikes = null;
+    if (mine.length) {
+      try {
+        const likesResult = await withTimeout(sb.rpc('reel_likes_count', { p_annonce_ids: mine.map(ad => Number(ad.id)) }), 10000);
+        if (!likesResult.error) receivedLikes = (likesResult.data || []).reduce((sum, row) => sum + Number(row.nb || 0), 0);
+      } catch (_) { /* le tableau de bord reste utilisable si la statistique est indisponible */ }
+    } else {
+      receivedLikes = 0;
+    }
     body.innerHTML = `
       <section class="cl-space-welcome">
         <div class="cl-space-avatar">${avatarHTML(shop, 58)}</div>
@@ -1543,7 +1552,7 @@
       <div class="cl-space-stats">
         <article><span>Offres publiées</span><strong>${mine.length}</strong></article>
         <article><span>Vues enregistrées</span><strong>${totalViews}</strong></article>
-        <article><span>Favoris reçus</span><strong>—</strong><small>Statistique à connecter</small></article>
+        <article><span>J’aime reçus</span><strong>${receivedLikes === null ? '—' : receivedLikes}</strong><small>${receivedLikes === null ? 'Statistique indisponible' : 'Sur vos annonces et Reels'}</small></article>
       </div>
       <section class="cl-space-section">
         <div class="cl-space-section-head"><div><span class="cl-space-eyebrow">BOUTIQUE NUMÉRIQUE</span><h4>Informations professionnelles</h4></div><span class="cl-space-lock">🔒 Votre compte</span></div>
