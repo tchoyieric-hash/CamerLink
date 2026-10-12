@@ -1,10 +1,11 @@
--- CamerLink: aligner les droits SQL sur la publication immédiate des commentaires Reels.
--- Les utilisateurs connectés publient sous leur propre identifiant; les commentaires publics
--- restent lisibles uniquement lorsqu'ils portent le statut approved.
--- Migration idempotente. À exécuter dans le SQL Editor du projet Supabase CamerLink.
+-- CamerLink: publier les commentaires Reels approuvés sans ouvrir les droits de modération.
+-- Migration idempotente : les visiteurs peuvent lire les commentaires approuvés;
+-- les utilisateurs connectés peuvent insérer uniquement leurs propres commentaires approved.
 begin;
 
+drop policy if exists "authenticated users can submit reel comments" on public.reel_comments;
 drop policy if exists "Authenticated users submit own reel comments" on public.reel_comments;
+
 create policy "Authenticated users submit own reel comments"
   on public.reel_comments
   for insert to authenticated
@@ -14,9 +15,10 @@ create policy "Authenticated users submit own reel comments"
   );
 
 revoke all on public.reel_comments from anon, authenticated;
+revoke insert (reel_id, user_id, content, status) on public.reel_comments from authenticated;
+revoke update (status) on public.reel_comments from authenticated;
 grant select on public.reel_comments to anon, authenticated;
 grant insert (reel_id, user_id, content, status) on public.reel_comments to authenticated;
-grant update (status) on public.reel_comments to authenticated;
-grant delete on public.reel_comments to authenticated;
 
 commit;
+notify pgrst, 'reload schema';
