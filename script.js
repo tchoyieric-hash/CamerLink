@@ -632,7 +632,7 @@
     return wrap;
   }
   async function fetchApprovedReelComments(reelId) {
-    const result = await withTimeout(sb.from('reel_comments').select('id,reel_id,user_id,content,status,created_at').eq('reel_id', Number(reelId)).eq('status', 'approved').order('created_at', { ascending: true }).limit(200));
+    const result = await withTimeout(sb.from('reel_comments').select('id,reel_id,user_id,content,status,created_at').eq('reel_id', Number(reelId)).ilike('status', 'approved').order('created_at', { ascending: true }).limit(200));
     if (result.error) throw result.error;
     return result.data || [];
   }
