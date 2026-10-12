@@ -453,3 +453,44 @@ section.reels-section #reels-feed > .reel-card .cl-reel-actions {
     object-fit: cover !important;
   }
 }
+
+
+/* CamerLink mobile Reels: fix définitif de la largeur utile sur téléphone */
+@media screen and (max-width: 700px) {
+  #reels-feed {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: calc(100vw - 32px) !important;
+    max-width: 560px !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    margin-left: calc(50% - 50vw + 16px) !important;
+    margin-right: 0 !important;
+    padding: 0 0 12px !important;
+    gap: 14px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    max-height: 78svh !important;
+  }
+  #reels-feed > article.reel-card,
+  #reels-feed > .reel-card {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 560px !important;
+    min-width: 0 !important;
+    height: 72svh !important;
+    min-height: 420px !important;
+    max-height: 760px !important;
+    margin: 0 0 14px !important;
+    box-sizing: border-box !important;
+  }
+  #reels-feed > article.reel-card > video,
+  #reels-feed > .reel-card > video {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+}
