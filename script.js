@@ -886,7 +886,7 @@
         : (!videoStory && media)
           ? `<img src="${esc(media)}" alt="" loading="lazy" class="cl-story-preview">`
           : videoStory
-            ? `<span class="cl-story-initial" aria-hidden="true">${esc(name.charAt(0).toUpperCase())}</span>`
+            ? `<span class="cl-story-video-icon" aria-hidden="true">${esc(name.charAt(0).toUpperCase())}</span>`
             : esc(name.charAt(0).toUpperCase());
       html += `
         <div class="shop-story-card cl-story-card" data-group="${gi}" role="button" tabindex="0" aria-label="Voir les statuts de ${esc(name)}">
