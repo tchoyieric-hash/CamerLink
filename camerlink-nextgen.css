@@ -272,3 +272,44 @@ main { padding-top:16px; }
   .btn-icon,.btn-login,.btn-pub,.cat-chip,.fav-toggle-btn,.ad-card,.card-img-container img { transition:none!important; }
   .ad-card:hover,.cat-chip:hover,.fav-toggle-btn:hover { transform:none; }
 }
+
+/* Statuts façon WhatsApp — photos et vidéos visibles au premier regard */
+.shops-section { padding-top:22px; padding-bottom:12px; }
+.shops-section h2 { margin-bottom:15px; }
+.shops-container { align-items:flex-start; gap:14px; min-height:0; padding:5px 2px 14px; }
+.shop-story-card.cl-story-card,.shop-story-card.cta-card {
+  flex:0 0 82px; width:82px; min-width:82px; display:flex; flex-direction:column;
+  align-items:center; gap:6px; text-align:center; cursor:pointer;
+}
+.shop-story-card.cl-story-card { position:relative; }
+.cl-story-ring {
+  position:relative; width:70px!important; height:70px!important; padding:3px!important;
+  border-radius:50%; background:conic-gradient(from 25deg,#22d3ee,#8b5cf6,#ec4899,#f59e0b,#22d3ee);
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 5px 18px rgba(0,0,0,.24);
+  transition:transform .18s ease,filter .18s ease;
+}
+.shop-story-card:hover .cl-story-ring { transform:scale(1.045); filter:brightness(1.1); }
+.cl-story-avatar-wrap {
+  width:100%!important; height:100%!important; display:grid; place-items:center; overflow:hidden;
+  border:3px solid #090b14; border-radius:50%!important; background:#12182b;
+  color:#f8fafc; font-size:1.35rem; font-weight:850;
+}
+.cl-story-preview { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.cl-story-video-icon { display:grid; place-items:center; width:100%; height:100%; border-radius:50%; color:#fff; background:radial-gradient(circle at 30% 20%,#5b3da9,#11172b 75%); font-size:1.4rem; }
+.cl-story-count { position:absolute; right:-2px; bottom:-1px; display:grid; place-items:center; min-width:21px; height:21px; padding:0 5px; border:2px solid #090b14; border-radius:999px; background:#22d3ee; color:#07131b; font-size:.66rem; font-weight:900; }
+.shop-story-name { width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.75rem; line-height:1.3; font-weight:750; color:var(--color-text-main,#f8fafc); }
+.cl-story-kind { color:var(--color-text-muted,#9ca3af); font-size:.64rem; line-height:1.2; white-space:nowrap; }
+.shop-story-card.cta-card .story-ring { width:70px!important;height:70px!important;border:2px dashed rgba(34,211,238,.75);background:rgba(34,211,238,.07);box-shadow:none; }
+.shop-story-card.cta-card .story-avatar-wrap { border:0;background:transparent;color:#67e8f9;font-size:1.8rem; }
+.shop-story-card:focus-visible { outline:2px solid #22d3ee; outline-offset:4px; border-radius:14px; }
+.story-modal-content { border:1px solid rgba(148,163,255,.24); box-shadow:0 24px 70px rgba(0,0,0,.55); }
+.story-header-info { padding:12px 14px; background:linear-gradient(100deg,rgba(8,145,178,.16),rgba(124,58,237,.16)); }
+.story-media-container { background:#050609; }
+#viewerMedia,#viewerVideo { max-height:72vh!important; object-fit:contain; }
+.story-caption { padding:10px 14px 14px; line-height:1.5; }
+@media(max-width:480px) {
+ .shops-container { gap:12px; }
+ .shop-story-card.cl-story-card,.shop-story-card.cta-card { flex-basis:76px;width:76px;min-width:76px; }
+ .cl-story-ring,.shop-story-card.cta-card .story-ring { width:64px!important;height:64px!important; }
+}
+@media(prefers-reduced-motion:reduce){.cl-story-ring{transition:none}.shop-story-card:hover .cl-story-ring{transform:none}}
