@@ -494,3 +494,61 @@ section.reels-section #reels-feed > .reel-card .cl-reel-actions {
     object-fit: cover !important;
   }
 }
+
+
+/* CamerLink — expérience Reels mobile immersive (référence maquette 2026-10-12) */
+@media (max-width: 700px) {
+  #reels-section {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  #reels-section #reels-feed,
+  #reels-section .reels-feed {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 0 12px !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    max-height: 78svh !important;
+    scroll-snap-type: y mandatory !important;
+  }
+  #reels-section #reels-feed > article.reel-card,
+  #reels-section .reels-feed > article.reel-card {
+    display: block !important;
+    position: relative !important;
+    flex: 0 0 76svh !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 76svh !important;
+    min-height: 440px !important;
+    max-height: 760px !important;
+    margin: 0 0 12px !important;
+    box-sizing: border-box !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+    scroll-snap-align: start !important;
+    background: #030712 !important;
+  }
+  #reels-section #reels-feed > article.reel-card > video,
+  #reels-section .reels-feed > article.reel-card > video {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
+  }
+}
