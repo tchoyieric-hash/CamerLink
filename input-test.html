@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Test de saisie CamerLink</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:24px;font:16px system-ui,sans-serif;background:#0b1020;color:#f4f7ff}
+main{max-width:520px;margin:30px auto;padding:22px;border:1px solid #334155;border-radius:16px;background:#111827}
+label{display:block;margin:18px 0 8px}
+input,textarea{display:block;width:100%;min-height:50px;padding:12px;border:2px solid #64748b;border-radius:10px;background:#fff;color:#111;font:18px system-ui,sans-serif;user-select:text;-webkit-user-select:text;pointer-events:auto}
+p{line-height:1.5;color:#cbd5e1}
+#result{padding:12px;border-radius:10px;background:#1e293b;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<main>
+<h1>Test de saisie CamerLink</h1>
+<p>Cette page est indépendante du formulaire de connexion. Écris <strong>12345</strong> dans le champ ci-dessous. Aucun compte ni mot de passe n’est demandé.</p>
+<label for="test">Champ de test</label>
+<input id="test" type="text" inputmode="text" autocomplete="off" placeholder="Tape ici : 12345">
+<label for="test2">Deuxième champ</label>
+<textarea id="test2" rows="2" placeholder="Essaie aussi ici"></textarea>
+<p>Texte détecté :</p><div id="result">En attente de saisie…</div>
+<script>
+(function(){
+ const a=document.getElementById('test'),b=document.getElementById('test2'),out=document.getElementById('result');
+ function update(){out.textContent='Champ 1 : '+JSON.stringify(a.value)+' | Champ 2 : '+JSON.stringify(b.value)}
+ a.addEventListener('input',update);b.addEventListener('input',update);
+ a.addEventListener('keydown',function(){out.textContent='Clavier détecté dans le champ 1; valeur : '+JSON.stringify(a.value)});
+ b.addEventListener('keydown',function(){out.textContent='Clavier détecté dans le champ 2; valeur : '+JSON.stringify(b.value)});
+})();
+</script>
+</main>
+</body>
+</html>

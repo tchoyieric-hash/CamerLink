@@ -1,0 +1,47 @@
+name: CamerLink checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [feature/reel-likes]
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in script.js camerlink-community.js camerlink-nextgen.js camerlink-reel-social-fix.js stories-shops.js stories.js extras.js modifier.js password.js sw.js api/share.js; do
+            if [ -f "$file" ]; then
+              echo "Checking $file"
+              node --check "$file"
+            fi
+          done
+          for file in api/*.js; do
+            [ -f "$file" ] || continue
+            echo "Checking $file"
+            node --check "$file"
+          done
+      - name: Validate PWA manifest and Vercel config
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"
+      - name: Check frontend does not contain Supabase service-role key
+        shell: bash
+        run: |
+          if grep -RniE 'service_role|SUPABASE_SERVICE_ROLE_KEY' --include='*.js' --include='*.html' --include='*.json' .; then
+            echo "Potential privileged Supabase key found in frontend/source files."
+            exit 1
+          fi

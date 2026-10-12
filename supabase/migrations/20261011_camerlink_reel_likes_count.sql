@@ -1,0 +1,9 @@
+-- IMPORTANT : NE PAS EXECUTER DE MIGRATION POUR reel_likes OU reel_likes_count.
+-- L'installation Supabase de CamerLink possède déjà public.reel_likes avec
+-- les colonnes id, annonce_id, user_id, created_at et RLS actif.
+-- La fonction public.reel_likes_count(bigint[]) existe déjà en base et renvoie
+-- annonce_id, nb. Elle utilise SECURITY DEFINER pour compter tous les likes
+-- sans exposer l'identité des utilisateurs.
+-- Le code client doit insérer/supprimer avec annonce_id et lire le total via
+-- supabase.rpc('reel_likes_count', { p_annonce_ids: [id] }).
+-- Ce fichier est volontairement informatif : ne pas le coller dans SQL Editor.

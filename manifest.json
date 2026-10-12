@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "CamerLink — Découverte & Reels",
+  "short_name": "CamerLink",
+  "description": "Découvrez des artisans, boutiques et vidéos au Cameroun.",
+  "lang": "fr-CM",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050609",
+  "theme_color": "#050609",
+  "categories": [
+    "social",
+    "shopping",
+    "lifestyle"
+  ],
+  "icons": [
+    {
+      "src": "/camerlink-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
