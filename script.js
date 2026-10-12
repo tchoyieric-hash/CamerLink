@@ -1817,8 +1817,8 @@
         <div id="adDetailBody"></div>
       </div>
     </div>
-    <div id="artisanModal" class="modal-overlay">
-      <div class="modal-sheet" style="max-width:520px;">
+    <div id="artisanModal" class="modal-overlay cl-artisan-page-overlay">
+      <div class="modal-sheet cl-artisan-page-sheet" style="max-width:1040px;">
         <div class="modal-header"><h3>Fiche artisan</h3><button type="button" class="modal-close" data-close="artisanModal" aria-label="Fermer">×</button></div>
         <div id="artisanBody"></div>
       </div>
