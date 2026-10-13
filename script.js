@@ -1010,29 +1010,30 @@
     const body = $('inboxBody');
     body.innerHTML = '<div class="state-msg">Chargement...</div>';
     try {
-      const msgs = await fetchMessages();
-      const me = currentUser.id;
-      const convs = new Map();
-      msgs.forEach(m => {
-        const other = m.sender_id === me ? m.receiver_id : m.sender_id;
-        const key = other + '|' + (m.ad_id || '');
-        if (!convs.has(key)) convs.set(key, { other, ad: m.ad_id, last: m });
-      });
-      if (convs.size === 0) {
+      // Utilise la fonction SQL dédiée : elle regroupe une conversation par interlocuteur,
+      // au lieu de fragmenter la boîte de réception par annonce/Reel.
+      const { data, error } = await withTimeout(sb.rpc('get_conversations'));
+      if (error) throw error;
+      const convs = data || [];
+      if (convs.length === 0) {
         body.innerHTML = '<div class="state-msg">Aucun message pour le moment.</div>';
         return;
       }
-      const names = await shopNames([...new Set([...convs.values()].map(c => c.other))]);
-      body.innerHTML = [...convs.values()].map(c => `
-        <button type="button" data-other="${esc(c.other)}" data-ad="${esc(c.ad || '')}"
-          style="display:block;width:100%;text-align:left;padding:10px;margin-bottom:6px;border-radius:10px;background:rgba(127,127,127,0.12);cursor:pointer;">
-          <strong>${esc(names[c.other] || 'Utilisateur')}</strong>
-          ${c.ad && adTitleOf(c.ad) ? `<small style="opacity:.7"> · ${esc(adTitleOf(c.ad))}</small>` : ''}
-          <div style="opacity:.8;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-            ${c.last.sender_id === me ? 'Vous : ' : ''}${esc(c.last.content)}
-          </div>
-          <small style="opacity:.6">${fmtDate(c.last.created_at)}</small>
-        </button>`).join('');
+      body.innerHTML = convs.map(c => {
+        const adLabel = c.ad_title || (c.ad_id ? adTitleOf(c.ad_id) : '');
+        const preview = (c.last_from_me ? 'Vous : ' : '') + (c.last_content || '');
+        return `
+          <button type="button" data-other="${esc(c.other_id)}" data-ad="${esc(c.ad_id || '')}"
+            style="display:block;width:100%;text-align:left;padding:10px;margin-bottom:6px;border-radius:10px;background:rgba(127,127,127,0.12);cursor:pointer;">
+            <strong>${esc(c.other_name || 'Utilisateur')}</strong>
+            ${adLabel ? `<small style="opacity:.7"> · ${esc(adLabel)}</small>` : ''}
+            <div style="opacity:.8;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              ${esc(preview)}
+            </div>
+            <small style="opacity:.6">${fmtDate(c.last_at)}</small>
+            ${Number(c.unread) > 0 ? `<small style="display:inline-block;margin-left:6px;padding:2px 6px;border-radius:10px;background:var(--a1);color:#05060D;">${Number(c.unread)}</small>` : ''}
+          </button>`;
+      }).join('');
     } catch (e) {
       body.innerHTML = '<div class="state-msg">Messagerie indisponible. Réessayez.</div>';
     }
@@ -1041,21 +1042,30 @@
   async function renderThread() {
     setView('thread');
     const body = $('inboxBody');
+    body.innerHTML = '<div class="state-msg">Chargement...</div>';
     try {
       const me = currentUser.id;
-      const msgs = (await fetchMessages())
-        .filter(m => (m.sender_id === chat.other || m.receiver_id === chat.other) &&
-                     String(m.ad_id || '') === String(chat.ad || ''))
-        .reverse();
+      // Le serveur vérifie les participants et renvoie toute la conversation, même si
+      // les messages ont été envoyés depuis des annonces/Reels différents.
+      const { data, error } = await withTimeout(sb.rpc('get_thread', {
+        p_other: chat.other,
+        p_limit: 200
+      }));
+      if (error) throw error;
+      const msgs = data || [];
       const names = await shopNames([chat.other]);
-      $('inboxTitle').textContent = (names[chat.other] || 'Utilisateur') + (chat.ad && adTitleOf(chat.ad) ? ' · ' + adTitleOf(chat.ad) : '');
+      $('inboxTitle').textContent = (names[chat.other] || 'Utilisateur');
       body.innerHTML = msgs.length ? msgs.map(m => `
         <div style="display:flex;justify-content:${m.sender_id === me ? 'flex-end' : 'flex-start'};margin-bottom:6px;">
           <div style="max-width:80%;padding:8px 12px;border-radius:12px;background:${m.sender_id === me ? 'var(--a1)' : 'rgba(127,127,127,0.2)'};color:${m.sender_id === me ? '#05060D' : 'inherit'};">
-            ${esc(m.content)}<div style="font-size:.7rem;opacity:.6;margin-top:2px;">${fmtDate(m.created_at)}</div>
+            ${esc(m.content)}${m.ad_title ? `<div style="font-size:.7rem;opacity:.7;margin-top:2px;">Annonce : ${esc(m.ad_title)}</div>` : ''}<div style="font-size:.7rem;opacity:.6;margin-top:2px;">${fmtDate(m.created_at)}</div>
           </div>
         </div>`).join('') : '<div class="state-msg">Écrivez le premier message.</div>';
       body.scrollTop = body.scrollHeight;
+      // Marque la conversation comme lue sans bloquer l'affichage.
+      sb.rpc('mark_thread_read', { p_other: chat.other }).then(({ error: readError }) => {
+        if (readError) console.warn('Impossible de marquer les messages comme lus', readError);
+      }).catch(() => {});
     } catch (e) {
       body.innerHTML = '<div class="state-msg">Messagerie indisponible. Réessayez.</div>';
     }
