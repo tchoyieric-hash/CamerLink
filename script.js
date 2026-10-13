@@ -1012,9 +1012,30 @@
     try {
       // Utilise la fonction SQL dédiée : elle regroupe une conversation par interlocuteur,
       // au lieu de fragmenter la boîte de réception par annonce/Reel.
-      const { data, error } = await withTimeout(sb.rpc('get_conversations'));
-      if (error) throw error;
-      const convs = data || [];
+      let { data, error } = await withTimeout(sb.rpc('get_conversations'));
+      let convs = data || [];
+      if (error || !Array.isArray(data)) {
+        console.warn('get_conversations RPC failed; using message-table fallback', error);
+        const rows = await fetchMessages();
+        const grouped = new Map();
+        rows.forEach(m => {
+          const other = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+          if (!other || other === currentUser.id) return;
+          const prev = grouped.get(other);
+          if (!prev || new Date(m.created_at).getTime() > new Date(prev.last_at).getTime()) {
+            grouped.set(other, {
+              other_id: other, other_name: '', ad_id: m.ad_id,
+              last_content: m.content, last_at: m.created_at,
+              last_from_me: m.sender_id === currentUser.id, unread: 0
+            });
+          }
+          if (m.receiver_id === currentUser.id && !m.read_at) {
+            const item = grouped.get(other);
+            if (item) item.unread = Number(item.unread || 0) + 1;
+          }
+        });
+        convs = Array.from(grouped.values()).sort((a, b) => new Date(b.last_at) - new Date(a.last_at));
+      }
       if (convs.length === 0) {
         body.innerHTML = '<div class="state-msg">Aucun message pour le moment.</div>';
         return;
@@ -1035,7 +1056,8 @@
           </button>`;
       }).join('');
     } catch (e) {
-      body.innerHTML = '<div class="state-msg">Messagerie indisponible. Réessayez.</div>';
+      console.error('CamerLink inbox error:', e);
+      body.innerHTML = '<div class="state-msg">Messagerie indisponible : ' + esc(e && e.message ? e.message : 'vérifiez votre connexion puis réessayez') + '</div>';
     }
   }
 
@@ -1047,12 +1069,21 @@
       const me = currentUser.id;
       // Le serveur vérifie les participants et renvoie toute la conversation, même si
       // les messages ont été envoyés depuis des annonces/Reels différents.
-      const { data, error } = await withTimeout(sb.rpc('get_thread', {
+      let { data, error } = await withTimeout(sb.rpc('get_thread', {
         p_other: chat.other,
         p_limit: 200
       }));
-      if (error) throw error;
-      const msgs = data || [];
+      let msgs = data || [];
+      if (error || !Array.isArray(data) || (data.length === 0 && chat.other)) {
+        console.warn('get_thread RPC failed or returned no rows; using message-table fallback', error);
+        const fallback = await withTimeout(sb.from('messages')
+          .select('id, sender_id, receiver_id, ad_id, content, created_at')
+          .or('and(sender_id.eq.' + me + ',receiver_id.eq.' + chat.other + '),and(sender_id.eq.' + chat.other + ',receiver_id.eq.' + me + ')')
+          .order('created_at', { ascending: true })
+          .limit(200));
+        if (fallback.error) throw fallback.error;
+        msgs = fallback.data || [];
+      }
       const names = await shopNames([chat.other]);
       $('inboxTitle').textContent = (names[chat.other] || 'Utilisateur');
       body.innerHTML = msgs.length ? msgs.map(m => `
@@ -1067,7 +1098,8 @@
         if (readError) console.warn('Impossible de marquer les messages comme lus', readError);
       }).catch(() => {});
     } catch (e) {
-      body.innerHTML = '<div class="state-msg">Messagerie indisponible. Réessayez.</div>';
+      console.error('CamerLink thread error:', e);
+      body.innerHTML = '<div class="state-msg">Messagerie indisponible : ' + esc(e && e.message ? e.message : 'vérifiez votre connexion puis réessayez') + '</div>';
     }
   }
 
