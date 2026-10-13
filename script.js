@@ -969,7 +969,7 @@
   async function fetchMessages() {
     const { data, error } = await withTimeout(
       sb.from('messages')
-        .select('id, sender_id, receiver_id, ad_id, content, created_at')
+        .select('id, sender_id, receiver_id, ad_id, content, created_at, read_at')
         .order('created_at', { ascending: false })
         .limit(500)
     );
