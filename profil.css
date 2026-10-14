@@ -1,0 +1,53 @@
+/* CamerLink · profil personnel (Instagram + menu Facebook) */
+#profile-section{color:var(--sh-txt);padding:12px 0 24px}
+.pf-top{display:flex;align-items:center;justify-content:space-between;padding:0 14px 10px}
+.pf-top h2{margin:0;font-size:19px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-ic{background:none;border:0;color:var(--sh-txt);font-size:24px;cursor:pointer;padding:6px 8px;line-height:1}
+.pf-head{display:flex;align-items:center;gap:20px;padding:4px 16px 10px}
+.pf-av{position:relative;width:86px;height:86px;border-radius:50%;flex:0 0 86px;padding:3px;background:linear-gradient(135deg,#22d3ee,#6366f1,#ec4899)}
+.pf-av .im{width:100%;height:100%;border-radius:50%;border:3px solid var(--sh-bg);background:#1b1d3a center/cover no-repeat;display:grid;place-items:center;font-size:32px;font-weight:800;color:var(--sh-c1);overflow:hidden}
+.pf-av .plus{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;border-radius:50%;background:var(--sh-c2);color:#fff;border:2px solid var(--sh-bg);display:grid;place-items:center;font-size:17px;line-height:1;cursor:pointer}
+.pf-stats{display:flex;flex:1;justify-content:space-around;text-align:center}
+.pf-stats b{display:block;font-size:18px}
+.pf-stats span{font-size:12.5px;color:var(--sh-mut)}
+.pf-info{padding:0 16px 10px}
+.pf-info .nm{font-weight:700;font-size:15px}
+.pf-info .bio{margin-top:2px;white-space:pre-wrap;word-break:break-word;font-size:14px}
+.pf-info .ct{margin-top:2px;color:var(--sh-mut);font-size:13px}
+.pf-btns{display:flex;gap:8px;padding:0 16px 14px}
+.pf-btns button{flex:1;padding:10px 6px;border-radius:10px;border:0;background:var(--sh-card);color:var(--sh-txt);font:600 14px inherit;font-family:inherit;cursor:pointer;border:1px solid var(--sh-line)}
+.pf-btns button.main{background:linear-gradient(135deg,var(--sh-c1),var(--sh-c2));color:#fff;border-color:transparent}
+.pf-tabs{display:flex;border-top:1px solid var(--sh-line);border-bottom:1px solid var(--sh-line)}
+.pf-tabs button{flex:1;background:none;border:0;color:var(--sh-mut);padding:12px 0;font-size:13px;font-weight:600;cursor:pointer;position:relative;font-family:inherit}
+.pf-tabs button.on{color:var(--sh-txt)}
+.pf-tabs button.on::after{content:"";position:absolute;left:20%;right:20%;bottom:0;height:2px;background:var(--sh-txt)}
+.pf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.pf-cell{position:relative;aspect-ratio:1/1;background:#14152b;overflow:hidden;cursor:pointer}
+.pf-cell img,.pf-cell video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.pf-cell .vb{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.55);color:#fff;border-radius:6px;font-size:11px;padding:2px 6px}
+.pf-cell .pr{position:absolute;left:0;right:0;bottom:0;padding:14px 6px 5px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font-size:11px;font-weight:700}
+.pf-empty{text-align:center;color:var(--sh-mut);padding:36px 16px}
+.pf-login{margin:30px 16px;text-align:center;background:var(--sh-card);border:1px solid var(--sh-line);border-radius:18px;padding:26px 16px}
+.pf-login h3{margin:0 0 6px}.pf-login p{color:var(--sh-mut);margin:0 0 14px}
+/* Visionneuse de publication */
+.pf-v{background:#000;color:#fff}
+.pf-v .vh{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pf-v .vh b{flex:1}
+.pf-v .vm{display:grid;place-items:center;background:#000;border-radius:12px;overflow:hidden}
+.pf-v .vm img,.pf-v .vm video{max-width:100%;max-height:68vh}
+.pf-v .cap{margin:12px 2px;white-space:pre-wrap;word-break:break-word}
+.pf-v .dt{color:#9aa0b8;font-size:12px}
+.pf-v .nv{display:flex;justify-content:space-between;margin-top:12px}
+.pf-v .nv button,.pf-v .vh button{background:#1f2147;color:#fff;border:0;border-radius:999px;padding:10px 16px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.pf-v .vh .back{background:none;color:var(--sh-c1);padding:4px 0}
+.pf-v .del{background:#7f1d1d!important}
+/* Menu façon Facebook */
+.pf-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.pf-tile{background:var(--sh-card);border:1px solid var(--sh-line);border-radius:16px;padding:14px 12px;cursor:pointer;font-weight:600;font-size:15px;text-align:left;color:var(--sh-txt);font-family:inherit}
+.pf-tile i{display:block;font-style:normal;font-size:28px;margin-bottom:6px}
+.pf-tile.wide{grid-column:1/-1;display:flex;align-items:center;gap:12px}
+.pf-tile.wide i{margin:0}
+.pf-tile.danger{color:#f87171}
+.pf-prev{max-width:100%;max-height:260px;border-radius:12px;margin:6px 0 10px;display:block}
+.pf-prog{height:6px;border-radius:3px;background:var(--sh-line);overflow:hidden;margin:6px 0 10px;display:none}
+.pf-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sh-c1),var(--sh-c2))}
