@@ -261,18 +261,12 @@
   function load(){
     return q('artisan_stories?select=id,artisan_id,media_url,caption,created_at&expires_at=gt.'+encodeURIComponent(new Date().toISOString())+'&order=created_at.asc').then(function(rows){
       if(!rows.length)return[];
-      var ids=[...new Set(rows.map(function(r){return r.artisan_id}))];
-      return Promise.all([
-        q('profiles?select=id,full_name,avatar_url&id=in.('+ids.join(',')+')'),
-        q('etablissements?select=user_id,name&user_id=in.('+ids.join(',')+')')
-      ]).then(function(res){
-        var pn={},en={};
-        res[0].forEach(function(p){pn[p.id]=p});
-        res[1].forEach(function(e){en[e.user_id]=e.name});
+      return fetch(URL_+'/rest/v1/rpc/story_authors',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},H),body:'{}'})
+        .then(function(r){return r.ok?r.json():[]}).catch(function(){return[]}).then(function(names){
+        var nm={};names.forEach(function(n){nm[n.artisan_id]=n.display_name});
         var map={};
         rows.forEach(function(r){
-          var g=map[r.artisan_id]||(map[r.artisan_id]={id:r.artisan_id,items:[],
-            name:en[r.artisan_id]||(pn[r.artisan_id]&&pn[r.artisan_id].full_name)||'Artisan'});
+          var g=map[r.artisan_id]||(map[r.artisan_id]={id:r.artisan_id,items:[],name:nm[r.artisan_id]||'CamerLink'});
           g.items.push(r);
         });
         return Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){
@@ -291,7 +285,7 @@
         return '<div class="wa-item" data-i="'+i+'"><div class="wa-ring '+(isSeen(g)?'seen':'')+'">'+m+'</div><div class="wa-name">'+esc(g.name)+'</div></div>';
       }).join('');
     row.querySelector('#wa-mine').onclick=function(){
-      var old=oldRow&&oldRow.firstElementChild;if(old)old.click();
+      var r=oldRowEl||oldRow;var old=r&&r.firstElementChild;if(old)old.click();
     };
     row.querySelectorAll('[data-i]').forEach(function(el){el.onclick=function(){open(+el.dataset.i)}});
   }
@@ -331,12 +325,23 @@
   var rowEl,oldRowEl;
   function refresh(){if(rowEl)render(rowEl,oldRowEl)}
 
+  function hideOld(){
+    var all=document.querySelectorAll('body *');
+    for(var i=0;i<all.length;i++){
+      var el=all[i];
+      if(el.children.length===0&&/^\s*Mon statut\s*$/i.test(el.textContent)&&!(rowEl&&rowEl.contains(el))){
+        var it=el;while(it.parentElement&&it.parentElement.children.length<2)it=it.parentElement;
+        var row=it.parentElement;
+        if(row&&row!==rowEl&&!row.contains(rowEl)){row.style.display='none';oldRowEl=row;}
+      }
+    }
+  }
   function init(){
     var h=findHeading();if(!h)return;
-    oldRowEl=findOldRow(h);
     rowEl=document.createElement('div');rowEl.id='wa-status-row';
-    if(oldRowEl){oldRowEl.parentElement.insertBefore(rowEl,oldRowEl);oldRowEl.style.cssText+=';position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden';}
-    else{h.parentElement.insertBefore(rowEl,h.nextSibling)}
+    h.parentElement.insertBefore(rowEl,h.nextSibling);
+    hideOld();
+    var n=0,iv=setInterval(function(){hideOld();if(++n>40)clearInterval(iv)},500);
     load().then(function(g){groups=g;render(rowEl,oldRowEl)});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,600)});
