@@ -188,3 +188,159 @@
 <script src="/script.js?v=logo-release-20261014"></script>
 </body>
 </html>
+<!-- ===== CamerLink : Statuts façon WhatsApp =====
+     À coller dans index.html, JUSTE AVANT la balise </body> (une seule fois). -->
+<style>
+#wa-status-row{display:flex;gap:14px;overflow-x:auto;padding:4px 16px 12px;scrollbar-width:none}
+#wa-status-row::-webkit-scrollbar{display:none}
+.wa-item{flex:0 0 72px;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wa-ring{width:68px;height:68px;border-radius:50%;padding:3px;background:linear-gradient(135deg,#22d3ee,#6366f1,#ec4899);box-sizing:border-box}
+.wa-ring.seen{background:#4b5563}
+.wa-ring.mine{background:none;border:2px dashed #22d3ee;padding:0;display:grid;place-items:center;font-size:30px;color:#22d3ee}
+.wa-ring img,.wa-ring video{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid #0b0b17;display:block;background:#111;box-sizing:border-box;pointer-events:none}
+.wa-name{margin-top:6px;font-size:12px;color:#e5e7eb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#wa-viewer{position:fixed;inset:0;z-index:99999;background:#000;display:none;flex-direction:column;color:#fff;touch-action:manipulation}
+#wa-viewer.open{display:flex}
+#wa-bars{display:flex;gap:4px;padding:10px 10px 6px}
+#wa-bars i{flex:1;height:3px;background:rgba(255,255,255,.35);border-radius:2px;overflow:hidden}
+#wa-bars i b{display:block;height:100%;width:0;background:#fff}
+#wa-head{display:flex;align-items:center;gap:10px;padding:4px 12px;font-weight:600}
+#wa-head .wa-av{width:36px;height:36px;border-radius:50%;background:#374151;display:grid;place-items:center;font-size:15px}
+#wa-head small{display:block;font-weight:400;opacity:.7;font-size:12px}
+#wa-close{margin-left:auto;background:none;border:0;color:#fff;font-size:28px;line-height:1}
+#wa-stage{flex:1;display:grid;place-items:center;position:relative;min-height:0}
+#wa-stage img,#wa-stage video{max-width:100%;max-height:100%;object-fit:contain}
+#wa-cap{position:absolute;left:0;right:0;bottom:0;padding:18px 16px 28px;text-align:center;font-size:15px;background:linear-gradient(transparent,rgba(0,0,0,.7))}
+#wa-prev,#wa-next{position:absolute;top:0;bottom:0;width:35%}
+#wa-prev{left:0}#wa-next{right:0;width:65%}
+</style>
+
+<div id="wa-viewer">
+  <div id="wa-bars"></div>
+  <div id="wa-head"><div class="wa-av" id="wa-av"></div><div><span id="wa-who"></span><small id="wa-when"></small></div><button id="wa-close" aria-label="Fermer">×</button></div>
+  <div id="wa-stage"><div id="wa-prev"></div><div id="wa-next"></div><div id="wa-cap"></div></div>
+</div>
+
+<script>
+(function(){
+  var URL_='https://lviddipduhaelxcvyykc.supabase.co';
+  var KEY='sb_publishable_j0C8eL1g6hgAcnL4gU_zRg_jvi0bmYH';
+  var H={apikey:KEY,Authorization:'Bearer '+KEY};
+  var groups=[],cur=0,idx=0,timer=null,seenKey='wa_seen_stories';
+  var seen=[];try{seen=JSON.parse(localStorage.getItem(seenKey)||'[]')}catch(e){}
+
+  function q(path){return fetch(URL_+'/rest/v1/'+path,{headers:H}).then(function(r){return r.ok?r.json():[]}).catch(function(){return[]})}
+  function isVideo(u){return /\.(mp4|webm|mov|m4v)(\?|$)/i.test(u||'')}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function ago(d){var m=Math.round((Date.now()-new Date(d))/60000);if(m<1)return"à l'instant";if(m<60)return'il y a '+m+' min';var h=Math.round(m/60);return h<24?'il y a '+h+' h':'hier'}
+
+  // Repère le titre de la zone et l'ancienne rangée de cercles
+  function findHeading(){
+    var els=document.querySelectorAll('h1,h2,h3,h4,div,span,p'),best=null;
+    for(var i=0;i<els.length;i++){
+      var t=(els[i].textContent||'').replace(/\s+/g,' ').trim();
+      if(/Statuts\s*&\s*Reels\s*Artisans/i.test(t)&&(!best||t.length<best.textContent.length))best=els[i];
+    }
+    return best;
+  }
+  function findOldRow(heading){
+    var sec=heading.parentElement,row=null;
+    for(var d=0;d<3&&sec&&!row;d++){
+      var all=sec.querySelectorAll('*');
+      for(var i=0;i<all.length;i++){
+        if(/^\s*Mon statut\s*$/i.test(all[i].textContent)&&all[i].children.length===0){
+          var it=all[i];while(it.parentElement&&it.parentElement.children.length<2)it=it.parentElement;
+          row=it.parentElement;break;
+        }
+      }
+      sec=sec.parentElement;
+    }
+    return row;
+  }
+
+  function load(){
+    return q('artisan_stories?select=id,artisan_id,media_url,caption,created_at&expires_at=gt.'+encodeURIComponent(new Date().toISOString())+'&order=created_at.asc').then(function(rows){
+      if(!rows.length)return[];
+      var ids=[...new Set(rows.map(function(r){return r.artisan_id}))];
+      return Promise.all([
+        q('profiles?select=id,full_name,avatar_url&id=in.('+ids.join(',')+')'),
+        q('etablissements?select=user_id,name&user_id=in.('+ids.join(',')+')')
+      ]).then(function(res){
+        var pn={},en={};
+        res[0].forEach(function(p){pn[p.id]=p});
+        res[1].forEach(function(e){en[e.user_id]=e.name});
+        var map={};
+        rows.forEach(function(r){
+          var g=map[r.artisan_id]||(map[r.artisan_id]={id:r.artisan_id,items:[],
+            name:en[r.artisan_id]||(pn[r.artisan_id]&&pn[r.artisan_id].full_name)||'Artisan'});
+          g.items.push(r);
+        });
+        return Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){
+          var la=a.items[a.items.length-1].created_at,lb=b.items[b.items.length-1].created_at;return lb>la?1:-1});
+      });
+    });
+  }
+
+  function isSeen(g){return g.items.every(function(i){return seen.indexOf(i.id)>-1})}
+
+  function render(row,oldRow){
+    row.innerHTML='<div class="wa-item" id="wa-mine"><div class="wa-ring mine">+</div><div class="wa-name">Mon statut</div></div>'+
+      groups.map(function(g,i){
+        var last=g.items[g.items.length-1];
+        var m=isVideo(last.media_url)?'<video src="'+esc(last.media_url)+'#t=0.5" muted playsinline preload="metadata"></video>':'<img src="'+esc(last.media_url)+'" alt="" loading="lazy">';
+        return '<div class="wa-item" data-i="'+i+'"><div class="wa-ring '+(isSeen(g)?'seen':'')+'">'+m+'</div><div class="wa-name">'+esc(g.name)+'</div></div>';
+      }).join('');
+    row.querySelector('#wa-mine').onclick=function(){
+      var old=oldRow&&oldRow.firstElementChild;if(old)old.click();
+    };
+    row.querySelectorAll('[data-i]').forEach(function(el){el.onclick=function(){open(+el.dataset.i)}});
+  }
+
+  var V=document.getElementById('wa-viewer'),stage=document.getElementById('wa-stage');
+  function open(i){cur=i;idx=0;V.classList.add('open');show()}
+  function close(){clearTimeout(timer);V.classList.remove('open');var m=stage.querySelector('img,video');if(m)m.remove();refresh()}
+  function show(){
+    clearTimeout(timer);
+    var g=groups[cur],it=g.items[idx];
+    if(seen.indexOf(it.id)<0){seen.push(it.id);try{localStorage.setItem(seenKey,JSON.stringify(seen))}catch(e){}}
+    document.getElementById('wa-who').textContent=g.name;
+    document.getElementById('wa-av').textContent=(g.name||'A').charAt(0).toUpperCase();
+    document.getElementById('wa-when').textContent=ago(it.created_at);
+    document.getElementById('wa-cap').textContent=it.caption||'';
+    document.getElementById('wa-cap').style.display=it.caption?'block':'none';
+    var bars=document.getElementById('wa-bars');
+    bars.innerHTML=g.items.map(function(_,k){return '<i><b style="width:'+(k<idx?100:0)+'%"></b></i>'}).join('');
+    var old=stage.querySelector('img,video');if(old)old.remove();
+    var el,dur=5000;
+    if(isVideo(it.media_url)){el=document.createElement('video');el.src=it.media_url;el.autoplay=true;el.playsInline=true;el.onended=next;
+      el.onloadedmetadata=function(){fill(el.duration*1000)};}
+    else{el=document.createElement('img');el.src=it.media_url;fill(dur);timer=setTimeout(next,dur)}
+    stage.insertBefore(el,stage.firstChild);
+  }
+  function fill(ms){
+    var b=document.querySelectorAll('#wa-bars i b')[idx];if(!b)return;
+    b.style.transition='none';b.style.width='0';
+    requestAnimationFrame(function(){requestAnimationFrame(function(){b.style.transition='width '+ms+'ms linear';b.style.width='100%'})});
+  }
+  function next(){var g=groups[cur];if(idx<g.items.length-1){idx++;show()}else if(cur<groups.length-1){cur++;idx=0;show()}else close()}
+  function prev(){if(idx>0){idx--;show()}else if(cur>0){cur--;idx=0;show()}else show()}
+  document.getElementById('wa-next').onclick=next;
+  document.getElementById('wa-prev').onclick=prev;
+  document.getElementById('wa-close').onclick=close;
+
+  var rowEl,oldRowEl;
+  function refresh(){if(rowEl)render(rowEl,oldRowEl)}
+
+  function init(){
+    var h=findHeading();if(!h)return;
+    oldRowEl=findOldRow(h);
+    rowEl=document.createElement('div');rowEl.id='wa-status-row';
+    if(oldRowEl){oldRowEl.parentElement.insertBefore(rowEl,oldRowEl);oldRowEl.style.cssText+=';position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden';}
+    else{h.parentElement.insertBefore(rowEl,h.nextSibling)}
+    load().then(function(g){groups=g;render(rowEl,oldRowEl)});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,600)});
+  else setTimeout(init,600);
+})();
+</script>
+<!-- ===== Fin du bloc ===== -->
