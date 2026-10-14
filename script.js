@@ -1559,3 +1559,115 @@ function renderStatuses(list){
       <div class="status-name">${s.author_name||'Artisan'}</div></div>`;
   }).join('');
 }
+// ==========================================
+// MODULE : Gestion du Profil et des Publications (CamerLink)
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Gestion de l'affichage des menus d'options (⋮) sur les publications du profil
+  const setupPostOptionsDropdowns = () => {
+    document.querySelectorAll('.options-trigger').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const menu = button.nextElementSibling;
+        
+        // Fermer tous les autres menus ouverts
+        document.querySelectorAll('.options-menu').forEach(m => {
+          if (m !== menu) m.classList.add('hidden');
+        });
+        
+        // Basculer l'état du menu actuel
+        if (menu) {
+          menu.classList.toggle('hidden');
+        }
+      });
+    });
+
+    // Fermer les menus si l'on clique n'importe où ailleurs sur la page
+    window.addEventListener('click', () => {
+      document.querySelectorAll('.options-menu').forEach(menu => {
+        menu.classList.add('hidden');
+      });
+    });
+  };
+
+  // 2. Gestion de la suppression professionnelle d'une publication
+  const setupPostDeletion = () => {
+    document.querySelectorAll('.action-delete').forEach(deleteBtn => {
+      deleteBtn.addEventListener('click', (e) => {
+        const postCard = e.target.closest('.post-card');
+        if (!postCard) return;
+        
+        const postId = postCard.getAttribute('data-post-id');
+        
+        // Boîte de dialogue de confirmation professionnelle
+        if (confirm("Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.")) {
+          // TODO: Insérer ici l'appel fetch() vers votre API backend/Supabase pour supprimer en base
+          // Exemple : fetch(`/api/posts/${postId}`, { method: 'DELETE' }) ...
+          
+          // Suppression visuelle fluide de la carte dans le DOM
+          postCard.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          postCard.style.opacity = '0';
+          postCard.style.transform = 'scale(0.95)';
+          
+          setTimeout(() => {
+            postCard.remove();
+            updatePublicationCounter();
+          }, 300);
+          
+          console.log(`Publication ID ${postId} supprimée avec succès.`);
+        }
+      });
+    });
+  };
+
+  // 3. Gestion de l'archivage d'une publication
+  const setupPostArchiving = () => {
+    document.querySelectorAll('.action-archive').forEach(archiveBtn => {
+      archiveBtn.addEventListener('click', (e) => {
+        const postCard = e.target.closest('.post-card');
+        if (!postCard) return;
+        
+        if (confirm("Voulez-vous archiver cette publication ? Elle ne sera plus visible sur votre profil public.")) {
+          postCard.style.display = 'none';
+          // TODO: Ajouter la logique d'appel API pour l'archivage
+          console.log("Publication archivée avec succès.");
+        }
+      });
+    });
+  };
+
+  // 4. Mise à jour dynamique du compteur de publications sur le profil
+  const updatePublicationCounter = () => {
+    const counterElement = document.querySelector('.stat-item strong'); // Ajustez le sélecteur selon votre HTML
+    if (counterElement) {
+      let currentCount = parseInt(counterElement.textContent, 10);
+      if (!isNaN(currentCount) && currentCount > 0) {
+        counterElement.textContent = currentCount - 1;
+      }
+    }
+  };
+
+  // 5. Gestion de la navigation par onglets du profil (Mes Publications / Enregistrés)
+  const setupProfileTabs = () => {
+    const tabButtons = document.querySelectorAll('.profile-tabs .tab-btn');
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // Retirer la classe active de tous les boutons
+        tabButtons.forEach(b => b.classList.remove('active'));
+        // Activer le bouton cliqué
+        e.target.classList.add('active');
+        
+        // Logique de basculement des conteneurs si nécessaire
+        const targetId = e.target.getAttribute('data-target');
+        console.log(`Affichage de l'onglet : ${targetId}`);
+      });
+    });
+  };
+
+  // Initialisation des fonctions du profil
+  setupPostOptionsDropdowns();
+  setupPostDeletion();
+  setupPostArchiving();
+  setupProfileTabs();
+});
