@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://camer-link.vercel.app/sitemap.xml
+Sitemap: https://camerlink.vercel.app/sitemap.xml
