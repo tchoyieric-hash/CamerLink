@@ -1544,3 +1544,18 @@
 
   loadData();
 })();
+function renderStatuses(list){
+  const seen = JSON.parse(localStorage.getItem('seenStatuses')||'[]');
+  const row = document.querySelector('.status-row');
+  if(!row) return;
+  row.innerHTML = `<div class="status-item" onclick="openAddStatus&&openAddStatus()">
+    <div class="status-ring mine"><div style="height:100%;display:grid;place-items:center;font-size:28px;color:#22d3ee">+</div></div>
+    <div class="status-name">Mon statut</div></div>` +
+  list.map(s=>{
+    const v=/\.(mp4|webm|mov)$/i.test(s.media_url);
+    const m=v?`<video src="${s.media_url}#t=0.5" muted playsinline preload="metadata"></video>`:`<img src="${s.media_url}" alt="" loading="lazy">`;
+    return `<div class="status-item" onclick="openStatus('${s.id}')">
+      <div class="status-ring ${seen.includes(s.id)?'seen':''}">${m}</div>
+      <div class="status-name">${s.author_name||'Artisan'}</div></div>`;
+  }).join('');
+}
