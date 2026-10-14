@@ -1708,3 +1708,62 @@ const loadUserProfile = async (userId) => {
     console.error("Erreur technique :", err);
   }
 };
+// ==========================================
+// MODULE : Édition interactive du Profil
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const editBtn = document.getElementById('edit-profile-btn');
+  const editForm = document.getElementById('edit-profile-form');
+  const saveBtn = document.getElementById('save-profile-btn');
+  const cancelBtn = document.getElementById('cancel-profile-btn');
+  const bioEl = document.querySelector('.profile-bio');
+  const bioInput = document.getElementById('edit-bio-input');
+
+  // ID de l'utilisateur connecté (À adapter selon votre système de session/auth)
+  const currentUserId = "VOTRE_UUID_UTILISATEUR_ICI"; 
+
+  // 1. Ouvrir le formulaire d'édition
+  if (editBtn && editForm && bioEl) {
+    editBtn.addEventListener('click', () => {
+      if (bioInput) bioInput.value = bioEl.textContent.trim();
+      editForm.classList.remove('hidden');
+      editBtn.style.display = 'none'; // Masquer le bouton principal pendant l'édition
+    });
+  }
+
+  // 2. Annuler l'édition
+  if (cancelBtn && editForm && editBtn) {
+    cancelBtn.addEventListener('click', () => {
+      editForm.classList.add('hidden');
+      editBtn.style.display = 'inline-block';
+    });
+  }
+
+  // 3. Enregistrer les modifications dans Supabase (Table unique 'profils')
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+      const newBio = bioInput.value.trim();
+
+      // Appel de mise à jour vers Supabase
+      const { error } = await supabase
+        .from('profils')
+        .update({ bio: newBio })
+        .eq('id', currentUserId);
+
+      if (error) {
+        console.error("Erreur lors de la mise à jour :", error.message);
+        alert("Erreur lors de l'enregistrement des modifications.");
+      } else {
+        // Mettre à jour l'affichage sur la page instantanément
+        if (bioEl) bioEl.textContent = newBio;
+        
+        // Fermer le formulaire
+        editForm.classList.add('hidden');
+        if (editBtn) editBtn.style.display = 'inline-block';
+        
+        console.log("Profil mis à jour avec succès !");
+      }
+    });
+  }
+});
