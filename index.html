@@ -26,7 +26,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css?v=logo-release-20261014">
+  <link rel="stylesheet" href="/style.css?v=refactor-20261015">
+  <link rel="stylesheet" href="/reels.css?v=1">
   <link rel="stylesheet" href="/statuts.css?v=1">
   <link rel="stylesheet" href="/shell.css?v=1">
 </head>
@@ -214,35 +215,10 @@
 </nav>
 
 <div id="toast"></div>
-<script src="/script.js?v=logo-release-20261014"></script>
+<script src="/config.js?v=1"></script>
+<script src="/utils.js?v=1"></script>
+<script src="/script.js?v=refactor-20261015"></script>
 <script src="/statuts.js?v=1"></script>
 <script src="/shell.js?v=1"></script>
 </body>
-  </html>
-<!-- Conteneur principal des vues -->
-<main class="app-main-container">
-  
-  <!-- Vue 1 : Fil d'actualité (Feed) -->
-  <section id="view-feed" class="app-view active">
-    <!-- Vos publications ici -->
-  </section>
-
-  <!-- Vue 2 : Profil utilisateur -->
-  <section id="view-profile" class="app-view hidden">
-    <!-- Votre profil et vos publications personnelles ici -->
-  </section>
-
-  <!-- Vue 3 : Explorer / Recherche -->
-  <section id="view-explore" class="app-view hidden">
-    <!-- Contenu explore -->
-  </section>
-
-</main>
-
-<!-- Barre de navigation inférieure (style Instagram) -->
-<nav class="app-bottom-nav">
-  <button class="nav-btn" data-view="view-feed">🏠</button>
-  <button class="nav-btn" data-view="view-explore">🔍</button>
-  <button class="nav-btn" data-view="view-profile">👤</button>
-</nav>
-
+</html>

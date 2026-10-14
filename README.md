@@ -1,6 +1,6 @@
 # 🌍 CamerLink
 
-**CamerLink** est une Progressive Web App (PWA) de marketplace locale et multi-services conçue spécifiquement pour le marché camerounais[span_0](start_span)[span_0](end_span). Elle permet aux particuliers et aux professionnels de publier et de découvrir facilement des annonces (véhicules, immobilier, high-tech, services, mode, etc.) à travers les principales villes du pays.
+**CamerLink** est une Progressive Web App (PWA) de marketplace locale et multi-services conçue spécifiquement pour le marché camerounais. Elle permet aux particuliers et aux professionnels de publier et de découvrir facilement des annonces (véhicules, immobilier, high-tech, services, mode, etc.) à travers les principales villes du pays.
 
 ## 🚀 Fonctionnalités Clés
 - **Mobile-First & PWA** : Conçue et optimisée pour une utilisation fluide sur smartphone, avec possibilité d'installation directe sur l'écran d'accueil.
@@ -10,10 +10,17 @@
 - **Sécurité et Authentification** : Gestion sécurisée des comptes utilisateurs et des rôles.
 
 ## 🛠️ Stack Technique
-- **Frontend** : HTML5, CSS3, JavaScript (Vanilla ES6+), hébergé et déployé en continu sur **Vercel**[span_1](start_span)[span_1](end_span).
+- **Frontend** : HTML5, CSS3, JavaScript (Vanilla ES6+), hébergé et déployé en continu sur **Vercel**.
 - **Backend & Base de Données** : **Supabase** (PostgreSQL, Authentification, Row Level Security et Storage).
 - **Architecture** : Application légère, rapide, taillée pour les conditions de connexion locales.
 
 ## 🔗 Liens du Projet
-- **Application en ligne** : [https://camer-link.vercel.app](https://camer-link.vercel.app)
+- **Application en ligne** : [https://camer-link-tchoyi-eric.vercel.app](https://camer-link-tchoyi-eric.vercel.app)
 - **Développeur** : Tchoyi Eric
+
+## 📁 Structure du code
+- `index.html` : page principale ; scripts chargés dans l'ordre `config.js` → `utils.js` → `script.js` → `statuts.js` → `shell.js`.
+- `config.js` / `utils.js` : constantes et fonctions pures partagées.
+- `script.js` : logique applicative ; `statuts.js` : statuts 24 h ; `shell.js` : onglets et pages entreprises.
+- `api/share.js` : pages partageables et sitemap (Vercel Function).
+- Détails et suite recommandée : `CHANGELOG-REFACTOR-20261015.md`.

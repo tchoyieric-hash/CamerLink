@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://camerlink.vercel.app/sitemap.xml
+Sitemap: https://camer-link-tchoyi-eric.vercel.app/sitemap.xml
