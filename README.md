@@ -24,3 +24,6 @@
 - `script.js` : logique applicative ; `statuts.js` : statuts 24 h ; `shell.js` : onglets et pages entreprises.
 - `api/share.js` : pages partageables et sitemap (Vercel Function).
 - Détails et suite recommandée : `CHANGELOG-REFACTOR-20261015.md`.
+
+## ✅ Tests
+`npm test` (Node 18+) lance les contrôles de non-régression de `tests/`. À exécuter avant chaque déploiement.
