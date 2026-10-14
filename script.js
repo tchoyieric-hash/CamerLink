@@ -1767,3 +1767,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+document.addEventListener('DOMContentLoaded', () => {
+  const navButtons = document.querySelectorAll('.app-bottom-nav .nav-btn, .profile-tabs .tab-btn');
+  const views = document.querySelectorAll('.app-view');
+
+  navButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const targetViewId = button.getAttribute('data-view') || button.getAttribute('data-target');
+      if (!targetViewId) return;
+
+      // 1. Mettre à jour l'état actif des boutons de navigation
+      navButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      // 2. Basculer les vues avec effet fluide
+      views.forEach(view => {
+        if (view.id === targetViewId || view.id === button.getAttribute('data-target')) {
+          view.classList.remove('hidden');
+          // Petit délai pour laisser le temps au DOM d'appliquer le display avant l'animation CSS
+          setTimeout(() => view.classList.add('active'), 10);
+        } else {
+          view.classList.remove('active');
+          setTimeout(() => view.classList.add('hidden'), 250); // Correspond à la durée de transition CSS
+        }
+      });
+    });
+  });
+});
