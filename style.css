@@ -777,3 +777,17 @@ line-height: 1.5;
     scroll-snap-align: start !important;
   }
 }
+
+/* Logo CamerLink officiel — alignement navbar et pied de page */
+.logo-brand { display:inline-flex; align-items:center; gap:9px; min-width:0; }
+.brand-logo-img { width:38px; height:38px; object-fit:contain; border-radius:10px; flex:0 0 auto; }
+.brand-wordmark { font-family:var(--font-display); font-size:1.18rem; font-weight:700; line-height:1; white-space:nowrap; }
+.brand-wordmark > span { background:linear-gradient(90deg,var(--a1),var(--a2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+@media (max-width:420px) {
+  .brand-logo-img { width:32px; height:32px; }
+  .brand-wordmark { font-size:1.04rem; }
+  header { --container-padding:10px; }
+  .header-actions { gap:4px; }
+  .btn-icon { width:34px; height:34px; }
+  .btn-pub { padding:8px 10px; font-size:.75rem; }
+}
