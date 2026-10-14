@@ -1,8 +1,80 @@
-const C='camerlink-v1';
-self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/icon-192.png'])));self.skipWaiting();});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))));self.clients.claim();});
-self.addEventListener('fetch',e=>{
-  const r=e.request;
-  if(r.method!=='GET'||new URL(r.url).origin!==location.origin)return;
-  e.respondWith(fetch(r).then(res=>{const cp=res.clone();caches.open(C).then(c=>c.put(r,cp));return res;}).catch(()=>caches.match(r).then(m=>m||caches.match('/'))));
+const CACHE_NAME = 'camerlink-v2';
+
+// Liste des fichiers clés à mettre en cache immédiatement à l'installation
+const ASSETS_TO_CACHE = [
+  '/',
+  '/index.html',
+  '/admin.html',
+  '/modele.html',
+  '/style.css',
+  '/profil.css',
+  '/script.js',
+  '/modifier.js',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/camerlink-logo.png',
+  '/manifest.webmanifest'
+];
+
+// 1. Installation : mise en cache des fichiers statiques principaux
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('[Service Worker] Mise en cache des ressources globales');
+        return cache.addAll(ASSETS_TO_CACHE);
+      })
+      .then(() => self.skipWaiting())
+  );
 });
+
+// 2. Activation : nettoyage des anciens caches obsolètes
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            console.log('[Service Worker] Suppression de l\'ancien cache :', key);
+            return caches.delete(key);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
+});
+
+// 3. Interception des requêtes (Stratégie : Network First avec repli sur le cache)
+self.addEventListener('fetch', event => {
+  const request = event.request;
+
+  // Ignorer les requêtes qui ne sont pas en GET ou qui proviennent d'une autre origine (ex: API Supabase externe)
+  if (request.method !== 'GET' || new URL(request.url).origin !== location.origin) {
+    return;
+  }
+
+  event.respondWith(
+    fetch(request)
+      .then(networkResponse => {
+        // Cloner la réponse réseau pour la stocker dans le cache
+        const responseClone = networkResponse.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(request, responseClone);
+        });
+        return networkResponse;
+      })
+      .catch(() => {
+        // En cas de panne de réseau (hors-ligne), on cherche dans le cache
+        return caches.match(request).then(cachedResponse => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // Si la ressource n'est pas dans le cache, renvoyer la page d'accueil par défaut
+          if (request.mode === 'navigate') {
+            return caches.match('/');
+          }
+        });
+      })
+  );
+});
+
