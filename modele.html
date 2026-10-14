@@ -149,3 +149,16 @@
 
 </body>
 </html>
+<div class="profile-header-actions">
+  <!-- Bouton pour basculer en mode édition -->
+  <button id="edit-profile-btn" class="btn-secondary">Modifier le profil</button>
+</div>
+
+<!-- Formulaire caché par défaut qui s'affiche lors du clic sur le bouton -->
+<div id="edit-profile-form" class="edit-form hidden" style="margin-top: 15px;">
+  <textarea id="edit-bio-input" class="form-input" placeholder="Votre nouveau message personnel..."></textarea>
+  <div class="form-actions" style="margin-top: 8px;">
+    <button id="save-profile-btn" class="btn-primary">Enregistrer</button>
+    <button id="cancel-profile-btn" class="btn-secondary">Annuler</button>
+  </div>
+</div>
