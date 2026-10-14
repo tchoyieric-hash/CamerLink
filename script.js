@@ -1671,3 +1671,40 @@ document.addEventListener('DOMContentLoaded', () => {
   setupPostArchiving();
   setupProfileTabs();
 });
+// Fonction pour charger le profil depuis Supabase
+const loadUserProfile = async (userId) => {
+  try {
+    // Récupérer les données de la table 'profils' pour un utilisateur spécifique
+    const { data, error } = await supabase
+      .from('profils')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error("Erreur lors du chargement du profil :", error.message);
+      return;
+    }
+
+    if (data) {
+      // Mettre à jour les éléments HTML de la page profil
+      const usernameEl = document.querySelector('.profile-username');
+      const bioEl = document.querySelector('.profile-bio');
+      const avatarEl = document.querySelector('.profile-avatar');
+      const statsEls = document.querySelectorAll('.profile-stats .stat-item strong');
+
+      if (usernameEl) usernameEl.textContent = data.username || 'Utilisateur';
+      if (bioEl) bioEl.textContent = data.bio || 'Ajoutez un message personnel...';
+      if (avatarEl && data.avatar_url) avatarEl.src = data.avatar_url;
+
+      // Mise à jour des compteurs (ex: [0] = Publications, [1] = Abonnés, [2] = Abonnements)
+      if (statsEls.length >= 3) {
+        statsEls[0].textContent = data.posts_count || 0;
+        statsEls[1].textContent = data.followers_count || 0;
+        statsEls[2].textContent = data.following_count || 0;
+      }
+    }
+  } catch (err) {
+    console.error("Erreur technique :", err);
+  }
+};
