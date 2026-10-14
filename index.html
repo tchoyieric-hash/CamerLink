@@ -191,6 +191,7 @@
 <!-- ===== CamerLink : Statuts façon WhatsApp =====
      À coller dans index.html, JUSTE AVANT la balise </body> (une seule fois). -->
 <style>
+.wa-hidden{display:none!important}
 #wa-status-row{display:flex;gap:14px;overflow-x:auto;padding:4px 16px 12px;scrollbar-width:none}
 #wa-status-row::-webkit-scrollbar{display:none}
 .wa-item{flex:0 0 72px;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -329,11 +330,13 @@
     var all=document.querySelectorAll('body *');
     for(var i=0;i<all.length;i++){
       var el=all[i];
-      if(el.children.length===0&&/^\s*Mon statut\s*$/i.test(el.textContent)&&!(rowEl&&rowEl.contains(el))){
-        var it=el;while(it.parentElement&&it.parentElement.children.length<2)it=it.parentElement;
-        var row=it.parentElement;
-        if(row&&row!==rowEl&&!row.contains(rowEl)){row.style.display='none';oldRowEl=row;}
-      }
+      if(el.children.length!==0||(rowEl&&rowEl.contains(el))||V.contains(el))continue;
+      var t=(el.textContent||'').trim();
+      if(t!=='Artisan'&&t!=='Mon statut')continue;
+      var item=el.parentElement,row=item&&item.parentElement;
+      if(!row||row===document.body||(rowEl&&row.contains(rowEl)))continue;
+      row.classList.add('wa-hidden');
+      if(/^Mon statut$/i.test(t)&&!oldRowEl)oldRowEl=row;
     }
   }
   function init(){
@@ -341,7 +344,7 @@
     rowEl=document.createElement('div');rowEl.id='wa-status-row';
     h.parentElement.insertBefore(rowEl,h.nextSibling);
     hideOld();
-    var n=0,iv=setInterval(function(){hideOld();if(++n>40)clearInterval(iv)},500);
+    var busy=false;new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){hideOld();busy=false},150)}).observe(document.body,{childList:true,subtree:true});
     load().then(function(g){groups=g;render(rowEl,oldRowEl)});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,600)});
@@ -349,3 +352,5 @@
 })();
 </script>
 <!-- ===== Fin du bloc ===== -->
+
+  
