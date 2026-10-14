@@ -219,4 +219,30 @@
 <script src="/shell.js?v=1"></script>
 </body>
   </html>
-                                                                   
+<!-- Conteneur principal des vues -->
+<main class="app-main-container">
+  
+  <!-- Vue 1 : Fil d'actualité (Feed) -->
+  <section id="view-feed" class="app-view active">
+    <!-- Vos publications ici -->
+  </section>
+
+  <!-- Vue 2 : Profil utilisateur -->
+  <section id="view-profile" class="app-view hidden">
+    <!-- Votre profil et vos publications personnelles ici -->
+  </section>
+
+  <!-- Vue 3 : Explorer / Recherche -->
+  <section id="view-explore" class="app-view hidden">
+    <!-- Contenu explore -->
+  </section>
+
+</main>
+
+<!-- Barre de navigation inférieure (style Instagram) -->
+<nav class="app-bottom-nav">
+  <button class="nav-btn" data-view="view-feed">🏠</button>
+  <button class="nav-btn" data-view="view-explore">🔍</button>
+  <button class="nav-btn" data-view="view-profile">👤</button>
+</nav>
+
