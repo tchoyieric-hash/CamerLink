@@ -20,7 +20,7 @@
 
 ## 📁 Structure du code
 - `index.html` : page principale ; scripts chargés dans l'ordre `config.js` → `utils.js` → `script.js` → `statuts.js` → `shell.js`.
-- `config.js` / `utils.js` : constantes et fonctions pures partagées.
+- `config.js` / `utils.js` : constantes et fonctions pures partagées ; `messagerie.js` : messagerie (dépendances injectées) ; `register-sw.js` + `sw.js` : mode hors-ligne.
 - `script.js` : logique applicative ; `statuts.js` : statuts 24 h ; `shell.js` : onglets et pages entreprises.
 - `api/share.js` : pages partageables et sitemap (Vercel Function).
 - Détails et suite recommandée : `CHANGELOG-REFACTOR-20261015.md`.
