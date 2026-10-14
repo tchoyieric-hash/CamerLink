@@ -1,0 +1,52 @@
+<div class="camerlink-profile-container">
+  <!-- En-tête du profil -->
+  <div class="profile-header">
+    <div class="profile-avatar-wrapper">
+      <img src="path/to/profile-pic.jpg" alt="Photo de profil" class="profile-avatar" />
+    </div>
+    <div class="profile-info">
+      <h2 class="profile-username">Nom d'Utilisateur</h2>
+      <p class="profile-bio">Votre message personnel ou statut ici...</p>
+      
+      <!-- Statistiques -->
+      <div class="profile-stats">
+        <span class="stat-item"><strong>142</strong> Publications</span>
+        <span class="stat-item"><strong>1.2K</strong> Abonnés</span>
+        <span class="stat-item"><strong>340</strong> Suivis</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation des onglets -->
+  <div class="profile-tabs">
+    <button class="tab-btn active" data-target="my-posts">Mes Publications</button>
+    <button class="tab-btn" data-target="saved-posts">Enregistrés</button>
+  </div>
+
+  <!-- Fil d'actualité / Grille des publications connectées au profil -->
+  <div class="profile-feed-container" id="my-posts">
+    <!-- Exemple d'une carte de publication -->
+    <div class="post-card" data-post-id="123">
+      <div class="post-header">
+        <span class="post-date">Il y a 2 heures</span>
+        <!-- Menu d'options professionnelles -->
+        <div class="post-options-dropdown">
+          <button class="options-trigger" aria-label="Options">⋮</button>
+          <div class="options-menu hidden">
+            <button class="action-edit">Modifier</button>
+            <button class="action-pin">Épingler au profil</button>
+            <button class="action-archive">Archiver</button>
+            <button class="action-delete text-danger">Supprimer</button>
+          </div>
+        </div>
+      </div>
+      <div class="post-content">
+        <p>Contenu de la publication de l'utilisateur sur CamerLink...</p>
+      </div>
+      <div class="post-metrics">
+        <span>❤️ 45 J'aime</span>
+        <span>💬 12 Commentaires</span>
+      </div>
+    </div>
+  </div>
+</div>
