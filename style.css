@@ -791,3 +791,9 @@ line-height: 1.5;
   .btn-icon { width:34px; height:34px; }
   .btn-pub { padding:8px 10px; font-size:.75rem; }
 }
+
+/* Identité de marque dans la fenêtre de connexion / inscription */
+.auth-brand { display:flex; align-items:center; justify-content:center; gap:10px; margin:2px auto 18px; }
+.auth-brand img { width:54px; height:54px; object-fit:contain; border-radius:12px; }
+.auth-brand > span { font-family:var(--font-display); font-size:1.45rem; font-weight:700; line-height:1; }
+.auth-brand > span > span { background:linear-gradient(90deg,var(--a1),var(--a2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
