@@ -875,3 +875,73 @@ main { width:100% !important; }
 @media (max-width:360px) {
   #listings-grid.listings-grid { grid-template-columns:minmax(0,1fr) !important; }
 }
+
+
+/* CamerLink mobile social feed — inspiré des habitudes de navigation Instagram */
+@media (max-width:700px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px));}
+  body>header{
+    position:sticky;top:0;z-index:810;width:100%;min-height:58px;
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:8px 12px;background:rgba(5,6,13,.97);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--color-border);box-sizing:border-box
+  }
+  .brand-wordmark{font-size:18px;white-space:nowrap}
+  .brand-logo-img{width:28px;height:28px}
+  .header-actions{display:flex;align-items:center;gap:5px;min-width:0}
+  .header-actions .btn-icon{width:34px;height:34px;min-width:34px;padding:0;font-size:14px}
+  .header-actions .btn-login{font-size:11px;padding:7px 8px;white-space:nowrap}
+  .header-actions .btn-pub{font-size:11px;padding:8px 10px;white-space:nowrap}
+  .header-spacer{height:0!important;display:none!important}
+  .shell-tabs{position:sticky;top:56px;z-index:805;width:100%;box-sizing:border-box}
+  .shell-tab{padding:12px 3px;font-size:13px}
+  .hero{width:100%;max-width:none;margin:0;padding:20px 14px 16px;box-sizing:border-box}
+  .hero h1{font-size:clamp(23px,6vw,30px);line-height:1.14;margin-bottom:10px}
+  .hero p{font-size:14px;line-height:1.45;margin:8px 0 14px}
+  .search-filter-bar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;width:100%;max-width:none}
+  .search-filter-bar .search-input{grid-column:1/-1;width:100%;min-width:0;box-sizing:border-box}
+  .search-filter-bar select{width:100%;min-width:0;box-sizing:border-box}
+  .shops-section{width:100%;padding:12px 14px 8px;box-sizing:border-box;margin:0}
+  .shops-section h2{font-size:16px;margin:0 0 12px}
+  .shops-container{gap:13px;overflow-x:auto;overscroll-behavior-x:contain;padding:2px 0 10px}
+  .shop-story-card{min-width:72px;max-width:72px}
+  .story-ring{width:66px;height:66px}
+  .reels-section{
+    width:100%!important;max-width:none!important;margin:8px 0 18px!important;
+    padding:14px!important;border-left:0!important;border-right:0!important;border-radius:0!important;
+    box-sizing:border-box
+  }
+  .reels-heading{display:flex;flex-direction:column;gap:10px}
+  .reels-heading h2{font-size:22px;margin:5px 0}
+  .reels-heading p{font-size:13px;margin:5px 0}
+  .reels-heading-actions{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  .reels-upload-btn{max-width:100%;white-space:nowrap}
+  .categories-scroll{width:100%;box-sizing:border-box;padding-left:12px;padding-right:12px}
+  main{width:100%;max-width:none;margin:0;padding:0 12px;box-sizing:border-box}
+  .filter-tabs-row{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:10px 0}
+  .listings-grid{
+    width:100%;max-width:none;margin:0;padding:8px 0 20px;
+    display:grid;grid-template-columns:minmax(0,1fr)!important;gap:14px
+  }
+  .ad-card{width:100%;min-width:0;border-radius:14px;box-sizing:border-box}
+  .card-img-container{height:auto;aspect-ratio:1.08/1;max-height:440px}
+  .card-img-container img{object-fit:cover}
+  .ad-card .card-body{padding:12px}
+  footer{width:100%;box-sizing:border-box;padding:18px 12px 22px}
+  .shell-nav{
+    left:0;right:0;bottom:0;width:100%;box-sizing:border-box;z-index:1000;
+    display:flex;justify-content:space-around;align-items:center;
+    padding:7px 4px calc(7px + env(safe-area-inset-bottom,0px));
+    background:rgba(7,7,18,.97);backdrop-filter:blur(16px)
+  }
+  .shell-nav button{font-size:10px;min-width:0;gap:3px}
+  .shell-nav button svg{width:23px;height:23px}
+  .shell-nav .plus{flex:0 0 52px}
+  .shell-nav .plus span.c{width:44px;height:44px;margin-top:-13px;font-size:27px}
+  #profile-section{width:100%;max-width:100%;box-sizing:border-box}
+  .modal-overlay,.modal-sheet{max-width:100vw;box-sizing:border-box}
+}
+@media (min-width:701px){
+  .listings-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+}
