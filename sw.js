@@ -1,4 +1,4 @@
-const CACHE_NAME = 'camerlink-v6';
+const CACHE_NAME = 'camerlink-v7';
 
 // Liste des fichiers clés à mettre en cache immédiatement à l'installation
 const ASSETS_TO_CACHE = [
@@ -11,6 +11,7 @@ const ASSETS_TO_CACHE = [
   '/script.js',
   '/shell.js',
   '/profil-page.js',
+  '/profil-public.js',
   '/reels.css',
   '/statuts.css',
   '/shell.css',
