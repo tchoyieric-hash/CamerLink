@@ -824,3 +824,54 @@ line-height: 1.5;
 .hidden {
   display: none !important;
 }
+
+
+/* CamerLink responsive plein écran : mobile, tablette et ordinateur */
+html, body {
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  margin:0 !important;
+}
+body { min-height:100dvh; overflow-x:clip; }
+header, .hero, .status-section, .reels-section, main, footer,
+#listings-grid, #categoryChips, .filter-tabs-row {
+  box-sizing:border-box;
+  max-width:none;
+}
+header { width:100% !important; }
+.hero { width:100% !important; }
+main { width:100% !important; }
+.reels-section {
+  width:calc(100% - 24px) !important;
+  max-width:1180px !important;
+}
+#listings-grid.listings-grid { width:100%; }
+@media (max-width:700px) {
+  :root { --container-padding:12px; }
+  header { padding-left:10px; padding-right:10px; }
+  .hero { padding:24px 12px 20px; }
+  .hero h1 { font-size:clamp(1.55rem, 6vw, 2.1rem); }
+  .search-filter-bar { width:100%; max-width:100%; }
+  .reels-section {
+    width:100% !important;
+    max-width:none !important;
+    margin:18px 0 24px !important;
+    padding:14px !important;
+    border-radius:18px !important;
+  }
+  .reels-heading { align-items:flex-start; flex-wrap:wrap; }
+  #listings-grid.listings-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:10px !important;
+  }
+  #listings-grid .ad-card { width:100%; min-width:0; }
+  #listings-grid .card-img-container { height:clamp(125px, 38vw, 210px); }
+  #listings-grid .card-body { padding:10px; }
+  #listings-grid .ad-title { font-size:.92rem; }
+  #listings-grid .ad-price { font-size:1rem; }
+  .shell-nav { width:100% !important; left:0 !important; right:0 !important; }
+}
+@media (max-width:360px) {
+  #listings-grid.listings-grid { grid-template-columns:minmax(0,1fr) !important; }
+}
