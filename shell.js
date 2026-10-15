@@ -24,12 +24,13 @@ function needLogin(){toast('Connectez-vous d\'abord');var a=$('#authBtn');if(a)a
 /* ---------- Onglets + barre du bas ---------- */
 var MODES={
  home:['.hero','.shops-section','#reels-section','#categoryChips','main','footer'],
+ profil:['#profile-section'],
  reels:['#reels-section'],
  statuts:['.shops-section'],
  annonces:['.hero','#categoryChips','main','footer'],
  decouvrir:['#discover-section','footer']
 };
-var ALL=['.hero','.shops-section','#reels-section','#categoryChips','main','footer','#discover-section'];
+var ALL=['.hero','.shops-section','#reels-section','#categoryChips','main','footer','#discover-section','#profile-section'];
 var cur='home';
 function setMode(m,noScroll){
   if(!MODES[m])m='home';cur=m;
@@ -39,6 +40,7 @@ function setMode(m,noScroll){
   try{history.replaceState(null,'',m==='home'?location.pathname+location.search:'#'+m)}catch(e){}
   if(!noScroll)window.scrollTo(0,0);
   if(m==='decouvrir')bzLoad();
+  if(m==='profil'&&window.CamerLinkProfile)window.CamerLinkProfile.load();
 }
 function hdr(){var h=$('header');if(h)document.documentElement.style.setProperty('--hdr',h.offsetHeight+'px')}
 function click(id){var e=$(id);if(e)e.click();else toast('Indisponible')}
@@ -48,7 +50,7 @@ function mountNav(){
   $$('.shell-nav [data-m]').forEach(function(b){b.onclick=function(){setMode(b.dataset.m)}});
   $('#nav-add').onclick=function(){click('#pubBtn')};
   $('#nav-msg').onclick=function(){click('#msgInboxBtn')};
-  $('#nav-me').onclick=function(){click('#authBtn')};
+  $('#nav-me').onclick=function(){setMode('profil')};
   // recopie la pastille de messages
   var src=$('#msgBadge'),dst=$('#nav-badge');
   function sync(){var t=(src&&src.textContent||'').trim();dst.textContent=t;dst.classList.toggle('show',!!t&&t!=='0')}
@@ -188,5 +190,6 @@ function start(){
   var m=(location.hash||'').replace('#','');
   setMode(MODES[m]?m:'home',true);
 }
+window.CamerLinkShell={setMode:setMode};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
