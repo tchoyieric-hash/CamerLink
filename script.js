@@ -473,54 +473,66 @@
     if (!feed) return;
     if (reelObserver) { reelObserver.disconnect(); reelObserver = null; }
 
-    const list = allListings.filter(a => videos[a.id]).slice(0, REELS_MAX);
+    // Le fil social mélange les publications photo et vidéo, de la plus récente à la plus ancienne.
+    const list = allListings.filter(ad => ad.image_url || videos[ad.id]).slice(0, 40);
     if (list.length === 0) {
       feed.innerHTML = reelsMessage(failed
-        ? 'Vidéos indisponibles pour le moment. Réessayez plus tard.'
-        : 'Aucune vidéo pour le moment. Publiez une annonce avec vidéo !');
+        ? 'Publications indisponibles pour le moment. Réessayez plus tard.'
+        : 'Aucune publication pour le moment. Soyez le premier à partager une photo ou une vidéo !');
       return;
     }
 
-    // défilement vertical, une vidéo à la fois
-    feed.style.maxHeight = '78vh';
-    feed.style.overflowY = 'auto';
-    feed.style.scrollSnapType = 'y mandatory';
+    feed.style.maxHeight = 'none';
+    feed.style.overflowY = 'visible';
+    feed.style.scrollSnapType = 'none';
 
     feed.innerHTML = list.map(ad => {
       const wa = waNumber(ad.contact);
-      const price = Number(ad.price || 0).toLocaleString('fr-FR');
-      const poster = ad.image_url ? ` poster="${esc(ad.image_url)}"` : '';
+      const price = Number(ad.price || 0) > 0 ? Number(ad.price).toLocaleString('fr-FR') + ' FCFA' : '';
+      const media = videos[ad.id]
+        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="metadata"></video><button type="button" class="cl-reel-sound" data-reel-sound aria-label="Activer ou couper le son">🔇</button>`
+        : `<img class="cl-reel-photo" src="${esc(ad.image_url)}" alt="${esc(ad.title)}" loading="lazy">`;
+      const location = [ad.quartier, ad.city].filter(Boolean).join(' · ');
+      const liked = window.getFavorites().includes(String(ad.id));
       return `
-      <article class="reel-card" data-reel="${esc(ad.id)}" style="position:relative;scroll-snap-align:start;background:#000;border-radius:16px;overflow:hidden;margin-bottom:12px;height:72vh;max-height:640px;">
-        <video src="${esc(videos[ad.id])}"${poster} muted loop playsinline preload="none" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
-        <button type="button" data-reel-sound aria-label="Activer ou couper le son" style="position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;font-size:1.1rem;cursor:pointer;">🔇</button>
-        <div style="position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,0.85));color:#fff;">
-          <strong style="display:block;font-size:1.05rem;">${esc(ad.title)}</strong>
-          ${ad.user_id ? `<button type="button" data-profile-user="${esc(ad.user_id)}" style="display:block;margin:5px 0 8px;padding:4px 0;background:transparent;border:0;color:#a5f3fc;font-weight:700;cursor:pointer;">Voir le profil de l’artisan →</button>` : ''}
-          <div style="margin:2px 0 10px;font-size:0.9rem;"><span style="color:#34d399;font-weight:800;">${price} FCFA</span>${(ad.quartier || ad.city) ? ' · 📍 ' + esc([ad.quartier, ad.city].filter(Boolean).join(', ')) : ''}</div>
-          <div style="display:flex;gap:8px;">
-            <button type="button" data-reel-open style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">Voir l’annonce</button>
-            ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="flex:1;padding:10px;border-radius:8px;background:#22C55E;color:#fff;font-weight:700;font-size:0.85rem;text-align:center;">WhatsApp</a>` : ''}
+      <article class="reel-card cl-social-post" data-reel="${esc(ad.id)}">
+        <div class="cl-post-location">${location ? `<span>📍 ${esc(location)}</span>` : '<span>Publication CamerLink</span>'}<span class="cl-post-type">${videos[ad.id] ? '▶ Vidéo' : '▧ Photo'}</span></div>
+        <div class="cl-post-media">${media}<div class="cl-post-shade"></div>
+          <div class="cl-post-actions">
+            <button type="button" data-reel-like aria-label="J’aime cette publication"><span>${liked ? '♥' : '♡'}</span><small>${likeCounts[ad.id] || 0}</small></button>
+            <button type="button" data-reel-comments aria-label="Voir les commentaires"><span>▢</span><small>Commentaires</small></button>
+            <button type="button" data-reel-share aria-label="Partager la publication"><span>↗</span><small>Partager</small></button>
+          </div>
+          <div class="cl-post-caption">
+            <strong>${esc(ad.title)}</strong>
+            ${ad.description ? `<p>${esc(ad.description)}</p>` : ''}
+            ${price ? `<b class="cl-post-price">${price}</b>` : ''}
           </div>
         </div>
+        <div class="cl-post-footer">
+          <button type="button" class="cl-post-creator" ${ad.user_id ? `data-profile-user="${esc(ad.user_id)}"` : 'data-reel-open'}>
+            <span class="cl-post-avatar">${esc((ad.title || 'C').trim().slice(0,1).toUpperCase())}</span>
+            <span><b>${esc(ad.owner_name || ad.artisan_name || 'Utilisateur')}</b><small>Voir le profil</small></span>
+          </button>
+          ${ad.user_id && currentUser && ad.user_id === currentUser.id ? '<span class="cl-post-own">Votre publication</span>' : ad.user_id ? `<button type="button" class="cl-follow-btn" data-profile-user="${esc(ad.user_id)}">＋ S’abonner</button>` : ''}
+          ${wa ? `<a class="cl-post-whatsapp" href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" aria-label="Contacter sur WhatsApp">☎</a>` : ''}
+        </div>
+        <button type="button" class="cl-post-open" data-reel-open>Voir l’annonce complète →</button>
       </article>`;
     }).join('');
 
-    // lecture automatique (sans son) de la vidéo visible, pause des autres
     if ('IntersectionObserver' in window) {
       reelObserver = new IntersectionObserver((entries) => {
         entries.forEach(en => {
           const v = en.target.querySelector('video');
           if (!v) return;
-          if (en.isIntersecting && en.intersectionRatio >= 0.6) {
+          if (en.isIntersecting && en.intersectionRatio >= 0.55) {
             const p = v.play();
             if (p && p.catch) p.catch(() => {});
-          } else {
-            v.pause();
-          }
+          } else v.pause();
         });
-      }, { threshold: [0, 0.6, 1] });
-      feed.querySelectorAll('.reel-card').forEach(c => reelObserver.observe(c));
+      }, { threshold: [0, 0.55, 1] });
+      feed.querySelectorAll('.cl-social-post').forEach(card => reelObserver.observe(card));
     }
   }
 
@@ -530,14 +542,27 @@
       const card = e.target.closest('.reel-card');
       if (!card) return;
       const v = card.querySelector('video');
+      const id = card.dataset.reel;
       const snd = e.target.closest('[data-reel-sound]');
       if (snd) {
         if (v) { v.muted = !v.muted; snd.textContent = v.muted ? '🔇' : '🔊'; }
         return;
       }
       const profileBtn = e.target.closest('[data-profile-user]');
-      if (profileBtn) { if (window.CamerLinkOpenProfile) window.CamerLinkOpenProfile(profileBtn.dataset.profileUser); else location.hash = '#profil/' + profileBtn.dataset.profileUser; return; }
-      if (e.target.closest('[data-reel-open]')) { openAdDetail(card.dataset.reel); return; }
+      if (profileBtn) {
+        const userId = profileBtn.dataset.profileUser;
+        if (window.CamerLinkOpenProfile) window.CamerLinkOpenProfile(userId);
+        else location.hash = '#profil/' + userId;
+        return;
+      }
+      if (e.target.closest('[data-reel-like]')) { window.toggleFavorite(id); return; }
+      if (e.target.closest('[data-reel-comments]')) { openAdDetail(id); return; }
+      if (e.target.closest('[data-reel-share]')) {
+        const ad = allListings.find(x => String(x.id) === String(id));
+        if (ad) shareLink(ad.title || 'Publication CamerLink', ad.description || 'Découvre cette publication sur CamerLink', '/annonce/' + id);
+        return;
+      }
+      if (e.target.closest('[data-reel-open]')) { openAdDetail(id); return; }
       if (e.target.closest('a')) return;
       if (v) {
         if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
