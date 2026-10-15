@@ -99,3 +99,9 @@
 .pf-mini.big{flex:0 0 72px;width:72px;height:72px;font-size:28px;color:var(--sh-c1)}
 
 .pf-ver{text-align:center;color:var(--sh-mut);font-size:12px;padding:18px 0 4px}
+
+/* Actions de gestion des publications dans Mon profil */
+.pf-cell{position:relative}
+.pf-delete-post{position:absolute;top:7px;right:7px;z-index:3;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(8,10,18,.88);color:#ff7b86;border:1px solid rgba(255,255,255,.18);font-size:15px}
+.pf-delete-post:disabled{opacity:.45}
+#pf-create{background:linear-gradient(110deg,var(--a1),var(--a2));color:#fff;border-radius:12px;padding:11px 14px;font-weight:700}
