@@ -438,6 +438,7 @@
         <button type="button" data-reel-sound aria-label="Activer ou couper le son" style="position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;font-size:1.1rem;cursor:pointer;">🔇</button>
         <div style="position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,0.85));color:#fff;">
           <strong style="display:block;font-size:1.05rem;">${esc(ad.title)}</strong>
+          ${ad.user_id ? `<button type="button" data-profile-user="${esc(ad.user_id)}" style="display:block;margin:5px 0 8px;padding:4px 0;background:transparent;border:0;color:#a5f3fc;font-weight:700;cursor:pointer;">Voir le profil de l’artisan →</button>` : ''}
           <div style="margin:2px 0 10px;font-size:0.9rem;"><span style="color:#34d399;font-weight:800;">${price} FCFA</span>${(ad.quartier || ad.city) ? ' · 📍 ' + esc([ad.quartier, ad.city].filter(Boolean).join(', ')) : ''}</div>
           <div style="display:flex;gap:8px;">
             <button type="button" data-reel-open style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">Voir l’annonce</button>
@@ -476,6 +477,8 @@
         if (v) { v.muted = !v.muted; snd.textContent = v.muted ? '🔇' : '🔊'; }
         return;
       }
+      const profileBtn = e.target.closest('[data-profile-user]');
+      if (profileBtn) { if (window.CamerLinkOpenProfile) window.CamerLinkOpenProfile(profileBtn.dataset.profileUser); else location.hash = '#profil/' + profileBtn.dataset.profileUser; return; }
       if (e.target.closest('[data-reel-open]')) { openAdDetail(card.dataset.reel); return; }
       if (e.target.closest('a')) return;
       if (v) {
