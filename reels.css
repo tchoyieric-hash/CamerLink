@@ -17,3 +17,53 @@
     display: block !important; width: 100% !important; height: 100% !important; object-fit: cover !important;
   }
 }
+
+/* CamerLink social feed: posts photo/vidéo pleine largeur, contrôles lisibles */
+.reels-section{width:100%;max-width:100%;margin:0 auto 24px;padding:0 0 18px;border-radius:0;border-left:0;border-right:0;background:transparent;box-shadow:none;overflow:visible}
+.reels-heading{padding:18px clamp(16px,3vw,36px) 12px;margin-bottom:0}
+#reels-feed.reels-feed{display:flex;flex-direction:column;gap:18px;width:100%;max-width:760px;margin:0 auto;overflow:visible;max-height:none}
+.cl-social-post{width:100%;max-width:100%;margin:0!important;border-radius:0!important;background:#030712!important;border:0!important;border-bottom:1px solid rgba(148,163,184,.18)!important;overflow:hidden;box-shadow:none!important;color:#f8fafc}
+.cl-post-location{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;font-size:.95rem;font-weight:700;color:#e5e7eb}
+.cl-post-type{font-size:.78rem;color:#93c5fd;background:rgba(59,130,246,.13);padding:5px 9px;border-radius:999px;white-space:nowrap}
+.cl-post-media{position:relative;width:100%;height:min(76vh,760px);min-height:400px;background:#000;overflow:hidden}
+.cl-post-media video,.cl-post-media .cl-reel-photo{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+.cl-post-media video{object-fit:cover}
+.cl-post-shade{position:absolute;inset:35% 0 0;pointer-events:none;background:linear-gradient(transparent,rgba(0,0,0,.82))}
+.cl-reel-sound{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;background:rgba(3,7,18,.72);color:#fff;font-size:1.2rem}
+.cl-post-actions{position:absolute;right:12px;bottom:24px;z-index:2;display:flex;flex-direction:column;gap:15px;align-items:center}
+.cl-post-actions button{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:54px;color:#fff;text-shadow:0 2px 8px #000}
+.cl-post-actions button span{display:grid;place-items:center;width:50px;height:50px;border-radius:50%;background:rgba(2,6,23,.78);font-size:1.8rem;line-height:1}
+.cl-post-actions button:first-child span{color:#fb7185}
+.cl-post-actions small{font-size:.75rem;font-weight:700}
+.cl-post-caption{position:absolute;z-index:1;left:16px;right:82px;bottom:20px;color:#fff;text-shadow:0 1px 5px #000}
+.cl-post-caption strong{display:block;font-size:1.2rem;line-height:1.3;margin-bottom:6px}
+.cl-post-caption p{font-size:1rem;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
+.cl-post-price{display:inline-block;font-size:1rem;color:#6ee7b7;margin-top:4px}
+.cl-post-footer{display:flex;align-items:center;gap:10px;padding:14px 16px;min-height:76px}
+.cl-post-creator{display:flex;align-items:center;gap:10px;text-align:left;min-width:0;flex:1;color:#f8fafc}
+.cl-post-avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:0 0 44px;background:linear-gradient(135deg,#2563eb,#a855f7);font-weight:800;font-size:1.05rem}
+.cl-post-creator b,.cl-post-creator small{display:block}
+.cl-post-creator b{font-size:.98rem}
+.cl-post-creator small{font-size:.78rem;color:#94a3b8;margin-top:2px}
+.cl-follow-btn{border:1px solid #e2e8f0!important;border-radius:999px!important;padding:10px 16px!important;min-height:44px!important;color:#fff!important;font-size:.9rem!important;font-weight:800!important;white-space:nowrap}
+.cl-post-own{font-size:.8rem;color:#94a3b8}
+.cl-post-whatsapp{width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:grid;place-items:center;background:#22c55e;color:#fff;font-size:1.4rem;font-weight:800}
+.cl-post-open{display:block;width:calc(100% - 32px);margin:0 16px 16px;text-align:left;color:#7dd3fc;font-size:.92rem;font-weight:700;padding:8px 0}
+@media(max-width:700px){
+ .reels-section{margin:0 0 20px;padding:0}
+ .reels-heading{padding:16px}
+ .reels-heading p{font-size:.95rem}
+ #reels-feed.reels-feed{max-width:none;gap:14px}
+ .cl-social-post{border-radius:0!important}
+ .cl-post-location{padding:12px 16px;font-size:.9rem}
+ .cl-post-media{height:calc(100svh - 270px);min-height:390px;max-height:720px}
+ .cl-post-media video{object-fit:contain}
+ .cl-post-actions{right:10px;bottom:18px;gap:12px}
+ .cl-post-actions button span{width:46px;height:46px;font-size:1.65rem}
+ .cl-post-caption{left:16px;right:72px;bottom:16px}
+ .cl-post-caption strong{font-size:1.08rem}
+ .cl-post-caption p{font-size:.94rem}
+ .cl-post-footer{padding:12px 14px;gap:8px}
+ .cl-follow-btn{padding:9px 12px!important;font-size:.84rem!important}
+ .cl-post-whatsapp{width:44px;height:44px;flex-basis:44px}
+}
