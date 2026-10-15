@@ -238,7 +238,24 @@
     btn.textContent = '📍 Près de moi';
     btn.setAttribute('aria-label', 'Trouver des annonces près de moi');
     btn.style.cssText = 'grid-column:1/-1;width:100%;min-height:44px;border-radius:14px;border:1px solid rgba(48,210,230,.45);background:rgba(48,210,230,.10);color:inherit;font-weight:700;cursor:pointer;';
+    const pro = document.createElement('button');
+    pro.id = 'findProBtn';
+    pro.type = 'button';
+    pro.className = 'form-el';
+    pro.textContent = '🛠️ Trouve-moi un pro';
+    pro.style.cssText = 'grid-column:1/-1;width:100%;min-height:44px;border-radius:14px;border:1px solid rgba(124,92,255,.45);background:rgba(124,92,255,.12);color:inherit;font-weight:700;cursor:pointer;';
+    bar.appendChild(pro);
     bar.appendChild(btn);
+    pro.addEventListener('click', () => {
+      const search = $('searchInput');
+      if (search) { search.value = ''; search.placeholder = 'Ex. plombier, coiffeur, électricien…'; search.focus(); }
+      currentCategory = 'Services';
+      document.querySelectorAll('.cat-chip').forEach(el => { el.classList.toggle('active', el.dataset.cat === 'Services'); });
+      renderListings();
+      const main = $('listings-grid');
+      if (main) main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      toast('Recherche de professionnels : saisis le métier ou le service recherché.');
+    });
     btn.addEventListener('click', () => {
       if (nearbyMode) {
         nearbyMode = false; nearbyPosition = null;
