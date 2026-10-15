@@ -50,3 +50,11 @@ Onglet « Profil » de la barre du bas : une page personnelle qui assemble trois
 - 6 tests supplémentaires (format, taille, envoi, remplacement, retrait, chemin étranger, échecs, recadrage).
 
 À vérifier en preview : que les règles du bucket `annonces-images` autorisent l'écriture dans `<id utilisateur>/avatar-….jpg` (si elles n'acceptent que certains noms de fichier, l'erreur s'affiche dans la fenêtre et rien n'est enregistré).
+
+---
+
+# Ajout : repérage de la nouvelle page
+
+- `profil.html` (ancienne maquette statique) redirige désormais vers `/#profil`, la nouvelle page. La page profil se trouve dans `index.html`, onglet « Profil » de la barre du bas.
+- Le menu affiche « CamerLink · version … » en bas : permet de vérifier quelle version est réellement en ligne.
+- Cache : `profil.css?v=3`, `profil-page.js?v=2`, `config.js?v=2`, service worker `camerlink-v7`.

@@ -97,3 +97,5 @@
 .pf-photo>div{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
 .pf-photo .pf-link{margin-top:0;padding:4px 0}
 .pf-mini.big{flex:0 0 72px;width:72px;height:72px;font-size:28px;color:var(--sh-c1)}
+
+.pf-ver{text-align:center;color:var(--sh-mut);font-size:12px;padding:18px 0 4px}
