@@ -1381,6 +1381,7 @@
       ${reel ? `<video src="${esc(reel)}" controls playsinline preload="metadata" style="width:100%;max-height:260px;border-radius:12px;margin-bottom:6px;background:#000;"></video>
         ${shop.reel_desc ? `<p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;">${esc(shop.reel_desc)}</p>` : '<div style="margin-bottom:12px;"></div>'}` : ''}
       ${nStories ? `<button type="button" data-act="stories" data-gi="${gi}" style="${btnStyle}width:100%;margin-bottom:8px;background:linear-gradient(90deg,var(--a1),var(--a2));color:#fff;">▶ Voir ses statuts (${nStories})</button>` : ''}
+      <div id="artisanFollowArea" style="display:flex;align-items:center;gap:10px;margin:4px 0 12px;">${mine ? '<span style="font-size:.85rem;color:var(--color-text-muted)">Votre profil</span>' : '<button type="button" data-act="follow" style="flex:1;padding:11px;border-radius:10px;background:linear-gradient(90deg,var(--a1),var(--a2));color:#fff;font-weight:800;">＋ S’abonner</button>'}<span id="artisanFollowStats" style="font-size:.8rem;color:var(--color-text-muted)">Abonnés…</span></div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
         ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="${btnStyle}background:#22C55E;color:#fff;">WhatsApp</a>
         <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
@@ -1397,6 +1398,13 @@
         </button>`).join('') : '<div class="state-msg" style="padding:16px;">Aucune annonce pour le moment.</div>'}`;
 
     body.dataset.uid = uid;
+    const followBtn = body.querySelector('[data-act="follow"]');
+    sb.rpc('camerlink_follow_stats',{target_user:uid}).then(({data,error})=>{
+      if(error)return;const st=Array.isArray(data)?data[0]:data;if(!st)return;
+      const statsEl=body.querySelector('#artisanFollowStats');if(statsEl)statsEl.textContent=Number(st.followers_count||0)+' abonnés · '+Number(st.following_count||0)+' abonnements';
+      if(followBtn)followBtn.textContent=st.is_following?'✓ Abonné':'＋ S’abonner';
+    }).catch(()=>{});
+    if(followBtn&&!mine&&!currentUser)followBtn.textContent='Connexion pour s’abonner';
     } catch (err) {
       console.error(err);
       body.innerHTML = '<div class="state-msg">Impossible d’afficher la fiche. Réessayez.</div>';
@@ -1409,6 +1417,16 @@
     const ad = e.target.closest('[data-ad]');
     if (ad) { closeModal('artisanModal'); openAdDetail(ad.dataset.ad); return; }
     const uid = $('artisanBody').dataset.uid;
+    const follow = e.target.closest('[data-act="follow"]');
+    if(follow){
+      if(!currentUser){toast('Connectez-vous pour vous abonner.');openModal('authModal');return;}
+      if(currentUser.id===uid){toast('Vous ne pouvez pas vous abonner à vous-même.');return;}
+      follow.disabled=true;
+      const isFollowing=follow.textContent.indexOf('Abonné')>=0;
+      const op=isFollowing?sb.from('abonnements').delete().eq('follower_id',currentUser.id).eq('followed_id',uid):sb.from('abonnements').insert({follower_id:currentUser.id,followed_id:uid});
+      op.then(({error})=>{follow.disabled=false;if(error){toast('Impossible de modifier l’abonnement. Réessayez.');return;}toast(isFollowing?'Désabonnement effectué':'Vous êtes abonné à cet artisan !');openArtisan(uid);}).catch(()=>{follow.disabled=false;toast('Erreur réseau.');});
+      return;
+    }
     if (e.target.closest('[data-act="share"]')) {
       const shop = shopCache[uid];
       const name = (shop && shop.name) || 'Artisan';
