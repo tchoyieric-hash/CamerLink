@@ -463,6 +463,52 @@
     document.head.appendChild(st);
   })();
 
+  /* ===== COMMENTAIRES REELS : seuls les commentaires approuvés sont publics ===== */
+  const reelCommentsCache = {};
+  async function loadApprovedReelComments(id) {
+    id = String(id);
+    if (reelCommentsCache[id]) return reelCommentsCache[id];
+    try {
+      const { data, error } = await withTimeout(
+        sb.from('reel_comments')
+          .select('id,reel_id,user_id,content,status,created_at,parent_id')
+          .eq('reel_id', Number(id)).eq('status', 'approved')
+          .order('created_at', { ascending: true }).limit(50),
+        FETCH_TIMEOUT
+      );
+      if (error) throw error;
+      reelCommentsCache[id] = Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.warn('Commentaires Reels indisponibles', e);
+      reelCommentsCache[id] = [];
+    }
+    return reelCommentsCache[id];
+  }
+
+  function commentPreviewHTML(rows, total) {
+    if (!rows.length) return '<div class="cl-comment-empty">Soyez le premier à commenter cette publication.</div>';
+    return rows.slice(-2).map(row => {
+      const who = row.user_id && currentUser && row.user_id === currentUser.id ? 'Vous' : 'Utilisateur CamerLink';
+      return '<div class="cl-comment-preview"><span class="cl-comment-avatar">' + esc(who === 'Vous' ? 'V' : 'C') +
+        '</span><div class="cl-comment-copy"><b>' + who + '</b><p>' + esc(row.content || '') +
+        '</p></div></div>';
+    }).join('') + (total > 2 ? '<button type="button" class="cl-comments-more" data-reel-comments>Voir les ' + total + ' commentaires</button>' : '');
+  }
+
+  async function hydrateReelComments() {
+    const cards = document.querySelectorAll('.cl-social-post[data-reel]');
+    await Promise.all([...cards].map(async card => {
+      const id = card.dataset.reel;
+      const host = card.querySelector('[data-comments-preview]');
+      if (!host) return;
+      const rows = await loadApprovedReelComments(id);
+      if (!card.isConnected || !host.isConnected) return;
+      const count = card.querySelector('[data-reel-comments] small');
+      if (count) count.textContent = String(rows.length);
+      host.innerHTML = commentPreviewHTML(rows, rows.length);
+    }));
+  }
+
   /* ===== REELS : fil vertical des annonces qui ont une vidéo ===== */
   function reelsMessage(text) {
     return '<div class="reels-placeholder"><span class="reels-placeholder-icon">▶</span><span>' + esc(text) + '</span></div>';
@@ -500,7 +546,7 @@
         <div class="cl-post-media">${media}<div class="cl-post-shade"></div>
           <div class="cl-post-actions">
             <button type="button" data-reel-like aria-label="J’aime cette publication"><span>${liked ? '♥' : '♡'}</span><small>${likeCounts[ad.id] || 0}</small></button>
-            <button type="button" data-reel-comments aria-label="Voir les commentaires"><span>▢</span><small>Commentaires</small></button>
+            <button type="button" data-reel-comments aria-label="Voir les commentaires"><span>▢</span><small>…</small></button>
             <button type="button" data-reel-share aria-label="Partager la publication"><span>↗</span><small>Partager</small></button>
           </div>
           <div class="cl-post-caption">
@@ -517,9 +563,11 @@
           ${ad.user_id && currentUser && ad.user_id === currentUser.id ? '<span class="cl-post-own">Votre publication</span>' : ad.user_id ? `<button type="button" class="cl-follow-btn" data-profile-user="${esc(ad.user_id)}">＋ S’abonner</button>` : ''}
           ${wa ? `<a class="cl-post-whatsapp" href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" aria-label="Contacter sur WhatsApp">☎</a>` : ''}
         </div>
-        <button type="button" class="cl-post-open" data-reel-open>Voir l’annonce complète →</button>
+        <div class="cl-comments-preview" data-comments-preview><span class="cl-comment-loading">Chargement des commentaires…</span></div><button type="button" class="cl-post-open" data-reel-open>Voir l’annonce complète →</button>
       </article>`;
     }).join('');
+
+    hydrateReelComments();
 
     if ('IntersectionObserver' in window) {
       reelObserver = new IntersectionObserver((entries) => {
