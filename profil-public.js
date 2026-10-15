@@ -11,7 +11,7 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){retur
 function toast(s){var t=document.getElementById('toast');if(t){t.textContent=s;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2600)}else alert(s)}
 function currentId(){var m=location.hash.match(/^#profil\/([0-9a-f-]{36})$/i);return m?m[1]:null}
 function showProfile(id){
- if(!id||busy)return;busy=true;root.classList.remove('shell-off');
+ if(!id||busy)return;busy=true;['.hero','.shops-section','#reels-section','#categoryChips','main','footer','#discover-section'].forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.classList.add('shell-off')})});document.querySelectorAll('.shell-tab,.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m==='profil')});root.classList.remove('shell-off');
  root.innerHTML='<div class="pf-login"><p>Chargement du profil…</p></div>';
  Promise.all([
   sb.from('profils').select('id,username,full_name,avatar_url,bio,created_at').eq('id',id).maybeSingle(),
