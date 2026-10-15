@@ -945,3 +945,24 @@ main { width:100% !important; }
 @media (min-width:701px){
   .listings-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
 }
+
+
+/* Mobile header fit: keep Publish visible beside Disconnect */
+@media (max-width:700px){
+  body>header{gap:5px;padding-left:8px;padding-right:8px}
+  body>header .logo-brand{flex:0 1 auto;min-width:0;gap:5px}
+  body>header .brand-wordmark{font-size:clamp(14px,4vw,18px);letter-spacing:-.5px}
+  body>header .brand-logo-img{width:26px;height:26px;flex:0 0 26px}
+  body>header .header-actions{flex:1 1 auto;justify-content:flex-end;gap:4px;min-width:0}
+  body>header .header-actions .btn-icon{width:30px;height:32px;min-width:30px;flex:0 0 30px}
+  body>header .header-actions .btn-login{padding:7px 6px;font-size:10px;flex:0 0 auto}
+  body>header .header-actions .btn-pub{padding:8px 9px;font-size:11px;flex:0 0 auto}
+}
+@media (max-width:390px){
+  body>header .brand-wordmark{font-size:13px}
+  body>header .brand-logo-img{width:23px;height:23px;flex-basis:23px}
+  body>header .header-actions{gap:3px}
+  body>header .header-actions .btn-icon{width:27px;height:30px;min-width:27px;flex-basis:27px;font-size:12px}
+  body>header .header-actions .btn-login{font-size:9px;padding:6px 4px}
+  body>header .header-actions .btn-pub{font-size:10px;padding:7px 7px}
+}
