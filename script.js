@@ -65,6 +65,7 @@
   const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
   let allListings = [], videos = {}, currentUser = null, currentCategory = '', favOnly = false;
+  let nearbyPosition = null, nearbyMode = false;
   let storyGroups = [];
   let likeCounts = {};
   let reelObserver = null;
@@ -225,6 +226,46 @@
   $('searchInput').addEventListener('input', () => renderListings());
   $('cityFilter').addEventListener('change', () => { refreshQuartierFilter(); renderListings(); });
   $('priceFilter').addEventListener('change', () => renderListings());
+
+  /* ===== Découverte locale : résultats proches, uniquement avec accord GPS ===== */
+  (function mountNearbyDiscovery() {
+    const bar = $('search-filter-bar') || $('priceFilter')?.parentElement;
+    if (!bar || $('nearbyBtn')) return;
+    const btn = document.createElement('button');
+    btn.id = 'nearbyBtn';
+    btn.type = 'button';
+    btn.className = 'form-el';
+    btn.textContent = '📍 Près de moi';
+    btn.setAttribute('aria-label', 'Trouver des annonces près de moi');
+    btn.style.cssText = 'grid-column:1/-1;width:100%;min-height:44px;border-radius:14px;border:1px solid rgba(48,210,230,.45);background:rgba(48,210,230,.10);color:inherit;font-weight:700;cursor:pointer;';
+    bar.appendChild(btn);
+    btn.addEventListener('click', () => {
+      if (nearbyMode) {
+        nearbyMode = false; nearbyPosition = null;
+        btn.textContent = '📍 Près de moi';
+        renderListings();
+        return;
+      }
+      if (!navigator.geolocation) { toast('La localisation n’est pas disponible sur cet appareil.'); return; }
+      btn.disabled = true; btn.textContent = 'Localisation…';
+      navigator.geolocation.getCurrentPosition(pos => {
+        nearbyPosition = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        nearbyMode = true; btn.disabled = false; btn.textContent = '✓ Annonces proches · Désactiver';
+        renderListings();
+      }, () => {
+        btn.disabled = false; btn.textContent = '📍 Près de moi';
+        toast('Autorise la localisation pour chercher les annonces proches, ou continue avec la ville et le quartier.');
+      }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+    });
+  })();
+
+  function distanceKm(a, b) {
+    if (!nearbyPosition || a.lat == null || a.lng == null || !Number.isFinite(Number(a.lat)) || !Number.isFinite(Number(a.lng))) return Infinity;
+    const rad = n => n * Math.PI / 180;
+    const dLat = rad(Number(a.lat) - nearbyPosition.lat), dLng = rad(Number(a.lng) - nearbyPosition.lng);
+    const x = Math.sin(dLat/2)**2 + Math.cos(rad(nearbyPosition.lat))*Math.cos(rad(Number(a.lat)))*Math.sin(dLng/2)**2;
+    return 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+  }
 
   /* ===== FAVORIS ===== */
   window.getFavorites = function () {
@@ -864,14 +905,17 @@
     const maxPrice = Number($('priceFilter').value) || 0;
     const favorites = window.getFavorites();
 
-    const filtered = allListings.filter(ad =>
+    let filtered = allListings.filter(ad =>
       (!favOnly || favorites.includes(String(ad.id))) &&
       (!currentCategory || ad.category === currentCategory) &&
       (!city || ad.city === city) &&
       (!currentQuartier || qKey(ad.quartier) === currentQuartier) &&
       (!maxPrice || Number(ad.price) <= maxPrice) &&
-      (!term || String(ad.title || '').toLowerCase().includes(term) || qKey(ad.quartier).includes(qKey(term)))
+      (!term || String(ad.title || '').toLowerCase().includes(term) || qKey(ad.quartier).includes(qKey(term)) || qKey(ad.description).includes(qKey(term)))
     );
+    if (nearbyMode && nearbyPosition) {
+      filtered = filtered.slice().sort((a,b) => distanceKm(a,nearbyPosition) - distanceKm(b,nearbyPosition));
+    }
 
     $('resultsCount').textContent = `${filtered.length} annonce(s)`;
     if (filtered.length === 0) {
