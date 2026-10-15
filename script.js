@@ -524,10 +524,25 @@
   async function shopInfo(ids) {
     const out = {};
     if (!ids.length) return out;
+    // Priorité au nom public de l’établissement, puis au profil personnel.
     try {
       const r = await withTimeout(sb.from('etablissements').select('user_id, name, logo_url').in('user_id', ids));
-      if (!r.error) (r.data || []).forEach(e => { out[e.user_id] = e; });
-    } catch (e) { /* on garde "Artisan" */ }
+      if (!r.error) (r.data || []).forEach(e => {
+        if (e.user_id && e.name) out[e.user_id] = { name: e.name, logo_url: e.logo_url || null };
+      });
+    } catch (e) { /* le profil personnel sert de solution de repli */ }
+    const missing = ids.filter(id => !out[id] || !out[id].name);
+    if (missing.length) {
+      try {
+        const p = await withTimeout(sb.from('profils').select('id, full_name, username, avatar_url').in('id', missing));
+        if (!p.error) (p.data || []).forEach(profile => {
+          const name = String(profile.full_name || '').trim() || String(profile.username || '').trim();
+          if (profile.id && name && !/^user-[a-f0-9]{12,}$/i.test(name)) {
+            out[profile.id] = { name, logo_url: profile.avatar_url || null };
+          }
+        });
+      } catch (e) { /* nom de secours affiché dans la messagerie */ }
+    }
     return out;
   }
 
@@ -1029,7 +1044,7 @@
       body.innerHTML = [...convs.values()].map(c => `
         <button type="button" data-other="${esc(c.other)}" data-ad="${esc(c.ad || '')}"
           style="display:block;width:100%;text-align:left;padding:10px;margin-bottom:6px;border-radius:10px;background:rgba(127,127,127,0.12);cursor:pointer;">
-          <strong>${esc(names[c.other] || 'Utilisateur')}</strong>
+          <strong>${esc(names[c.other] || 'Membre CamerLink')}</strong>
           ${c.ad && adTitleOf(c.ad) ? `<small style="opacity:.7"> · ${esc(adTitleOf(c.ad))}</small>` : ''}
           <div style="opacity:.8;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             ${c.last.sender_id === me ? 'Vous : ' : ''}${esc(c.last.content)}
@@ -1051,7 +1066,7 @@
                      String(m.ad_id || '') === String(chat.ad || ''))
         .reverse();
       const names = await shopNames([chat.other]);
-      $('inboxTitle').textContent = (names[chat.other] || 'Utilisateur') + (chat.ad && adTitleOf(chat.ad) ? ' · ' + adTitleOf(chat.ad) : '');
+      $('inboxTitle').textContent = (names[chat.other] || 'Membre CamerLink') + (chat.ad && adTitleOf(chat.ad) ? ' · ' + adTitleOf(chat.ad) : '');
       body.innerHTML = msgs.length ? msgs.map(m => `
         <div style="display:flex;justify-content:${m.sender_id === me ? 'flex-end' : 'flex-start'};margin-bottom:6px;">
           <div style="max-width:80%;padding:8px 12px;border-radius:12px;background:${m.sender_id === me ? 'var(--a1)' : 'rgba(127,127,127,0.2)'};color:${m.sender_id === me ? '#05060D' : 'inherit'};">
