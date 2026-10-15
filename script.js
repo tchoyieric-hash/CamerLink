@@ -505,6 +505,8 @@
       if (!card.isConnected || !host.isConnected) return;
       const count = card.querySelector('[data-reel-comments] small');
       if (count) count.textContent = String(rows.length);
+      const floating = card.querySelector('[data-comments-float-text]');
+      if (floating) floating.textContent = rows.length ? rows[rows.length - 1].content : 'Aucun commentaire approuvé — commenter';
       host.innerHTML = commentPreviewHTML(rows, rows.length);
     }));
   }
@@ -554,6 +556,7 @@
             ${ad.description ? `<p>${esc(ad.description)}</p>` : ''}
             ${price ? `<b class="cl-post-price">${price}</b>` : ''}
           </div>
+          <button type="button" class="cl-comments-float" data-reel-comments><span>💬</span><span data-comments-float-text>Lire les commentaires…</span><b>›</b></button>
         </div>
         <div class="cl-post-footer">
           <button type="button" class="cl-post-creator" ${ad.user_id ? `data-profile-user="${esc(ad.user_id)}"` : 'data-reel-open'}>
