@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SITE_URL = (process.env.SITE_URL || 'https://camerlink.vercel.app').replace(/\/+$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://camer-link-tchoyi-eric.vercel.app').replace(/\/+$/, '');
 const SB_URL = process.env.SUPABASE_URL || 'https://lviddipduhaelxcvyykc.supabase.co';
 // Clé publique (anon) : la même que dans script.js, protégée par les règles RLS.
 const SB_KEY = process.env.SUPABASE_ANON_KEY ||
