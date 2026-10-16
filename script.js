@@ -1069,6 +1069,49 @@
     });
   }
 
+  // Galerie horizontale pour annonces multi-photos, avec compatibilité anciennes annonces.
+  function listingPhotoCarousel(ad, mode) {
+    const urls = Array.isArray(ad.images_urls)
+      ? [...new Set(ad.images_urls.filter(url => typeof url === 'string' && /^https:\/\//i.test(url)))]
+      : [];
+    if (!urls.length && ad.image_url) urls.push(ad.image_url);
+    if (!urls.length) return '';
+    const cls = mode === 'detail' ? 'ad-photo-carousel ad-photo-carousel-detail' : 'ad-photo-carousel ad-photo-carousel-card';
+    const slides = urls.map((url, i) =>
+      `<div class="ad-photo-slide"><img src="${esc(url)}" alt="Photo ${i + 1} de ${esc(ad.title || 'l’annonce')}" loading="${i === 0 ? 'eager' : 'lazy'}"></div>`
+    ).join('');
+    const controls = urls.length > 1
+      ? `<button type="button" class="ad-photo-arrow ad-photo-prev" data-photo-prev aria-label="Photo précédente">‹</button><button type="button" class="ad-photo-arrow ad-photo-next" data-photo-next aria-label="Photo suivante">›</button><div class="ad-photo-counter" aria-live="polite">1 / ${urls.length}</div><div class="ad-photo-dots">${urls.map((_, i) => `<span class="${i === 0 ? 'active' : ''}"></span>`).join('')}</div>`
+      : '';
+    return `<div class="${cls}" data-photo-carousel data-photo-count="${urls.length}"><div class="ad-photo-track">${slides}</div>${controls}</div>`;
+  }
+
+  // Flèches et indicateurs de la galerie; le défilement tactile reste natif sur mobile.
+  document.addEventListener('click', (e) => {
+    const arrow = e.target.closest('[data-photo-prev], [data-photo-next]');
+    if (!arrow) return;
+    e.preventDefault(); e.stopPropagation();
+    const carousel = arrow.closest("[data-photo-carousel]");
+    const track = carousel && carousel.querySelector(".ad-photo-track");
+    if (!track) return;
+    const slides = Array.from(track.children);
+    const current = Math.round(track.scrollLeft / Math.max(track.clientWidth, 1));
+    const next = arrow.hasAttribute("data-photo-next") ? Math.min(current + 1, slides.length - 1) : Math.max(current - 1, 0);
+    track.scrollTo({ left: slides[next].offsetLeft - track.offsetLeft, behavior: "smooth" });
+  }, true);
+
+  document.addEventListener('scroll', (e) => {
+    const track = e.target;
+    if (!track || !track.classList || !track.classList.contains("ad-photo-track")) return;
+    const carousel = track.closest("[data-photo-carousel]");
+    if (!carousel) return;
+    const slides = Array.from(track.children);
+    const index = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / Math.max(track.clientWidth, 1))));
+    const counter = carousel.querySelector(".ad-photo-counter");
+    if (counter) counter.textContent = (index + 1) + " / " + slides.length;
+    carousel.querySelectorAll(".ad-photo-dots span").forEach((dot, i) => dot.classList.toggle("active", i === index));
+  }, true);
+
   /* ===== AFFICHAGE DES ANNONCES ===== */
   function renderListings() {
     const grid = $('listings-grid');
@@ -1114,7 +1157,7 @@
           <span class="card-badge-top">${esc(ad.category)}</span>
           <span class="card-views">👁 ${viewsCount} · ❤️ ${likes}</span>
           <button type="button" class="btn-fav ${isFav ? 'active' : ''}" data-fav="${esc(ad.id)}" aria-label="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}" aria-pressed="${isFav}" style="position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:3;">${isFav ? '❤️' : '🤍'}</button>
-          ${ad.image_url ? `<img src="${esc(ad.image_url)}" loading="lazy" alt="">` : ''}
+          ${listingPhotoCarousel(ad, 'card')}
         </div>
         <div class="card-body">
           <h3 class="ad-title">${esc(ad.title)}</h3>
@@ -1519,7 +1562,7 @@
     const place = [ad.quartier, ad.city].filter(Boolean).join(', ');
 
     body.innerHTML = `
-      ${ad.image_url ? `<img src="${esc(ad.image_url)}" alt="" style="width:100%;max-height:300px;object-fit:cover;border-radius:12px;margin-bottom:12px;">` : ''}
+      ${listingPhotoCarousel(ad, 'detail')}
       ${vUrl ? `<video src="${esc(vUrl)}" controls playsinline preload="metadata" style="width:100%;max-height:300px;border-radius:12px;margin-bottom:12px;background:#000;"></video>` : ''}
       <span style="display:inline-block;padding:3px 10px;border-radius:999px;background:rgba(34,211,238,0.12);color:var(--a1);font-size:0.75rem;font-weight:600;">${esc(ad.category)}</span>
       <h3 style="font-size:1.25rem;margin:8px 0 4px;">${esc(ad.title)}</h3>
