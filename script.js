@@ -952,9 +952,9 @@
       if (description.length > 2000) return setErr('La description est trop longue (2000 caractères max).');
       if (!Number.isFinite(price) || price < 0) return setErr('Prix invalide.');
       if ($('adQuartier') && $('adQuartier').value.trim().length > MAX_QUARTIER) return setErr(`Le quartier est trop long (${MAX_QUARTIER} caractères max).`);
-      if (!file) return setErr('Ajoutez une photo.');
-      if (!AD_IMG_TYPES.includes(file.type)) return setErr('Photo : jpg, png ou webp uniquement.');
-      if (file.size > MAX_AD_IMG_MB * 1024 * 1024) return setErr(`Photo trop lourde (max ${MAX_AD_IMG_MB} Mo).`);
+      if (!file && !vFile) return setErr('Ajoutez au moins une photo ou une vidéo.');
+      if (file && !AD_IMG_TYPES.includes(file.type)) return setErr('Photo : jpg, png ou webp uniquement.');
+      if (file && file.size > MAX_AD_IMG_MB * 1024 * 1024) return setErr(`Photo trop lourde (max ${MAX_AD_IMG_MB} Mo).`);
 
       let vType = '';
       if (vFile) {
@@ -968,12 +968,15 @@
       const uploaded = []; // fichiers envoyés : [bucket, chemin]
       let saved = false;
       try {
-        const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
-        const path = `${currentUser.id}/${Date.now()}.${ext}`;
-        const up = await sb.storage.from(AD_BUCKET).upload(path, file, { contentType: file.type });
-        if (up.error) throw up.error;
-        uploaded.push([AD_BUCKET, path]);
-        const { data: { publicUrl } } = sb.storage.from(AD_BUCKET).getPublicUrl(path);
+        let publicUrl = null;
+        if (file) {
+          const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
+          const path = `${currentUser.id}/${Date.now()}.${ext}`;
+          const up = await sb.storage.from(AD_BUCKET).upload(path, file, { contentType: file.type });
+          if (up.error) throw up.error;
+          uploaded.push([AD_BUCKET, path]);
+          publicUrl = sb.storage.from(AD_BUCKET).getPublicUrl(path).data.publicUrl;
+        }
 
         let videoUrl = null;
         if (vFile) {
@@ -991,9 +994,9 @@
           city: $('adCity').value,
           price,
           description,
-          contact,
-          image_url: publicUrl
+          contact
         };
+        if (publicUrl) row.image_url = publicUrl;
         if (videoUrl) row.video_url = videoUrl;
         if (quartier) row.quartier = quartier;
 
@@ -1007,7 +1010,7 @@
         resetAdImagePreview();
         const quickDetails = document.querySelector('.quick-publish-details');
         if (quickDetails) quickDetails.open = false;
-        toast(videoUrl ? 'Annonce publiée avec sa vidéo !' : 'Annonce publiée !');
+        toast(videoUrl && publicUrl ? 'Annonce publiée avec photo et vidéo !' : videoUrl ? 'Annonce publiée avec sa vidéo !' : 'Annonce publiée avec sa photo !');
         await loadListings();
       } catch (ex) {
         console.error(ex);
