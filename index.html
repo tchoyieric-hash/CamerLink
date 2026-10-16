@@ -27,10 +27,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css?v=vision-premium-20261015">
-  <link rel="stylesheet" href="/reels.css?v=comments-overlay-20261015">
+  <link rel="stylesheet" href="/reels.css?v=scrollfix-20261016">
   <link rel="stylesheet" href="/statuts.css?v=1">
   <link rel="stylesheet" href="/shell.css?v=1">
   <link rel="stylesheet" href="/profil.css?v=4">
+  <link rel="stylesheet" href="/camerlink-premium.css?v=3">
 </head>
 <body>
 <!--SEO_BODY-->
@@ -68,6 +69,9 @@
       <option value="50000">Max 50 000 FCFA</option>
       <option value="250000">Max 250 000 FCFA</option>
     </select>
+  </div>
+  <div style="display:flex;justify-content:center;margin:16px auto 4px;padding:0 14px;">
+    <a href="/monetisation.html" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#17120a;font-weight:900;text-decoration:none;box-shadow:0 8px 24px #f59e0b25;">🚀 Booster mon annonce · dès 500 FCFA</a>
   </div>
 </section>
 
@@ -150,16 +154,19 @@
 <div id="publishModal" class="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-header"><h3>Publier une offre</h3><button class="modal-close" data-close="publishModal">×</button></div>
-    <form id="adForm">
-      <div class="form-group"><label>Catégorie</label><select class="form-sheet-el" id="adCategory"></select></div>
-      <div class="form-group"><label>Titre</label><input class="form-sheet-el" id="adTitle" type="text" required></div>
-      <div class="form-group"><label>Ville</label><select class="form-sheet-el" id="adCity"></select></div>
-      <div class="form-group"><label>Prix (FCFA)</label><input class="form-sheet-el" id="adPrice" type="number" required></div>
-      <div class="form-group"><label>Photo principale</label><input class="form-sheet-el" id="adImage" type="file" accept="image/jpeg,image/png,image/webp" required></div>
-      <div class="form-group video-upload-group"><label for="adVideoFile">🎬 Ajouter une vidéo à votre Reel (facultatif)</label><input class="form-sheet-el video-file-input" id="adVideoFile" name="adVideoFile" type="file" accept="video/*,.mp4,.webm,.mov,.quicktime" aria-describedby="adVideoHint adVideoSelected"><small class="form-hint" id="adVideoHint">Touchez le bouton « Choisir un fichier » pour ouvrir la galerie de votre téléphone. MP4 recommandé · maximum 50 Mo. La vidéo sera publiée dans CamerLink Reels.</small><p id="adVideoSelected" class="video-selected-name" aria-live="polite">Aucune vidéo sélectionnée (optionnel).</p><video id="adVideoPreview" class="video-upload-preview" controls playsinline hidden></video></div>
-      <div class="form-group"><label>Description</label><textarea class="form-sheet-el" id="adDesc" rows="3" required></textarea></div>
-      <div class="form-group"><label>WhatsApp / Téléphone</label><input class="form-sheet-el" id="adContact" type="tel" required></div>
-      <button type="submit" class="btn-submit-modal">Publier</button>
+    <form id="adForm" class="quick-publish-form">
+      <p class="quick-publish-intro">Ajoutez une photo ou une vidéo, puis indiquez votre offre.</p>
+      <div class="form-group quick-photo-field"><label for="adImage">📸 Ajouter une photo (facultatif si vous ajoutez une vidéo)</label><input class="form-sheet-el" id="adImage" type="file" accept="image/jpeg,image/png,image/webp"><small class="form-hint">Vous pouvez publier avec une photo, une vidéo, ou les deux.</small><div id="adImagePreviewWrap" class="quick-image-preview" hidden><img id="adImagePreview" alt="Aperçu de votre photo"><button type="button" id="adImageRemove" class="quick-image-remove">Changer la photo</button></div></div>
+      <div class="form-group"><label for="adTitle">Que proposez-vous ?</label><input class="form-sheet-el" id="adTitle" type="text" required minlength="3" maxlength="120" placeholder="Ex. : iPhone 13 en bon état"></div>
+      <div class="form-group"><label for="adPrice">Prix (FCFA)</label><input class="form-sheet-el" id="adPrice" type="number" required min="0" step="1" placeholder="Ex. : 75000"></div>
+      <details class="quick-publish-details"><summary>Ajouter des détails (facultatif)</summary>
+        <div class="form-group"><label for="adCategory">Catégorie</label><select class="form-sheet-el" id="adCategory"></select></div>
+        <div class="form-group"><label for="adCity">Ville</label><select class="form-sheet-el" id="adCity"></select></div>
+        <div class="form-group"><label for="adDesc">Description (facultatif)</label><textarea class="form-sheet-el" id="adDesc" rows="3" placeholder="Quelques précisions sur votre offre…"></textarea></div>
+        <div class="form-group"><label for="adContact">WhatsApp / Téléphone de contact</label><input class="form-sheet-el" id="adContact" type="tel" required placeholder="6 91 23 45 67"></div>
+        <div class="form-group video-upload-group"><label for="adVideoFile">🎬 Ajouter une vidéo (facultatif si vous ajoutez une photo)</label><input class="form-sheet-el video-file-input" id="adVideoFile" name="adVideoFile" type="file" accept="video/*,.mp4,.webm,.mov,.quicktime" aria-describedby="adVideoHint adVideoSelected"><small class="form-hint" id="adVideoHint">MP4 recommandé · maximum 50 Mo. La vidéo sera publiée dans CamerLink Reels.</small><p id="adVideoSelected" class="video-selected-name" aria-live="polite">Aucune vidéo sélectionnée (optionnel).</p><video id="adVideoPreview" class="video-upload-preview" controls playsinline hidden></video></div>
+      </details>
+      <button type="submit" class="btn-submit-modal">Publier mon annonce</button>
       <p class="form-error" id="pubError"></p>
     </form>
   </div>
@@ -219,7 +226,7 @@
 </nav>
 
 <div id="toast"></div>
-<script src="/script.js?v=comments-overlay-20261015"></script>
+<script src="/script.js?v=reels-cinema-20261016"></script>
 <script src="/statuts.js?v=1"></script>
 <script src="/shell.js?v=3"></script>
 <script src="/profil-page.js?v=6"></script>

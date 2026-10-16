@@ -545,7 +545,7 @@
       return `
       <article class="reel-card cl-social-post" data-reel="${esc(ad.id)}">
         <div class="cl-post-location">${location ? `<span>📍 ${esc(location)}</span>` : '<span>Publication CamerLink</span>'}<span class="cl-post-type">${videos[ad.id] ? '▶ Vidéo' : '▧ Photo'}</span></div>
-        <div class="cl-post-media">${media}<div class="cl-post-shade"></div>
+        <div class="cl-post-media">${media}<button type="button" class="cl-reel-fullscreen" data-reel-fullscreen aria-label="Afficher la vidéo en plein écran">⛶</button><div class="cl-post-shade"></div>
           <div class="cl-post-actions">
             <button type="button" data-reel-like aria-label="J’aime cette publication"><span>${liked ? '♥' : '♡'}</span><small>${likeCounts[ad.id] || 0}</small></button>
             <button type="button" data-reel-comments aria-label="Voir les commentaires"><span>▢</span><small>…</small></button>
@@ -594,6 +594,16 @@
       if (!card) return;
       const v = card.querySelector('video');
       const id = card.dataset.reel;
+      const full = e.target.closest('[data-reel-fullscreen]');
+      if (full) {
+        const media = full.closest('.cl-post-media');
+        if (media) {
+          const exit = document.fullscreenElement === media;
+          const action = exit ? document.exitFullscreen?.() : media.requestFullscreen?.();
+          if (action && action.catch) action.catch(() => toast('Le plein écran n’est pas disponible sur ce navigateur.'));
+        }
+        return;
+      }
       const snd = e.target.closest('[data-reel-sound]');
       if (snd) {
         if (v) { v.muted = !v.muted; snd.textContent = v.muted ? '🔇' : '🔊'; }
@@ -875,6 +885,39 @@
     if (nm) nm.textContent = 'Aucune vidéo sélectionnée (optionnel).';
   }
 
+  // Publication express : aperçu de la photo et contact prérempli quand possible.
+  const adImageInput = $('adImage');
+  const adImagePreviewWrap = $('adImagePreviewWrap');
+  const adImagePreview = $('adImagePreview');
+  const adImageRemove = $('adImageRemove');
+  let adImagePreviewUrl = null;
+  function resetAdImagePreview() {
+    if (adImagePreviewUrl) { URL.revokeObjectURL(adImagePreviewUrl); adImagePreviewUrl = null; }
+    if (adImagePreview) adImagePreview.removeAttribute('src');
+    if (adImagePreviewWrap) adImagePreviewWrap.hidden = true;
+  }
+  if (adImageInput) adImageInput.addEventListener('change', () => {
+    resetAdImagePreview();
+    const f = adImageInput.files && adImageInput.files[0];
+    if (!f || !f.type || !f.type.startsWith('image/')) return;
+    adImagePreviewUrl = URL.createObjectURL(f);
+    if (adImagePreview) adImagePreview.src = adImagePreviewUrl;
+    if (adImagePreviewWrap) adImagePreviewWrap.hidden = false;
+  });
+  if (adImageRemove && adImageInput) adImageRemove.addEventListener('click', () => {
+    adImageInput.value = '';
+    resetAdImagePreview();
+  });
+  function prepareQuickPublish() {
+    const contact = $('adContact');
+    const details = document.querySelector('.quick-publish-details');
+    if (contact && !contact.value.trim() && currentUser) {
+      const loginDigits = String(currentUser.email || '').split('@')[0].replace(/[^0-9]/g, '');
+      if (loginDigits.length >= 8) contact.value = normPhone(loginDigits);
+    }
+    if (details && contact && !contact.value.trim()) details.open = true;
+  }
+
   const adVideoInput = $('adVideoFile');
   if (adVideoInput) {
     adVideoInput.addEventListener('change', () => {
@@ -919,9 +962,9 @@
       if (description.length > 2000) return setErr('La description est trop longue (2000 caractères max).');
       if (!Number.isFinite(price) || price < 0) return setErr('Prix invalide.');
       if ($('adQuartier') && $('adQuartier').value.trim().length > MAX_QUARTIER) return setErr(`Le quartier est trop long (${MAX_QUARTIER} caractères max).`);
-      if (!file) return setErr('Ajoutez une photo.');
-      if (!AD_IMG_TYPES.includes(file.type)) return setErr('Photo : jpg, png ou webp uniquement.');
-      if (file.size > MAX_AD_IMG_MB * 1024 * 1024) return setErr(`Photo trop lourde (max ${MAX_AD_IMG_MB} Mo).`);
+      if (!file && !vFile) return setErr('Ajoutez au moins une photo ou une vidéo.');
+      if (file && !AD_IMG_TYPES.includes(file.type)) return setErr('Photo : jpg, png ou webp uniquement.');
+      if (file && file.size > MAX_AD_IMG_MB * 1024 * 1024) return setErr(`Photo trop lourde (max ${MAX_AD_IMG_MB} Mo).`);
 
       let vType = '';
       if (vFile) {
@@ -935,12 +978,15 @@
       const uploaded = []; // fichiers envoyés : [bucket, chemin]
       let saved = false;
       try {
-        const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
-        const path = `${currentUser.id}/${Date.now()}.${ext}`;
-        const up = await sb.storage.from(AD_BUCKET).upload(path, file, { contentType: file.type });
-        if (up.error) throw up.error;
-        uploaded.push([AD_BUCKET, path]);
-        const { data: { publicUrl } } = sb.storage.from(AD_BUCKET).getPublicUrl(path);
+        let publicUrl = null;
+        if (file) {
+          const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
+          const path = `${currentUser.id}/${Date.now()}.${ext}`;
+          const up = await sb.storage.from(AD_BUCKET).upload(path, file, { contentType: file.type });
+          if (up.error) throw up.error;
+          uploaded.push([AD_BUCKET, path]);
+          publicUrl = sb.storage.from(AD_BUCKET).getPublicUrl(path).data.publicUrl;
+        }
 
         let videoUrl = null;
         if (vFile) {
@@ -958,9 +1004,9 @@
           city: $('adCity').value,
           price,
           description,
-          contact,
-          image_url: publicUrl
+          contact
         };
+        if (publicUrl) row.image_url = publicUrl;
         if (videoUrl) row.video_url = videoUrl;
         if (quartier) row.quartier = quartier;
 
@@ -971,7 +1017,10 @@
         closeModal('publishModal');
         adForm.reset();
         resetVideoPreview();
-        toast(videoUrl ? 'Annonce publiée avec sa vidéo !' : 'Annonce publiée !');
+        resetAdImagePreview();
+        const quickDetails = document.querySelector('.quick-publish-details');
+        if (quickDetails) quickDetails.open = false;
+        toast(videoUrl && publicUrl ? 'Annonce publiée avec photo et vidéo !' : videoUrl ? 'Annonce publiée avec sa vidéo !' : 'Annonce publiée avec sa photo !');
         await loadListings();
       } catch (ex) {
         console.error(ex);
@@ -1382,6 +1431,7 @@
 
   $('pubBtn').addEventListener('click', () => {
     if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
+    prepareQuickPublish();
     openModal('publishModal');
   });
 

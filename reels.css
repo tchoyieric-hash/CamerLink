@@ -74,3 +74,107 @@
 .cl-comments-float span:nth-child(2){flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.88rem;font-weight:650}
 .cl-comments-float b{font-size:1.3rem;color:#67e8f9}
 @media(max-width:700px){.cl-comments-float{left:12px;right:72px;bottom:112px;min-height:46px;padding:9px 11px}.cl-comments-float span:nth-child(2){font-size:.82rem}}
+
+/* CamerLink Reels — expérience cinéma haute immersion */
+.cl-social-post{
+  max-width:900px!important;
+  border:1px solid rgba(125,211,252,.14)!important;
+  border-radius:24px!important;
+  overflow:hidden!important;
+  background:linear-gradient(160deg,#050816,#03040a 65%)!important;
+  box-shadow:0 22px 70px rgba(0,0,0,.34),0 0 36px rgba(34,211,238,.06)!important;
+}
+.cl-post-location{background:linear-gradient(90deg,rgba(8,15,35,.96),rgba(8,15,35,.58));}
+.cl-post-media{
+  height:min(82svh,860px)!important;
+  min-height:520px!important;
+  background:radial-gradient(ellipse at 50% 35%,#172033 0%,#000 72%)!important;
+  isolation:isolate;
+}
+.cl-post-media video,.cl-post-media .cl-reel-photo{
+  object-fit:contain!important;
+  object-position:center center!important;
+  background:#000!important;
+  image-rendering:auto;
+}
+.cl-post-shade{inset:24% 0 0!important;background:linear-gradient(180deg,transparent 25%,rgba(0,0,0,.12) 45%,rgba(0,0,0,.88) 100%)!important;}
+.cl-post-caption{left:20px!important;bottom:22px!important;right:88px!important;}
+.cl-post-caption strong{font-size:clamp(1.15rem,2.4vw,1.55rem)!important;text-shadow:0 3px 18px #000;}
+.cl-post-caption p{font-size:1rem!important;text-shadow:0 2px 12px #000;}
+.cl-post-actions button span{box-shadow:0 5px 20px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px);}
+.cl-reel-fullscreen{position:absolute;z-index:5;top:14px;left:14px;width:46px;height:46px;display:grid;place-items:center;border-radius:50%;color:#fff;background:rgba(3,7,18,.72);border:1px solid rgba(255,255,255,.22);font-size:1.35rem;backdrop-filter:blur(14px);box-shadow:0 6px 22px #0005;}
+.cl-reel-fullscreen:focus-visible,.cl-reel-sound:focus-visible{outline:3px solid #67e8f9;outline-offset:3px}
+.cl-post-media:fullscreen{width:100vw!important;height:100dvh!important;max-height:none!important;min-height:0!important;background:#000!important}
+.cl-post-media:fullscreen video,.cl-post-media:fullscreen .cl-reel-photo{width:100%!important;height:100%!important;object-fit:contain!important}
+.cl-post-media:fullscreen .cl-post-caption{bottom:max(22px,env(safe-area-inset-bottom))!important}
+.cl-post-footer{background:linear-gradient(180deg,#050816,#03040a);}
+@media(max-width:700px){
+  .cl-social-post{border-radius:0!important;border-left:0!important;border-right:0!important;max-width:none!important;box-shadow:none!important}
+  .cl-post-media{height:calc(100svh - 180px)!important;min-height:58svh!important;max-height:900px!important}
+  .cl-post-media video,.cl-post-media .cl-reel-photo{object-fit:contain!important}
+  .cl-post-location{padding:12px 16px}
+  .cl-reel-fullscreen{top:12px;left:12px;width:42px;height:42px}
+  .cl-post-caption{left:16px!important;right:76px!important;bottom:18px!important}
+  .cl-post-actions{right:10px!important;bottom:20px!important}
+}
+@media(prefers-reduced-motion:no-preference){
+  .cl-social-post{animation:cl-reel-enter .45s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes cl-reel-enter{from{opacity:.65;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+}
+
+/* UX mobile: ne jamais enfermer le défilement dans le cadre des Reels */
+@media (max-width:700px){
+  .reels-section{
+    overflow:visible!important;
+    height:auto!important;
+    max-height:none!important;
+    touch-action:pan-y!important;
+  }
+  #reels-feed,#reels-feed.reels-feed{
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+    overflow-y:visible!important;
+    overflow-x:clip!important;
+    overscroll-behavior-y:auto!important;
+    scroll-snap-type:none!important;
+    touch-action:pan-y!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  #reels-feed>.reel-card,
+  #reels-feed>.cl-social-post{
+    flex:0 0 auto!important;
+    height:auto!important;
+    max-height:none!important;
+    min-height:0!important;
+    scroll-snap-align:none!important;
+    margin-bottom:18px!important;
+  }
+  .reels-heading{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:14px!important;
+  }
+  .reels-heading-actions{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+    flex-wrap:wrap!important;
+    width:100%!important;
+  }
+  .reels-upload-btn{
+    position:relative!important;
+    z-index:3!important;
+    min-height:46px!important;
+    padding:12px 18px!important;
+    border-radius:999px!important;
+    flex:1 1 180px!important;
+    box-shadow:0 8px 26px rgba(34,211,238,.22)!important;
+    touch-action:manipulation;
+  }
+  .cl-post-media{
+    touch-action:pan-y!important;
+  }
+}
