@@ -545,7 +545,7 @@
       return `
       <article class="reel-card cl-social-post" data-reel="${esc(ad.id)}">
         <div class="cl-post-location">${location ? `<span>📍 ${esc(location)}</span>` : '<span>Publication CamerLink</span>'}<span class="cl-post-type">${videos[ad.id] ? '▶ Vidéo' : '▧ Photo'}</span></div>
-        <div class="cl-post-media">${media}<div class="cl-post-shade"></div>
+        <div class="cl-post-media">${media}<button type="button" class="cl-reel-fullscreen" data-reel-fullscreen aria-label="Afficher la vidéo en plein écran">⛶</button><div class="cl-post-shade"></div>
           <div class="cl-post-actions">
             <button type="button" data-reel-like aria-label="J’aime cette publication"><span>${liked ? '♥' : '♡'}</span><small>${likeCounts[ad.id] || 0}</small></button>
             <button type="button" data-reel-comments aria-label="Voir les commentaires"><span>▢</span><small>…</small></button>
@@ -594,6 +594,16 @@
       if (!card) return;
       const v = card.querySelector('video');
       const id = card.dataset.reel;
+      const full = e.target.closest('[data-reel-fullscreen]');
+      if (full) {
+        const media = full.closest('.cl-post-media');
+        if (media) {
+          const exit = document.fullscreenElement === media;
+          const action = exit ? document.exitFullscreen?.() : media.requestFullscreen?.();
+          if (action && action.catch) action.catch(() => toast('Le plein écran n’est pas disponible sur ce navigateur.'));
+        }
+        return;
+      }
       const snd = e.target.closest('[data-reel-sound]');
       if (snd) {
         if (v) { v.muted = !v.muted; snd.textContent = v.muted ? '🔇' : '🔊'; }
