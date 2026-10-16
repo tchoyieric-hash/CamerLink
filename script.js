@@ -875,6 +875,39 @@
     if (nm) nm.textContent = 'Aucune vidéo sélectionnée (optionnel).';
   }
 
+  // Publication express : aperçu de la photo et contact prérempli quand possible.
+  const adImageInput = $('adImage');
+  const adImagePreviewWrap = $('adImagePreviewWrap');
+  const adImagePreview = $('adImagePreview');
+  const adImageRemove = $('adImageRemove');
+  let adImagePreviewUrl = null;
+  function resetAdImagePreview() {
+    if (adImagePreviewUrl) { URL.revokeObjectURL(adImagePreviewUrl); adImagePreviewUrl = null; }
+    if (adImagePreview) adImagePreview.removeAttribute('src');
+    if (adImagePreviewWrap) adImagePreviewWrap.hidden = true;
+  }
+  if (adImageInput) adImageInput.addEventListener('change', () => {
+    resetAdImagePreview();
+    const f = adImageInput.files && adImageInput.files[0];
+    if (!f || !f.type || !f.type.startsWith('image/')) return;
+    adImagePreviewUrl = URL.createObjectURL(f);
+    if (adImagePreview) adImagePreview.src = adImagePreviewUrl;
+    if (adImagePreviewWrap) adImagePreviewWrap.hidden = false;
+  });
+  if (adImageRemove && adImageInput) adImageRemove.addEventListener('click', () => {
+    adImageInput.value = '';
+    resetAdImagePreview();
+  });
+  function prepareQuickPublish() {
+    const contact = $('adContact');
+    const details = document.querySelector('.quick-publish-details');
+    if (contact && !contact.value.trim() && currentUser) {
+      const loginDigits = String(currentUser.email || '').split('@')[0].replace(/[^0-9]/g, '');
+      if (loginDigits.length >= 8) contact.value = normPhone(loginDigits);
+    }
+    if (details && contact && !contact.value.trim()) details.open = true;
+  }
+
   const adVideoInput = $('adVideoFile');
   if (adVideoInput) {
     adVideoInput.addEventListener('change', () => {
@@ -971,6 +1004,9 @@
         closeModal('publishModal');
         adForm.reset();
         resetVideoPreview();
+        resetAdImagePreview();
+        const quickDetails = document.querySelector('.quick-publish-details');
+        if (quickDetails) quickDetails.open = false;
         toast(videoUrl ? 'Annonce publiée avec sa vidéo !' : 'Annonce publiée !');
         await loadListings();
       } catch (ex) {
