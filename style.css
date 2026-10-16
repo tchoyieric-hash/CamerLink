@@ -1087,3 +1087,10 @@ img,video{max-width:100%}
  .hero input,.hero select{font-size:16px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+/* Sélection et aperçu de plusieurs photos pour une annonce */
+.multi-photo-preview-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.multi-photo-preview-item{position:relative;min-width:0;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--color-surface)}
+.multi-photo-preview-item img{width:100%;height:100%;object-fit:cover;display:block}
+.multi-photo-preview-item span{position:absolute;left:4px;right:4px;bottom:4px;padding:4px 5px;border-radius:6px;background:rgba(0,0,0,.72);color:#fff;font-size:.65rem;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
