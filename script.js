@@ -1086,6 +1086,32 @@
     return `<div class="${cls}" data-photo-carousel data-photo-count="${urls.length}"><div class="ad-photo-track">${slides}</div>${controls}</div>`;
   }
 
+  // Flèches et indicateurs de la galerie; le défilement tactile reste natif sur mobile.
+  document.addEventListener('click', (e) => {
+    const arrow = e.target.closest('[data-photo-prev], [data-photo-next]');
+    if (!arrow) return;
+    e.preventDefault(); e.stopPropagation();
+    const carousel = arrow.closest("[data-photo-carousel]");
+    const track = carousel && carousel.querySelector(".ad-photo-track");
+    if (!track) return;
+    const slides = Array.from(track.children);
+    const current = Math.round(track.scrollLeft / Math.max(track.clientWidth, 1));
+    const next = arrow.hasAttribute("data-photo-next") ? Math.min(current + 1, slides.length - 1) : Math.max(current - 1, 0);
+    track.scrollTo({ left: slides[next].offsetLeft - track.offsetLeft, behavior: "smooth" });
+  }, true);
+
+  document.addEventListener('scroll', (e) => {
+    const track = e.target;
+    if (!track || !track.classList || !track.classList.contains("ad-photo-track")) return;
+    const carousel = track.closest("[data-photo-carousel]");
+    if (!carousel) return;
+    const slides = Array.from(track.children);
+    const index = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / Math.max(track.clientWidth, 1))));
+    const counter = carousel.querySelector(".ad-photo-counter");
+    if (counter) counter.textContent = (index + 1) + " / " + slides.length;
+    carousel.querySelectorAll(".ad-photo-dots span").forEach((dot, i) => dot.classList.toggle("active", i === index));
+  }, true);
+
   /* ===== AFFICHAGE DES ANNONCES ===== */
   function renderListings() {
     const grid = $('listings-grid');
