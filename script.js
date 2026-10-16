@@ -1418,6 +1418,7 @@
 
   $('pubBtn').addEventListener('click', () => {
     if (!currentUser) { toast('Connectez-vous pour publier'); openModal('authModal'); return; }
+    prepareQuickPublish();
     openModal('publishModal');
   });
 
