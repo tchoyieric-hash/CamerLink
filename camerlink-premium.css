@@ -145,3 +145,27 @@ footer{margin-top:28px}
  .hero h1{font-size:clamp(2rem,9.6vw,2.7rem)}
  .hero::after{max-width:100%;font-size:.52rem;letter-spacing:.05em}
 }
+
+
+/* Publication express — mobile-first, sans surcharge visuelle */
+.quick-publish-form{display:grid;gap:14px}
+.quick-publish-intro{margin:0 0 2px;color:var(--color-text-muted,#9ca3af);font-size:.92rem;line-height:1.45}
+.quick-publish-form .form-group{margin:0}
+.quick-publish-form .form-group>label{display:block;margin-bottom:7px;font-weight:700}
+.quick-publish-form .form-sheet-el{width:100%;box-sizing:border-box}
+.quick-photo-field{padding:14px;border:1px dashed rgba(34,211,238,.45);border-radius:16px;background:rgba(34,211,238,.045)}
+.quick-photo-field input[type=file]{padding:10px;background:rgba(127,127,127,.08);border-radius:10px}
+.quick-image-preview{display:grid;gap:8px;margin-top:12px}
+.quick-image-preview[hidden]{display:none}
+.quick-image-preview img{display:block;width:100%;max-height:230px;object-fit:contain;border-radius:12px;background:#090b10}
+.quick-image-remove{justify-self:start;padding:7px 10px;border-radius:9px;border:1px solid rgba(127,127,127,.35);background:transparent;color:inherit;font-weight:600}
+.quick-publish-details{border:1px solid var(--color-border,rgba(127,127,127,.25));border-radius:13px;padding:12px 14px}
+.quick-publish-details summary{cursor:pointer;font-weight:700;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.quick-publish-details summary::-webkit-details-marker{display:none}
+.quick-publish-details summary:after{content:'＋';font-size:1.15rem;color:#22d3ee}
+.quick-publish-details[open] summary:after{content:'−'}
+.quick-publish-details[open] summary{margin-bottom:14px}
+.quick-publish-details .form-group+.form-group{margin-top:13px}
+.quick-publish-form button[type=submit]{width:100%;min-height:50px;border-radius:13px;font-size:1rem;font-weight:800;background:linear-gradient(100deg,#06b6d4,#7c3aed);color:#fff;box-shadow:0 8px 24px rgba(34,211,238,.16)}
+.quick-publish-form button[type=submit]:disabled{opacity:.65}
+@media(max-width:480px){#publishModal .modal-sheet{padding:18px 16px;max-height:90dvh;overflow-y:auto}.quick-publish-form{gap:12px}}
