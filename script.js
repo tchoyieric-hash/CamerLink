@@ -888,21 +888,46 @@
   // Publication express : aperçu de la photo et contact prérempli quand possible.
   const adImageInput = $('adImage');
   const adImagePreviewWrap = $('adImagePreviewWrap');
-  const adImagePreview = $('adImagePreview');
+  const adImagePreviewGrid = $('adImagePreviewGrid');
   const adImageRemove = $('adImageRemove');
-  let adImagePreviewUrl = null;
+  let adImagePreviewUrls = [];
   function resetAdImagePreview() {
-    if (adImagePreviewUrl) { URL.revokeObjectURL(adImagePreviewUrl); adImagePreviewUrl = null; }
-    if (adImagePreview) adImagePreview.removeAttribute('src');
+    adImagePreviewUrls.forEach(url => URL.revokeObjectURL(url));
+    adImagePreviewUrls = [];
+    if (adImagePreviewGrid) adImagePreviewGrid.replaceChildren();
     if (adImagePreviewWrap) adImagePreviewWrap.hidden = true;
   }
   if (adImageInput) adImageInput.addEventListener('change', () => {
     resetAdImagePreview();
-    const f = adImageInput.files && adImageInput.files[0];
-    if (!f || !f.type || !f.type.startsWith('image/')) return;
-    adImagePreviewUrl = URL.createObjectURL(f);
-    if (adImagePreview) adImagePreview.src = adImagePreviewUrl;
-    if (adImagePreviewWrap) adImagePreviewWrap.hidden = false;
+    const files = Array.from(adImageInput.files || []);
+    if (files.length > 8) {
+      adImageInput.value = '';
+      if (adImagePreviewWrap) adImagePreviewWrap.hidden = true;
+      const err = $('pubError'); if (err) err.textContent = 'Choisissez 8 photos maximum.';
+      return;
+    }
+    const invalid = files.find(f => !AD_IMG_TYPES.includes(f.type) || f.size > MAX_AD_IMG_MB * 1024 * 1024);
+    if (invalid) {
+      adImageInput.value = '';
+      const err = $('pubError'); if (err) err.textContent = !AD_IMG_TYPES.includes(invalid.type)
+        ? 'Photo : jpg, png ou webp uniquement.' : `Photo trop lourde : ${invalid.name} (max ${MAX_AD_IMG_MB} Mo).`;
+      return;
+    }
+    const err = $('pubError'); if (err) err.textContent = '';
+    files.forEach((file, index) => {
+      const url = URL.createObjectURL(file);
+      adImagePreviewUrls.push(url);
+      const item = document.createElement('div');
+      item.className = 'multi-photo-preview-item';
+      const img = document.createElement('img');
+      img.src = url; img.alt = `Aperçu photo ${index + 1}`;
+      item.appendChild(img);
+      const number = document.createElement('span');
+      number.textContent = index === 0 ? 'Photo principale' : String(index + 1);
+      item.appendChild(number);
+      if (adImagePreviewGrid) adImagePreviewGrid.appendChild(item);
+    });
+    if (adImagePreviewWrap) adImagePreviewWrap.hidden = files.length === 0;
   });
   if (adImageRemove && adImageInput) adImageRemove.addEventListener('click', () => {
     adImageInput.value = '';
@@ -955,16 +980,19 @@
       const price = Math.round(Number($('adPrice').value));
       const contact = $('adContact').value.trim();
       const quartier = canonicalQuartier($('adCity').value, $('adQuartier') ? $('adQuartier').value : '');
-      const file = $('adImage').files[0];
+      const imageFiles = Array.from(($('adImage') && $('adImage').files) || []);
       const vFile = adVideoInput ? adVideoInput.files[0] : null;
 
       if (title.length < 3 || title.length > 120) return setErr('Le titre doit faire entre 3 et 120 caractères.');
       if (description.length > 2000) return setErr('La description est trop longue (2000 caractères max).');
       if (!Number.isFinite(price) || price < 0) return setErr('Prix invalide.');
       if ($('adQuartier') && $('adQuartier').value.trim().length > MAX_QUARTIER) return setErr(`Le quartier est trop long (${MAX_QUARTIER} caractères max).`);
-      if (!file && !vFile) return setErr('Ajoutez au moins une photo ou une vidéo.');
-      if (file && !AD_IMG_TYPES.includes(file.type)) return setErr('Photo : jpg, png ou webp uniquement.');
-      if (file && file.size > MAX_AD_IMG_MB * 1024 * 1024) return setErr(`Photo trop lourde (max ${MAX_AD_IMG_MB} Mo).`);
+      if (!imageFiles.length && !vFile) return setErr('Ajoutez au moins une photo ou une vidéo.');
+      if (imageFiles.length > 8) return setErr('Choisissez 8 photos maximum.');
+      for (const file of imageFiles) {
+        if (!AD_IMG_TYPES.includes(file.type)) return setErr('Photo : jpg, png ou webp uniquement.');
+        if (file.size > MAX_AD_IMG_MB * 1024 * 1024) return setErr(`Photo trop lourde : ${file.name} (max ${MAX_AD_IMG_MB} Mo).`);
+      }
 
       let vType = '';
       if (vFile) {
@@ -978,15 +1006,18 @@
       const uploaded = []; // fichiers envoyés : [bucket, chemin]
       let saved = false;
       try {
-        let publicUrl = null;
-        if (file) {
+        const imageUrls = [];
+        for (let i = 0; i < imageFiles.length; i++) {
+          const file = imageFiles[i];
+          if (btn) btn.textContent = `Envoi des photos (${i + 1}/${imageFiles.length})...`;
           const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
-          const path = `${currentUser.id}/${Date.now()}.${ext}`;
-          const up = await sb.storage.from(AD_BUCKET).upload(path, file, { contentType: file.type });
+          const imagePath = `${currentUser.id}/${Date.now()}-${i}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+          const up = await sb.storage.from(AD_BUCKET).upload(imagePath, file, { contentType: file.type });
           if (up.error) throw up.error;
-          uploaded.push([AD_BUCKET, path]);
-          publicUrl = sb.storage.from(AD_BUCKET).getPublicUrl(path).data.publicUrl;
+          uploaded.push([AD_BUCKET, imagePath]);
+          imageUrls.push(sb.storage.from(AD_BUCKET).getPublicUrl(imagePath).data.publicUrl);
         }
+        const publicUrl = imageUrls[0] || null;
 
         let videoUrl = null;
         if (vFile) {
@@ -1007,6 +1038,7 @@
           contact
         };
         if (publicUrl) row.image_url = publicUrl;
+        if (imageUrls.length) row.images_urls = imageUrls;
         if (videoUrl) row.video_url = videoUrl;
         if (quartier) row.quartier = quartier;
 
@@ -1020,7 +1052,7 @@
         resetAdImagePreview();
         const quickDetails = document.querySelector('.quick-publish-details');
         if (quickDetails) quickDetails.open = false;
-        toast(videoUrl && publicUrl ? 'Annonce publiée avec photo et vidéo !' : videoUrl ? 'Annonce publiée avec sa vidéo !' : 'Annonce publiée avec sa photo !');
+        toast(videoUrl && imageUrls.length ? `Annonce publiée avec ${imageUrls.length} photo(s) et vidéo !` : videoUrl ? 'Annonce publiée avec sa vidéo !' : `Annonce publiée avec ${imageUrls.length} photo(s) !`);
         await loadListings();
       } catch (ex) {
         console.error(ex);
