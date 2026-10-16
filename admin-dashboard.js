@@ -31,18 +31,21 @@ async function loadPremium(){
  const {data,error}=await sb.rpc('admin_list_premium_requests');
  if(error){box.innerHTML='<p class="muted">Lecture impossible : '+esc(error.message)+'</p>';return}
  if(!data?.length){box.innerHTML='<p class="muted">Aucune demande Premium enregistrée.</p>';return}
- box.innerHTML=data.map(p=>'<article class="comment"><div class="comment-body"><div class="meta">Demande #'+esc(p.id)+' · '+esc(p.created_at?new Date(p.created_at).toLocaleString('fr-FR'):'date inconnue')+' · '+esc(p.status)+'</div><p><strong>'+esc(p.type||'Offre Premium')+'</strong></p><p class="comment-text">'+esc(p.message||'Aucun message')+'</p><div class="meta">Annonce : '+esc(p.annonce_id??'—')+' · établissement : '+esc(p.etablissement_id??'—')+' · utilisateur : '+esc(p.user_id)+'</div>'+(p.processed_at?'<div class="meta">Traitée le '+esc(new Date(p.processed_at).toLocaleString('fr-FR'))+'</div>':'')+'</div><div class="actions">'+(p.status!=='approved'?'<button class="action approve" data-premium-status="approved" data-id="'+esc(p.id)+'">Approuver</button>':'')+(p.status!=='rejected'?'<button class="action reject" data-premium-status="rejected" data-id="'+esc(p.id)+'">Refuser</button>':'')+'</div></article>').join('');
+ box.innerHTML=data.map(p=>'<article class="comment"><div class="comment-body"><div class="meta">Demande #'+esc(p.id)+' · '+esc(p.created_at?new Date(p.created_at).toLocaleString('fr-FR'):'date inconnue')+' · '+esc(p.status)+'</div><p><strong>'+esc(p.type||'Offre Premium')+'</strong></p><p class="comment-text">'+esc(p.message||'Aucun message')+'</p><div class="meta">Annonce : '+esc(p.annonce_id??'—')+' · établissement : '+esc(p.etablissement_id??'—')+' · utilisateur : '+esc(p.user_id)+'</div>'+(p.processed_at?'<div class="meta">Traitée le '+esc(new Date(p.processed_at).toLocaleString('fr-FR'))+'</div>':'')+'</div><div class="actions">'+(p.status!=='approved'?'<button class="action approve" data-premium-status="approved" data-days="'+(p.type==='boost'?3:30)+'" data-id="'+esc(p.id)+'">Confirmer paiement et activer</button>':'')+(p.status!=='rejected'?'<button class="action reject" data-premium-status="rejected" data-id="'+esc(p.id)+'">Refuser</button>':'')+'</div></article>').join('');
 }
-async function updatePremium(id,next){
- if(next==='approved'&&!window.confirm('Approuver cette demande Premium ? Vérifie séparément le paiement avant toute prestation payante.'))return;
+async function updatePremium(id,next,days){
+ if(next==='approved'&&!window.confirm('As-tu vérifié le paiement réel auprès de l’opérateur ou sur le reçu officiel ? La référence déclarée seule ne suffit pas. Si oui, confirmer activera la promotion.'))return;
  if(next==='rejected'&&!window.confirm('Refuser cette demande Premium ?'))return;
- const {error}=await sb.rpc('admin_update_premium_request',{request_id:Number(id),next_status:next});
+ const result = next==='approved'
+   ? await sb.rpc('admin_decide_premium',{p_request_id:Number(id),p_approve:true,p_days:Number(days)||30})
+   : await sb.rpc('admin_update_premium_request',{request_id:Number(id),next_status:next});
+ const {error}=result;
  if(error){notice('Modification de la demande impossible : '+error.message);return}
- notice('Demande Premium mise à jour.');await loadPremium();
+ notice(next==='approved'?'Paiement confirmé : promotion activée.':'Demande Premium mise à jour.');await loadPremium();
 }
 document.addEventListener('click',e=>{
  const r=e.target.closest('[data-report-status][data-id]');if(r){updateReport(r.dataset.id,r.dataset.reportStatus);return}
- const p=e.target.closest('[data-premium-status][data-id]');if(p){updatePremium(p.dataset.id,p.dataset.premiumStatus);return}
+ const p=e.target.closest('[data-premium-status][data-id]');if(p){updatePremium(p.dataset.id,p.dataset.premiumStatus,p.dataset.days);return}
 });
 $('reload-reports').addEventListener('click',loadReports);$('reload-premium').addEventListener('click',loadPremium);
 $('refresh').addEventListener('click',async()=>{$('notice').hidden=true;await loadStats();await loadComments()});$('reload-comments').addEventListener('click',loadComments);
