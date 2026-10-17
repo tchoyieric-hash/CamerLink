@@ -200,3 +200,95 @@
 .wa-item{cursor:pointer;transition:transform .16s ease}
 .wa-item:active{transform:scale(.96)}
 @media(prefers-reduced-motion:reduce){#reels-feed[aria-busy="true"] .reels-placeholder-icon{animation:none}}
+
+/* Reels mobile fluides — défilement naturel de la page, jamais enfermé dans le lecteur */
+html { scroll-behavior: smooth; }
+.reels-section,
+#reels-feed,
+#reels-feed.reels-feed {
+  overflow: visible !important;
+  max-height: none !important;
+  height: auto !important;
+  overscroll-behavior-y: auto;
+  touch-action: pan-y;
+}
+#reels-feed.reels-feed {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+#reels-feed > .cl-social-post,
+#reels-feed > .reel-card {
+  scroll-margin-block: 12px;
+  contain: layout paint;
+}
+.cl-post-media {
+  touch-action: pan-y;
+  overscroll-behavior: auto;
+}
+.cl-post-media video,
+.cl-post-media .cl-reel-photo {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+@media (max-width: 700px) {
+  .reels-section {
+    overflow: visible !important;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  #reels-feed,
+  #reels-feed.reels-feed {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
+    scroll-snap-type: none !important;
+    touch-action: pan-y !important;
+  }
+  #reels-feed > .cl-social-post,
+  #reels-feed > .reel-card {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 560px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 auto 12px !important;
+    border-radius: 0 !important;
+    scroll-snap-align: none !important;
+    contain: layout paint;
+  }
+  .cl-post-media {
+    width: 100% !important;
+    height: min(74svh, 760px) !important;
+    min-height: 420px !important;
+    max-height: 760px !important;
+    overflow: hidden !important;
+    background: #000 !important;
+    touch-action: pan-y !important;
+  }
+  .cl-post-media video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+  .cl-post-media .cl-reel-photo {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+  .cl-post-footer,
+  .cl-post-open {
+    position: relative;
+    z-index: 2;
+  }
+  .reels-heading-actions,
+  .reels-upload-btn {
+    position: relative !important;
+    z-index: 5 !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html, #reels-feed { scroll-behavior: auto !important; }
+}
