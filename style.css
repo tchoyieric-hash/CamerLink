@@ -1347,3 +1347,81 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
 @media(prefers-reduced-motion:reduce){
  .shop-story-card,.shop-story-card .story-ring,#listings-grid .ad-card,#listings-grid .card-img-container img,.fav-toggle-btn{transition:none!important}
 }
+/* ===== CamerLink – rendu unifié (à coller à la fin de style.css) ===== */
+:root{
+  --cl-bg:#070b16; --cl-card:#0e1424; --cl-line:#1c2540;
+  --cl-txt:#eef2ff; --cl-mut:#9aa4c7; --cl-g1:#2fd9f5; --cl-g2:#8b6cff;
+  --cl-nav-h:76px;
+}
+.cl-app{background:var(--cl-bg);color:var(--cl-txt);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100dvh;padding-bottom:calc(var(--cl-nav-h) + 12px)}
+.cl-app *{box-sizing:border-box}
+
+/* En-tête */
+.cl-top{position:sticky;top:0;z-index:20;height:60px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,11,22,.8);backdrop-filter:blur(14px)}
+.cl-logo{font-size:22px;font-weight:800;background:linear-gradient(90deg,var(--cl-g1),var(--cl-g2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cl-ib{width:40px;height:40px;border-radius:50%;border:1px solid var(--cl-line);background:var(--cl-card);color:var(--cl-txt);display:inline-flex;align-items:center;justify-content:center}
+
+/* Onglets */
+.cl-tabs{display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none}
+.cl-tabs button{flex:none;padding:8px 16px;border-radius:99px;border:1px solid transparent;background:none;color:var(--cl-mut);font:600 13px inherit}
+.cl-tabs button.on{background:var(--cl-card);border-color:var(--cl-line);color:var(--cl-txt);font-weight:700}
+
+/* Anneau dégradé (statuts, avatars, À la une) */
+.cl-ring{border-radius:50%;padding:3px;background:linear-gradient(135deg,var(--cl-g1),var(--cl-g2));flex:none}
+.cl-ring>*{width:100%;height:100%;border-radius:50%;border:3px solid var(--cl-bg);object-fit:cover;display:flex;align-items:center;justify-content:center;background:#1d2a52;font-weight:800}
+
+/* Statuts */
+.cl-stories{display:flex;gap:12px;padding:6px 16px 14px;border-bottom:1px solid var(--cl-line);overflow-x:auto;scrollbar-width:none}
+.cl-story{width:68px;flex:none;text-align:center;font-size:11px;color:#c9d1ee;background:none;border:0}
+.cl-story .cl-ring{width:64px;height:64px;margin:0 auto 6px}
+
+/* Carte d'annonce (fil) */
+.cl-post{padding:14px 0 6px;border-bottom:1px solid var(--cl-line)}
+.cl-post-head{display:flex;align-items:center;gap:10px;padding:0 16px}
+.cl-post-head .cl-ring{width:44px;height:44px}
+.cl-post-who{flex:1;min-width:0}
+.cl-post-who b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl-post-who small{color:var(--cl-mut);font-size:12px}
+.cl-follow{min-height:36px;padding:0 16px;border-radius:99px;border:1px solid var(--cl-g2);background:none;color:#cfc6ff;font:700 13px inherit}
+.cl-follow[data-following="true"]{background:linear-gradient(135deg,var(--cl-g1),var(--cl-g2));border-color:transparent;color:#07101f}
+.cl-post-text{margin:10px 16px;font-size:14px;line-height:1.45;color:#dfe5fb}
+.cl-post-text .tag{color:var(--cl-g1)}
+.cl-media{position:relative;margin:0 16px;height:300px;border-radius:20px;overflow:hidden;border:1px solid var(--cl-line);background:linear-gradient(160deg,#1b2a5a,#3a2a7a 60%,#10343f)}
+.cl-media img,.cl-media video{width:100%;height:100%;object-fit:cover;display:block}
+.cl-pill{position:absolute;padding:6px 12px;border-radius:99px;background:rgba(7,11,22,.7);font-size:12px;font-weight:700;color:#fff}
+.cl-pill.tl{left:12px;top:12px}.cl-pill.tr{right:12px;top:12px}
+.cl-price{position:absolute;left:12px;bottom:12px;padding:8px 14px;border-radius:99px;background:#eef2ff;color:#07101f;font-weight:800;font-size:14px}
+.cl-actions{display:flex;align-items:center;justify-content:space-between;padding:4px 10px}
+.cl-act{min-height:44px;padding:0 8px;background:none;border:0;color:#c9d1ee;display:inline-flex;align-items:center;gap:6px;font:600 13px inherit}
+.cl-act[aria-pressed="true"]{color:#ff5d7a}
+.cl-wa{height:40px;padding:0 16px;border-radius:99px;border:0;background:#25d366;color:#04230f;font:800 13px inherit}
+
+/* Profil */
+.cl-prof-head{display:flex;align-items:center;gap:18px;padding:8px 16px}
+.cl-prof-head .cl-ring{width:84px;height:84px}
+.cl-stats{flex:1;display:flex;justify-content:space-between}
+.cl-stat{background:none;border:0;color:inherit;text-align:center;min-height:44px}
+.cl-stat b{display:block;font-size:18px;font-weight:800}
+.cl-stat span{font-size:11px;color:var(--cl-mut)}
+.cl-prof-bio{padding:4px 16px}
+.cl-prof-bio b{font-size:16px}.cl-prof-bio div{font-size:13px;color:var(--cl-mut)}
+.cl-prof-btns{display:flex;gap:8px;padding:14px 16px}
+.cl-prof-btns button{height:40px;border-radius:12px;font:700 13px inherit;color:var(--cl-txt);border:1px solid var(--cl-line);background:var(--cl-card)}
+.cl-prof-btns .main{flex:1;border:0;background:linear-gradient(135deg,var(--cl-g1),var(--cl-g2));color:#07101f;font-weight:800}
+.cl-prof-btns .sec{flex:1}.cl-prof-btns .sq{width:44px}
+.cl-highlights{display:flex;gap:12px;padding:0 16px 14px;overflow-x:auto;scrollbar-width:none}
+.cl-prof-tabs{display:flex;justify-content:space-around;border-block:1px solid var(--cl-line);height:48px;align-items:center}
+.cl-prof-tabs button{background:none;border:0;color:var(--cl-mut);min-width:44px;min-height:44px}
+.cl-prof-tabs button.on{color:var(--cl-g1)}
+.cl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.cl-grid>*{aspect-ratio:1;object-fit:cover;width:100%;background:linear-gradient(160deg,#1b2a5a,#3a2a7a)}
+
+/* Liste d'abonnés (feuille du bas) */
+.cl-sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:flex;align-items:flex-end}
+.cl-sheet{width:100%;max-height:70dvh;overflow:auto;background:#0f1220;border-radius:20px 20px 0 0;padding:20px}
+
+/* Barre du bas */
+.cl-nav{position:fixed;left:0;right:0;bottom:0;height:var(--cl-nav-h);z-index:30;background:#0a1020;border-top:1px solid var(--cl-line);display:flex;align-items:center;justify-content:space-around;padding:0 6px calc(6px + env(safe-area-inset-bottom,0px))}
+.cl-nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:56px;min-height:44px;color:var(--cl-mut);font:600 11px inherit}
+.cl-nav button.on{color:var(--cl-g1)}
+.cl-nav .fab{width:54px;height:54px;min-width:0;border-radius:50%;margin-top:-26px;background:linear-gradient(135deg,var(--cl-g1),var(--cl-g2));color:#07101f;justify-content:center;box-shadow:0 8px 24px rgba(47,217,245,.3)}
