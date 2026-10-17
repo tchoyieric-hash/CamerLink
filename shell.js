@@ -31,7 +31,7 @@ var MODES={
  decouvrir:['#discover-section','footer']
 };
 var ALL=['.hero','.shops-section','#reels-section','#categoryChips','main','footer','#discover-section','#profile-section'];
-var cur='home';
+var cur='home',modeHistory=[];\nfunction mountBack(){var b=$('#cl-global-back');if(!b){b=document.createElement('button');b.id='cl-global-back';b.type='button';b.innerHTML='<span aria-hidden="true">←</span><span>Retour</span>';b.setAttribute('aria-label','Revenir à la rubrique précédente');var anchor=$('.shell-tabs');if(anchor)anchor.parentNode.insertBefore(b,anchor);else{var h=$('header');if(h&&h.nextSibling)h.parentNode.insertBefore(b,h.nextSibling)}b.onclick=function(){if(modeHistory.length){var prev=modeHistory.pop();setMode(prev,true,true)}else if(cur!=='home'){setMode('home',false,true)}else if(history.length>1){history.back()}else{window.scrollTo({top:0,behavior:'smooth')}}};}return b;}
 function setMode(m,noScroll){
   if(!MODES[m])m='home';cur=m;
   ALL.forEach(function(sel){$$(sel).forEach(function(el){el.classList.toggle('shell-off',MODES[m].indexOf(sel)<0)})});
