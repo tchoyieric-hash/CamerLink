@@ -363,3 +363,11 @@ footer{margin-top:28px}
  #inboxModal .cl-msg-body{padding-inline:10px}
 }
 @media(prefers-reduced-motion:reduce){#inboxModal .cl-msg-loader{animation:none}}
+
+/* Reels: tap the video itself to toggle sound, not a side icon */
+.cl-reel-sound{display:none!important}
+.cl-reel-sound-feedback{position:absolute;z-index:8;left:50%;top:50%;transform:translate(-50%,-50%) scale(.92);padding:13px 18px;border-radius:999px;background:rgba(5,9,18,.72);border:1px solid rgba(255,255,255,.24);color:#fff;font-size:15px;font-weight:850;letter-spacing:.01em;opacity:0;pointer-events:none;backdrop-filter:blur(12px);white-space:nowrap}
+.cl-reel-sound-feedback.show{animation:clReelSoundPop 1.15s ease both}
+.cl-reel-tap-hint{position:absolute;z-index:7;left:50%;top:44%;transform:translate(-50%,-50%);max-width:82%;padding:9px 13px;border-radius:999px;background:rgba(5,9,18,.62);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:750;text-align:center;pointer-events:none;backdrop-filter:blur(10px);transition:opacity .2s ease}
+.cl-reel-tap-hint.hidden{opacity:0}
+@keyframes clReelSoundPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.85)}15%,70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.04)}}
