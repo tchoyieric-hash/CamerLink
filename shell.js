@@ -37,8 +37,8 @@ function setMode(m,noScroll,fromBack){
   if(!MODES[m])m='home';if(m!==cur&&!fromBack)modeHistory.push(cur);if(modeHistory.length>20)modeHistory.shift();cur=m;
   var back=mountBack();back.classList.toggle('visible',m!=='home');
   ALL.forEach(function(sel){$$(sel).forEach(function(el){el.classList.toggle('shell-off',MODES[m].indexOf(sel)<0)})});
-  $$('.shell-tab').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
-  $$('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
+  $$$('.shell-tab').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
+  $$$('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
   try{history.replaceState(null,'',m==='home'?location.pathname+location.search:'#'+m)}catch(e){}
   if(!noScroll)window.scrollTo(0,0);
   if(m==='decouvrir')bzLoad();
@@ -50,7 +50,7 @@ function click(id){var e=$(id);if(e)e.click();else toast('Indisponible')}
 function mountNav(){
   mountBack();
   // Délégation d'événements robuste pour les onglets du haut et la barre du bas.
-  $('.shell-tab').forEach(function(b){b.addEventListener('click',function(){setMode(b.dataset.m)})});
+  $$('.shell-tab').forEach(function(b){b.addEventListener('click',function(){setMode(b.dataset.m)})});
   var nav=$('.shell-nav');
   if(nav&&!nav.dataset.shellBound){
     nav.dataset.shellBound='1';
@@ -62,7 +62,7 @@ function mountNav(){
       if(b.dataset.m){ev.preventDefault();setMode(b.dataset.m)}
     });
   }
-  $('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===cur)});
+  $$('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===cur)});
   // recopie la pastille de messages
   var src=$('#msgBadge'),dst=$('#nav-badge');
   function sync(){var t=(src&&src.textContent||'').trim();dst.textContent=t;dst.classList.toggle('show',!!t&&t!=='0')}
