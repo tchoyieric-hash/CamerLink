@@ -1718,7 +1718,7 @@
       ${reel ? `<video src="${esc(reel)}" controls playsinline preload="metadata" style="width:100%;max-height:260px;border-radius:12px;margin-bottom:6px;background:#000;"></video>
         ${shop.reel_desc ? `<p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;">${esc(shop.reel_desc)}</p>` : '<div style="margin-bottom:12px;"></div>'}` : ''}
       ${nStories ? `<button type="button" data-act="stories" data-gi="${gi}" style="${btnStyle}width:100%;margin-bottom:8px;background:linear-gradient(90deg,var(--a1),var(--a2));color:#fff;">▶ Voir ses statuts (${nStories})</button>` : ''}
-      <div id="artisanFollowArea" style="display:flex;align-items:center;gap:10px;margin:4px 0 12px;">${mine ? '<span style="font-size:.85rem;color:var(--color-text-muted)">Votre profil</span>' : '<button type="button" data-act="follow" style="flex:1;padding:11px;border-radius:10px;background:linear-gradient(90deg,var(--a1),var(--a2));color:#fff;font-weight:800;">＋ S’abonner</button>'}<span id="artisanFollowStats" style="font-size:.8rem;color:var(--color-text-muted)">Abonnés…</span></div>
+      <div id="artisanFollowArea" style="display:flex;align-items:center;gap:10px;margin:4px 0 12px;">${mine ? '<span style="font-size:.85rem;color:var(--color-text-muted)">Votre profil</span>' : '<button type="button" data-act="follow" style="flex:1;padding:11px;border-radius:10px;background:linear-gradient(90deg,var(--a1),var(--a2));color:#fff;font-weight:800;">＋ S’abonner</button>'}<div id="artisanFollowStats" style="display:flex;gap:8px;flex-wrap:wrap;font-size:.8rem;color:var(--color-text-muted)"><button type="button" data-follow-list="followers" style="border:0;background:transparent;color:inherit;cursor:pointer;padding:4px">Abonnés…</button><button type="button" data-follow-list="following" style="border:0;background:transparent;color:inherit;cursor:pointer;padding:4px">Abonnements…</button></div></div><div id="artisanFollowList" style="display:none;margin:8px 0 14px;padding:10px;border-radius:12px;background:rgba(127,127,127,.10)"></div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
         ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="${btnStyle}background:#22C55E;color:#fff;">WhatsApp</a>
         <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
@@ -1737,10 +1737,11 @@
     body.dataset.uid = uid;
     const followBtn = body.querySelector('[data-act="follow"]');
     sb.rpc('camerlink_follow_stats',{target_user:uid}).then(({data,error})=>{
-      if(error)return;const st=Array.isArray(data)?data[0]:data;if(!st)return;
-      const statsEl=body.querySelector('#artisanFollowStats');if(statsEl)statsEl.textContent=Number(st.followers_count||0)+' abonnés · '+Number(st.following_count||0)+' abonnements';
+      if(error){console.warn('Statistiques abonnements:',error);return;}const st=Array.isArray(data)?data[0]:data;if(!st)return;
+      const statsEl=body.querySelector('#artisanFollowStats');
+      if(statsEl){const fb=statsEl.querySelector('[data-follow-list="followers"]'),fg=statsEl.querySelector('[data-follow-list="following"]');if(fb)fb.textContent=Number(st.followers_count||0)+' abonnés';if(fg)fg.textContent=Number(st.following_count||0)+' abonnements';}
       if(followBtn)followBtn.textContent=st.is_following?'✓ Abonné':'＋ S’abonner';
-    }).catch(()=>{});
+    }).catch(err=>console.warn('Statistiques abonnements:',err));
     if(followBtn&&!mine&&!currentUser)followBtn.textContent='Connexion pour s’abonner';
     } catch (err) {
       console.error(err);
@@ -1754,14 +1755,34 @@
     const ad = e.target.closest('[data-ad]');
     if (ad) { closeModal('artisanModal'); openAdDetail(ad.dataset.ad); return; }
     const uid = $('artisanBody').dataset.uid;
+    const listBtn=e.target.closest('[data-follow-list]');
+    if(listBtn){
+      const kind=listBtn.dataset.followList, host=$('artisanFollowList');
+      if(!host||!uid)return;
+      if(host.dataset.kind===kind&&host.style.display!=='none'){host.style.display='none';return;}
+      host.dataset.kind=kind;host.style.display='block';host.innerHTML='<div class="state-msg">Chargement des profils…</div>';
+      (async()=>{try{
+        const col=kind==='followers'?'followed_id':'follower_id';
+        const {data:links,error:linkErr}=await withTimeout(sb.from('abonnements').select('follower_id,followed_id').eq(col,uid));
+        if(linkErr)throw linkErr;
+        const ids=(links||[]).map(x=>kind==='followers'?x.follower_id:x.followed_id).filter(Boolean);
+        if(!ids.length){host.innerHTML='<p style="margin:4px 0">Aucun '+(kind==='followers'?'abonné':'abonnement')+' pour le moment.</p>';return;}
+        const {data:profiles,error:profileErr}=await withTimeout(sb.from('profiles').select('id,full_name,avatar_url,city').in('id',ids));
+        if(profileErr)throw profileErr;
+        const byId=new Map((profiles||[]).map(p=>[p.id,p]));
+        host.innerHTML='<strong style="display:block;margin-bottom:8px">'+(kind==='followers'?'Tes abonnés':'Les personnes que tu suis')+'</strong>'+ids.map(id=>{const p=byId.get(id)||{};const name=p.full_name||'Utilisateur CamerLink';return '<button type="button" data-follow-profile="'+esc(id)+'" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px;border:0;border-radius:8px;background:transparent;color:inherit;text-align:left;cursor:pointer">'+(p.avatar_url?'<img src="'+esc(p.avatar_url)+'" alt="" style="width:34px;height:34px;border-radius:50%;object-fit:cover">':'<span style="width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(127,127,127,.2)">👤</span>')+'<span>'+esc(name)+(p.city?'<small style="display:block;opacity:.7">'+esc(p.city)+'</small>':'')+'</span></button>';}).join('');
+      }catch(err){console.error('Liste abonnements:',err);host.innerHTML='<p>Impossible de charger la liste. Réessaie dans un instant.</p>';}})();
+      return;
+    }
+    const profileBtn=e.target.closest('[data-follow-profile]');
+    if(profileBtn){openArtisan(profileBtn.dataset.followProfile);return;}
     const follow = e.target.closest('[data-act="follow"]');
     if(follow){
       if(!currentUser){toast('Connectez-vous pour vous abonner.');openModal('authModal');return;}
       if(currentUser.id===uid){toast('Vous ne pouvez pas vous abonner à vous-même.');return;}
       follow.disabled=true;
-      const isFollowing=follow.textContent.indexOf('Abonné')>=0;
-      const op=isFollowing?sb.from('abonnements').delete().eq('follower_id',currentUser.id).eq('followed_id',uid):sb.from('abonnements').insert({follower_id:currentUser.id,followed_id:uid});
-      op.then(({error})=>{follow.disabled=false;if(error){toast('Impossible de modifier l’abonnement. Réessayez.');return;}toast(isFollowing?'Désabonnement effectué':'Vous êtes abonné à cet artisan !');openArtisan(uid);}).catch(()=>{follow.disabled=false;toast('Erreur réseau.');});
+      follow.disabled=true;
+      sb.rpc('toggle_follow',{p_user:uid}).then(({data,error})=>{follow.disabled=false;if(error){console.error('Abonnement impossible:',error);toast('Abonnement impossible : '+(error.message||'réessaie.'));return;}toast(data?'Abonnement ajouté !':'Désabonnement effectué');openArtisan(uid);}).catch(err=>{follow.disabled=false;console.error(err);toast('Erreur réseau pendant l’abonnement.');});
       return;
     }
     if (e.target.closest('[data-act="share"]')) {
