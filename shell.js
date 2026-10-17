@@ -49,11 +49,20 @@ function click(id){var e=$(id);if(e)e.click();else toast('Indisponible')}
 
 function mountNav(){
   mountBack();
-  $('.shell-tab').forEach(function(b){b.onclick=function(){setMode(b.dataset.m)}});
-  $$('.shell-nav [data-m]').forEach(function(b){b.onclick=function(){setMode(b.dataset.m)}});
-  $('#nav-add').onclick=function(){click('#pubBtn')};
-  $('#nav-msg').onclick=function(){click('#msgInboxBtn')};
-  $('#nav-me').onclick=function(){setMode('profil')};
+  // Délégation d'événements robuste pour les onglets du haut et la barre du bas.
+  $('.shell-tab').forEach(function(b){b.addEventListener('click',function(){setMode(b.dataset.m)})});
+  var nav=$('.shell-nav');
+  if(nav&&!nav.dataset.shellBound){
+    nav.dataset.shellBound='1';
+    nav.addEventListener('click',function(ev){
+      var b=ev.target.closest('button');
+      if(!b||!nav.contains(b))return;
+      if(b.id==='nav-add'){ev.preventDefault();click('#pubBtn');return}
+      if(b.id==='nav-msg'){ev.preventDefault();click('#msgInboxBtn');return}
+      if(b.dataset.m){ev.preventDefault();setMode(b.dataset.m)}
+    });
+  }
+  $('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===cur)});
   // recopie la pastille de messages
   var src=$('#msgBadge'),dst=$('#nav-badge');
   function sync(){var t=(src&&src.textContent||'').trim();dst.textContent=t;dst.classList.toggle('show',!!t&&t!=='0')}
