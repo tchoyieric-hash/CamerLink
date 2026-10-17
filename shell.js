@@ -31,9 +31,9 @@ var MODES={
  decouvrir:['#discover-section','footer']
 };
 var ALL=['.hero','.shops-section','#reels-section','#categoryChips','main','footer','#discover-section','#profile-section'];
-var cur='home';
-function setMode(m,noScroll){
-  if(!MODES[m])m='home';cur=m;
+var cur='home',modeHistory=[];
+function setMode(m,noScroll,fromBack){
+  if(!MODES[m])m='home';if(m!==cur&&!fromBack)modeHistory.push(cur);if(modeHistory.length>20)modeHistory.shift();cur=m;
   ALL.forEach(function(sel){$$(sel).forEach(function(el){el.classList.toggle('shell-off',MODES[m].indexOf(sel)<0)})});
   $$('.shell-tab').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
   $$('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
@@ -46,11 +46,20 @@ function hdr(){var h=$('header');if(h)document.documentElement.style.setProperty
 function click(id){var e=$(id);if(e)e.click();else toast('Indisponible')}
 
 function mountNav(){
-  $$('.shell-tab').forEach(function(b){b.onclick=function(){setMode(b.dataset.m)}});
-  $$('.shell-nav [data-m]').forEach(function(b){b.onclick=function(){setMode(b.dataset.m)}});
-  $('#nav-add').onclick=function(){click('#pubBtn')};
-  $('#nav-msg').onclick=function(){click('#msgInboxBtn')};
-  $('#nav-me').onclick=function(){setMode('profil')};
+  // Délégation d'événements robuste pour les onglets du haut et la barre du bas.
+  $$('.shell-tab').forEach(function(b){b.addEventListener('click',function(){setMode(b.dataset.m)})});
+  var nav=$('.shell-nav');
+  if(nav&&!nav.dataset.shellBound){
+    nav.dataset.shellBound='1';
+    nav.addEventListener('click',function(ev){
+      var b=ev.target.closest('button');
+      if(!b||!nav.contains(b))return;
+      if(b.id==='nav-add'){ev.preventDefault();click('#pubBtn');return}
+      if(b.id==='nav-msg'){ev.preventDefault();click('#msgInboxBtn');return}
+      if(b.dataset.m){ev.preventDefault();setMode(b.dataset.m)}
+    });
+  }
+  $$('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===cur)});
   // recopie la pastille de messages
   var src=$('#msgBadge'),dst=$('#nav-badge');
   function sync(){var t=(src&&src.textContent||'').trim();dst.textContent=t;dst.classList.toggle('show',!!t&&t!=='0')}

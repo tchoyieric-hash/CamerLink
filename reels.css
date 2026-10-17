@@ -178,3 +178,25 @@
     touch-action:pan-y!important;
   }
 }
+
+
+/* Empty, loading and error states: readable and consistent with the premium theme */
+.reels-placeholder{
+  width:min(100% - 32px,680px);min-height:150px;margin:12px auto;padding:28px 22px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  text-align:center;color:var(--cl-muted,#9aa8bc);
+  background:linear-gradient(135deg,rgba(84,226,223,.07),rgba(141,123,255,.09));
+  border:1px solid var(--cl-line,rgba(164,184,216,.14));border-radius:20px;
+}
+.reels-placeholder-icon{
+  width:48px;height:48px;display:grid;place-items:center;border-radius:50%;
+  color:var(--cl-cyan,#54e2df);background:rgba(84,226,223,.12);
+  border:1px solid rgba(84,226,223,.2);font-size:1.15rem;
+}
+.reels-placeholder span:last-child{max-width:36ch;line-height:1.55}
+#reels-feed[aria-busy="true"] .reels-placeholder-icon{animation:cl-pulse 1.3s ease-in-out infinite}
+@keyframes cl-pulse{0%,100%{opacity:.55;transform:scale(.96)}50%{opacity:1;transform:scale(1.04)}}
+#wa-stage{touch-action:pan-y;overscroll-behavior:contain}
+.wa-item{cursor:pointer;transition:transform .16s ease}
+.wa-item:active{transform:scale(.96)}
+@media(prefers-reduced-motion:reduce){#reels-feed[aria-busy="true"] .reels-placeholder-icon{animation:none}}

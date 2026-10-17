@@ -521,24 +521,20 @@
     if (!feed) return;
     if (reelObserver) { reelObserver.disconnect(); reelObserver = null; }
 
-    // Le fil social mélange les publications photo et vidéo, de la plus récente à la plus ancienne.
-    const list = allListings.filter(ad => ad.image_url || videos[ad.id]).slice(0, 40);
+    // Les Réels sont réservés aux vidéos ; les publications photo restent dans le fil des annonces.
+    const list = allListings.filter(ad => Boolean(videos[ad.id])).slice(0, 40);
     if (list.length === 0) {
       feed.innerHTML = reelsMessage(failed
         ? 'Publications indisponibles pour le moment. Réessayez plus tard.'
-        : 'Aucune publication pour le moment. Soyez le premier à partager une photo ou une vidéo !');
+        : 'Aucune vidéo pour le moment. Soyez le premier à publier un Réel !');
       return;
     }
-
-    feed.style.maxHeight = 'none';
-    feed.style.overflowY = 'visible';
-    feed.style.scrollSnapType = 'none';
 
     feed.innerHTML = list.map(ad => {
       const wa = waNumber(ad.contact);
       const price = Number(ad.price || 0) > 0 ? Number(ad.price).toLocaleString('fr-FR') + ' FCFA' : '';
       const media = videos[ad.id]
-        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="metadata"></video><button type="button" class="cl-reel-sound" data-reel-sound aria-label="Activer ou couper le son">🔇</button>`
+        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="metadata"></video><div class="cl-reel-sound-feedback" data-reel-sound-feedback aria-hidden="true">🔊 Son activé</div><div class="cl-reel-tap-hint" aria-hidden="true">Toucher la vidéo pour activer le son</div>`
         : `<img class="cl-reel-photo" src="${esc(ad.image_url)}" alt="${esc(ad.title)}" loading="lazy">`;
       const location = [ad.quartier, ad.city].filter(Boolean).join(' · ');
       const liked = window.getFavorites().includes(String(ad.id));
@@ -587,6 +583,20 @@
     }
   }
 
+  function toggleReelSound(card, video) {
+    video.muted = !video.muted;
+    if (!video.muted) video.volume = 1;
+    const feedback = card.querySelector('[data-reel-sound-feedback]');
+    if (feedback) {
+      feedback.textContent = video.muted ? '🔇 Son désactivé' : '🔊 Son activé';
+      feedback.classList.remove('show');
+      void feedback.offsetWidth;
+      feedback.classList.add('show');
+    }
+    const hint = card.querySelector('.cl-reel-tap-hint');
+    if (hint && !video.muted) hint.classList.add('hidden');
+  }
+
   const reelsFeed = $('reels-feed');
   if (reelsFeed) {
     reelsFeed.addEventListener('click', (e) => {
@@ -605,10 +615,7 @@
         return;
       }
       const snd = e.target.closest('[data-reel-sound]');
-      if (snd) {
-        if (v) { v.muted = !v.muted; snd.textContent = v.muted ? '🔇' : '🔊'; }
-        return;
-      }
+      if (snd) { if (v) toggleReelSound(card, v); return; }
       const profileBtn = e.target.closest('[data-profile-user]');
       if (profileBtn) {
         const userId = profileBtn.dataset.profileUser;
@@ -625,9 +632,11 @@
       }
       if (e.target.closest('[data-reel-open]')) { openAdDetail(id); return; }
       if (e.target.closest('a')) return;
-      if (v) {
+      if (v && e.target.closest('.cl-post-media') && !e.target.closest('.cl-post-actions, .cl-post-caption, .cl-comments-float, .cl-reel-fullscreen')) {
+        toggleReelSound(card, v);
         if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
-        else v.pause();
+      } else if (v && e.target.closest('.cl-post-media')) {
+        if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause();
       }
     });
   }
@@ -1071,8 +1080,12 @@
 
   // Galerie horizontale pour annonces multi-photos, avec compatibilité anciennes annonces.
   function listingPhotoCarousel(ad, mode) {
-    const urls = Array.isArray(ad.images_urls)
-      ? [...new Set(ad.images_urls.filter(url => typeof url === 'string' && /^https:\/\//i.test(url)))]
+    let rawUrls = ad.images_urls;
+    if (typeof rawUrls === 'string') {
+      try { rawUrls = JSON.parse(rawUrls); } catch (e) { rawUrls = [rawUrls]; }
+    }
+    const urls = Array.isArray(rawUrls)
+      ? [...new Set(rawUrls.filter(url => typeof url === 'string' && /^https:\/\//i.test(url)))]
       : [];
     if (!urls.length && ad.image_url) urls.push(ad.image_url);
     if (!urls.length) return '';
@@ -1220,23 +1233,30 @@
     $('videoModalOverlay').classList.remove('active');
   };
 
-  /* ===== MESSAGERIE ===== */
+  /* ===== MESSAGERIE CAMERLINK — interface conversation moderne ===== */
   const MSG_SEEN_KEY = 'camerlink_msg_seen';
   const chat = { other: null, ad: null };
-  let msgChannel = null;
-
+  let msgChannel = null, msgSearch = '';
   if (!$('inboxModal')) {
     document.body.insertAdjacentHTML('beforeend', `
-      <div id="inboxModal" class="modal-overlay">
-        <div class="modal-sheet">
-          <div class="modal-header"><h3 id="inboxTitle">Messages</h3><button type="button" class="modal-close" id="inboxClose">×</button></div>
-          <button type="button" id="inboxBack" style="display:none;margin-bottom:8px;background:none;color:var(--a1);font-weight:700;cursor:pointer;">← Conversations</button>
-          <div id="inboxBody" style="max-height:60vh;overflow-y:auto;"></div>
-          <form id="chatForm" style="display:none;gap:8px;margin-top:10px;">
-            <input id="chatInput" class="form-sheet-el" type="text" maxlength="2000" placeholder="Votre message..." autocomplete="off" required>
-            <button type="submit" class="btn-submit-modal" style="width:auto;padding:0 16px;">Envoyer</button>
-          </form>
-        </div>
+      <div id="inboxModal" class="modal-overlay cl-messenger-overlay">
+        <section class="modal-sheet cl-messenger" role="dialog" aria-modal="true" aria-label="Messagerie CamerLink">
+          <header class="cl-msg-header">
+            <div class="cl-msg-brand"><span class="cl-msg-logo">C</span><div><h3 id="inboxTitle">Messages</h3><p id="inboxSubtitle">Vos conversations CamerLink</p></div></div>
+            <button type="button" class="modal-close cl-msg-close" id="inboxClose" aria-label="Fermer la messagerie">×</button>
+          </header>
+          <button type="button" id="inboxBack" class="cl-msg-back" style="display:none">← Toutes les conversations</button>
+          <label class="cl-msg-search" id="inboxSearchWrap"><span>⌕</span><input id="inboxSearch" type="search" placeholder="Rechercher une conversation…" autocomplete="off"><button type="button" id="inboxSearchClear" aria-label="Effacer la recherche" hidden>×</button></label>
+          <div id="inboxBody" class="cl-msg-body" aria-live="polite"></div>
+          <div class="cl-msg-composer-wrap" id="chatComposerWrap" style="display:none">
+            <div class="cl-msg-quick" aria-label="Réactions rapides"><button type="button" data-emoji="😊">😊</button><button type="button" data-emoji="❤️">❤️</button><button type="button" data-emoji="👍">👍</button><button type="button" data-emoji="😂">😂</button><button type="button" data-emoji="🙏">🙏</button></div>
+            <form id="chatForm" class="cl-msg-composer" style="display:none">
+              <input id="chatInput" type="text" maxlength="2000" placeholder="Écrire un message…" autocomplete="off" required aria-label="Votre message">
+              <button type="submit" id="chatSendBtn" aria-label="Envoyer le message">➤</button>
+            </form>
+            <p class="cl-msg-hint">Entrée pour envoyer · Soyez respectueux et prudent.</p>
+          </div>
+        </section>
       </div>`);
   }
 
@@ -1244,176 +1264,146 @@
     const a = allListings.find(x => String(x.id) === String(id));
     return a ? a.title : null;
   };
-
   async function fetchMessages() {
     const { data, error } = await withTimeout(
-      sb.from('messages')
-        .select('id, sender_id, receiver_id, ad_id, content, created_at')
-        .order('created_at', { ascending: false })
-        .limit(500)
+      sb.from('messages').select('id, sender_id, receiver_id, ad_id, content, created_at')
+        .order('created_at', { ascending: false }).limit(500)
     );
     if (error) throw error;
     return data || [];
   }
-
   async function shopNames(ids) {
-    const info = await shopInfo(ids);
-    const names = {};
+    const info = await shopInfo(ids), names = {};
     Object.keys(info).forEach(k => { names[k] = info[k].name; });
     return names;
   }
-
+  function msgInitial(name) { return String(name || 'C').trim().charAt(0).toUpperCase() || 'C'; }
+  function msgTime(value) {
+    try { return new Intl.DateTimeFormat('fr-FR',{hour:'2-digit',minute:'2-digit'}).format(new Date(value)); }
+    catch(e) { return fmtDate(value); }
+  }
   async function refreshBadge() {
     const badge = $('msgBadge');
     if (!badge) return;
     if (!currentUser) { badge.textContent = ''; return; }
     try {
       const seen = localStorage.getItem(MSG_SEEN_KEY) || '1970-01-01T00:00:00Z';
-      const { count, error } = await withTimeout(
-        sb.from('messages').select('id', { count: 'exact', head: true })
-          .eq('receiver_id', currentUser.id).gt('created_at', seen)
-      );
+      const { count, error } = await withTimeout(sb.from('messages').select('id',{count:'exact',head:true})
+        .eq('receiver_id',currentUser.id).gt('created_at',seen));
       badge.textContent = (!error && count > 0) ? String(count) : '';
-    } catch (e) { /* silencieux */ }
+    } catch(e) {}
   }
-
   function setView(mode) {
     const thread = mode === 'thread';
-    $('inboxBack').style.display = thread ? '' : 'none';
+    $('inboxBack').style.display = thread ? 'inline-flex' : 'none';
+    $('inboxSearchWrap').style.display = thread ? 'none' : 'flex';
+    $('chatComposerWrap').style.display = thread ? 'block' : 'none';
     $('chatForm').style.display = thread ? 'flex' : 'none';
-    if (!thread) $('inboxTitle').textContent = 'Messages';
+    if (!thread) {
+      $('inboxTitle').textContent = 'Messages';
+      $('inboxSubtitle').textContent = 'Vos conversations CamerLink';
+    }
   }
-
   async function renderInbox() {
     setView('list');
     const body = $('inboxBody');
-    body.innerHTML = '<div class="state-msg">Chargement...</div>';
+    body.innerHTML = '<div class="cl-msg-state"><span class="cl-msg-loader"></span><b>Vos messages arrivent…</b><small>Chargement des conversations</small></div>';
     try {
-      const msgs = await fetchMessages();
-      const me = currentUser.id;
-      const convs = new Map();
-      msgs.forEach(m => {
+      const msgs = await fetchMessages(), me = currentUser.id, convs = new Map();
+      msgs.filter(m => m.sender_id === me || m.receiver_id === me).forEach(m => {
         const other = m.sender_id === me ? m.receiver_id : m.sender_id;
         const key = other + '|' + (m.ad_id || '');
-        if (!convs.has(key)) convs.set(key, { other, ad: m.ad_id, last: m });
+        if (!convs.has(key)) convs.set(key,{other,ad:m.ad_id,last:m,unread:0});
+        const c = convs.get(key);
+        if (m.receiver_id === me && m.created_at > (localStorage.getItem(MSG_SEEN_KEY)||'1970-01-01T00:00:00Z')) c.unread++;
       });
-      if (convs.size === 0) {
-        body.innerHTML = '<div class="state-msg">Aucun message pour le moment.</div>';
+      if (!convs.size) {
+        body.innerHTML = '<div class="cl-msg-empty"><span>✉</span><h4>Aucune conversation pour le moment</h4><p>Écrivez à un vendeur ou découvrez des créateurs pour démarrer une discussion.</p></div>';
         return;
       }
-      const names = await shopNames([...new Set([...convs.values()].map(c => c.other))]);
-      body.innerHTML = [...convs.values()].map(c => `
-        <button type="button" data-other="${esc(c.other)}" data-ad="${esc(c.ad || '')}"
-          style="display:block;width:100%;text-align:left;padding:10px;margin-bottom:6px;border-radius:10px;background:rgba(127,127,127,0.12);cursor:pointer;">
-          <strong>${esc(names[c.other] || 'Membre CamerLink')}</strong>
-          ${c.ad && adTitleOf(c.ad) ? `<small style="opacity:.7"> · ${esc(adTitleOf(c.ad))}</small>` : ''}
-          <div style="opacity:.8;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-            ${c.last.sender_id === me ? 'Vous : ' : ''}${esc(c.last.content)}
-          </div>
-          <small style="opacity:.6">${fmtDate(c.last.created_at)}</small>
-        </button>`).join('');
-    } catch (e) {
-      body.innerHTML = '<div class="state-msg">Messagerie indisponible. Réessayez.</div>';
+      const values = [...convs.values()];
+      const names = await shopNames([...new Set(values.map(c=>c.other))]);
+      const filtered = values.filter(c => !msgSearch || String(names[c.other]||'Membre CamerLink').toLowerCase().includes(msgSearch.toLowerCase()) || String(c.last.content||'').toLowerCase().includes(msgSearch.toLowerCase()));
+      body.innerHTML = filtered.length ? filtered.map(c => {
+        const name=names[c.other]||'Membre CamerLink';
+        return '<button type="button" class="cl-msg-conversation" data-other="'+esc(c.other)+'" data-ad="'+esc(c.ad||'')+'"><span class="cl-msg-avatar">'+esc(msgInitial(name))+'</span><span class="cl-msg-conv-copy"><span class="cl-msg-conv-top"><b>'+esc(name)+'</b><time>'+esc(msgTime(c.last.created_at))+'</time></span><span class="cl-msg-conv-preview">'+(c.last.sender_id===me?'Vous : ':'')+esc(c.last.content||'')+'</span>'+(c.ad&&adTitleOf(c.ad)?'<small>Annonce : '+esc(adTitleOf(c.ad))+'</small>':'')+'</span>'+(c.unread?'<span class="cl-msg-unread">'+c.unread+'</span>':'')+'</button>';
+      }).join('') : '<div class="cl-msg-empty"><span>⌕</span><h4>Aucun résultat</h4><p>Essayez un autre nom ou mot-clé.</p></div>';
+    } catch(e) {
+      body.innerHTML = '<div class="cl-msg-empty"><span>⚠</span><h4>Messages indisponibles</h4><p>Vérifiez votre connexion puis réessayez.</p><button type="button" id="cl-msg-retry">Réessayer</button></div>';
+      const retry=$('cl-msg-retry'); if(retry)retry.onclick=renderInbox;
     }
   }
-
   async function renderThread() {
     setView('thread');
-    const body = $('inboxBody');
+    const body=$('inboxBody');
+    body.innerHTML='<div class="cl-msg-state"><span class="cl-msg-loader"></span><b>Ouverture de la conversation…</b></div>';
     try {
-      const me = currentUser.id;
-      const msgs = (await fetchMessages())
-        .filter(m => (m.sender_id === chat.other || m.receiver_id === chat.other) &&
-                     String(m.ad_id || '') === String(chat.ad || ''))
-        .reverse();
-      const names = await shopNames([chat.other]);
-      $('inboxTitle').textContent = (names[chat.other] || 'Membre CamerLink') + (chat.ad && adTitleOf(chat.ad) ? ' · ' + adTitleOf(chat.ad) : '');
-      body.innerHTML = msgs.length ? msgs.map(m => `
-        <div style="display:flex;justify-content:${m.sender_id === me ? 'flex-end' : 'flex-start'};margin-bottom:6px;">
-          <div style="max-width:80%;padding:8px 12px;border-radius:12px;background:${m.sender_id === me ? 'var(--a1)' : 'rgba(127,127,127,0.2)'};color:${m.sender_id === me ? '#05060D' : 'inherit'};">
-            ${esc(m.content)}<div style="font-size:.7rem;opacity:.6;margin-top:2px;">${fmtDate(m.created_at)}</div>
-          </div>
-        </div>`).join('') : '<div class="state-msg">Écrivez le premier message.</div>';
-      body.scrollTop = body.scrollHeight;
-    } catch (e) {
-      body.innerHTML = '<div class="state-msg">Messagerie indisponible. Réessayez.</div>';
+      const me=currentUser.id;
+      const msgs=(await fetchMessages()).filter(m =>
+        ((m.sender_id===chat.other&&m.receiver_id===me)||(m.sender_id===me&&m.receiver_id===chat.other)) &&
+        String(m.ad_id||'')===String(chat.ad||'')).reverse();
+      const names=await shopNames([chat.other]), name=names[chat.other]||'Membre CamerLink';
+      $('inboxTitle').textContent=name;
+      $('inboxSubtitle').textContent='Conversation privée';
+      body.innerHTML=msgs.length?'<div class="cl-msg-day">Messages</div>'+msgs.map(m=>'<div class="cl-msg-row '+(m.sender_id===me?'mine':'theirs')+'"><div class="cl-msg-bubble">'+esc(m.content)+'<time>'+esc(msgTime(m.created_at))+'</time></div></div>').join(''):'<div class="cl-msg-empty cl-msg-thread-empty"><span>👋</span><h4>Commencez la conversation</h4><p>Envoyez un premier message à '+esc(name)+'.</p></div>';
+      body.scrollTop=body.scrollHeight;
+      markSeen();
+    } catch(e) {
+      body.innerHTML='<div class="cl-msg-empty"><h4>Impossible de charger cette conversation</h4><button type="button" id="cl-thread-retry">Réessayer</button></div>';
+      const retry=$('cl-thread-retry');if(retry)retry.onclick=renderThread;
     }
   }
-
   function markSeen() {
-    try { localStorage.setItem(MSG_SEEN_KEY, new Date().toISOString()); } catch (e) { /* ignoré */ }
-    if ($('msgBadge')) $('msgBadge').textContent = '';
+    try { localStorage.setItem(MSG_SEEN_KEY,new Date().toISOString()); } catch(e) {}
+    if($('msgBadge'))$('msgBadge').textContent='';
   }
-
   function openInbox() {
-    if (!currentUser) { toast('Connectez-vous pour voir vos messages'); openModal('authModal'); return; }
-    openModal('inboxModal');
-    markSeen();
-    renderInbox();
+    if(!currentUser){toast('Connectez-vous pour voir vos messages');openModal('authModal');return;}
+    chat.other=null;chat.ad=null;openModal('inboxModal');markSeen();renderInbox();
   }
-
-  window.openChat = function (otherId, adId) {
-    if (!currentUser) { toast('Connectez-vous pour envoyer un message'); openModal('authModal'); return; }
-    if (otherId === currentUser.id) { toast('C’est votre propre annonce'); return; }
-    chat.other = otherId; chat.ad = adId || null;
-    openModal('inboxModal');
-    markSeen();
-    renderThread();
+  window.openChat=function(otherId,adId){
+    if(!currentUser){toast('Connectez-vous pour envoyer un message');openModal('authModal');return;}
+    if(otherId===currentUser.id){toast('C’est votre propre annonce');return;}
+    chat.other=otherId;chat.ad=adId||null;openModal('inboxModal');markSeen();renderThread();
   };
-
-  $('msgInboxBtn').addEventListener('click', openInbox);
-  $('inboxClose').addEventListener('click', () => closeModal('inboxModal'));
-  $('inboxBack').addEventListener('click', renderInbox);
-
-  $('inboxBody').addEventListener('click', (e) => {
-    const c = e.target.closest('[data-other]');
-    if (!c) return;
-    chat.other = c.dataset.other;
-    chat.ad = c.dataset.ad ? Number(c.dataset.ad) : null;
-    renderThread();
+  $('msgInboxBtn').addEventListener('click',openInbox);
+  $('inboxClose').addEventListener('click',()=>closeModal('inboxModal'));
+  $('inboxBack').addEventListener('click',renderInbox);
+  $('inboxSearch').addEventListener('input',e=>{msgSearch=e.target.value; $('inboxSearchClear').hidden=!msgSearch;renderInbox();});
+  $('inboxSearchClear').addEventListener('click',()=>{$('inboxSearch').value='';msgSearch='';$('inboxSearchClear').hidden=true;renderInbox();});
+  $('inboxBody').addEventListener('click',e=>{
+    const c=e.target.closest('[data-other]');if(!c)return;
+    chat.other=c.dataset.other;chat.ad=c.dataset.ad?Number(c.dataset.ad):null;markSeen();renderThread();
   });
-
-  $('chatForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const input = $('chatInput');
-    const content = input.value.trim();
-    if (!content || !currentUser || !chat.other) return;
-    input.disabled = true;
-    try {
-      const { error } = await sb.from('messages').insert({
-        sender_id: currentUser.id,
-        receiver_id: chat.other,
-        ad_id: chat.ad || null,
-        content
-      });
-      if (error) throw error;
-      input.value = '';
-      await renderThread();
-    } catch (ex) {
-      toast('Message non envoyé : ' + (ex && ex.message ? ex.message : 'réessayez.'));
-    } finally {
-      input.disabled = false;
-      input.focus();
-    }
+  document.querySelectorAll('#inboxModal [data-emoji]').forEach(b=>b.addEventListener('click',()=>{
+    const input=$('chatInput');input.value+=b.dataset.emoji;input.focus();
+  }));
+  $('chatForm').addEventListener('submit',async e=>{
+    e.preventDefault();const input=$('chatInput'),content=input.value.trim();
+    if(!content||!currentUser||!chat.other)return;
+    const send=$('chatSendBtn');input.disabled=true;send.disabled=true;
+    try{
+      const {error}=await sb.from('messages').insert({sender_id:currentUser.id,receiver_id:chat.other,ad_id:chat.ad||null,content});
+      if(error)throw error;
+      input.value='';await renderThread();refreshBadge();
+    }catch(ex){toast('Message non envoyé. Vérifiez la connexion et réessayez.');}
+    finally{input.disabled=false;send.disabled=false;input.focus();}
   });
-
-  function subscribeMessages() {
-    if (msgChannel) { sb.removeChannel(msgChannel); msgChannel = null; }
-    refreshBadge();
-    if (!currentUser) return;
-    msgChannel = sb.channel('messages-' + currentUser.id)
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages', filter: 'receiver_id=eq.' + currentUser.id },
-        () => {
-          if ($('inboxModal').classList.contains('active')) {
-            markSeen();
-            if ($('chatForm').style.display === 'flex') renderThread(); else renderInbox();
-          } else {
-            toast('💬 Nouveau message');
-            refreshBadge();
-          }
-        })
-      .subscribe();
+  function subscribeMessages(){
+    if(msgChannel){sb.removeChannel(msgChannel);msgChannel=null;}
+    refreshBadge();if(!currentUser)return;
+    msgChannel=sb.channel('messages-'+currentUser.id)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'receiver_id=eq.'+currentUser.id},payload=>{
+        const m=payload.new||{};
+        if($('inboxModal').classList.contains('active')){
+          if(chat.other && ((m.sender_id===chat.other)||(m.receiver_id===chat.other)) && String(m.ad_id||'')===String(chat.ad||''))renderThread();
+          else if(!chat.other)renderInbox();
+          refreshBadge();
+        }else{toast('💬 Nouveau message');refreshBadge();}
+      })
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'sender_id=eq.'+currentUser.id},()=>{
+        if($('inboxModal').classList.contains('active')&&!chat.other)renderInbox();
+      }).subscribe();
   }
 
   /* ===== AUTHENTIFICATION ===== */
@@ -1593,8 +1583,77 @@
         <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
         <button type="button" data-act="share" style="${softStyle}">📤 Partager</button>
         <button type="button" data-act="copy" style="${softStyle}">🔗 Copier le lien</button>
-      </div>`;
+      </div>
+      <section style="margin-top:20px;padding-top:14px;border-top:1px solid var(--color-border);" aria-label="Commentaires">
+        <h4 style="margin:0 0 10px;font-size:1.05rem;">💬 Commentaires <span id="adCommentsCount" style="color:var(--color-text-muted);font-weight:500;">…</span></h4>
+        <div id="adCommentsList" aria-live="polite" style="display:grid;gap:10px;margin-bottom:12px;"><p style="color:var(--color-text-muted);">Chargement des commentaires…</p></div>
+        ${currentUser ? `
+          <form id="adCommentForm" style="display:flex;gap:8px;align-items:flex-end;">
+            <textarea name="content" maxlength="500" required placeholder="Écrire un commentaire…" rows="2" style="flex:1;min-width:0;resize:vertical;padding:10px;border:1px solid var(--color-border);border-radius:12px;background:var(--color-bg);color:var(--color-text);"></textarea>
+            <button type="submit" style="${btnStyle}background:var(--a1);color:#fff;">Envoyer</button>
+          </form>
+        ` : '<p style="font-size:.9rem;color:var(--color-text-muted);">Connectez-vous pour écrire un commentaire.</p>'}
+      </section>`;
   }
+
+  async function loadAdComments(id) {
+    const list = $('adCommentsList');
+    const count = $('adCommentsCount');
+    if (!list || !count) return;
+    list.innerHTML = '<p style="color:var(--color-text-muted);">Chargement des commentaires…</p>';
+    try {
+      const { data, error } = await withTimeout(
+        sb.from('reel_comments')
+          .select('id,reel_id,user_id,content,created_at')
+          .eq('reel_id', Number(id)).eq('status', 'approved')
+          .order('created_at', { ascending: true }).limit(100),
+        FETCH_TIMEOUT
+      );
+      if (error) throw error;
+      const rows = Array.isArray(data) ? data : [];
+      count.textContent = '(' + rows.length + ')';
+      list.innerHTML = rows.length ? rows.map(row =>
+        '<article style="padding:10px;border-radius:12px;background:var(--color-bg);border:1px solid var(--color-border);">' +
+        '<strong style="font-size:.85rem;">' + (currentUser && row.user_id === currentUser.id ? 'Vous' : 'Utilisateur CamerLink') + '</strong>' +
+        '<p style="margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;">' + esc(row.content || '') + '</p>' +
+        '<small style="color:var(--color-text-muted);">' + esc(fmtDate(row.created_at)) + '</small></article>'
+      ).join('') : '<p style="color:var(--color-text-muted);">Aucun commentaire pour le moment. Soyez le premier !</p>';
+    } catch (err) {
+      console.warn('Chargement des commentaires impossible', err);
+      count.textContent = '';
+      list.innerHTML = '<p style="color:var(--color-text-muted);">Impossible de charger les commentaires. Vérifiez votre connexion puis rouvrez la publication.</p>';
+    }
+  }
+
+  $('adDetailBody').addEventListener('submit', async (e) => {
+    const form = e.target.closest('#adCommentForm');
+    if (!form) return;
+    e.preventDefault();
+    if (!currentUser) { toast('Connectez-vous pour commenter'); openModal('authModal'); return; }
+    const field = form.querySelector('[name="content"]');
+    const content = String(field && field.value || '').trim();
+    const adId = Number(detail.id);
+    if (!content || !adId) return;
+    const submit = form.querySelector('button[type="submit"]');
+    if (submit) { submit.disabled = true; submit.textContent = 'Envoi…'; }
+    try {
+      const { error } = await withTimeout(
+        sb.from('reel_comments').insert({ reel_id: adId, user_id: currentUser.id, content: content, status: 'approved' }),
+        FETCH_TIMEOUT
+      );
+      if (error) throw error;
+      if (field) field.value = '';
+      delete reelCommentsCache[String(adId)];
+      await loadAdComments(adId);
+      toast('Commentaire publié !');
+      hydrateReelComments();
+    } catch (err) {
+      console.warn('Envoi du commentaire impossible', err);
+      toast(err && err.code === '42501' ? 'Vous devez vous connecter pour commenter.' : 'Envoi impossible. Réessayez.');
+    } finally {
+      if (submit) { submit.disabled = false; submit.textContent = 'Envoyer'; }
+    }
+  });
 
   async function openAdDetail(id) {
     const ad = allListings.find(a => String(a.id) === String(id));
@@ -1603,6 +1662,7 @@
     detail.shop = ad.user_id && shopCache[ad.user_id] ? shopCache[ad.user_id] : null;
     renderAdDetail();
     openModal('adDetailModal');
+    loadAdComments(ad.id);
     setUrl('/annonce/' + ad.id, ad.title + ' · CamerLink');
     registerView(ad.id);
     if (ad.user_id && !detail.shop) {
