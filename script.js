@@ -1780,9 +1780,22 @@
     if(follow){
       if(!currentUser){toast('Connectez-vous pour vous abonner.');openModal('authModal');return;}
       if(currentUser.id===uid){toast('Vous ne pouvez pas vous abonner à vous-même.');return;}
+      const originalLabel=follow.textContent;
       follow.disabled=true;
-      follow.disabled=true;
-      sb.rpc('toggle_follow',{p_user:uid}).then(({data,error})=>{follow.disabled=false;if(error){console.error('Abonnement impossible:',error);toast('Abonnement impossible : '+(error.message||'réessaie.'));return;}toast(data?'Abonnement ajouté !':'Désabonnement effectué');openArtisan(uid);}).catch(err=>{follow.disabled=false;console.error(err);toast('Erreur réseau pendant l’abonnement.');});
+      follow.textContent='Traitement…';
+      (async()=>{
+        try {
+          const {data,error}=await withTimeout(sb.rpc('toggle_follow',{p_user:uid}),FETCH_TIMEOUT);
+          if(error) throw error;
+          toast(data?'Abonnement ajouté !':'Désabonnement effectué');
+          await openArtisan(uid);
+        } catch(err) {
+          console.error('Abonnement impossible:',err);
+          follow.disabled=false;
+          follow.textContent=originalLabel;
+          toast('Échec abonnement : '+(err&&err.message?err.message:'vérifiez la connexion puis réessayez.'));
+        }
+      })();
       return;
     }
     if (e.target.closest('[data-act="share"]')) {
