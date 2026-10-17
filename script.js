@@ -1593,8 +1593,77 @@
         <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
         <button type="button" data-act="share" style="${softStyle}">📤 Partager</button>
         <button type="button" data-act="copy" style="${softStyle}">🔗 Copier le lien</button>
-      </div>`;
+      </div>
+      <section style="margin-top:20px;padding-top:14px;border-top:1px solid var(--color-border);" aria-label="Commentaires">
+        <h4 style="margin:0 0 10px;font-size:1.05rem;">💬 Commentaires <span id="adCommentsCount" style="color:var(--color-text-muted);font-weight:500;">…</span></h4>
+        <div id="adCommentsList" aria-live="polite" style="display:grid;gap:10px;margin-bottom:12px;"><p style="color:var(--color-text-muted);">Chargement des commentaires…</p></div>
+        ${currentUser ? `
+          <form id="adCommentForm" style="display:flex;gap:8px;align-items:flex-end;">
+            <textarea name="content" maxlength="500" required placeholder="Écrire un commentaire…" rows="2" style="flex:1;min-width:0;resize:vertical;padding:10px;border:1px solid var(--color-border);border-radius:12px;background:var(--color-bg);color:var(--color-text);"></textarea>
+            <button type="submit" style="${btnStyle}background:var(--a1);color:#fff;">Envoyer</button>
+          </form>
+        ` : '<p style="font-size:.9rem;color:var(--color-text-muted);">Connectez-vous pour écrire un commentaire.</p>'}
+      </section>`;
   }
+
+  async function loadAdComments(id) {
+    const list = $('adCommentsList');
+    const count = $('adCommentsCount');
+    if (!list || !count) return;
+    list.innerHTML = '<p style="color:var(--color-text-muted);">Chargement des commentaires…</p>';
+    try {
+      const { data, error } = await withTimeout(
+        sb.from('reel_comments')
+          .select('id,reel_id,user_id,content,created_at')
+          .eq('reel_id', Number(id)).eq('status', 'approved')
+          .order('created_at', { ascending: true }).limit(100),
+        FETCH_TIMEOUT
+      );
+      if (error) throw error;
+      const rows = Array.isArray(data) ? data : [];
+      count.textContent = '(' + rows.length + ')';
+      list.innerHTML = rows.length ? rows.map(row =>
+        '<article style="padding:10px;border-radius:12px;background:var(--color-bg);border:1px solid var(--color-border);">' +
+        '<strong style="font-size:.85rem;">' + (currentUser && row.user_id === currentUser.id ? 'Vous' : 'Utilisateur CamerLink') + '</strong>' +
+        '<p style="margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;">' + esc(row.content || '') + '</p>' +
+        '<small style="color:var(--color-text-muted);">' + esc(fmtDate(row.created_at)) + '</small></article>'
+      ).join('') : '<p style="color:var(--color-text-muted);">Aucun commentaire pour le moment. Soyez le premier !</p>';
+    } catch (err) {
+      console.warn('Chargement des commentaires impossible', err);
+      count.textContent = '';
+      list.innerHTML = '<p style="color:var(--color-text-muted);">Impossible de charger les commentaires. Vérifiez votre connexion puis rouvrez la publication.</p>';
+    }
+  }
+
+  $('adDetailBody').addEventListener('submit', async (e) => {
+    const form = e.target.closest('#adCommentForm');
+    if (!form) return;
+    e.preventDefault();
+    if (!currentUser) { toast('Connectez-vous pour commenter'); openModal('authModal'); return; }
+    const field = form.querySelector('[name="content"]');
+    const content = String(field && field.value || '').trim();
+    const adId = Number(detail.id);
+    if (!content || !adId) return;
+    const submit = form.querySelector('button[type="submit"]');
+    if (submit) { submit.disabled = true; submit.textContent = 'Envoi…'; }
+    try {
+      const { error } = await withTimeout(
+        sb.from('reel_comments').insert({ reel_id: adId, user_id: currentUser.id, content: content, status: 'approved' }),
+        FETCH_TIMEOUT
+      );
+      if (error) throw error;
+      if (field) field.value = '';
+      delete reelCommentsCache[String(adId)];
+      await loadAdComments(adId);
+      toast('Commentaire publié !');
+      hydrateReelComments();
+    } catch (err) {
+      console.warn('Envoi du commentaire impossible', err);
+      toast(err && err.code === '42501' ? 'Vous devez vous connecter pour commenter.' : 'Envoi impossible. Réessayez.');
+    } finally {
+      if (submit) { submit.disabled = false; submit.textContent = 'Envoyer'; }
+    }
+  });
 
   async function openAdDetail(id) {
     const ad = allListings.find(a => String(a.id) === String(id));
@@ -1603,6 +1672,7 @@
     detail.shop = ad.user_id && shopCache[ad.user_id] ? shopCache[ad.user_id] : null;
     renderAdDetail();
     openModal('adDetailModal');
+    loadAdComments(ad.id);
     setUrl('/annonce/' + ad.id, ad.title + ' · CamerLink');
     registerView(ad.id);
     if (ad.user_id && !detail.shop) {
