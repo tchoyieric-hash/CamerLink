@@ -521,18 +521,14 @@
     if (!feed) return;
     if (reelObserver) { reelObserver.disconnect(); reelObserver = null; }
 
-    // Le fil social mélange les publications photo et vidéo, de la plus récente à la plus ancienne.
-    const list = allListings.filter(ad => ad.image_url || videos[ad.id]).slice(0, 40);
+    // Les Réels sont réservés aux vidéos ; les publications photo restent dans le fil des annonces.
+    const list = allListings.filter(ad => Boolean(videos[ad.id])).slice(0, 40);
     if (list.length === 0) {
       feed.innerHTML = reelsMessage(failed
         ? 'Publications indisponibles pour le moment. Réessayez plus tard.'
-        : 'Aucune publication pour le moment. Soyez le premier à partager une photo ou une vidéo !');
+        : 'Aucune vidéo pour le moment. Soyez le premier à publier un Réel !');
       return;
     }
-
-    feed.style.maxHeight = 'none';
-    feed.style.overflowY = 'visible';
-    feed.style.scrollSnapType = 'none';
 
     feed.innerHTML = list.map(ad => {
       const wa = waNumber(ad.contact);
@@ -1071,8 +1067,12 @@
 
   // Galerie horizontale pour annonces multi-photos, avec compatibilité anciennes annonces.
   function listingPhotoCarousel(ad, mode) {
-    const urls = Array.isArray(ad.images_urls)
-      ? [...new Set(ad.images_urls.filter(url => typeof url === 'string' && /^https:\/\//i.test(url)))]
+    let rawUrls = ad.images_urls;
+    if (typeof rawUrls === 'string') {
+      try { rawUrls = JSON.parse(rawUrls); } catch (e) { rawUrls = [rawUrls]; }
+    }
+    const urls = Array.isArray(rawUrls)
+      ? [...new Set(rawUrls.filter(url => typeof url === 'string' && /^https:\/\//i.test(url)))]
       : [];
     if (!urls.length && ad.image_url) urls.push(ad.image_url);
     if (!urls.length) return '';
