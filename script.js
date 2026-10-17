@@ -294,8 +294,22 @@
     $('favCount').textContent = arr.length;
   }
 
+  function updateReelLikeUI(id) {
+    const count = String(likeCounts[id] || 0);
+    const liked = window.getFavorites().includes(String(id));
+    document.querySelectorAll('.reel-card[data-reel="' + String(id).replace(/"/g, '\\"') + '"] [data-reel-like]').forEach(button => {
+      const heart = button.querySelector('span');
+      const number = button.querySelector('small');
+      if (heart) heart.textContent = liked ? '♥' : '♡';
+      if (number) number.textContent = count;
+      button.setAttribute('aria-pressed', liked ? 'true' : 'false');
+      button.setAttribute('aria-label', liked ? 'Retirer le j’aime' : 'J’aime cette publication');
+    });
+  }
+
   function bumpLike(id, d) {
     likeCounts[id] = Math.max(0, (likeCounts[id] || 0) + d);
+    updateReelLikeUI(id);
   }
 
   function refreshOpenDetail() {
@@ -352,6 +366,7 @@
       if (error) return;
       likeCounts = {};
       (data || []).forEach(r => { likeCounts[r.annonce_id] = Number(r.likes) || 0; });
+      document.querySelectorAll('.reel-card[data-reel]').forEach(card => updateReelLikeUI(card.dataset.reel));
       renderListings(); refreshOpenDetail();
     } catch (e) { /* silencieux */ }
   }
@@ -543,7 +558,7 @@
         <div class="cl-post-location">${location ? `<span>📍 ${esc(location)}</span>` : '<span>Publication CamerLink</span>'}<span class="cl-post-type">${videos[ad.id] ? '▶ Vidéo' : '▧ Photo'}</span></div>
         <div class="cl-post-media">${media}<button type="button" class="cl-reel-fullscreen" data-reel-fullscreen aria-label="Afficher la vidéo en plein écran">⛶</button><div class="cl-post-shade"></div>
           <div class="cl-post-actions">
-            <button type="button" data-reel-like aria-label="J’aime cette publication"><span>${liked ? '♥' : '♡'}</span><small>${likeCounts[ad.id] || 0}</small></button>
+            <button type="button" data-reel-like aria-label="${liked ? 'Retirer le j’aime' : 'J’aime cette publication'}" aria-pressed="${liked ? 'true' : 'false'}"><span>${liked ? '♥' : '♡'}</span><small>${likeCounts[ad.id] || 0}</small></button>
             <button type="button" data-reel-comments aria-label="Voir les commentaires"><span>▢</span><small>…</small></button>
             <button type="button" data-reel-share aria-label="Partager la publication"><span>↗</span><small>Partager</small></button>
           </div>
