@@ -25,8 +25,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css?v=vision-premium-20261017">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css?v=unified-ui-20261017">
   <link rel="stylesheet" href="/reels.css?v=smooth-scroll-20261017">
   <link rel="stylesheet" href="/statuts.css?v=swipe-20261017">
   <link rel="stylesheet" href="/shell.css?v=2">
@@ -36,10 +36,10 @@
 <body>
 <!--SEO_BODY-->
 
-<header>
-  <a href="/" class="logo-brand" aria-label="CamerLink, accueil"><img src="/camerlink-logo.png" alt="" class="brand-logo-img"><span class="brand-wordmark">Camer<span>Link</span></span></a>
+<header class="cl-top">
+  <a href="/" class="logo-brand" aria-label="CamerLink, accueil"><img src="/camerlink-logo.png" alt="" class="brand-logo-img"><span class="brand-wordmark cl-logo">Camer<span>Link</span></span></a>
   <div class="header-actions">
-    <button class="btn-icon" id="msgInboxBtn">💬 <span id="msgBadge"></span></button>
+    <button class="btn-icon cl-ib" id="msgInboxBtn">💬 <span id="msgBadge"></span></button>
     <button class="btn-icon" id="claimBtn" title="Récupérer mes annonces" aria-label="Récupérer mes annonces" style="display:none">🔑</button>
     <button class="btn-icon" id="themeBtn">🌓</button>
     <button class="btn-login" id="authBtn">Connexion</button>
@@ -50,7 +50,7 @@
 <div class="header-spacer"></div>
 
 <!-- Onglets du haut (façon maquette) -->
-<nav class="shell-tabs" aria-label="Sections">
+<nav class="shell-tabs cl-tabs" aria-label="Sections">
   <button class="shell-tab" data-m="reels">Réels</button>
   <button class="shell-tab" data-m="statuts">Statuts</button>
   <button class="shell-tab" data-m="annonces">Annonces</button>
@@ -218,7 +218,7 @@
 </div>
 
 <!-- Barre du bas (façon maquette) -->
-<nav class="shell-nav" aria-label="Navigation principale">
+<nav class="shell-nav cl-nav" aria-label="Navigation principale">
   <button data-m="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Accueil</span></button>
   <button data-m="reels"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg><span>Réels</span></button>
   <button class="plus" id="nav-add" aria-label="Publier"><span class="c">+</span></button>
