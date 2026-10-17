@@ -98,6 +98,29 @@
   document.getElementById('wa-prev').onclick=prev;
   document.getElementById('wa-close').onclick=close;
 
+  // Navigation tactile des statuts : balayage horizontal, glisser vers le bas pour fermer.
+  (function enableStorySwipe(){
+    if(!stage || stage.dataset.swipeReady)return;
+    stage.dataset.swipeReady='1';
+    var sx=0,sy=0,tracking=false;
+    stage.addEventListener('touchstart',function(e){
+      if(!e.touches||e.touches.length!==1)return;
+      sx=e.touches[0].clientX;sy=e.touches[0].clientY;tracking=true;
+    },{passive:true});
+    stage.addEventListener('touchend',function(e){
+      if(!tracking||!e.changedTouches||!e.changedTouches.length)return;
+      tracking=false;
+      var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+      if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.25){
+        if(e.cancelable)e.preventDefault();
+        if(dx<0)next();else prev();
+      }else if(dy>95&&dy>Math.abs(dx)*1.3){
+        if(e.cancelable)e.preventDefault();
+        close();
+      }
+    },{passive:false});
+  })();
+
   var rowEl,oldRowEl;
   function refresh(){if(rowEl)render(rowEl,oldRowEl)}
 
