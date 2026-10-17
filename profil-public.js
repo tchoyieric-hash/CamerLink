@@ -48,7 +48,7 @@ function showProfile(id){
 }
 function showSocialList(kind,profileId){
  var field=kind==='followers'?'follower_id':'followed_id',label=kind==='followers'?'Abonnés':'Abonnements';
- client.from('abonnements').select(field).eq(kind==='followers'?'followed_id':'follower_id',profileId).then(function(r){
+ sb.from('abonnements').select(field).eq(kind==='followers'?'followed_id':'follower_id',profileId).then(function(r){
   if(r.error){toast('Impossible de charger la liste.');return}
   var ids=(r.data||[]).map(function(x){return x[field]}).filter(Boolean);
   var show=function(profiles){
@@ -59,7 +59,7 @@ function showSocialList(kind,profileId){
    document.body.appendChild(modal);document.getElementById('pf-social-close').onclick=function(){modal.remove()};modal.onclick=function(e){if(e.target===modal)modal.remove()};modal.querySelectorAll('[data-social-open]').forEach(function(b){b.onclick=function(){modal.remove();location.hash='#profil/'+b.getAttribute('data-social-open')}});
   };
   if(!ids.length){show([]);return}
-  client.from('profils').select('id,username,full_name,avatar_url').in('id',ids).then(function(pr){if(pr.error){toast('Impossible de charger les profils.');return}var map={};(pr.data||[]).forEach(function(p){map[p.id]=p});show(ids.map(function(id){return map[id]}).filter(Boolean))});
+  sb.from('profils').select('id,username,full_name,avatar_url').in('id',ids).then(function(pr){if(pr.error){toast('Impossible de charger les profils.');return}var map={};(pr.data||[]).forEach(function(p){map[p.id]=p});show(ids.map(function(id){return map[id]}).filter(Boolean))});
  }).catch(function(){toast('Erreur réseau. Réessayez.')});
 }
 window.CamerLinkOpenProfile=function(id){if(!id)return;location.hash='#profil/'+id};
