@@ -534,7 +534,7 @@
       const wa = waNumber(ad.contact);
       const price = Number(ad.price || 0) > 0 ? Number(ad.price).toLocaleString('fr-FR') + ' FCFA' : '';
       const media = videos[ad.id]
-        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="metadata"></video><button type="button" class="cl-reel-sound" data-reel-sound aria-label="Activer ou couper le son">🔇</button>`
+        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="metadata"></video><div class="cl-reel-sound-feedback" data-reel-sound-feedback aria-hidden="true">🔊 Son activé</div><div class="cl-reel-tap-hint" aria-hidden="true">Toucher la vidéo pour activer le son</div>`
         : `<img class="cl-reel-photo" src="${esc(ad.image_url)}" alt="${esc(ad.title)}" loading="lazy">`;
       const location = [ad.quartier, ad.city].filter(Boolean).join(' · ');
       const liked = window.getFavorites().includes(String(ad.id));
@@ -583,6 +583,20 @@
     }
   }
 
+  function toggleReelSound(card, video) {
+    video.muted = !video.muted;
+    if (!video.muted) video.volume = 1;
+    const feedback = card.querySelector('[data-reel-sound-feedback]');
+    if (feedback) {
+      feedback.textContent = video.muted ? '🔇 Son désactivé' : '🔊 Son activé';
+      feedback.classList.remove('show');
+      void feedback.offsetWidth;
+      feedback.classList.add('show');
+    }
+    const hint = card.querySelector('.cl-reel-tap-hint');
+    if (hint && !video.muted) hint.classList.add('hidden');
+  }
+
   const reelsFeed = $('reels-feed');
   if (reelsFeed) {
     reelsFeed.addEventListener('click', (e) => {
@@ -601,10 +615,7 @@
         return;
       }
       const snd = e.target.closest('[data-reel-sound]');
-      if (snd) {
-        if (v) { v.muted = !v.muted; snd.textContent = v.muted ? '🔇' : '🔊'; }
-        return;
-      }
+      if (snd) { if (v) toggleReelSound(card, v); return; }
       const profileBtn = e.target.closest('[data-profile-user]');
       if (profileBtn) {
         const userId = profileBtn.dataset.profileUser;
@@ -621,9 +632,11 @@
       }
       if (e.target.closest('[data-reel-open]')) { openAdDetail(id); return; }
       if (e.target.closest('a')) return;
-      if (v) {
+      if (v && e.target.closest('.cl-post-media') && !e.target.closest('.cl-post-actions, .cl-post-caption, .cl-comments-float, .cl-reel-fullscreen')) {
+        toggleReelSound(card, v);
         if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
-        else v.pause();
+      } else if (v && e.target.closest('.cl-post-media')) {
+        if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause();
       }
     });
   }
