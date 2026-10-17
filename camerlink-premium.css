@@ -461,3 +461,167 @@ img,video{height:auto}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+
+/* CamerLink Next-Gen Header — polished, responsive, accessible */
+header {
+  height: var(--header-height, 68px);
+  padding-inline: clamp(12px, 3.2vw, 42px);
+  gap: clamp(10px, 2vw, 24px);
+  background: color-mix(in srgb, var(--cl-bg, #080d18) 86%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--cl-cyan, #54e2df) 18%, var(--cl-line, #263247));
+  box-shadow: 0 10px 34px rgba(0, 0, 0, .22);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  backdrop-filter: blur(22px) saturate(145%);
+}
+header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 2%, rgba(84,226,223,.55) 28%, rgba(141,123,255,.62) 72%, transparent 98%);
+  opacity: .72;
+}
+header .logo-brand {
+  position: relative;
+  flex: 0 1 auto;
+  min-width: 0;
+  gap: 10px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+header .brand-logo-img {
+  width: 38px;
+  height: 38px;
+  padding: 4px;
+  border-radius: 13px;
+  background: linear-gradient(145deg, rgba(84,226,223,.13), rgba(141,123,255,.15));
+  border: 1px solid rgba(130,180,255,.18);
+  filter: drop-shadow(0 4px 12px rgba(84,150,240,.16));
+}
+header .brand-wordmark {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: clamp(1.14rem, 1.7vw, 1.38rem);
+  font-weight: 850;
+  letter-spacing: -.065em;
+}
+header .header-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(5px, .8vw, 10px);
+  min-width: 0;
+}
+header .btn-icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--cl-surface, #111a2b) 88%, transparent);
+  border: 1px solid var(--cl-line, rgba(150,170,210,.18));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+  color: var(--cl-text, #f5f7ff);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+header .btn-icon:hover {
+  transform: translateY(-1px);
+  border-color: rgba(84,226,223,.52);
+  background: rgba(84,226,223,.08);
+  box-shadow: 0 6px 20px rgba(84,150,240,.12);
+}
+header .btn-login {
+  min-height: 40px;
+  border: 1px solid var(--cl-line, rgba(150,170,210,.2));
+  border-radius: 13px;
+  padding: 0 13px;
+  color: var(--cl-text, #f5f7ff);
+  font-size: .82rem;
+  font-weight: 750;
+  white-space: nowrap;
+  background: rgba(130,150,190,.055);
+}
+header .btn-login:hover { border-color: rgba(84,226,223,.5); }
+header .btn-pub {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 14px;
+  padding: 0 16px;
+  color: #07121b;
+  font-size: .83rem;
+  font-weight: 900;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  background: linear-gradient(115deg, #54e2df 0%, #8bb9ff 53%, #a18aff 100%);
+  box-shadow: 0 7px 22px rgba(84,150,240,.22), inset 0 1px 0 rgba(255,255,255,.4);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+header .btn-pub:hover {
+  transform: translateY(-1px);
+  filter: saturate(1.08) brightness(1.03);
+  box-shadow: 0 10px 28px rgba(84,150,240,.32), inset 0 1px 0 rgba(255,255,255,.48);
+}
+header .btn-icon:focus-visible,
+header .btn-login:focus-visible,
+header .btn-pub:focus-visible,
+header .logo-brand:focus-visible {
+  outline: 2px solid var(--cl-cyan, #54e2df);
+  outline-offset: 3px;
+}
+#msgBadge { box-shadow: 0 0 0 2px var(--cl-bg, #080d18); }
+.shell-tabs {
+  border-bottom-color: color-mix(in srgb, var(--cl-cyan, #54e2df) 13%, var(--cl-line, #263247));
+}
+@media (max-width: 560px) {
+  header {
+    padding-inline: 10px;
+    gap: 6px;
+  }
+  header .logo-brand { gap: 6px; }
+  header .brand-logo-img {
+    width: 31px;
+    height: 31px;
+    padding: 3px;
+    border-radius: 10px;
+  }
+  header .brand-wordmark { font-size: 1.06rem; letter-spacing: -.07em; }
+  header .header-actions { gap: 4px; }
+  header .btn-icon {
+    width: 34px;
+    height: 36px;
+    border-radius: 11px;
+    font-size: .9rem;
+  }
+  header .btn-login {
+    min-height: 36px;
+    padding-inline: 7px;
+    border-radius: 11px;
+    font-size: .72rem;
+  }
+  header .btn-pub {
+    min-height: 37px;
+    padding-inline: 9px;
+    border-radius: 11px;
+    font-size: .72rem;
+  }
+}
+@media (max-width: 380px) {
+  header { padding-inline: 7px; gap: 4px; }
+  header .brand-wordmark { font-size: .98rem; }
+  header .brand-logo-img { width: 28px; height: 28px; }
+  header .header-actions { gap: 3px; }
+  header .btn-icon { width: 31px; height: 34px; }
+  header .btn-login { padding-inline: 5px; font-size: .68rem; }
+  header .btn-pub { padding-inline: 7px; font-size: .68rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  header .btn-icon, header .btn-login, header .btn-pub { transition: none; }
+}
