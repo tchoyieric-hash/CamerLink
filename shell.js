@@ -37,8 +37,8 @@ function setMode(m,noScroll,fromBack){
   if(!MODES[m])m='home';if(m!==cur&&!fromBack)modeHistory.push(cur);if(modeHistory.length>20)modeHistory.shift();cur=m;
   var back=mountBack();back.classList.toggle('visible',m!=='home');
   ALL.forEach(function(sel){$$(sel).forEach(function(el){el.classList.toggle('shell-off',MODES[m].indexOf(sel)<0)})});
-  $$$('.shell-tab').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
-  $$$('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
+  $$('.shell-tab').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
+  $$('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
   try{history.replaceState(null,'',m==='home'?location.pathname+location.search:'#'+m)}catch(e){}
   if(!noScroll)window.scrollTo(0,0);
   if(m==='decouvrir')bzLoad();
