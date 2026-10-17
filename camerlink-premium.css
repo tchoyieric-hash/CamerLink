@@ -379,3 +379,45 @@ footer{margin-top:28px}
 #cl-global-back:active{transform:scale(.96)}
 @media(min-width:800px){#cl-global-back{margin-left:max(18px,calc((100% - 1180px)/2));}}
 @media(prefers-reduced-motion:reduce){#cl-global-back{transition:none}}
+
+
+/* CamerLink polish pass — mobile performance, accessibility and responsive finish */
+:where(button,a,input,select,textarea,[tabindex]):focus-visible{
+  outline:2px solid var(--cl-cyan);outline-offset:3px
+}
+button,a{-webkit-tap-highlight-color:transparent}
+img,video{height:auto}
+.shell-nav{
+  background:color-mix(in srgb,var(--cl-bg) 90%,transparent);
+  backdrop-filter:blur(16px);
+  border-top-color:var(--cl-line);
+  padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))
+}
+.listing-card,.ad-card,.listing-item,.bz .card{
+  contain:layout style;
+}
+@media(max-width:760px){
+  .hero{padding-top:30px;padding-bottom:24px}
+  .hero::before{width:150px;height:150px;right:-18px;top:10%;opacity:.7}
+  .search-filter-bar{grid-template-columns:minmax(0,1fr);gap:8px}
+  .search-input,.city-select,.price-select{min-width:0;width:100%}
+  .listings-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .reels-heading{align-items:flex-start;flex-direction:column}
+  .reels-heading-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+  .shell-tabs{backdrop-filter:blur(12px)}
+}
+@media(max-width:390px){
+  .header-actions{gap:4px}
+  .btn-icon{width:36px;height:36px}
+  .btn-login{padding:8px 7px;font-size:.78rem}
+  .btn-pub{padding:9px 10px;font-size:.76rem}
+  .brand-wordmark{font-size:1.12rem}
+  .listings-grid{grid-template-columns:minmax(0,1fr)}
+  .shell-nav button{font-size:10px}
+  .shell-nav .plus{flex-basis:56px}
+  .shell-nav .plus span.c{width:48px;height:48px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
