@@ -616,6 +616,46 @@
       }
       const snd = e.target.closest('[data-reel-sound]');
       if (snd) { if (v) toggleReelSound(card, v); return; }
+      const followBtn = e.target.closest('.cl-follow-btn');
+      if (followBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const userId = followBtn.dataset.profileUser;
+        if (!currentUser) { toast('Connectez-vous pour vous abonner.'); openModal('authModal'); return; }
+        if (currentUser.id === userId) { toast('Vous ne pouvez pas vous abonner à vous-même.'); return; }
+        if (followBtn.dataset.busy === '1') return;
+        followBtn.dataset.busy = '1';
+        const previousLabel = followBtn.textContent;
+        followBtn.disabled = true;
+        followBtn.textContent = 'Traitement…';
+        (async () => {
+          try {
+            const { data, error } = await withTimeout(sb.rpc('toggle_follow', { p_user: userId }), FETCH_TIMEOUT);
+            if (error) {
+              const msg = String(error.message || '');
+              const duplicate = error.code === '23505' || /409|duplicate|already exists|unique constraint/i.test(msg);
+              if (!duplicate) throw error;
+              // Le lien existe déjà : synchroniser l'interface sans afficher une fausse panne.
+              followBtn.textContent = '✓ Abonné';
+              followBtn.dataset.following = '1';
+              toast('Vous êtes déjà abonné à ce créateur.');
+            } else {
+              const following = data === true || data === 'true';
+              followBtn.textContent = following ? '✓ Abonné' : '＋ S’abonner';
+              followBtn.dataset.following = following ? '1' : '0';
+              toast(following ? 'Abonnement ajouté !' : 'Désabonnement effectué');
+            }
+          } catch (err) {
+            console.error('Abonnement du créateur impossible:', err);
+            followBtn.textContent = previousLabel;
+            toast('Échec abonnement : ' + (err && err.message ? err.message : 'vérifiez la connexion.'));
+          } finally {
+            followBtn.disabled = false;
+            delete followBtn.dataset.busy;
+          }
+        })();
+        return;
+      }
       const profileBtn = e.target.closest('[data-profile-user]');
       if (profileBtn) {
         const userId = profileBtn.dataset.profileUser;
