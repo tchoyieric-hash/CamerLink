@@ -371,3 +371,11 @@ footer{margin-top:28px}
 .cl-reel-tap-hint{position:absolute;z-index:7;left:50%;top:44%;transform:translate(-50%,-50%);max-width:82%;padding:9px 13px;border-radius:999px;background:rgba(5,9,18,.62);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:750;text-align:center;pointer-events:none;backdrop-filter:blur(10px);transition:opacity .2s ease}
 .cl-reel-tap-hint.hidden{opacity:0}
 @keyframes clReelSoundPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.85)}15%,70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.04)}}
+
+/* Native-feeling back navigation for every top-level section */
+#cl-global-back{display:none;position:sticky;top:0;z-index:1000;align-items:center;gap:9px;width:max-content;max-width:calc(100% - 24px);margin:8px 12px 10px;padding:10px 16px 10px 12px;border:1px solid var(--cl-line,rgba(164,184,216,.18));border-radius:999px;background:color-mix(in srgb,var(--cl-surface,#101624) 88%,transparent);color:var(--cl-text,#f6f8fc);font:700 13px/1.1 Inter,system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.12);backdrop-filter:blur(16px);cursor:pointer;transition:transform .18s ease,background .18s ease}
+#cl-global-back.visible{display:flex}
+#cl-global-back span:first-child{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:linear-gradient(135deg,#35d9ee,#6785ff 70%,#9871ff);color:#07101b;font-size:20px;font-weight:900}
+#cl-global-back:active{transform:scale(.96)}
+@media(min-width:800px){#cl-global-back{margin-left:max(18px,calc((100% - 1180px)/2));}}
+@media(prefers-reduced-motion:reduce){#cl-global-back{transition:none}}
