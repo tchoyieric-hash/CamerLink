@@ -32,10 +32,8 @@ var MODES={
 };
 var ALL=['.hero','.shops-section','#reels-section','#categoryChips','main','footer','#discover-section','#profile-section'];
 var cur='home',modeHistory=[];
-function mountBack(){var b=$('#cl-global-back');if(!b){b=document.createElement('button');b.id='cl-global-back';b.type='button';b.innerHTML='<span aria-hidden="true">←</span><span>Retour</span>';b.setAttribute('aria-label','Revenir à la rubrique précédente');var anchor=$('.shell-tabs');if(anchor)anchor.parentNode.insertBefore(b,anchor);else{var h=$('header');if(h&&h.nextSibling)h.parentNode.insertBefore(b,h.nextSibling)}b.onclick=function(){if(modeHistory.length){var prev=modeHistory.pop();setMode(prev,true,true)}else if(cur!=='home'){setMode('home',false,true)}else if(history.length>1){history.back()}else{window.scrollTo({top:0,behavior:'smooth')}}};}return b;}
 function setMode(m,noScroll,fromBack){
   if(!MODES[m])m='home';if(m!==cur&&!fromBack)modeHistory.push(cur);if(modeHistory.length>20)modeHistory.shift();cur=m;
-  var back=mountBack();back.classList.toggle('visible',m!=='home');
   ALL.forEach(function(sel){$$(sel).forEach(function(el){el.classList.toggle('shell-off',MODES[m].indexOf(sel)<0)})});
   $$('.shell-tab').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
   $$('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
@@ -48,7 +46,6 @@ function hdr(){var h=$('header');if(h)document.documentElement.style.setProperty
 function click(id){var e=$(id);if(e)e.click();else toast('Indisponible')}
 
 function mountNav(){
-  mountBack();
   // Délégation d'événements robuste pour les onglets du haut et la barre du bas.
   $$('.shell-tab').forEach(function(b){b.addEventListener('click',function(){setMode(b.dataset.m)})});
   var nav=$('.shell-nav');
