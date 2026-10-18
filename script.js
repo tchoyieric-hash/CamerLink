@@ -1372,9 +1372,13 @@
     return a ? a.title : null;
   };
   async function fetchMessages() {
+    if (!currentUser || !currentUser.id) throw new Error('Connectez-vous pour accéder à vos messages.');
+    // Restreindre la requête au compte connecté; RLS reste la protection côté base.
     const { data, error } = await withTimeout(
-      sb.from('messages').select('id, sender_id, receiver_id, ad_id, content, created_at')
-        .order('created_at', { ascending: false }).limit(500)
+      sb.from('messages').select('id, sender_id, receiver_id, ad_id, content, created_at, read_at')
+        .or('sender_id.eq.' + currentUser.id + ',receiver_id.eq.' + currentUser.id)
+        .order('created_at', { ascending: false }).limit(500),
+      FETCH_TIMEOUT
     );
     if (error) throw error;
     return data || [];
@@ -1767,7 +1771,8 @@
       ).join('') : '<p style="color:var(--color-text-muted);">Aucun avis pour le moment. Soyez le premier !</p>';
     } catch (err) {
       console.warn('Chargement des avis impossible', err);
-      list.innerHTML = '<p style="color:var(--color-text-muted);">Impossible de charger les avis pour le moment.</p>';
+      count.textContent = '(indisponible)';
+      list.innerHTML = '<div role="status"><p style="color:var(--color-text-muted);">Les avis n’ont pas pu être chargés. Vérifiez la connexion puis réessayez.</p><button type="button" data-reviews-retry style="padding:9px 13px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text);">Réessayer</button></div>';
     }
   }
 
@@ -1847,6 +1852,8 @@
   }
 
   $('adDetailBody').addEventListener('click', (e) => {
+    const retryReviews = e.target.closest('[data-reviews-retry]');
+    if (retryReviews) { loadAdReviews(detail.id); return; }
     const act = e.target.closest('[data-act]');
     if (!act) return;
     const ad = allListings.find(a => String(a.id) === String(detail.id));
