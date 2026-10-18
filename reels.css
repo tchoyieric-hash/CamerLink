@@ -292,3 +292,93 @@ html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   html, #reels-feed { scroll-behavior: auto !important; }
 }
+
+
+/* CAMERLINK REELS — immersion mobile plein écran façon TikTok */
+@media (max-width:700px){
+  /* Retirer l'en-tête éditorial : la vidéo devient l'écran principal. */
+  #reels-section .reels-heading{display:none!important}
+  #reels-section{width:100%!important;max-width:100%!important;margin:0!important;padding:0!important;overflow:visible!important;background:#000!important}
+  #reels-section #reels-feed,
+  #reels-section #reels-feed.reels-feed{
+    display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;
+    width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;
+    gap:0!important;margin:0!important;padding:0!important;overflow-x:hidden!important;overflow-y:auto!important;
+    scroll-snap-type:y mandatory!important;overscroll-behavior-y:contain!important;
+    -webkit-overflow-scrolling:touch!important;background:#000!important;
+  }
+  #reels-section #reels-feed > .cl-social-post,
+  #reels-section #reels-feed > .reel-card{
+    position:relative!important;display:block!important;flex:0 0 100svh!important;
+    width:100%!important;max-width:none!important;min-width:0!important;
+    height:100svh!important;min-height:100svh!important;max-height:100svh!important;
+    margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+    overflow:hidden!important;background:#000!important;box-shadow:none!important;
+    scroll-snap-align:start!important;scroll-snap-stop:always!important;contain:layout paint!important;
+  }
+  #reels-section .cl-post-media{
+    position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+    min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;
+    overflow:hidden!important;background:#000!important;touch-action:pan-y!important;
+  }
+  #reels-section .cl-post-media video,
+  #reels-section .cl-post-media .cl-reel-photo{
+    position:absolute!important;inset:0!important;display:block!important;
+    width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+    object-fit:cover!important;object-position:center!important;background:#000!important;
+  }
+  #reels-section .cl-post-location{
+    position:absolute!important;z-index:5!important;top:max(12px,env(safe-area-inset-top))!important;
+    left:14px!important;right:14px!important;padding:10px 12px!important;
+    border:1px solid rgba(255,255,255,.12)!important;border-radius:14px!important;
+    background:rgba(3,7,18,.48)!important;backdrop-filter:blur(12px)!important;
+    font-size:.84rem!important;pointer-events:none!important;
+  }
+  #reels-section .cl-post-actions{
+    position:absolute!important;z-index:6!important;right:10px!important;
+    bottom:calc(112px + env(safe-area-inset-bottom))!important;
+    display:flex!important;flex-direction:column!important;gap:13px!important;
+    align-items:center!important;margin:0!important;
+  }
+  #reels-section .cl-post-actions button{min-width:48px!important;padding:0!important}
+  #reels-section .cl-post-actions button span{
+    width:44px!important;height:44px!important;border:1px solid rgba(255,255,255,.2)!important;
+    background:rgba(4,8,20,.58)!important;backdrop-filter:blur(10px)!important;
+    font-size:1.6rem!important;
+  }
+  #reels-section .cl-post-actions small{font-size:.72rem!important}
+  #reels-section .cl-post-caption{
+    position:absolute!important;z-index:5!important;left:16px!important;right:76px!important;
+    bottom:calc(112px + env(safe-area-inset-bottom))!important;
+    max-width:none!important;padding:0!important;color:#fff!important;
+    text-shadow:0 2px 12px rgba(0,0,0,.8)!important;
+  }
+  #reels-section .cl-post-caption strong{font-size:1.08rem!important;line-height:1.3!important}
+  #reels-section .cl-post-caption p{
+    display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;
+    overflow:hidden!important;font-size:.88rem!important;line-height:1.35!important;margin:5px 0!important;
+  }
+  #reels-section .cl-post-price{font-size:1rem!important;color:#6ee7b7!important}
+  #reels-section .cl-comments-float{
+    position:absolute!important;z-index:7!important;left:14px!important;right:72px!important;
+    bottom:calc(62px + env(safe-area-inset-bottom))!important;min-height:42px!important;
+    padding:8px 11px!important;border-radius:14px!important;
+    background:rgba(3,10,28,.76)!important;backdrop-filter:blur(12px)!important;
+  }
+  #reels-section .cl-comments-float span:nth-child(2){font-size:.78rem!important}
+  #reels-section .cl-post-footer,
+  #reels-section .cl-comments-preview,
+  #reels-section .cl-post-open{display:none!important}
+  #reels-section .cl-reel-fullscreen{
+    position:absolute!important;z-index:7!important;top:calc(62px + env(safe-area-inset-top))!important;
+    left:12px!important;width:40px!important;height:40px!important;border-radius:50%!important;
+    border:1px solid rgba(255,255,255,.22)!important;background:rgba(3,7,18,.5)!important;
+    color:#fff!important;font-size:1.25rem!important;backdrop-filter:blur(10px)!important;
+  }
+  #reels-section .cl-post-shade{inset:35% 0 0!important;z-index:2!important}
+  #reels-section .cl-reel-tap-hint{z-index:4!important;max-width:80%!important}
+  #reels-section .cl-reel-sound-feedback{z-index:8!important}
+}
+@media (max-width:700px) and (prefers-reduced-motion:reduce){
+  #reels-section #reels-feed{scroll-behavior:auto!important}
+}
