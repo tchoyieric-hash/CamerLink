@@ -1230,6 +1230,18 @@
           <span class="card-views">👁 ${viewsCount} · ❤️ ${likes}</span>
           <button type="button" class="btn-fav ${isFav ? 'active' : ''}" data-fav="${esc(ad.id)}" aria-label="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}" aria-pressed="${isFav}" style="position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:3;">${isFav ? '❤️' : '🤍'}</button>
           ${listingPhotoCarousel(ad, 'card')}
+          <div class="cl-immersive-overlay">
+            <div class="cl-immersive-product">
+              <div class="cl-immersive-title">${esc(ad.title)}</div>
+              <div class="cl-immersive-price">${Number(ad.price || 0).toLocaleString('fr-FR')} FCFA</div>
+              <div class="cl-immersive-city">📍 ${esc([ad.quartier, ad.city].filter(Boolean).join(', ') || 'Cameroun')}</div>
+            </div>
+            <div class="cl-immersive-actions" aria-label="Interactions">
+              <span>♡ <b>${likes}</b></span>
+              <span>◯ <b>${reviewCount}</b></span>
+              <button type="button" class="cl-immersive-share" data-share-ad="${esc(ad.id)}" aria-label="Partager l’annonce">↗</button>
+            </div>
+          </div>
         </div>
         <div class="card-body">
           <h3 class="ad-title">${esc(ad.title)}</h3>
