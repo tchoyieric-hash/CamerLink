@@ -1478,3 +1478,31 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
   #listings-grid .ad-card { border-radius: 14px !important; }
   #listings-grid .card-img-container { padding: 0 !important; }
 }
+
+
+/* CAMERLINK RELEASE FIX — conserver la photo complète dans les cartes d’annonces */
+#listings-grid .card-img-container {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  background: #05060D !important;
+}
+#listings-grid .ad-photo-carousel-card {
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: hidden !important;
+}
+#listings-grid .ad-photo-carousel-card .ad-photo-track,
+#listings-grid .ad-photo-carousel-card .ad-photo-slide {
+  height: auto !important;
+  min-height: 0 !important;
+}
+#listings-grid .ad-photo-carousel-card .ad-photo-slide img {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
