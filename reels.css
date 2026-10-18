@@ -105,7 +105,7 @@
 .cl-reel-fullscreen{position:absolute;z-index:5;top:14px;left:14px;width:46px;height:46px;display:grid;place-items:center;border-radius:50%;color:#fff;background:rgba(3,7,18,.72);border:1px solid rgba(255,255,255,.22);font-size:1.35rem;backdrop-filter:blur(14px);box-shadow:0 6px 22px #0005;}
 .cl-reel-fullscreen:focus-visible,.cl-reel-sound:focus-visible{outline:3px solid #67e8f9;outline-offset:3px}
 .cl-post-media:fullscreen{width:100vw!important;height:100dvh!important;max-height:none!important;min-height:0!important;background:#000!important}
-.cl-post-media:fullscreen video,.cl-post-media:fullscreen .cl-reel-photo{width:100%!important;height:100%!important;object-fit:contain!important}
+.cl-post-media:fullscreen video,.cl-post-media:fullscreen .cl-reel-photo{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
 .cl-post-media:fullscreen .cl-post-caption{bottom:max(22px,env(safe-area-inset-bottom))!important}
 .cl-post-footer{background:linear-gradient(180deg,#050816,#03040a);}
 @media(max-width:700px){
@@ -463,3 +463,12 @@ html { scroll-behavior: smooth; }
     left: 12px !important;
   }
 }
+
+
+/* Plein écran mobile façon Reels : occuper réellement toute la surface disponible. */
+.cl-post-media:fullscreen{position:relative!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;min-height:0!important;margin:0!important;border-radius:0!important;}
+.cl-post-media:fullscreen .cl-post-shade{inset:25% 0 0!important;}
+.cl-post-media:fullscreen .cl-reel-fullscreen{top:max(14px,env(safe-area-inset-top))!important;}
+.cl-post-media:fullscreen .cl-reel-exit{top:max(14px,env(safe-area-inset-top))!important;}
+.cl-post-media:fullscreen .cl-post-actions{bottom:max(24px,env(safe-area-inset-bottom))!important;}
+.cl-post-media:fullscreen .cl-post-caption{bottom:max(24px,env(safe-area-inset-bottom))!important;}
