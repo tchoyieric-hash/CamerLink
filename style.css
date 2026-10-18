@@ -1506,3 +1506,29 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
   object-fit: contain !important;
   object-position: center !important;
 }
+
+
+/* Fil CamerLink — en-tête artisan façon publication sociale */
+#listings-grid .cl-feed-seller {
+  display:flex; align-items:center; gap:10px;
+  min-height:58px; padding:9px 12px;
+  background:var(--color-surface, #0B0D1A);
+  color:var(--color-text-main, #F5F7FF);
+}
+#listings-grid .cl-feed-avatar {
+  display:flex; align-items:center; justify-content:center;
+  width:38px; height:38px; flex:0 0 38px;
+  border-radius:50%; object-fit:cover;
+  background:linear-gradient(135deg,var(--a1,#22D3EE),var(--a2,#8B5CF6));
+  color:#05060D; font-weight:800; font-size:15px;
+  border:1px solid rgba(255,255,255,.22);
+}
+#listings-grid .cl-feed-seller-name {
+  min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-weight:750; font-size:14px; line-height:1.25;
+}
+#listings-grid .cl-feed-verified {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; border-radius:50%;
+  background:#22D3EE; color:#061018; font-size:11px; font-weight:900;
+}
