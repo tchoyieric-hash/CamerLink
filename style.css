@@ -1425,3 +1425,38 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
 .cl-nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:56px;min-height:44px;color:var(--cl-mut);font:600 11px inherit}
 .cl-nav button.on{color:var(--cl-g1)}
 .cl-nav .fab{width:54px;height:54px;min-width:0;border-radius:50%;margin-top:-26px;background:linear-gradient(135deg,var(--cl-g1),var(--cl-g2));color:#07101f;justify-content:center;box-shadow:0 8px 24px rgba(47,217,245,.3)}
+
+
+/* Correctif annonces : conserver le format natif des photos, sans vignette recadrée */
+#listings-grid .card-img-container,
+.ad-card .card-img-container {
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+  overflow: visible;
+}
+#listings-grid .card-img-container img,
+.ad-card .card-img-container img {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  object-position: center;
+}
+/* Le flux type Instagram doit montrer la photo en grand, dans son ratio original. */
+.cl-media {
+  height: auto !important;
+  min-height: 0;
+  aspect-ratio: auto !important;
+  overflow: hidden;
+}
+.cl-media img,
+.cl-media video {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+}
