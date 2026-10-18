@@ -1762,3 +1762,19 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
     max-height:none !important;
   }
 }
+
+
+/* CAMERLINK VISUAL FIX 2026-10-18: show the complete product photo, without cropping */
+#listings-grid .card-img-container > .ad-photo-carousel-card .ad-photo-slide > img.cl-photo-main {
+  object-fit: contain !important;
+  object-position: center center !important;
+  background: transparent !important;
+}
+#listings-grid .card-img-container > .ad-photo-carousel-card {
+  background: #080b16 !important;
+}
+@media (max-width: 700px) {
+  #listings-grid .card-img-container > .ad-photo-carousel-card {
+    aspect-ratio: 4 / 5 !important;
+  }
+}
