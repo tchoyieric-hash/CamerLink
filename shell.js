@@ -23,7 +23,7 @@ function needLogin(){toast('Connectez-vous d\'abord');var a=$('#authBtn');if(a)a
 
 /* ---------- Onglets + barre du bas ---------- */
 var MODES={
- home:['.hero','.shops-section','#reels-section','#categoryChips','main','footer'],
+ home:['.hero','.shops-section','#categoryChips','main','footer'],
  profil:['#profile-section'],
  reels:['#reels-section'],
  statuts:['.shops-section'],
