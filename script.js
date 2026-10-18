@@ -1790,7 +1790,7 @@
     registerView(ad.id);
     if (ad.user_id && !detail.shop) {
       const shop = await fetchShop(ad.user_id);
-      if (detail.id === String(ad.id)) { detail.shop = shop; renderAdDetail(); }
+      if (detail.id === String(ad.id)) { detail.shop = shop; renderAdDetail(); loadAdReviews(ad.id); loadAdComments(ad.id); }
     }
   }
 
