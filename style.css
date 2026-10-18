@@ -1425,3 +1425,56 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
 .cl-nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:56px;min-height:44px;color:var(--cl-mut);font:600 11px inherit}
 .cl-nav button.on{color:var(--cl-g1)}
 .cl-nav .fab{width:54px;height:54px;min-width:0;border-radius:50%;margin-top:-26px;background:linear-gradient(135deg,var(--cl-g1),var(--cl-g2));color:#07101f;justify-content:center;box-shadow:0 8px 24px rgba(47,217,245,.3)}
+
+
+/* FIXE CAMERLINK — photos d'annonces non recadrées, proportions originales */
+#listings-grid .card-img-container {
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+#listings-grid .ad-photo-carousel-card {
+  position: relative !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: auto !important;
+  overflow: hidden !important;
+  background: #05060D !important;
+}
+#listings-grid .ad-photo-track {
+  display: flex !important;
+  width: 100% !important;
+  height: auto !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x mandatory !important;
+  scrollbar-width: none !important;
+  align-items: flex-start !important;
+}
+#listings-grid .ad-photo-track::-webkit-scrollbar { display: none !important; }
+#listings-grid .ad-photo-slide {
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  scroll-snap-align: start !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #05060D !important;
+}
+#listings-grid .ad-photo-slide img {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+@media (max-width: 700px) {
+  #listings-grid.listings-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 18px !important; }
+  #listings-grid .ad-card { border-radius: 14px !important; }
+  #listings-grid .card-img-container { padding: 0 !important; }
+}
