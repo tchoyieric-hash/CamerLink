@@ -382,3 +382,84 @@ html { scroll-behavior: smooth; }
 @media (max-width:700px) and (prefers-reduced-motion:reduce){
   #reels-section #reels-feed{scroll-behavior:auto!important}
 }
+
+
+/* CAMERLINK REELS: véritable mode immersif mobile avec sortie accessible */
+@media (max-width: 700px) {
+  body[data-cl-mode="reels"] .cl-top,
+  body[data-cl-mode="reels"] .header-spacer,
+  body[data-cl-mode="reels"] .cl-tabs,
+  body[data-cl-mode="reels"] .cl-nav {
+    display: none !important;
+  }
+  body[data-cl-mode="reels"] #reels-section {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 5000 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #000 !important;
+  }
+  body[data-cl-mode="reels"] #reels-feed,
+  body[data-cl-mode="reels"] #reels-feed.reels-feed {
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scroll-snap-type: y mandatory !important;
+    overscroll-behavior-y: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  body[data-cl-mode="reels"] #reels-feed > .cl-social-post,
+  body[data-cl-mode="reels"] #reels-feed > .reel-card {
+    flex: 0 0 100dvh !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    scroll-snap-align: start !important;
+    scroll-snap-stop: always !important;
+  }
+  body[data-cl-mode="reels"] .cl-post-media {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+  body[data-cl-mode="reels"] .cl-post-media video,
+  body[data-cl-mode="reels"] .cl-post-media .cl-reel-photo {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+  body[data-cl-mode="reels"] .cl-reel-exit {
+    position: absolute !important;
+    z-index: 20 !important;
+    top: max(12px, env(safe-area-inset-top)) !important;
+    left: 12px !important;
+    width: 42px !important;
+    height: 42px !important;
+    display: grid !important;
+    place-items: center !important;
+    border: 1px solid rgba(255,255,255,.24) !important;
+    border-radius: 50% !important;
+    color: #fff !important;
+    background: rgba(3,7,18,.64) !important;
+    font-size: 1.65rem !important;
+    backdrop-filter: blur(10px) !important;
+  }
+  body[data-cl-mode="reels"] .cl-reel-fullscreen {
+    top: calc(62px + env(safe-area-inset-top)) !important;
+    left: 12px !important;
+  }
+}
