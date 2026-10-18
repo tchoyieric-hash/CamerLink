@@ -1257,13 +1257,20 @@
       const card = grid.querySelector(`.ad-card[data-id="${CSS.escape(String(ad.id))}"]`);
       const seller = card && card.querySelector('[data-seller-for]');
       if (!seller) return;
-      const shop = await fetchShop(ad.user_id);
+      let shop = await fetchShop(ad.user_id);
+      let profile = null;
+      if (!shop || !shop.name) {
+        try {
+          const info = await shopInfo([ad.user_id]);
+          profile = info[ad.user_id] || null;
+        } catch (_) { /* le nom de secours reste affiché */ }
+      }
       // Ne modifier que la carte toujours présente après les filtres/re-rendus.
       const currentCard = grid.querySelector(`.ad-card[data-id="${CSS.escape(String(ad.id))}"]`);
       const currentSeller = currentCard && currentCard.querySelector('[data-seller-for]');
       if (!currentSeller) return;
-      const name = (shop && shop.name) || ad.seller_name || ad.artisan_name || 'Artisan CamerLink';
-      const logo = shop && shop.logo_url;
+      const name = (shop && shop.name) || (profile && profile.name) || ad.seller_name || ad.artisan_name || 'Artisan CamerLink';
+      const logo = (shop && shop.logo_url) || (profile && profile.logo_url) || null;
       currentSeller.innerHTML = `
         ${logo
           ? `<img class="cl-feed-avatar" src="${esc(logo)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
