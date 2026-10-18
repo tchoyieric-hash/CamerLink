@@ -64,7 +64,7 @@
 
   const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
-  let allListings = [], videos = {}, currentUser = null, currentCategory = '', favOnly = false;
+  let allListings = [], videos = {}, currentUser = null, currentCategory = '', favOnly = false, sortMode = 'recent';
   let nearbyPosition = null, nearbyMode = false;
   let storyGroups = [];
   let likeCounts = {};
@@ -226,6 +226,7 @@
   $('searchInput').addEventListener('input', () => renderListings());
   $('cityFilter').addEventListener('change', () => { refreshQuartierFilter(); renderListings(); });
   $('priceFilter').addEventListener('change', () => renderListings());
+  $('sortFilter')?.addEventListener('change', () => { sortMode = $('sortFilter').value || 'recent'; renderListings(); });
 
   /* ===== Découverte locale : résultats proches, uniquement avec accord GPS ===== */
   (function mountNearbyDiscovery() {
@@ -1207,6 +1208,13 @@
     );
     if (nearbyMode && nearbyPosition) {
       filtered = filtered.slice().sort((a,b) => distanceKm(a,nearbyPosition) - distanceKm(b,nearbyPosition));
+    } else {
+      filtered = filtered.slice().sort((a, b) => {
+        if (sortMode === 'price-asc') return Number(a.price || 0) - Number(b.price || 0);
+        if (sortMode === 'price-desc') return Number(b.price || 0) - Number(a.price || 0);
+        if (sortMode === 'rating') return Number(b.note_moyenne || 0) - Number(a.note_moyenne || 0);
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+      });
     }
 
     $('resultsCount').textContent = `${filtered.length} annonce(s)`;
