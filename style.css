@@ -1618,3 +1618,100 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
   #listings-grid .card-img-container { border-radius: 0 !important; }
   #listings-grid .ad-photo-carousel-card { aspect-ratio: 4 / 5 !important; max-height: 125vw !important; }
 }
+
+
+/* CAMERLINK FUTURE FEED — edge-to-edge image and cinematic product overlay */
+#listings-grid .ad-card {
+  position: relative !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(47,220,255,.42) !important;
+  border-radius: 22px !important;
+  background: linear-gradient(150deg,#0b1530 0%,#080b18 65%,#11102a 100%) !important;
+  box-shadow: 0 0 0 1px rgba(116,82,255,.12), 0 12px 38px rgba(0,0,0,.24) !important;
+}
+#listings-grid .cl-feed-seller {
+  min-height: 72px !important;
+  padding: 12px 16px !important;
+  background: linear-gradient(105deg,rgba(10,22,48,.98),rgba(10,13,31,.98)) !important;
+}
+#listings-grid .cl-feed-avatar { width:44px !important;height:44px !important;flex-basis:44px !important; }
+#listings-grid .card-img-container {
+  position: relative !important;
+  height: auto !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #080b16 !important;
+  border-radius: 0 !important;
+}
+#listings-grid .ad-photo-carousel-card {
+  position: relative !important;
+  width: 100% !important;
+  aspect-ratio: 0.76 !important;
+  height: auto !important;
+  max-height: 150vw !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  background: #080b16 !important;
+  isolation: isolate !important;
+}
+#listings-grid .ad-photo-carousel-card .ad-photo-track {
+  display:flex !important; width:100% !important; height:100% !important;
+  overflow-x:auto !important; overflow-y:hidden !important;
+  scroll-snap-type:x mandatory !important; scrollbar-width:none !important;
+}
+#listings-grid .ad-photo-carousel-card .ad-photo-track::-webkit-scrollbar {display:none !important}
+#listings-grid .ad-photo-carousel-card .ad-photo-slide {
+  position:relative !important; flex:0 0 100% !important;
+  width:100% !important; height:100% !important; min-height:0 !important;
+  overflow:hidden !important; display:flex !important;
+  align-items:center !important; justify-content:center !important;
+  background:#080b16 !important; scroll-snap-align:start !important; isolation:isolate !important;
+}
+#listings-grid .ad-photo-carousel-card .cl-photo-atmosphere {
+  position:absolute !important; inset:-18px !important; z-index:0 !important;
+  width:calc(100% + 36px) !important; height:calc(100% + 36px) !important;
+  object-fit:cover !important; filter:blur(22px) brightness(.35) saturate(1.35) !important;
+  transform:scale(1.06) !important; opacity:.8 !important;
+}
+#listings-grid .ad-photo-carousel-card .cl-photo-main {
+  position:relative !important; z-index:1 !important; display:block !important;
+  width:100% !important; height:100% !important; max-height:none !important;
+  object-fit:cover !important; object-position:center !important;
+}
+#listings-grid .cl-immersive-overlay {
+  position:absolute !important; z-index:5 !important; inset:auto 0 0 !important;
+  display:flex !important; align-items:flex-end !important; justify-content:space-between !important;
+  gap:12px !important; padding:70px 16px 22px !important;
+  color:#fff !important;
+  background:linear-gradient(180deg,transparent 0%,rgba(4,9,24,.22) 28%,rgba(4,9,24,.88) 100%) !important;
+  pointer-events:none !important;
+}
+#listings-grid .cl-immersive-product {min-width:0 !important;flex:1 1 auto !important}
+#listings-grid .cl-immersive-title {font-size:clamp(20px,5vw,27px) !important;font-weight:850 !important;line-height:1.12 !important;text-shadow:0 2px 12px #000 !important}
+#listings-grid .cl-immersive-price {margin-top:6px !important;font-size:clamp(21px,5.4vw,30px) !important;font-weight:900 !important;color:#39e4f2 !important;text-shadow:0 2px 12px #000 !important}
+#listings-grid .cl-immersive-city {display:inline-flex !important;margin-top:10px !important;padding:7px 11px !important;border:1px solid rgba(255,255,255,.16) !important;border-radius:999px !important;background:rgba(5,12,30,.55) !important;backdrop-filter:blur(14px) !important;font-size:13px !important}
+#listings-grid .cl-immersive-actions {display:flex !important;align-items:center !important;gap:7px !important;flex-shrink:0 !important;pointer-events:auto !important}
+#listings-grid .cl-immersive-actions span,#listings-grid .cl-immersive-share {
+  display:flex !important;align-items:center !important;justify-content:center !important;gap:5px !important;
+  min-width:40px !important;height:40px !important;padding:0 10px !important;border-radius:999px !important;
+  color:#fff !important;background:rgba(8,14,34,.56) !important;border:1px solid rgba(255,255,255,.3) !important;
+  backdrop-filter:blur(12px) !important;font-size:14px !important;
+}
+#listings-grid .cl-immersive-share {font-size:22px !important;cursor:pointer !important}
+#listings-grid .card-img-container .card-badge-top {z-index:6 !important;top:14px !important;left:14px !important;border-radius:999px !important;backdrop-filter:blur(12px) !important}
+#listings-grid .card-img-container .card-views {display:none !important}
+#listings-grid .card-img-container .btn-fav {z-index:7 !important;top:14px !important;right:14px !important;width:42px !important;height:42px !important}
+#listings-grid .ad-photo-carousel-card .ad-photo-counter {z-index:6 !important;top:14px !important;right:66px !important;padding:7px 11px !important;border-radius:999px !important;background:rgba(5,7,15,.62) !important;backdrop-filter:blur(14px) !important}
+#listings-grid .ad-photo-carousel-card .ad-photo-dots {z-index:6 !important;bottom:10px !important}
+#listings-grid .ad-photo-carousel-card .ad-photo-arrow {z-index:6 !important;background:rgba(5,7,15,.45) !important;backdrop-filter:blur(12px) !important}
+#listings-grid .card-body {padding:14px 16px 18px !important;background:rgba(9,13,29,.98) !important}
+#listings-grid .card-body > .ad-title,#listings-grid .card-body > .ad-price,#listings-grid .card-body > .card-meta {display:none !important}
+#listings-grid .card-body .ad-desc {margin-top:0 !important}
+@media(max-width:700px) {
+ #listings-grid.listings-grid {gap:18px !important}
+ #listings-grid .ad-card {border-radius:22px !important}
+ #listings-grid .ad-photo-carousel-card {aspect-ratio:.76 !important;max-height:150vw !important}
+ #listings-grid .cl-immersive-overlay {padding:65px 13px 23px !important;gap:6px !important}
+ #listings-grid .cl-immersive-actions {gap:5px !important}
+ #listings-grid .cl-immersive-actions span,#listings-grid .cl-immersive-share {min-width:35px !important;height:36px !important;padding:0 7px !important;font-size:12px !important}
+}
