@@ -1639,6 +1639,11 @@
         <button type="button" data-act="share" style="${softStyle}">📤 Partager</button>
         <button type="button" data-act="copy" style="${softStyle}">🔗 Copier le lien</button>
       </div>
+      <section id="adReviewsSection" style="margin-top:20px;padding-top:14px;border-top:1px solid var(--color-border);" aria-label="Avis sur l’annonce">
+        <h4 style="margin:0 0 10px;font-size:1.05rem;">⭐ Avis sur cette annonce <span id="adReviewsCount" style="color:var(--color-text-muted);font-weight:500;">…</span></h4>
+        <div id="adReviewsList" aria-live="polite" style="display:grid;gap:10px;margin-bottom:12px;"><p style="color:var(--color-text-muted);">Chargement des avis…</p></div>
+        ${currentUser ? (ad.user_id === currentUser.id ? '<p style="font-size:.9rem;color:var(--color-text-muted);">Vous ne pouvez pas noter votre propre annonce.</p>' : '<form id="adReviewForm" style="display:grid;gap:8px;"><label for="adReviewRating" style="font-size:.9rem;font-weight:700;">Votre note</label><select id="adReviewRating" name="rating" required style="padding:10px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text);"><option value="">Choisir une note</option><option value="5">★★★★★ — Excellent</option><option value="4">★★★★ — Très bien</option><option value="3">★★★ — Correct</option><option value="2">★★ — Décevant</option><option value="1">★ — Mauvais</option></select><textarea name="commentaire" maxlength="1000" placeholder="Décrivez votre expérience (facultatif)…" rows="3" style="padding:10px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text);"></textarea><button type="submit" style="${btnStyle}background:var(--a1);color:#fff;">Publier mon avis</button><p id="adReviewError" role="status" style="margin:0;color:#f87171;font-size:.85rem;"></p></form>') : '<p style="font-size:.9rem;color:var(--color-text-muted);">Connectez-vous pour laisser un avis.</p>'}
+      </section>
       <section style="margin-top:20px;padding-top:14px;border-top:1px solid var(--color-border);" aria-label="Commentaires">
         <h4 style="margin:0 0 10px;font-size:1.05rem;">💬 Commentaires <span id="adCommentsCount" style="color:var(--color-text-muted);font-weight:500;">…</span></h4>
         <div id="adCommentsList" aria-live="polite" style="display:grid;gap:10px;margin-bottom:12px;"><p style="color:var(--color-text-muted);">Chargement des commentaires…</p></div>
@@ -1651,6 +1656,47 @@
       </section>`;
   }
 
+  async function loadAdReviews(id) {
+    const list = $('adReviewsList'), count = $('adReviewsCount');
+    if (!list || !count) return;
+    try {
+      const { data, error } = await withTimeout(sb.from('avis').select('id,user_id,note,commentaire,created_at').eq('annonce_id', Number(id)).order('created_at', { ascending: false }).limit(100), FETCH_TIMEOUT);
+      if (error) throw error;
+      const rows = Array.isArray(data) ? data : [];
+      count.textContent = '(' + rows.length + ')';
+      list.innerHTML = rows.length ? rows.map(row => '<article style="padding:10px;border-radius:12px;background:var(--color-bg);border:1px solid var(--color-border);"><strong style="font-size:.9rem;">' + (currentUser && row.user_id === currentUser.id ? 'Vous' : 'Utilisateur CamerLink') + '</strong><div aria-label="Note ' + Number(row.note) + ' sur 5" style="color:#fbbf24;margin-top:3px;">' + '★'.repeat(Number(row.note)) + '☆'.repeat(5 - Number(row.note)) + '</div>' + (row.commentaire ? '<p style="margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;">' + esc(row.commentaire) + '</p>' : '') + '<small style="color:var(--color-text-muted);">' + esc(fmtDate(row.created_at)) + '</small></article>').join('') : '<p style="color:var(--color-text-muted);">Aucun avis pour le moment. Soyez le premier !</p>';
+    } catch (err) {
+      console.warn('Chargement des avis impossible', err);
+      count.textContent = '';
+      list.innerHTML = '<p style="color:var(--color-text-muted);">Impossible de charger les avis pour le moment.</p>';
+    }
+  }
+
+  $('adDetailBody').addEventListener('submit', async (e) => {
+    const form = e.target.closest('#adReviewForm');
+    if (!form) return;
+    e.preventDefault();
+    const errBox = $('adReviewError'); if (errBox) errBox.textContent = '';
+    const ad = allListings.find(a => String(a.id) === String(detail.id));
+    if (!currentUser) { toast('Connectez-vous pour publier un avis.'); openModal('authModal'); return; }
+    if (!ad) return;
+    if (ad.user_id && ad.user_id === currentUser.id) { if (errBox) errBox.textContent = 'Vous ne pouvez pas noter votre propre annonce.'; return; }
+    const rating = Number(form.elements.rating.value), commentaire = String(form.elements.commentaire.value || '').trim();
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) { if (errBox) errBox.textContent = 'Choisissez une note de 1 à 5 étoiles.'; return; }
+    const btn = form.querySelector('button[type="submit"]'); if (btn) { btn.disabled = true; btn.textContent = 'Envoi…'; }
+    try {
+      const { error } = await withTimeout(sb.from('avis').insert({ annonce_id: Number(ad.id), user_id: currentUser.id, note: rating, commentaire: commentaire || null }), FETCH_TIMEOUT);
+      if (error) { if (error.code === '23505') throw new Error('Vous avez déjà laissé un avis sur cette annonce.'); throw error; }
+      toast('Avis publié !');
+      await loadAdReviews(ad.id);
+      const fresh = await withTimeout(sb.from('annonces').select('id,note_moyenne,nb_avis').eq('id', Number(ad.id)).maybeSingle(), FETCH_TIMEOUT);
+      if (!fresh.error && fresh.data) { ad.note_moyenne = fresh.data.note_moyenne; ad.nb_avis = fresh.data.nb_avis; }
+      renderAdDetail(); loadAdReviews(ad.id);
+    } catch (err) {
+      console.warn('Publication de l’avis impossible', err);
+      if (errBox) errBox.textContent = err.message || 'Publication impossible. Vérifiez la connexion puis réessayez.';
+    } finally { if (btn) { btn.disabled = false; btn.textContent = "Publier mon avis"; } }
+  });
   async function loadAdComments(id) {
     const list = $('adCommentsList');
     const count = $('adCommentsCount');
@@ -1718,6 +1764,7 @@
     renderAdDetail();
     openModal('adDetailModal');
     loadAdComments(ad.id);
+    loadAdReviews(ad.id);
     setUrl('/annonce/' + ad.id, ad.title + ' · CamerLink');
     registerView(ad.id);
     if (ad.user_id && !detail.shop) {
