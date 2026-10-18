@@ -1221,6 +1221,10 @@
 
       return `
       <article class="ad-card" data-id="${esc(ad.id)}">
+        <div class="cl-feed-seller" data-seller-for="${esc(ad.id)}" aria-label="Profil du vendeur">
+          <div class="cl-feed-avatar">A</div>
+          <div class="cl-feed-seller-name">Artisan CamerLink</div>
+        </div>
         <div class="card-img-container">
           <span class="card-badge-top">${esc(ad.category)}</span>
           <span class="card-views">👁 ${viewsCount} · ❤️ ${likes}</span>
@@ -1246,6 +1250,28 @@
         </div>
       </article>`;
     }).join('');
+
+    // Charger les noms et logos des artisans après le rendu, sans bloquer les annonces.
+    filtered.forEach(async (ad) => {
+      if (!ad.user_id) return;
+      const card = grid.querySelector(`.ad-card[data-id="${CSS.escape(String(ad.id))}"]`);
+      const seller = card && card.querySelector('[data-seller-for]');
+      if (!seller) return;
+      const shop = await fetchShop(ad.user_id);
+      // Ne modifier que la carte toujours présente après les filtres/re-rendus.
+      const currentCard = grid.querySelector(`.ad-card[data-id="${CSS.escape(String(ad.id))}"]`);
+      const currentSeller = currentCard && currentCard.querySelector('[data-seller-for]');
+      if (!currentSeller) return;
+      const name = (shop && shop.name) || ad.seller_name || ad.artisan_name || 'Artisan CamerLink';
+      const logo = shop && shop.logo_url;
+      currentSeller.innerHTML = `
+        ${logo
+          ? `<img class="cl-feed-avatar" src="${esc(logo)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+          : `<div class="cl-feed-avatar">${esc(String(name).trim().charAt(0).toUpperCase() || 'A')}</div>`}
+        <div class="cl-feed-seller-name">${esc(name)}</div>
+        ${shop && shop.verified ? '<span class="cl-feed-verified" aria-label="Artisan vérifié">✓</span>' : ''}
+      `;
+    });
   }
 
   $('listings-grid').addEventListener('click', (e) => {
