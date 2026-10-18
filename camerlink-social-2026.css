@@ -1,0 +1,120 @@
+/* CamerLink Social 2026 — Instagram-like feed with a distinct next-gen identity.
+   Styles the existing live app components; preserves IDs, data attributes, Supabase and handlers. */
+:root{
+  --cl-social-bg:#050609;--cl-social-panel:#090b12;--cl-social-line:rgba(255,255,255,.10);
+  --cl-social-text:#f7f8fc;--cl-social-muted:#a5a8b5;
+  --cl-neon-cyan:#27dfff;--cl-neon-violet:#8b5cf6;--cl-neon-pink:#ff2f85;
+}
+html,body{background:var(--cl-social-bg)!important;color:var(--cl-social-text)}
+body::before{background:radial-gradient(ellipse at 15% -10%,rgba(39,223,255,.10),transparent 35%),radial-gradient(ellipse at 95% 5%,rgba(139,92,246,.10),transparent 32%)!important}
+header.cl-top{height:66px;min-height:66px;padding:8px 16px;background:rgba(5,6,9,.92)!important;border-bottom:1px solid var(--cl-social-line)!important;backdrop-filter:blur(22px)!important}
+header.cl-top .logo-brand{display:flex;align-items:center;gap:7px}
+header.cl-top .brand-logo-img{width:32px;height:32px;object-fit:contain}
+header.cl-top .brand-wordmark{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(19px,5vw,25px);font-weight:850;letter-spacing:-1.1px;background:linear-gradient(95deg,#fff 15%,var(--cl-neon-cyan) 62%,#b58bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+header.cl-top .header-actions{gap:8px}
+header.cl-top .btn-icon{background:transparent;border:1px solid transparent;font-size:19px}
+header.cl-top .btn-icon:active{background:#171a25}
+header.cl-top .btn-login{color:#fff}
+header.cl-top .btn-pub{background:linear-gradient(110deg,var(--cl-neon-cyan),#8872ff 65%,var(--cl-neon-pink));color:#070910;box-shadow:0 0 22px rgba(39,223,255,.18)}
+.header-spacer{height:4px}
+nav.cl-tabs{background:#050609;gap:8px;padding:8px 14px 12px;border-bottom:1px solid var(--cl-social-line)}
+nav.cl-tabs button{color:var(--cl-social-muted);border:1px solid transparent;background:transparent}
+nav.cl-tabs button.on,nav.cl-tabs button.active{color:#fff;background:#171a24;border-color:rgba(39,223,255,.25);box-shadow:0 0 18px rgba(39,223,255,.06)}
+/* Make the status/story strip feel like a social app, while using real status cards. */
+.shops-section{max-width:760px!important;margin:0 auto!important;padding:14px 12px 8px!important}
+.shops-section h2{font-size:1rem!important;font-weight:750!important;margin-bottom:12px!important}
+.shops-container{display:flex!important;overflow-x:auto!important;gap:13px!important;padding:2px 2px 12px!important;scrollbar-width:none!important}
+.shops-container::-webkit-scrollbar{display:none}
+.shop-story-card{flex:0 0 70px!important;width:70px!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:6px!important}
+.shop-story-card .story-ring{width:64px!important;height:64px!important;padding:3px!important;border-radius:50%!important;background:conic-gradient(#ffb12b,#ff2f85,#a855f7,#27dfff,#ffb12b)!important}
+.shop-story-card .story-ring img{border:2px solid #050609!important;border-radius:50%!important;width:100%!important;height:100%!important;object-fit:cover!important}
+.shop-story-card .story-name{max-width:72px!important;font-size:10px!important;color:#f5f5f7!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+/* Keep search and marketplace controls available but visually quieter. */
+.hero{max-width:760px;margin:0 auto!important;padding:22px 14px 12px!important}
+.hero h1{font-size:clamp(1.65rem,5vw,2.5rem)!important;letter-spacing:-.055em!important}
+.hero p{color:var(--cl-social-muted)!important}
+.search-filter-bar{gap:8px!important}
+.search-filter-bar input,.search-filter-bar select{background:#11131c!important;border:1px solid var(--cl-social-line)!important;color:#fff!important;border-radius:14px!important}
+.categories-scroll{max-width:760px!important;padding:8px 12px 14px!important;gap:8px!important}
+.categories-scroll>*{background:#11131c!important;border:1px solid var(--cl-social-line)!important;color:#fff!important}
+/* The existing listings become a familiar edge-to-edge social post feed on phones. */
+main{width:100%;max-width:760px;margin:0 auto!important}
+.filter-tabs-row{padding:10px 12px!important}
+#listings-grid.listings-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px!important;padding:0 0 26px!important;max-width:760px!important}
+#listings-grid .ad-card{border:0!important;border-radius:0!important;background:#050609!important;box-shadow:none!important;border-bottom:1px solid var(--cl-social-line)!important;overflow:hidden!important}
+#listings-grid .card-img-container{border-radius:0!important;background:#090b12!important}
+#listings-grid .card-img-container img{object-fit:cover!important}
+#listings-grid .ad-photo-carousel-card{height:auto!important;aspect-ratio:4/4.25!important;max-height:680px!important;border-radius:0!important}
+#listings-grid .ad-photo-carousel{border-radius:0!important}
+#listings-grid .card-body{padding:12px 14px 16px!important;gap:7px!important}
+#listings-grid .ad-title{font-size:1rem!important;color:#fff!important}
+#listings-grid .ad-price{font-size:1.05rem!important;color:var(--cl-neon-cyan)!important}
+#listings-grid .ad-desc{color:#c4c6d0!important}
+#listings-grid .card-meta{border-top:1px solid var(--cl-social-line)!important;padding-top:10px!important}
+#listings-grid .card-meta button,#listings-grid .card-meta a{min-height:38px!important}
+#listings-grid .ad-photo-counter{right:12px!important;border-radius:8px!important;background:rgba(10,12,18,.72)!important;backdrop-filter:blur(14px)!important}
+#listings-grid .ad-photo-dots span.active{background:var(--cl-neon-cyan)!important}
+#listings-grid .ad-photo-arrow{width:32px;height:32px;opacity:.9}
+nav.cl-nav{height:calc(64px + env(safe-area-inset-bottom,0px))!important;padding:5px 8px calc(7px + env(safe-area-inset-bottom,0px))!important;background:rgba(7,8,13,.94)!important;border-top:1px solid var(--cl-social-line)!important;box-shadow:0 -10px 32px rgba(0,0,0,.24)!important;backdrop-filter:blur(24px)!important}
+nav.cl-nav button{font-size:10px!important;color:#b5b8c4!important}
+nav.cl-nav button.on,nav.cl-nav button.active{color:var(--cl-neon-cyan)!important}
+nav.cl-nav button svg{width:23px!important;height:23px!important}
+nav.cl-nav .plus,nav.cl-nav .fab{width:44px!important;height:44px!important;min-width:44px!important;margin-top:-10px!important;border:2px solid rgba(255,255,255,.15)!important;background:linear-gradient(135deg,var(--cl-neon-cyan),#7568ff 65%,var(--cl-neon-pink))!important;box-shadow:0 0 24px rgba(39,223,255,.22)!important}
+footer{max-width:760px;margin:18px auto 90px!important;color:var(--cl-social-muted)!important}
+@media(min-width:761px){
+  #listings-grid.listings-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;padding:0 14px 30px!important}
+  #listings-grid .ad-card{border:1px solid var(--cl-social-line)!important;border-radius:18px!important}
+  #listings-grid .ad-photo-carousel-card{aspect-ratio:4/3!important}
+}
+@media(max-width:560px){
+  header.cl-top{padding-inline:10px!important}
+  header.cl-top .brand-logo-img{width:28px;height:28px}
+  header.cl-top .header-actions{gap:3px!important}
+  header.cl-top .btn-icon{width:34px!important;height:34px!important;min-width:34px!important}
+  header.cl-top .btn-login{font-size:11px!important;padding-inline:7px!important}
+  header.cl-top .btn-pub{font-size:11px!important;padding-inline:9px!important}
+  .hero{padding-top:16px!important}
+  #listings-grid .card-body{padding-inline:12px!important}
+}
+@media(prefers-reduced-motion:reduce){#listings-grid .ad-card,nav.cl-nav button{transition:none!important}}
+
+
+/* Rendu Reels immersif : vidéo plein écran, actions à droite, infos en bas */
+@media(max-width:700px){
+  #reels-feed>.reel-card{width:100%!important;max-width:100%!important;min-width:0!important;height:calc(100svh - 128px)!important;max-height:none!important;min-height:480px!important;margin:0 0 12px!important;border-radius:0!important;overflow:hidden!important;background:#050609!important;position:relative!important}
+  #reels-feed>.reel-card .cl-post-media{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-height:none!important;min-height:0!important;border-radius:0!important}
+  #reels-feed>.reel-card .cl-post-media video,#reels-feed>.reel-card .cl-post-media .cl-reel-photo{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:0!important}
+  #reels-feed>.reel-card .cl-post-actions{right:10px!important;bottom:116px!important;z-index:5!important;display:flex!important;flex-direction:column!important;gap:17px!important}
+  #reels-feed>.reel-card .cl-post-caption{left:14px!important;right:68px!important;bottom:66px!important;z-index:4!important;color:#fff!important;text-shadow:0 1px 6px #000!important}
+  #reels-feed>.reel-card .cl-comments-float{left:12px!important;right:68px!important;bottom:12px!important;z-index:6!important;width:auto!important;max-width:calc(100% - 82px)!important}
+  #reels-feed>.reel-card .cl-post-footer,#reels-feed>.reel-card .cl-comments-preview,#reels-feed>.reel-card .cl-post-open{display:none!important}
+}
+
+/* Correctifs vérifiés pour l'expérience sociale mobile */
+.shops-section h2{font-size:1rem!important;font-weight:700!important;margin:0 0 10px!important}
+.shop-story-card .shop-story-name{display:block!important;max-width:72px!important;font-size:10px!important;color:#f5f5f7!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important}
+#shops-container .shop-story-card .story-ring{display:grid!important;place-items:center!important;overflow:hidden!important}
+#shops-container .shop-story-card .story-avatar-wrap{width:100%!important;height:100%!important;border:2px solid #050609!important;border-radius:50%!important;display:grid!important;place-items:center!important;overflow:hidden!important;background:#151827!important;color:#fff!important;font-size:22px!important}
+#shops-container .shop-story-card.cta-card .story-ring{padding:3px!important}
+#shops-container .shop-story-card.cta-card .story-avatar-wrap{border:2px solid #050609!important;background:linear-gradient(135deg,#27dfff,#8b5cf6,#ff2f85)!important}
+#shops-container .shop-story-card.cta-card .story-avatar-wrap:empty:after{content:"+";font-size:30px;color:#fff}
+#reels-section .reels-heading{display:none!important}
+#reels-feed.reels-feed{gap:0!important}
+#reels-feed>.cl-social-post{border-radius:0!important;border-left:0!important;border-right:0!important;max-width:100%!important}
+@media(max-width:700px){
+  #reels-feed>.cl-social-post{width:100%!important;margin:0 0 10px!important}
+  #reels-feed .cl-post-media{height:calc(100svh - 120px)!important;min-height:70svh!important;max-height:none!important}
+  #reels-feed .cl-post-media video,#reels-feed .cl-post-media .cl-reel-photo{width:100%!important;height:100%!important;object-fit:cover!important}
+  #reels-feed .cl-post-location{padding:10px 14px!important}
+  #reels-feed .cl-post-footer{padding:10px 14px!important}
+  /* Reels remain exclusively in their own tab, never rendered as square cards in Home. */
+  #listings-grid .ad-photo-carousel-card{aspect-ratio:4/5!important;max-height:none!important}
+}
+
+/* Cache-busted last word for complete Instagram-like listing images */
+@media(max-width:700px){
+ #listings-grid .card-img-container{height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:auto!important;overflow:hidden!important}
+ #listings-grid .card-img-container .ad-photo-carousel-card{width:100%!important;height:auto!important;aspect-ratio:4/3!important;max-height:none!important;overflow:hidden!important}
+ #listings-grid .ad-photo-carousel-card .ad-photo-track,#listings-grid .ad-photo-carousel-card .ad-photo-slide{height:100%!important;min-height:0!important}
+ #listings-grid .ad-photo-carousel-card .ad-photo-slide img{width:100%!important;height:100%!important;object-fit:contain!important;background:#090b12!important}
+}
