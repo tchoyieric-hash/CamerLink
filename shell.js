@@ -33,7 +33,7 @@ var MODES={
 var ALL=['.hero','.shops-section','#reels-section','#categoryChips','main','footer','#discover-section','#profile-section'];
 var cur='home',modeHistory=[];
 function setMode(m,noScroll,fromBack){
-  if(!MODES[m])m='home';if(m!==cur&&!fromBack)modeHistory.push(cur);if(modeHistory.length>20)modeHistory.shift();cur=m;
+  if(!MODES[m])m='home';if(m!==cur&&!fromBack)modeHistory.push(cur);if(modeHistory.length>20)modeHistory.shift();cur=m;document.body.setAttribute('data-cl-mode',m);
   ALL.forEach(function(sel){$$(sel).forEach(function(el){el.classList.toggle('shell-off',MODES[m].indexOf(sel)<0)})});
   $$('.shell-tab').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
   $$('.shell-nav [data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
