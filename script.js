@@ -1828,6 +1828,11 @@
         <button type="button" data-act="share" style="${softStyle}">📤 Partager</button>
         <button type="button" data-act="copy" style="${softStyle}">🔗 Copier le lien</button>
       </div>
+      <section id="artisanReviewsSection" style="margin:16px 0;padding:14px 0;border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border);" aria-label="Avis sur le vendeur">
+        <h4 style="margin:0 0 10px;">⭐ Avis sur ce vendeur <span id="artisanReviewsCount" style="color:var(--color-text-muted);font-weight:500;">…</span></h4>
+        <div id="artisanReviewsList" aria-live="polite" style="display:grid;gap:10px;margin-bottom:12px;"><p style="color:var(--color-text-muted);">Chargement des avis…</p></div>
+        ${currentUser ? (mine ? '<p style="font-size:.9rem;color:var(--color-text-muted);">Vous ne pouvez pas évaluer votre propre profil.</p>' : '<form id="artisanReviewForm" style="display:grid;gap:8px;"><label for="artisanReviewRating" style="font-size:.9rem;font-weight:700;">Votre note</label><select id="artisanReviewRating" name="rating" required style="padding:10px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text);"><option value="">Choisir une note</option><option value="5">★★★★★ — Excellent</option><option value="4">★★★★ — Très bien</option><option value="3">★★★ — Correct</option><option value="2">★★ — Décevant</option><option value="1">★ — Mauvais</option></select><textarea name="comment" maxlength="1000" placeholder="Décrivez votre expérience (facultatif)…" rows="3" style="padding:10px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text);"></textarea><button type="submit" style="${btnStyle}background:var(--a1);color:#fff;">Envoyer mon avis</button><p id="artisanReviewError" role="status" style="margin:0;color:#f87171;font-size:.85rem;"></p></form>') : '<p style="font-size:.9rem;color:var(--color-text-muted);">Connectez-vous pour évaluer ce vendeur.</p>'}
+      </section>
       <h4 style="margin-bottom:8px;">Annonces (${ads.length})</h4>
       ${ads.length ? ads.map(a => `
         <button type="button" data-ad="${esc(a.id)}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px;margin-bottom:6px;border-radius:10px;background:rgba(127,127,127,0.12);cursor:pointer;">
@@ -1837,6 +1842,7 @@
         </button>`).join('') : '<div class="state-msg" style="padding:16px;">Aucune annonce pour le moment.</div>'}`;
 
     body.dataset.uid = uid;
+    loadArtisanReviews(uid);
     const followBtn = body.querySelector('[data-act="follow"]');
     sb.rpc('camerlink_follow_stats',{target_user:uid}).then(({data,error})=>{
       if(error){console.warn('Statistiques abonnements:',error);return;}const st=Array.isArray(data)?data[0]:data;if(!st)return;
@@ -1851,6 +1857,40 @@
     }
   }
 
+  async function loadArtisanReviews(uid) {
+    const list = $('artisanReviewsList'), count = $('artisanReviewsCount');
+    if (!list || !count) return;
+    try {
+      const { data, error } = await withTimeout(sb.from('artisan_reviews').select('id,reviewer_id,rating,comment,created_at').eq('artisan_id', uid).eq('status', 'approved').order('created_at', { ascending: false }).limit(100), FETCH_TIMEOUT);
+      if (error) throw error;
+      const rows = Array.isArray(data) ? data : [];
+      count.textContent = '(' + rows.length + ')';
+      list.innerHTML = rows.length ? rows.map(row => '<article style="padding:10px;border-radius:12px;background:var(--color-bg);border:1px solid var(--color-border);"><strong style="font-size:.9rem;">' + (currentUser && row.reviewer_id === currentUser.id ? 'Vous' : 'Utilisateur CamerLink') + '</strong><div aria-label="Note ' + Number(row.rating) + ' sur 5" style="color:#fbbf24;margin-top:3px;">' + '★'.repeat(Number(row.rating)) + '☆'.repeat(5 - Number(row.rating)) + '</div>' + (row.comment ? '<p style="margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;">' + esc(row.comment) + '</p>' : '') + '<small style="color:var(--color-text-muted);">' + esc(fmtDate(row.created_at)) + '</small></article>').join('') : '<p style="color:var(--color-text-muted);">Aucun avis approuvé pour le moment.</p>';
+    } catch (err) {
+      console.warn('Chargement des avis du vendeur impossible', err); count.textContent = '';
+      list.innerHTML = '<p style="color:var(--color-text-muted);">Impossible de charger les avis pour le moment.</p>';
+    }
+  }
+
+  $('artisanBody').addEventListener('submit', async (e) => {
+    const form = e.target.closest('#artisanReviewForm'); if (!form) return;
+    e.preventDefault();
+    const errBox = $('artisanReviewError'); if (errBox) errBox.textContent = '';
+    const uid = $('artisanBody').dataset.uid;
+    if (!currentUser) { toast('Connectez-vous pour évaluer ce vendeur.'); openModal('authModal'); return; }
+    if (!uid || uid === currentUser.id) { if (errBox) errBox.textContent = 'Vous ne pouvez pas évaluer votre propre profil.'; return; }
+    const rating = Number(form.elements.rating.value), comment = String(form.elements.comment.value || '').trim();
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) { if (errBox) errBox.textContent = 'Choisissez une note de 1 à 5 étoiles.'; return; }
+    const btn = form.querySelector('button[type="submit"]'); if (btn) { btn.disabled = true; btn.textContent = 'Envoi…'; }
+    try {
+      const { error } = await withTimeout(sb.from('artisan_reviews').insert({ artisan_id: uid, reviewer_id: currentUser.id, rating, comment: comment || null, status: 'pending' }), FETCH_TIMEOUT);
+      if (error) { if (error.code === '23505') throw new Error('Vous avez déjà envoyé un avis pour ce vendeur.'); throw error; }
+      toast('Avis envoyé : il sera visible après modération.'); form.reset(); await loadArtisanReviews(uid);
+    } catch (err) {
+      console.warn('Publication de l’avis vendeur impossible', err);
+      if (errBox) errBox.textContent = err.message || 'Envoi impossible. Vérifiez la connexion puis réessayez.';
+    } finally { if (btn) { btn.disabled = false; btn.textContent = "Envoyer mon avis"; } }
+  });
   $('artisanBody').addEventListener('click', (e) => {
     const st = e.target.closest('[data-act="stories"]');
     if (st) { closeModal('artisanModal'); openViewer(Number(st.dataset.gi)); return; }
