@@ -473,7 +473,7 @@
     scroll-snap-align: start !important;
   }
   #reels-feed > .reel-card video {
-    display: block !important; width: 100% !important; height: 100% !important; object-fit: cover !important;
+    display: block !important; width: 100% !important; height: 100% !important; object-fit: contain !important; background: #03040a !important;
   }
 }`;
     document.head.appendChild(st);
@@ -1516,7 +1516,7 @@
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'receiver_id=eq.'+currentUser.id},payload=>{
         const m=payload.new||{};
         if($('inboxModal').classList.contains('active')){
-          if(chat.other && ((m.sender_id===chat.other)||(m.receiver_id===chat.other)) && String(m.ad_id||'')===String(chat.ad||''))renderThread();
+          if(chat.other && (m.sender_id===chat.other || m.receiver_id===chat.other)) renderThread();
           else if(!chat.other)renderInbox();
           refreshBadge();
         }else{toast('💬 Nouveau message');refreshBadge();}
