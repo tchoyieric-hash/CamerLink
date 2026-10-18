@@ -14,17 +14,17 @@ function render(o){
  var h=o.innerHTML;
  var match=h.match(/<h1>([^<]+)<\/h1>/);
  if(!match)return;
- var title=match[1],key=title+'|'+h.length;
- if(o.dataset.proEnhanced===key)return;
+ var title=match[1];
+ if(o.dataset.proEnhanced==='done:'+title||o.dataset.proEnhanced==='loading:'+title)return;
+ o.dataset.proEnhanced='loading:'+title;
  // The detail overlay is created by shell.js. Wait until its content has settled.
  var head=$('.bhead',o);if(!head)return;
  var address=(($('.box',o)||{}).textContent||'');
  var bizName=head.textContent.trim();
  api('business_spaces?select=id,owner_id,name,city,address,phone,whatsapp,cover_url,logo_url&name=eq.'+encodeURIComponent(title.replace(/&amp;/g,'&'))+'&limit=1').then(function(rows){
   if(!o.classList.contains('open')||!rows.length)return;
-  var b=rows[0],sig=String(b.id)+'|'+o.innerHTML.length;
-  if(o.dataset.proEnhanced===sig)return;
-  o.dataset.proEnhanced=sig;
+  var b=rows[0];
+  o.dataset.proEnhanced='done:'+title;
   var phone=String(b.phone||b.whatsapp||'').replace(/\D/g,'');
   if(phone&&!phone.startsWith('237'))phone='237'+phone;
   var links=$('.row',o);
