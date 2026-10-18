@@ -458,22 +458,36 @@
     st.id = 'reels-vertical-fix';
     st.textContent = `
 @media screen and (max-width: 700px) {
-  .reels-section { width: 100%; min-width: 0; overflow: hidden; }
+  .reels-section { width: 100% !important; min-width: 0 !important; max-width: 100% !important; overflow: visible !important; }
   #reels-feed, #reels-feed.reels-feed {
     display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
     align-items: stretch !important; justify-content: flex-start !important;
-    width: 100% !important; max-width: 100% !important; max-height: 78vh !important;
-    overflow-x: hidden !important; overflow-y: auto !important; scroll-snap-type: y mandatory !important;
+    width: 100% !important; max-width: 100% !important; max-height: none !important;
+    overflow-x: hidden !important; overflow-y: visible !important; scroll-snap-type: y mandatory !important;
+    gap: 0 !important; padding: 0 !important; margin: 0 !important;
   }
   #reels-feed > .reel-card {
-    display: block !important; position: relative !important; flex: 0 0 72vh !important;
-    width: 100% !important; max-width: 420px !important; min-width: 0 !important;
-    height: 72vh !important; max-height: 640px !important; margin: 0 auto 12px !important;
-    scroll-snap-align: start !important;
+    display: block !important; position: relative !important; flex: 0 0 auto !important;
+    width: 100% !important; max-width: 100% !important; min-width: 0 !important;
+    height: calc(100svh - 128px) !important; min-height: 480px !important; max-height: none !important;
+    margin: 0 0 12px !important; border-radius: 0 !important; overflow: hidden !important;
+    scroll-snap-align: start !important; background: #050609 !important;
   }
-  #reels-feed > .reel-card video {
-    display: block !important; width: 100% !important; height: 100% !important; object-fit: cover !important;
-  }
+  #reels-feed > .reel-card .cl-post-location { position: absolute !important; z-index: 4 !important; top: 0 !important; left: 0 !important; right: 0 !important; padding: 12px 14px !important; color: #fff !important; background: linear-gradient(180deg,rgba(0,0,0,.66),transparent) !important; border: 0 !important; }
+  #reels-feed > .reel-card .cl-post-media { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; max-height: none !important; min-height: 0 !important; border-radius: 0 !important; }
+  #reels-feed > .reel-card .cl-post-media video,
+  #reels-feed > .reel-card .cl-post-media .cl-reel-photo { display: block !important; width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 0 !important; }
+  #reels-feed > .reel-card .cl-post-shade { position: absolute !important; inset: 0 !important; pointer-events: none !important; background: linear-gradient(180deg,rgba(0,0,0,.25),transparent 22%,transparent 48%,rgba(0,0,0,.72)) !important; }
+  #reels-feed > .reel-card .cl-post-actions { position: absolute !important; z-index: 5 !important; right: 10px !important; bottom: 116px !important; display: flex !important; flex-direction: column !important; align-items: center !important; gap: 17px !important; width: 48px !important; }
+  #reels-feed > .reel-card .cl-post-actions button { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 4px !important; width: 46px !important; min-height: 46px !important; padding: 4px 0 !important; color: #fff !important; background: rgba(8,10,18,.38) !important; border: 1px solid rgba(255,255,255,.14) !important; border-radius: 24px !important; backdrop-filter: blur(12px) !important; text-shadow: 0 1px 5px #000 !important; }
+  #reels-feed > .reel-card .cl-post-actions button span { font-size: 25px !important; line-height: 1 !important; }
+  #reels-feed > .reel-card .cl-post-actions button small { font-size: 10px !important; color: #fff !important; }
+  #reels-feed > .reel-card .cl-post-caption { position: absolute !important; z-index: 4 !important; left: 14px !important; right: 68px !important; bottom: 66px !important; color: #fff !important; text-shadow: 0 1px 6px #000 !important; }
+  #reels-feed > .reel-card .cl-post-caption p { display: -webkit-box !important; -webkit-line-clamp: 3 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; margin: 6px 0 !important; }
+  #reels-feed > .reel-card .cl-comments-float { position: absolute !important; z-index: 6 !important; left: 12px !important; right: 68px !important; bottom: 12px !important; width: auto !important; max-width: calc(100% - 82px) !important; border-radius: 22px !important; background: rgba(10,12,20,.68) !important; border: 1px solid rgba(255,255,255,.2) !important; backdrop-filter: blur(16px) !important; color: #fff !important; }
+  #reels-feed > .reel-card .cl-post-footer, #reels-feed > .reel-card .cl-comments-preview, #reels-feed > .reel-card .cl-post-open { display: none !important; }
+  #reels-feed > .reel-card .cl-reel-fullscreen { z-index: 5 !important; top: 54px !important; right: 12px !important; }
+  #reels-feed > .reel-card .cl-reel-tap-hint { bottom: 30% !important; }
 }`;
     document.head.appendChild(st);
   })();
