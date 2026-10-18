@@ -622,6 +622,7 @@
       const id = card.dataset.reel;
       const exitReels = e.target.closest('[data-reel-exit]');
       if (exitReels) {
+        if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
         const homeButton = document.querySelector('.shell-nav [data-m="home"]');
         if (homeButton) homeButton.click();
         else document.body.setAttribute('data-cl-mode', 'home');
