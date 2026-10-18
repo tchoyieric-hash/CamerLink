@@ -1367,7 +1367,8 @@
       const msgs = await fetchMessages(), me = currentUser.id, convs = new Map();
       msgs.filter(m => m.sender_id === me || m.receiver_id === me).forEach(m => {
         const other = m.sender_id === me ? m.receiver_id : m.sender_id;
-        const key = other + '|' + (m.ad_id || '');
+        // Une seule conversation par contact, même si plusieurs annonces sont concernées.
+        const key = other;
         if (!convs.has(key)) convs.set(key,{other,ad:m.ad_id,last:m,unread:0});
         const c = convs.get(key);
         if (m.receiver_id === me && m.created_at > (localStorage.getItem(MSG_SEEN_KEY)||'1970-01-01T00:00:00Z')) c.unread++;
@@ -1395,8 +1396,7 @@
     try {
       const me=currentUser.id;
       const msgs=(await fetchMessages()).filter(m =>
-        ((m.sender_id===chat.other&&m.receiver_id===me)||(m.sender_id===me&&m.receiver_id===chat.other)) &&
-        String(m.ad_id||'')===String(chat.ad||'')).reverse();
+        ((m.sender_id===chat.other&&m.receiver_id===me)||(m.sender_id===me&&m.receiver_id===chat.other))).reverse();
       const names=await shopNames([chat.other]), name=names[chat.other]||'Membre CamerLink';
       $('inboxTitle').textContent=name;
       $('inboxSubtitle').textContent='Conversation privée';
