@@ -1616,7 +1616,7 @@
         <span>📍 ${esc(place || '—')}</span>
         <span>👁 ${views} vue(s)</span>
         <span>❤️ ${likes} j'aime</span>
-        <span>⭐ ${rating} (${ad.nb_avis || 0} avis)</span>
+        <span id="adReviewAverage">⭐ ${rating} (${ad.nb_avis || 0} avis)</span>
         ${ad.created_at ? `<span>🕒 ${fmtDate(ad.created_at)}</span>` : ''}
       </div>
       <p style="white-space:pre-wrap;line-height:1.5;margin-bottom:14px;">${esc(ad.description || 'Pas de description.')}</p>
@@ -1639,6 +1639,21 @@
         <button type="button" data-act="share" style="${softStyle}">📤 Partager</button>
         <button type="button" data-act="copy" style="${softStyle}">🔗 Copier le lien</button>
       </div>
+      <section id="adReviewsSection" style="margin-top:20px;padding-top:14px;border-top:1px solid var(--color-border);" aria-label="Avis vendeur">
+        <h4 style="margin:0 0 10px;font-size:1.05rem;">⭐ Avis sur le vendeur <span id="adReviewsCount" style="color:var(--color-text-muted);font-weight:500;">(0)</span></h4>
+        <div id="adReviewsList" aria-live="polite" style="display:grid;gap:10px;margin-bottom:12px;"><p style="color:var(--color-text-muted);">Chargement des avis…</p></div>
+        ${currentUser ? `
+          <form id="adReviewForm" style="display:grid;gap:10px;">
+            <label style="display:grid;gap:6px;font-weight:600;">Votre note
+              <select name="note" required style="padding:10px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text);">
+                <option value="">Choisir une note</option><option value="5">★★★★★ — Excellent</option><option value="4">★★★★☆ — Très bien</option><option value="3">★★★☆☆ — Correct</option><option value="2">★★☆☆☆ — Décevant</option><option value="1">★☆☆☆☆ — Mauvais</option>
+              </select>
+            </label>
+            <textarea name="commentaire" maxlength="500" placeholder="Décrivez votre expérience (facultatif)…" rows="3" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--color-border);border-radius:12px;background:var(--color-bg);color:var(--color-text);"></textarea>
+            <button type="submit" style="${btnStyle}background:var(--a1);color:#fff;">Publier mon avis</button>
+          </form>
+        ` : '<p style="font-size:.9rem;color:var(--color-text-muted);">Connectez-vous pour laisser un avis.</p>'}
+      </section>
       <section style="margin-top:20px;padding-top:14px;border-top:1px solid var(--color-border);" aria-label="Commentaires">
         <h4 style="margin:0 0 10px;font-size:1.05rem;">💬 Commentaires <span id="adCommentsCount" style="color:var(--color-text-muted);font-weight:500;">…</span></h4>
         <div id="adCommentsList" aria-live="polite" style="display:grid;gap:10px;margin-bottom:12px;"><p style="color:var(--color-text-muted);">Chargement des commentaires…</p></div>
@@ -1680,6 +1695,58 @@
     }
   }
 
+  async function loadAdReviews(id) {
+    const list = $('adReviewsList'), count = $('adReviewsCount');
+    if (!list || !count) return;
+    list.innerHTML = '<p style="color:var(--color-text-muted);">Chargement des avis…</p>';
+    try {
+      const { data, error } = await withTimeout(sb.from('avis').select('id,user_id,note,commentaire,created_at').eq('annonce_id', Number(id)).order('created_at', { ascending: false }).limit(100), FETCH_TIMEOUT);
+      if (error) throw error;
+      const rows = Array.isArray(data) ? data : [];
+      count.textContent = '(' + rows.length + ')';
+      const avg = rows.length ? rows.reduce((sum, row) => sum + Number(row.note || 0), 0) / rows.length : 0;
+      const ratingEl = $('adReviewAverage');
+      if (ratingEl) ratingEl.textContent = '⭐ ' + avg.toFixed(1) + ' (' + rows.length + ' avis)';
+      list.innerHTML = rows.length ? rows.map(row =>
+        '<article style="padding:10px;border-radius:12px;background:var(--color-bg);border:1px solid var(--color-border);">' +
+        '<strong>' + '★'.repeat(Math.max(0, Math.min(5, Number(row.note) || 0))) + '<span style="color:var(--color-text-muted);">' + '☆'.repeat(5 - Math.max(0, Math.min(5, Number(row.note) || 0))) + '</span></strong>' +
+        (row.commentaire ? '<p style="margin:5px 0;white-space:pre-wrap;overflow-wrap:anywhere;">' + esc(row.commentaire) + '</p>' : '') +
+        '<small style="color:var(--color-text-muted);">' + esc(fmtDate(row.created_at)) + '</small></article>'
+      ).join('') : '<p style="color:var(--color-text-muted);">Aucun avis pour le moment. Soyez le premier !</p>';
+    } catch (err) {
+      console.warn('Chargement des avis impossible', err);
+      list.innerHTML = '<p style="color:var(--color-text-muted);">Impossible de charger les avis pour le moment.</p>';
+    }
+  }
+
+  $('adDetailBody').addEventListener('submit', async (e) => {
+    const form = e.target.closest('#adReviewForm');
+    if (!form) return;
+    e.preventDefault();
+    if (!currentUser) { toast('Connectez-vous pour publier un avis'); openModal('authModal'); return; }
+    const fd = new FormData(form);
+    const note = Number(fd.get('note'));
+    const commentaire = String(fd.get('commentaire') || '').trim();
+    const adId = Number(detail.id);
+    if (!adId || !Number.isInteger(note) || note < 1 || note > 5) { toast('Choisissez une note entre 1 et 5 étoiles.'); return; }
+    const submit = form.querySelector('button[type="submit"]');
+    if (submit) { submit.disabled = true; submit.textContent = 'Publication…'; }
+    try {
+      const { error } = await withTimeout(sb.from('avis').insert({ annonce_id: adId, user_id: currentUser.id, note, commentaire: commentaire || null }), FETCH_TIMEOUT);
+      if (error) throw error;
+      form.reset();
+      await loadAdReviews(adId);
+      toast('Votre avis a été publié !');
+    } catch (err) {
+      console.warn('Publication de l’avis impossible', err);
+      if (err && (err.code === '42501' || err.code === 'PGRST301')) toast('Connectez-vous puis réessayez.');
+      else if (err && err.code === '23503') toast('Cette annonce n’est plus disponible.');
+      else toast('Avis non publié : ' + (err && err.message ? err.message : 'vérifiez la connexion et réessayez.'));
+    } finally {
+      if (submit) { submit.disabled = false; submit.textContent = 'Publier mon avis'; }
+    }
+  });
+
   $('adDetailBody').addEventListener('submit', async (e) => {
     const form = e.target.closest('#adCommentForm');
     if (!form) return;
@@ -1717,6 +1784,7 @@
     detail.shop = ad.user_id && shopCache[ad.user_id] ? shopCache[ad.user_id] : null;
     renderAdDetail();
     openModal('adDetailModal');
+    loadAdReviews(ad.id);
     loadAdComments(ad.id);
     setUrl('/annonce/' + ad.id, ad.title + ' · CamerLink');
     registerView(ad.id);
