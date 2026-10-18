@@ -556,7 +556,7 @@
       return `
       <article class="reel-card cl-social-post" data-reel="${esc(ad.id)}">
         <div class="cl-post-location">${location ? `<span>📍 ${esc(location)}</span>` : '<span>Publication CamerLink</span>'}<span class="cl-post-type">${videos[ad.id] ? '▶ Vidéo' : '▧ Photo'}</span></div>
-        <div class="cl-post-media">${media}<button type="button" class="cl-reel-fullscreen" data-reel-fullscreen aria-label="Afficher la vidéo en plein écran">⛶</button><div class="cl-post-shade"></div>
+        <div class="cl-post-media">${media}<button type="button" class="cl-reel-exit" data-reel-exit aria-label="Quitter les Réels">‹</button><button type="button" class="cl-reel-fullscreen" data-reel-fullscreen aria-label="Afficher la vidéo en plein écran">⛶</button><div class="cl-post-shade"></div>
           <div class="cl-post-actions">
             <button type="button" data-reel-like aria-label="${liked ? 'Retirer le j’aime' : 'J’aime cette publication'}" aria-pressed="${liked ? 'true' : 'false'}"><span>${liked ? '♥' : '♡'}</span><small>${likeCounts[ad.id] || 0}</small></button>
             <button type="button" data-reel-comments aria-label="Voir les commentaires"><span>▢</span><small>…</small></button>
@@ -619,6 +619,13 @@
       if (!card) return;
       const v = card.querySelector('video');
       const id = card.dataset.reel;
+      const exitReels = e.target.closest('[data-reel-exit]');
+      if (exitReels) {
+        const homeButton = document.querySelector('.shell-nav [data-m="home"]');
+        if (homeButton) homeButton.click();
+        else document.body.setAttribute('data-cl-mode', 'home');
+        return;
+      }
       const full = e.target.closest('[data-reel-fullscreen]');
       if (full) {
         const media = full.closest('.cl-post-media');
