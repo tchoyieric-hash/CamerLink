@@ -1778,3 +1778,12 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
     aspect-ratio: 4 / 5 !important;
   }
 }
+
+
+/* CamerLink · photos d'annonces visibles en entier sur les cartes */
+.ad-photo-carousel-card{height:clamp(190px,62vw,340px)!important;background:#080a12!important;}
+.ad-photo-carousel-card .ad-photo-track,.ad-photo-carousel-card .ad-photo-slide{height:100%!important;}
+.ad-photo-carousel-card .ad-photo-slide img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;background:#080a12!important;}
+#listings-grid .card-img-container{background:#080a12!important;}
+#listings-grid .card-img-container img{object-fit:contain!important;object-position:center!important;background:#080a12!important;}
+@media(max-width:640px){.ad-photo-carousel-card{height:clamp(220px,78vw,360px)!important;}}
