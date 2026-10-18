@@ -1146,7 +1146,7 @@
     if (!urls.length) return '';
     const cls = mode === 'detail' ? 'ad-photo-carousel ad-photo-carousel-detail' : 'ad-photo-carousel ad-photo-carousel-card';
     const slides = urls.map((url, i) =>
-      `<div class="ad-photo-slide"><img src="${esc(url)}" alt="Photo ${i + 1} de ${esc(ad.title || 'l’annonce')}" loading="${i === 0 ? 'eager' : 'lazy'}"></div>`
+      `<div class="ad-photo-slide"><img class="cl-photo-atmosphere" src="${esc(url)}" alt="" aria-hidden="true" loading="lazy"><img class="cl-photo-main" src="${esc(url)}" alt="Photo ${i + 1} de ${esc(ad.title || 'l’annonce')}" loading="${i === 0 ? 'eager' : 'lazy'}"></div>`
     ).join('');
     const controls = urls.length > 1
       ? `<button type="button" class="ad-photo-arrow ad-photo-prev" data-photo-prev aria-label="Photo précédente">‹</button><button type="button" class="ad-photo-arrow ad-photo-next" data-photo-next aria-label="Photo suivante">›</button><div class="ad-photo-counter" aria-live="polite">1 / ${urls.length}</div><div class="ad-photo-dots">${urls.map((_, i) => `<span class="${i === 0 ? 'active' : ''}"></span>`).join('')}</div>`
