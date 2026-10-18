@@ -1715,3 +1715,50 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
  #listings-grid .cl-immersive-actions {gap:5px !important}
  #listings-grid .cl-immersive-actions span,#listings-grid .cl-immersive-share {min-width:35px !important;height:36px !important;padding:0 7px !important;font-size:12px !important}
 }
+
+/* HOTFIX: force the announcement media itself to occupy the whole portrait frame */
+#listings-grid .card-img-container > .ad-photo-carousel-card {
+  display:block !important;
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio: 0.72 / 1 !important;
+  max-height:none !important;
+  min-height:0 !important;
+}
+#listings-grid .card-img-container > .ad-photo-carousel-card > .ad-photo-track {
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+}
+#listings-grid .card-img-container > .ad-photo-carousel-card .ad-photo-slide {
+  position:relative !important;
+  flex:0 0 100% !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+}
+#listings-grid .card-img-container > .ad-photo-carousel-card .ad-photo-slide > img.cl-photo-main {
+  position:absolute !important;
+  inset:0 !important;
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  object-fit:cover !important;
+  object-position:center 38% !important;
+}
+#listings-grid .card-img-container > .ad-photo-carousel-card .ad-photo-slide > img.cl-photo-atmosphere {
+  position:absolute !important;
+  inset:-20px !important;
+  width:calc(100% + 40px) !important;
+  height:calc(100% + 40px) !important;
+  object-fit:cover !important;
+}
+@media(max-width:700px) {
+  #listings-grid .card-img-container > .ad-photo-carousel-card {
+    aspect-ratio:0.72 / 1 !important;
+    max-height:none !important;
+  }
+}
