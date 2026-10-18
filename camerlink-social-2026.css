@@ -77,3 +77,25 @@ footer{max-width:760px;margin:18px auto 90px!important;color:var(--cl-social-mut
   #listings-grid .card-body{padding-inline:12px!important}
 }
 @media(prefers-reduced-motion:reduce){#listings-grid .ad-card,nav.cl-nav button{transition:none!important}}
+
+
+/* Correctifs vérifiés pour l'expérience sociale mobile */
+.shops-section h2{font-size:1rem!important;font-weight:700!important;margin:0 0 10px!important}
+.shop-story-card .shop-story-name{display:block!important;max-width:72px!important;font-size:10px!important;color:#f5f5f7!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important}
+#shops-container .shop-story-card .story-ring{display:grid!important;place-items:center!important;overflow:hidden!important}
+#shops-container .shop-story-card .story-avatar-wrap{width:100%!important;height:100%!important;border:2px solid #050609!important;border-radius:50%!important;display:grid!important;place-items:center!important;overflow:hidden!important;background:#151827!important;color:#fff!important;font-size:22px!important}
+#shops-container .shop-story-card.cta-card .story-ring{padding:3px!important}
+#shops-container .shop-story-card.cta-card .story-avatar-wrap{border:2px solid #050609!important;background:linear-gradient(135deg,#27dfff,#8b5cf6,#ff2f85)!important}
+#shops-container .shop-story-card.cta-card .story-avatar-wrap:empty:after{content:"+";font-size:30px;color:#fff}
+#reels-section .reels-heading{display:none!important}
+#reels-feed.reels-feed{gap:0!important}
+#reels-feed>.cl-social-post{border-radius:0!important;border-left:0!important;border-right:0!important;max-width:100%!important}
+@media(max-width:700px){
+  #reels-feed>.cl-social-post{width:100%!important;margin:0 0 10px!important}
+  #reels-feed .cl-post-media{height:calc(100svh - 120px)!important;min-height:70svh!important;max-height:none!important}
+  #reels-feed .cl-post-media video,#reels-feed .cl-post-media .cl-reel-photo{width:100%!important;height:100%!important;object-fit:cover!important}
+  #reels-feed .cl-post-location{padding:10px 14px!important}
+  #reels-feed .cl-post-footer{padding:10px 14px!important}
+  /* Reels remain exclusively in their own tab, never rendered as square cards in Home. */
+  #listings-grid .ad-photo-carousel-card{aspect-ratio:4/5!important;max-height:none!important}
+}
