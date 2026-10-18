@@ -1532,3 +1532,89 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
   width:16px; height:16px; border-radius:50%;
   background:#22D3EE; color:#061018; font-size:11px; font-weight:900;
 }
+
+
+/* CAMERLINK IMMERSIVE FEED — edge-to-edge media with a living blurred backdrop */
+#listings-grid .card-img-container {
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #080b16 !important;
+}
+#listings-grid .ad-photo-carousel-card {
+  width: 100% !important;
+  aspect-ratio: 4 / 5 !important;
+  height: auto !important;
+  max-height: min(125vw, 680px) !important;
+  overflow: hidden !important;
+  background: #080b16 !important;
+  border-radius: 0 !important;
+  isolation: isolate;
+}
+#listings-grid .ad-photo-carousel-card .ad-photo-track {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: stretch !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x mandatory !important;
+  scrollbar-width: none !important;
+}
+#listings-grid .ad-photo-carousel-card .ad-photo-track::-webkit-scrollbar { display:none !important; }
+#listings-grid .ad-photo-carousel-card .ad-photo-slide {
+  position: relative !important;
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background: #080b16 !important;
+  scroll-snap-align: start !important;
+  isolation: isolate;
+}
+#listings-grid .ad-photo-carousel-card .cl-photo-atmosphere {
+  position: absolute !important;
+  z-index: -1 !important;
+  inset: -14px !important;
+  width: calc(100% + 28px) !important;
+  height: calc(100% + 28px) !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  filter: blur(18px) brightness(.48) saturate(1.35) !important;
+  transform: scale(1.06) !important;
+  opacity: .96 !important;
+}
+#listings-grid .ad-photo-carousel-card .cl-photo-main {
+  position: relative !important;
+  z-index: 1 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  filter: drop-shadow(0 8px 22px rgba(0,0,0,.24));
+}
+#listings-grid .ad-photo-carousel-card .ad-photo-counter {
+  top: 14px !important; right: 14px !important;
+  padding: 7px 11px !important; border-radius: 999px !important;
+  background: rgba(5,7,15,.68) !important;
+  backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+}
+#listings-grid .ad-photo-carousel-card .ad-photo-dots { bottom: 12px !important; }
+#listings-grid .ad-photo-carousel-card .ad-photo-arrow {
+  background: rgba(5,7,15,.48) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255,255,255,.2) !important;
+}
+@media (max-width: 700px) {
+  #listings-grid.listings-grid { gap: 14px !important; }
+  #listings-grid .ad-card { overflow: hidden !important; border-radius: 18px !important; }
+  #listings-grid .card-img-container { border-radius: 0 !important; }
+  #listings-grid .ad-photo-carousel-card { aspect-ratio: 4 / 5 !important; max-height: 125vw !important; }
+}
