@@ -28,7 +28,8 @@ var MODES={
  reels:['#reels-section'],
  statuts:['.shops-section'],
  annonces:['.hero','#categoryChips','main','footer'],
- decouvrir:['#discover-section','footer']
+ decouvrir:['#discover-section','footer'],
+ artisan:['#cl-artisan-space']
 };
 var ALL=['.hero','.shops-section','#reels-section','#categoryChips','main','footer','#discover-section','#profile-section','#cl-artisan-space'];
 var cur='home',modeHistory=[];
