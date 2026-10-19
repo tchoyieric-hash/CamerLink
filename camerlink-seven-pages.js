@@ -16,7 +16,7 @@ function init(){
   const a=document.createElement('button');a.type='button';a.dataset.clPage='artisan';a.innerHTML='<span aria-hidden="true">✦</span><span>Artisan</span>';nav.appendChild(a);
   nav.addEventListener('click',e=>{const b=e.target.closest('[data-cl-page]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();if(b.dataset.clPage==='artisan')go('cl-artisan-space');else go('discover-section');},true);
  }
- document.addEventListener('click',e=>{const b=e.target.closest('[data-cl-action]');if(!b)return;const a=b.dataset.clAction;if(a==='publish')click('pubBtn');if(a==='auth')click('authBtn');if(a==='messages')click('msgInboxBtn');if(a==='profile')go('profile-section');if(a==='reel'){go('reels-section');setTimeout(()=>click('addVideoBtn'),300);}});
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-cl-action]');if(!b)return;const a=b.dataset.clAction;if(a==='publish')click('pubBtn');if(a==='auth')click('authBtn');if(a==='messages')click('msgInboxBtn');if(a==='profile')click('nav-me');if(a==='reel'){go('reels-section');setTimeout(()=>click('addVideoBtn'),300);}});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
