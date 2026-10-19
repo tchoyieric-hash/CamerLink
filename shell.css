@@ -67,3 +67,18 @@ body{padding-bottom:92px}
 .bzf label{display:block;font-size:13px;color:var(--sh-mut);margin:4px 0 4px}
 .bzf .err{color:#f87171;font-size:13px;min-height:18px}
 .bz-toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);background:#1f2147;color:#fff;padding:10px 16px;border-radius:999px;z-index:1300;font-size:14px;max-width:88%;text-align:center}
+
+
+/* Espace Pro — médias, avis et contact */
+.bpro-gallery,.bpro-reviews{margin:18px 0 0}
+.bpro-gallery h2,.bpro-reviews h2{font-size:17px;margin:0 0 8px}
+.bpro-muted{font-size:13px;color:var(--sh-mut);margin:6px 0 12px}
+.bpro-media{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.bpro-tile{min-width:0;overflow:hidden;border:1px solid var(--sh-line);border-radius:13px;background:var(--sh-card)}
+.bpro-tile img,.bpro-tile video{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:#050609}
+.bpro-tile div{font-size:12px;padding:8px;overflow-wrap:anywhere}
+.bpro-average{font-weight:800;font-size:18px;margin:8px 0;color:#fbbf24}
+.bpro-average span{font-size:12px;color:var(--sh-mut);font-weight:500}
+.bpro-review{border:1px solid var(--sh-line);background:var(--sh-card);border-radius:12px;padding:10px 12px;margin:8px 0}
+.bpro-review div{color:#fbbf24;letter-spacing:2px}.bpro-review p{font-size:13px;margin:5px 0;overflow-wrap:anywhere}.bpro-review small{font-size:11px;color:var(--sh-mut)}
+@media(min-width:650px){.bpro-media{grid-template-columns:repeat(3,minmax(0,1fr))}}

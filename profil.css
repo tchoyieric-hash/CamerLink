@@ -167,3 +167,10 @@
 #profile-section .pf-creator-message{background:var(--sh-card);border:1px solid var(--sh-line);color:var(--sh-txt)}
 #profile-section .pf-creator-loading{padding:20px 16px;color:var(--sh-mut);font-size:13px;min-width:240px}
 #profile-section .pf-stats span{white-space:normal;overflow-wrap:anywhere}
+
+/* Tableau de bord léger pour les artisans */
+.pf-insights{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 14px 14px;padding:12px 8px;border:1px solid var(--sh-line);border-radius:14px;background:var(--sh-card);text-align:center}
+.pf-insights>div{min-width:0}
+.pf-insights b{display:block;font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+.pf-insights span{display:block;margin-top:3px;font-size:11px;line-height:1.25;color:var(--sh-mut)}
+@media(min-width:560px){.pf-insights{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;padding:14px}.pf-insights span{font-size:12px}}

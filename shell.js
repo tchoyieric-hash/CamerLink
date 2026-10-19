@@ -90,7 +90,7 @@ function bzLoad(){
   if(loaded){bzHome();return}
   box.innerHTML='<div class="bz"><p class="sub">Chargement…</p></div>';
   api('business_spaces?select=id,owner_id,name,category,description,city,address,phone,whatsapp,opening_hours,logo_url,cover_url,website_url&status=eq.published&order=created_at.desc')
-   .then(function(r){biz=r.data||[];loaded=true;bzHome()});
+   .then(function(r){if(!r.ok){loaded=false;box.innerHTML='<div class="bz"><p class="err">Impossible de charger les entreprises pour le moment.</p><button class="bzb" id="bz-retry">Réessayer</button></div>';var retry=$('#bz-retry');if(retry)retry.onclick=bzLoad;return}biz=Array.isArray(r.data)?r.data:[];loaded=true;bzHome()});
 }
 function listHtml(){
   var rows=biz.filter(function(b){
@@ -135,7 +135,7 @@ function openDetail(id){
   var o=overlay('bz-detail');o.innerHTML='<p class="sub">Chargement…</p>';openOv(o);
   var ses=session(),mine=ses&&ses.uid===b.owner_id;
   api('business_catalog_items?select=id,name,description,price_xaf,is_available&business_id=eq.'+encodeURIComponent(id)+'&order=created_at.desc').then(function(r){
-    var items=r.data||[],cov=safe(b.cover_url),wa=digits(b.whatsapp||b.phone),ph=digits(b.phone||b.whatsapp);
+    if(!r.ok){o.innerHTML='<button class="back" id="bz-back">← Retour</button><div class="box"><p class="err">Impossible de charger cette page pour le moment.</p><button class="bzb" id="bz-detail-retry">Réessayer</button></div>';$('#bz-back',o).onclick=function(){closeOv(o)};$('#bz-detail-retry',o).onclick=function(){openDetail(id)};return}var items=Array.isArray(r.data)?r.data:[],cov=safe(b.cover_url),wa=digits(b.whatsapp||b.phone),ph=digits(b.phone||b.whatsapp);
     var h='<button class="back" id="bz-back">← Retour</button><div class="cover" style="'+(cov?'background-image:url('+cov+')':'')+'"></div>'+
      '<div class="bhead">'+logoHtml(b).replace('class="logo"','class="logo"')+'<div><h1>'+esc(b.name)+'</h1><span class="tag">'+esc(b.category)+'</span></div></div>'+
      '<div class="row">'+(wa?'<a class="bzb wa" href="https://wa.me/'+wa+'">WhatsApp</a>':'')+(ph?'<a class="bzb gr" href="tel:+'+ph+'">Appeler</a>':'')+(/^https:\/\//i.test(b.website_url||'')?'<a class="bzb gr" href="'+esc(b.website_url)+'" rel="noopener">Site web</a>':'')+'</div>';

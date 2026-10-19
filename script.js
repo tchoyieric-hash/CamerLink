@@ -64,7 +64,7 @@
 
   const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
-  let allListings = [], videos = {}, currentUser = null, currentCategory = '', favOnly = false;
+  let allListings = [], videos = {}, currentUser = null, currentCategory = '', favOnly = false, sortMode = 'recent';
   let nearbyPosition = null, nearbyMode = false;
   let storyGroups = [];
   let likeCounts = {};
@@ -226,6 +226,7 @@
   $('searchInput').addEventListener('input', () => renderListings());
   $('cityFilter').addEventListener('change', () => { refreshQuartierFilter(); renderListings(); });
   $('priceFilter').addEventListener('change', () => renderListings());
+  $('sortFilter')?.addEventListener('change', () => { sortMode = $('sortFilter').value || 'recent'; renderListings(); });
 
   /* ===== Découverte locale : résultats proches, uniquement avec accord GPS ===== */
   (function mountNearbyDiscovery() {
@@ -472,7 +473,7 @@
     scroll-snap-align: start !important;
   }
   #reels-feed > .reel-card video {
-    display: block !important; width: 100% !important; height: 100% !important; object-fit: cover !important;
+    display: block !important; width: 100% !important; height: 100% !important; object-fit: contain !important; background: #03040a !important;
   }
 }`;
     document.head.appendChild(st);
@@ -556,7 +557,7 @@
       return `
       <article class="reel-card cl-social-post" data-reel="${esc(ad.id)}">
         <div class="cl-post-location">${location ? `<span>📍 ${esc(location)}</span>` : '<span>Publication CamerLink</span>'}<span class="cl-post-type">${videos[ad.id] ? '▶ Vidéo' : '▧ Photo'}</span></div>
-        <div class="cl-post-media">${media}<button type="button" class="cl-reel-fullscreen" data-reel-fullscreen aria-label="Afficher la vidéo en plein écran">⛶</button><div class="cl-post-shade"></div>
+        <div class="cl-post-media">${media}<button type="button" class="cl-reel-exit" data-reel-exit aria-label="Quitter les Réels">‹</button><button type="button" class="cl-reel-fullscreen" data-reel-fullscreen aria-label="Afficher la vidéo en plein écran">⛶</button><div class="cl-post-shade"></div>
           <div class="cl-post-actions">
             <button type="button" data-reel-like aria-label="${liked ? 'Retirer le j’aime' : 'J’aime cette publication'}" aria-pressed="${liked ? 'true' : 'false'}"><span>${liked ? '♥' : '♡'}</span><small>${likeCounts[ad.id] || 0}</small></button>
             <button type="button" data-reel-comments aria-label="Voir les commentaires"><span>▢</span><small>…</small></button>
@@ -619,6 +620,14 @@
       if (!card) return;
       const v = card.querySelector('video');
       const id = card.dataset.reel;
+      const exitReels = e.target.closest('[data-reel-exit]');
+      if (exitReels) {
+        if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        const homeButton = document.querySelector('.shell-nav [data-m="home"]');
+        if (homeButton) homeButton.click();
+        else document.body.setAttribute('data-cl-mode', 'home');
+        return;
+      }
       const full = e.target.closest('[data-reel-fullscreen]');
       if (full) {
         const media = full.closest('.cl-post-media');
@@ -1200,6 +1209,13 @@
     );
     if (nearbyMode && nearbyPosition) {
       filtered = filtered.slice().sort((a,b) => distanceKm(a,nearbyPosition) - distanceKm(b,nearbyPosition));
+    } else {
+      filtered = filtered.slice().sort((a, b) => {
+        if (sortMode === 'price-asc') return Number(a.price || 0) - Number(b.price || 0);
+        if (sortMode === 'price-desc') return Number(b.price || 0) - Number(a.price || 0);
+        if (sortMode === 'rating') return Number(b.note_moyenne || 0) - Number(a.note_moyenne || 0);
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+      });
     }
 
     $('resultsCount').textContent = `${filtered.length} annonce(s)`;
@@ -1365,9 +1381,13 @@
     return a ? a.title : null;
   };
   async function fetchMessages() {
+    if (!currentUser || !currentUser.id) throw new Error('Connectez-vous pour accéder à vos messages.');
+    // Restreindre la requête au compte connecté; RLS reste la protection côté base.
     const { data, error } = await withTimeout(
-      sb.from('messages').select('id, sender_id, receiver_id, ad_id, content, created_at')
-        .order('created_at', { ascending: false }).limit(500)
+      sb.from('messages').select('id, sender_id, receiver_id, ad_id, content, created_at, read_at')
+        .or('sender_id.eq.' + currentUser.id + ',receiver_id.eq.' + currentUser.id)
+        .order('created_at', { ascending: false }).limit(500),
+      FETCH_TIMEOUT
     );
     if (error) throw error;
     return data || [];
@@ -1496,7 +1516,7 @@
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'receiver_id=eq.'+currentUser.id},payload=>{
         const m=payload.new||{};
         if($('inboxModal').classList.contains('active')){
-          if(chat.other && ((m.sender_id===chat.other)||(m.receiver_id===chat.other)) && String(m.ad_id||'')===String(chat.ad||''))renderThread();
+          if(chat.other && (m.sender_id===chat.other || m.receiver_id===chat.other)) renderThread();
           else if(!chat.other)renderInbox();
           refreshBadge();
         }else{toast('💬 Nouveau message');refreshBadge();}
@@ -1760,7 +1780,8 @@
       ).join('') : '<p style="color:var(--color-text-muted);">Aucun avis pour le moment. Soyez le premier !</p>';
     } catch (err) {
       console.warn('Chargement des avis impossible', err);
-      list.innerHTML = '<p style="color:var(--color-text-muted);">Impossible de charger les avis pour le moment.</p>';
+      count.textContent = '(indisponible)';
+      list.innerHTML = '<div role="status"><p style="color:var(--color-text-muted);">Les avis n’ont pas pu être chargés. Vérifiez la connexion puis réessayez.</p><button type="button" data-reviews-retry style="padding:9px 13px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text);">Réessayer</button></div>';
     }
   }
 
@@ -1840,6 +1861,8 @@
   }
 
   $('adDetailBody').addEventListener('click', (e) => {
+    const retryReviews = e.target.closest('[data-reviews-retry]');
+    if (retryReviews) { loadAdReviews(detail.id); return; }
     const act = e.target.closest('[data-act]');
     if (!act) return;
     const ad = allListings.find(a => String(a.id) === String(detail.id));

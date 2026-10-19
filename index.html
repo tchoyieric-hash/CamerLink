@@ -6,16 +6,16 @@
   <!--SEO-->
   <title>CamerLink · Annonces et commerces locaux au Cameroun</title>
   <meta name="description" content="CamerLink · La plateforme de référence des annonces, services et commerces au Cameroun. Contactez les artisans en un clic sur WhatsApp.">
-  <link rel="canonical" href="https://camer-link-tchoyi-eric.vercel.app/">
+  <link rel="canonical" href="https://camerlink.vercel.app/">
   <meta property="og:site_name" content="CamerLink">
   <meta property="og:locale" content="fr_CM">
   <meta property="og:type" content="website">
   <meta property="og:title" content="CamerLink · Annonces et commerces locaux au Cameroun">
   <meta property="og:description" content="Annonces, services, restaurants et boutiques du Cameroun, à contacter en un clic.">
-  <meta property="og:url" content="https://camer-link-tchoyi-eric.vercel.app/">
-  <meta property="og:image" content="https://camer-link-tchoyi-eric.vercel.app/og-default.png">
+  <meta property="og:url" content="https://camerlink.vercel.app/">
+  <meta property="og:image" content="https://camerlink.vercel.app/og-default.png">
   <meta name="twitter:card" content="summary_large_image">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"CamerLink","url":"https://camer-link-tchoyi-eric.vercel.app/","inLanguage":"fr","description":"Annonces, services et commerces locaux au Cameroun."}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"CamerLink","url":"https://camerlink.vercel.app/","inLanguage":"fr","description":"Annonces, services et commerces locaux au Cameroun."}</script>
   <!--/SEO-->
   <meta name="theme-color" content="#050609">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -26,13 +26,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css?v=future-feed-hotfix-20261018">
-  <link rel="stylesheet" href="/reels.css?v=smooth-scroll-20261017">
+  <link rel="stylesheet" href="/style.css?v=fullscreen-reels-messages-20261018">
+  <link rel="stylesheet" href="/reels.css?v=fullscreen-fill-20261018">
   <link rel="stylesheet" href="/statuts.css?v=swipe-20261017">
   <link rel="stylesheet" href="/shell.css?v=2">
-  <link rel="stylesheet" href="/profil.css?v=6">
+  <link rel="stylesheet" href="/profil.css?v=artisan-profile-metrics-20261018">
   <link rel="stylesheet" href="/camerlink-premium.css?v=nextgen-header-20261017">
   <link rel="stylesheet" href="/maquette-accueil-profil.css?v=1">
+  <link rel="stylesheet" href="/immersion360.css?v=immersion-360-20261019">
 </head>
 <body>
 <!--SEO_BODY-->
@@ -69,6 +70,12 @@
       <option value="10000">Max 10 000 FCFA</option>
       <option value="50000">Max 50 000 FCFA</option>
       <option value="250000">Max 250 000 FCFA</option>
+    </select>
+    <select id="sortFilter" class="price-select form-el" aria-label="Trier les annonces">
+      <option value="recent">🕒 Plus récentes</option>
+      <option value="price-asc">💰 Prix croissant</option>
+      <option value="price-desc">💸 Prix décroissant</option>
+      <option value="rating">⭐ Mieux notées</option>
     </select>
   </div>
   <div style="display:flex;justify-content:center;margin:16px auto 4px;padding:0 14px;">
@@ -228,11 +235,12 @@
 </nav>
 
 <div id="toast"></div>
-<script src="/script.js?v=future-feed-hotfix-20261018"></script>
+<script src="/script.js?v=messages-fix-20261019"></script>
 <script src="/statuts.js?v=swipe-20261017"></script>
 <script src="/shell.js?v=future-feed-hotfix-20261018"></script>
-<script src="/profil-page.js?v=8"></script>
+<script src="/profil-page.js?v=artisan-profile-metrics-20261018"></script>
 <script src="/profil-public.js?v=6"></script>
 <script src="/register-sw.js?v=2"></script>
+  <script src="/espace-pro.js?v=espace-pro-media-avis-20261018"></script>
 </body>
 </html>
