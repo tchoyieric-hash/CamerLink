@@ -30,7 +30,7 @@ var MODES={
  annonces:['.hero','#categoryChips','main','footer'],
  decouvrir:['#discover-section','footer']
 };
-var ALL=['.hero','.shops-section','#reels-section','#categoryChips','main','footer','#discover-section','#profile-section'];
+var ALL=['.hero','.shops-section','#reels-section','#categoryChips','main','footer','#discover-section','#profile-section','#cl-artisan-space'];
 var cur='home',modeHistory=[];
 function setMode(m,noScroll,fromBack){
   if(!MODES[m])m='home';if(m!==cur&&!fromBack)modeHistory.push(cur);if(modeHistory.length>20)modeHistory.shift();cur=m;document.body.setAttribute('data-cl-mode',m);
@@ -41,6 +41,7 @@ function setMode(m,noScroll,fromBack){
   if(!noScroll)window.scrollTo(0,0);
   if(m==='decouvrir')bzLoad();
   if(m==='profil'&&window.CamerLinkProfile)window.CamerLinkProfile.load();
+  if(m==='artisan'&&!document.getElementById('cl-artisan-space')){var tries=0;var wait=setInterval(function(){tries++;if(document.getElementById('cl-artisan-space')){clearInterval(wait);setMode('artisan',true)}if(tries>20)clearInterval(wait)},100)}
 }
 function hdr(){var h=$('header');if(h)document.documentElement.style.setProperty('--hdr',h.offsetHeight+'px')}
 function click(id){var e=$(id);if(e)e.click();else toast('Indisponible')}
@@ -196,7 +197,7 @@ function openForm(){
 function start(){
   box=$('#discover-section');
   mountNav();
-  var m=(location.hash||'').replace('#','');
+  var m=(location.hash||'').replace('#','').split('/')[0];
   setMode(MODES[m]?m:'home',true);
 }
 window.CamerLinkShell={setMode:setMode};
