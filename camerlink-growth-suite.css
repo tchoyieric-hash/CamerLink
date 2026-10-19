@@ -20,3 +20,12 @@
 .cl-growth-card-share{display:block;margin:8px 0 0 auto;padding:8px 12px;font-size:12px}
 @media(max-width:480px){.cl-growth-actions{right:9px;bottom:calc(76px + env(safe-area-inset-bottom))}.cl-growth-actions button{padding:11px 13px;font-size:12px}.cl-growth-dialog{padding:20px 16px;border-radius:18px}}
 @media(prefers-reduced-motion:reduce){.cl-growth-actions *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+.cl-my-quotes{margin-top:20px;border-top:1px solid #344154;padding-top:16px}
+.cl-my-quotes h3{font-size:19px;margin:0 0 12px}
+.cl-my-quote{padding:13px 0;border-bottom:1px solid #293548}
+.cl-my-quote strong{font-size:15px}
+.cl-my-quote p{margin:7px 0;color:#d0d8e3;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.cl-my-quote small{color:#aab6c5}
+.cl-growth-status{display:inline-block;margin-left:8px;border-radius:999px;padding:4px 8px;background:#263344;color:#ffd7b8;font-size:11px;font-weight:800}
+@media(max-width:480px){.cl-growth-actions button{max-width:190px}}
