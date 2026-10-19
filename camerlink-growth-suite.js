@@ -159,6 +159,12 @@
       var id = card.getAttribute('data-annonce-id') || card.getAttribute('data-id');
       if (!id) return;
       card.dataset.clGrowthShare = '1';
+      var actions = document.createElement('div'); actions.className = 'cl-growth-card-actions';
+      var fav = document.createElement('button'); fav.type = 'button'; fav.className = 'cl-growth-card-share cl-growth-fav';
+      var favKey = 'camerlink-favorites-v1';
+      function getFavs(){ try{return JSON.parse(localStorage.getItem(favKey)||'[]').map(String)}catch(_){return []} }
+      function paintFav(){var yes=getFavs().includes(String(id));fav.textContent=yes?'♥ Enregistré':'♡ Favori';fav.setAttribute('aria-pressed',yes?'true':'false');}
+      fav.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();var ids=getFavs(),key=String(id);ids=ids.includes(key)?ids.filter(function(x){return x!==key}):ids.concat(key);try{localStorage.setItem(favKey,JSON.stringify(ids));paintFav();toast(ids.includes(key)?'Annonce ajoutée aux favoris':'Annonce retirée des favoris')}catch(_){toast('Stockage local indisponible.')}});paintFav();
       var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'cl-growth-card-share'; btn.textContent = '↗ Partager';
       btn.addEventListener('click', function(ev) {
         ev.preventDefault(); ev.stopPropagation();
@@ -167,7 +173,7 @@
         else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function(){toast('Lien de l’annonce copié');});
         else window.prompt('Copiez le lien :', url);
       });
-      card.appendChild(btn);
+      actions.appendChild(fav); actions.appendChild(btn); card.appendChild(actions);
     });
   }
   function init() {
