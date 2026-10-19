@@ -1,0 +1,52 @@
+/* CamerLink — intégration visuelle maquette 2026
+   Couche de présentation uniquement : conserve les IDs et flux applicatifs existants. */
+:root{--cl-orange:#ff6b18;--cl-orange2:#ff8a00;--cl-ink:#08090c;--cl-card:#fff;--cl-muted:#71717a;--cl-line:rgba(255,255,255,.1);--cl-radius:22px}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{font-family:Inter,"Plus Jakarta Sans",sans-serif;background:#f5f6f8;color:#17181c}
+.cl-top{position:sticky;top:0;z-index:80;min-height:70px;padding:12px clamp(14px,4vw,54px);background:rgba(7,8,11,.94);border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(18px);box-shadow:0 8px 30px #0002}
+.logo-brand{gap:10px;text-decoration:none}.brand-logo-img{width:42px;height:42px;object-fit:contain}.brand-wordmark,.cl-logo{font-family:"Space Grotesk",sans-serif;font-weight:900;letter-spacing:-1.2px;font-size:clamp(1.45rem,2.5vw,2rem);color:#fff}.brand-wordmark span,.cl-logo span{color:var(--cl-orange)}
+.header-actions{gap:10px}.header-actions button{border-radius:14px;min-height:42px;font-weight:800}.btn-pub{background:linear-gradient(135deg,var(--cl-orange),#ff9b19)!important;color:#fff!important;box-shadow:0 8px 22px #ff6b1833}
+.shell-tabs{max-width:1220px;margin:14px auto 0;padding:7px;background:#fff;border:1px solid #e8e8eb;border-radius:16px;box-shadow:0 5px 22px #11106}
+.shell-tab{border-radius:11px!important;font-weight:800!important}
+.shell-tab.active,.shell-tab[aria-selected=true]{background:var(--cl-orange)!important;color:#fff!important}
+.hero{position:relative;isolation:isolate;overflow:hidden;max-width:none;margin:0;padding:clamp(35px,6vw,76px) max(18px,calc((100vw - 1160px)/2)) 34px;background:radial-gradient(ellipse at 82% 15%,#ff6b1830,transparent 36%),linear-gradient(120deg,#090a0e 0%,#15171d 58%,#08090c 100%);color:#fff}
+.hero:after{content:"";position:absolute;z-index:-1;right:-90px;top:-120px;width:440px;height:440px;border:1px solid #ff7b2928;border-radius:50%;box-shadow:0 0 0 42px #ff7b2910,0 0 0 84px #ff7b2908}
+.hero h1{max-width:780px;margin:0 auto 12px;text-align:center;font-family:"Space Grotesk",sans-serif;font-size:clamp(2rem,5.5vw,4.35rem);line-height:1.04;letter-spacing:-.055em;font-weight:900}
+.hero h1 span{color:var(--cl-orange);text-shadow:0 8px 32px #ff6b1830}
+.hero>p{max-width:680px;margin:0 auto 26px;text-align:center;color:#d5d6da;font-size:clamp(.98rem,2vw,1.15rem);line-height:1.65}
+.search-filter-bar{display:grid;grid-template-columns:minmax(200px,2fr) repeat(3,minmax(120px,1fr));gap:10px;max-width:1100px;margin:0 auto;padding:10px;background:#fff;border:1px solid #ffffff2b;border-radius:20px;box-shadow:0 20px 60px #0004}
+.search-filter-bar .form-el{width:100%;min-width:0;min-height:48px;border:1px solid #e7e7eb;border-radius:12px;background:#f8f8fa;color:#1b1b20;padding:0 13px;font:600 .92rem Inter,sans-serif}
+.search-filter-bar .search-input{background:#f5f5f7}
+.hero a[href*="monetisation"]{border-radius:13px!important;background:linear-gradient(135deg,var(--cl-orange),#ff9b22)!important;color:white!important;box-shadow:0 10px 28px #ff6b183d!important}
+.shops-section,main,.reels-section{width:min(1200px,calc(100% - 32px));margin:30px auto}
+.shops-section h2,main h2{font-family:"Space Grotesk",sans-serif;font-weight:900;letter-spacing:-.035em}
+.shops-section h2{font-size:clamp(1.25rem,3vw,1.8rem)}
+.shops-container{gap:14px}
+.categories-scroll{width:min(1200px,calc(100% - 32px));margin:24px auto 12px;gap:9px}
+.categories-scroll button,.category-chip{border-radius:999px!important;font-weight:800!important}
+.listings-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.listing-card,.annonce-card,.ad-card{border-radius:20px!important;overflow:hidden;border:1px solid #e8e8eb!important;background:#fff!important;box-shadow:0 7px 24px #10111a0a!important;transition:transform .2s ease,box-shadow .2s ease}
+.listing-card:hover,.annonce-card:hover,.ad-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px #10111a14!important}
+.listing-card img,.annonce-card img,.ad-card img{object-fit:cover}
+.reels-section{width:min(1200px,calc(100% - 32px));padding:clamp(18px,3vw,32px);background:#0a0b0e;color:#fff;border-radius:28px;border:1px solid #25262b;box-shadow:0 18px 50px #00018}
+.reels-heading{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px}
+.reels-heading h2{font-family:"Space Grotesk",sans-serif;font-size:clamp(1.6rem,4vw,2.5rem);letter-spacing:-.05em;margin:6px 0}
+.reels-heading h2 span{color:var(--cl-orange)}
+.reels-heading p{color:#b8bac2;line-height:1.55;max-width:640px}
+.reels-upload-btn{background:var(--cl-orange)!important;color:#fff!important;border:0!important;border-radius:13px!important;font-weight:900!important;padding:12px 16px!important}
+.reels-feed{border-radius:22px;overflow:hidden}
+.reels-placeholder{color:#c6c7cc}
+.shell-nav{z-index:90;background:rgba(8,9,12,.96)!important;border-top:1px solid #ffffff14!important;backdrop-filter:blur(18px);padding-bottom:max(8px,env(safe-area-inset-bottom))}
+.shell-nav button{color:#b9bac1!important;font-weight:700!important}.shell-nav button.active,.shell-nav button[aria-current=page]{color:var(--cl-orange)!important}
+.shell-nav .plus,.shell-nav button.plus{background:linear-gradient(135deg,var(--cl-orange),#ff9b22)!important;color:#fff!important;box-shadow:0 6px 22px #ff6b1840}
+#profile-section:not(.shell-off){width:min(1000px,calc(100% - 24px));margin:20px auto 100px;background:#fff;border:1px solid #e8e8eb;border-radius:24px;overflow:hidden;box-shadow:0 12px 36px #12131a0c;color:#18191e}
+#discover-section:not(.shell-off){width:min(1200px,calc(100% - 24px));margin:20px auto 100px}
+.modal-overlay{backdrop-filter:blur(8px);background:#050609b8!important}
+.modal-sheet{border-radius:24px 24px 0 0!important;border:1px solid #ffffff20!important;box-shadow:0 -15px 60px #0004!important}
+.btn-submit-modal{background:linear-gradient(135deg,var(--cl-orange),#ff9220)!important;border-radius:13px!important;font-weight:900!important}
+footer{margin-top:54px;padding:30px 18px 100px;background:#090a0d;color:#b9bac1;text-align:center}
+footer .brand-wordmark{color:#fff}
+@media(min-width:900px){.hero{text-align:left}.hero h1,.hero>p{text-align:left;margin-left:0}.search-filter-bar{margin-left:0}.hero>div:has(a[href*="monetisation"]){justify-content:flex-start!important}.hero h1{max-width:800px}}
+@media(max-width:850px){.search-filter-bar{grid-template-columns:1fr 1fr}.search-filter-bar .search-input{grid-column:1/-1}.listings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.reels-heading{align-items:flex-start;flex-direction:column}.reels-heading-actions{width:100%;display:flex;justify-content:space-between;align-items:center}}
+@media(max-width:560px){.cl-top{min-height:60px;padding:8px 12px}.brand-logo-img{width:34px;height:34px}.brand-wordmark,.cl-logo{font-size:1.35rem}.header-actions{gap:5px}.header-actions button{min-height:38px;padding:7px 9px;font-size:.8rem}.header-actions #themeBtn{display:none}.shell-tabs{margin:9px 10px 0}.hero{padding:34px 14px 26px}.hero h1{font-size:2.2rem}.hero>p{font-size:.94rem}.search-filter-bar{grid-template-columns:1fr;padding:9px;border-radius:16px}.search-filter-bar .search-input{grid-column:auto}.search-filter-bar .form-el{min-height:44px}.shops-section,main,.reels-section{width:calc(100% - 20px);margin:22px auto}.reels-section{padding:16px 12px;border-radius:22px}.listings-grid{grid-template-columns:1fr;gap:12px}.listing-card,.annonce-card,.ad-card{border-radius:17px!important}.categories-scroll{width:calc(100% - 20px)}footer{padding-bottom:110px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
