@@ -17,7 +17,8 @@ function showProfile(id){
  root.innerHTML='<div class="pf-login"><p>Chargement du profil…</p></div>';
  Promise.all([
   sb.from('profils').select('id,username,full_name,avatar_url,bio,created_at').eq('id',id).maybeSingle(),
-  sb.from('abonnements').select('follower_id',{count:'exact',head:true}).eq('followed_id',id),\n  sb.from('abonnements').select('followed_id',{count:'exact',head:true}).eq('follower_id',id),
+  sb.from('abonnements').select('follower_id',{count:'exact',head:true}).eq('followed_id',id),
+  sb.from('abonnements').select('followed_id',{count:'exact',head:true}).eq('follower_id',id),
   sb.rpc('camerlink_profile_stats_v2',{target_profile:id}),
   sb.from('annonces').select('id,title,image_url,video_url,created_at,views,vues').eq('user_id',id).order('created_at',{ascending:false}).limit(60)
  ]).then(function(res){
@@ -27,7 +28,8 @@ function showProfile(id){
   sb.auth.getSession().then(function(sess){
    var me=sess.data&&sess.data.session&&sess.data.session.user;
    var isMe=!!me&&me.id===id;
-   var following=false,profileViews=Number(profileStats&&profileStats.profile_views||0);\n   if(me&&me.id!==id){sb.from('abonnements').select('follower_id',{count:'exact',head:true}).eq('follower_id',me.id).eq('followed_id',id).then(function(fr){following=!!(fr.count);var fb=document.getElementById('pp-follow');if(fb)fb.textContent=following?'Abonné ✓':'＋ S’abonner'}).catch(function(){});}
+   var following=false,profileViews=Number(profileStats&&profileStats.profile_views||0);
+   if(me&&me.id!==id){sb.from('abonnements').select('follower_id',{count:'exact',head:true}).eq('follower_id',me.id).eq('followed_id',id).then(function(fr){following=!!(fr.count);var fb=document.getElementById('pp-follow');if(fb)fb.textContent=following?'Abonné ✓':'＋ S’abonner'}).catch(function(){});}
    var name=p.full_name||p.username||'Artisan CamerLink',av=p.avatar_url?'<img src="'+esc(p.avatar_url)+'" alt="Photo de '+esc(name)+'">':esc((name[0]||'C').toUpperCase());
    sb.rpc('camerlink_public_post_view_counts',{post_ids:ads.map(function(a){return Number(a.id)}).filter(Number.isFinite)}).then(function(vr){(vr.data||[]).forEach(function(v){var el=root.querySelector('[data-view-post="'+v.annonce_id+'"] .pr');if(el)el.textContent=(ads.find(function(a){return String(a.id)===String(v.annonce_id)}).title||'Publication')+' · '+Number(v.views||0)+' vues'});});
   var posts=ads.map(function(a){var media=a.video_url||a.image_url;var vc=Number(a.views||a.vues||0);sb.from('camerlink_post_views').upsert({annonce_id:a.id,viewer_key:vk,viewed_on:new Date().toISOString().slice(0,10)},{onConflict:'annonce_id,viewer_key,viewed_on',ignoreDuplicates:true}).then(function(){}).catch(function(){});return '<div class="pf-cell" data-view-post="'+esc(a.id)+'">'+(media?(a.video_url?'<video src="'+esc(media)+'" muted playsinline controls></video>':'<img src="'+esc(media)+'" alt="'+esc(a.title||'Publication')+'">'):'')+'<div class="pr">'+esc(a.title||'Publication')+' · '+vc+' vues</div></div>'}).join('');

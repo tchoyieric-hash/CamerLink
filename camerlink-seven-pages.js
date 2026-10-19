@@ -11,12 +11,12 @@ function init(){
   const p=$('#profile-section');if(p&&p.parentNode)p.parentNode.insertBefore(s,p.nextSibling);else document.body.appendChild(s);
  }
  const nav=$('.shell-nav');
- if(nav&&!nav.querySelector('[data-cl-page="discover"]')){
+ if(false && nav&&!nav.querySelector('[data-cl-page="discover"]')){
   const d=document.createElement('button');d.type='button';d.dataset.clPage='discover';d.innerHTML='<span aria-hidden="true">⌕</span><span>Découvrir</span>';nav.insertBefore(d,nav.lastElementChild);
   const a=document.createElement('button');a.type='button';a.dataset.clPage='artisan';a.innerHTML='<span aria-hidden="true">✦</span><span>Artisan</span>';nav.appendChild(a);
   nav.addEventListener('click',e=>{const b=e.target.closest('[data-cl-page]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();if(b.dataset.clPage==='artisan')go('cl-artisan-space');else go('discover-section');},true);
  }
- document.addEventListener('click',e=>{const b=e.target.closest('[data-cl-action]');if(!b)return;const a=b.dataset.clAction;if(a==='publish')click('pubBtn');if(a==='auth')click('authBtn');if(a==='messages')click('msgInboxBtn');if(a==='profile')click('nav-me');if(a==='reel'){go('reels-section');setTimeout(()=>click('addVideoBtn'),300);}});
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-cl-action]');if(!b)return;const a=b.dataset.clAction;if(a==='publish')click('pubBtn');if(a==='auth')click('authBtn');if(a==='messages')click('msgInboxBtn');if(a==='profile'){if(window.CamerLinkShell&&typeof window.CamerLinkShell.setMode==='function')window.CamerLinkShell.setMode('profil');else click('nav-me');}if(a==='reel'){go('reels-section');setTimeout(()=>click('addVideoBtn'),300);}});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
