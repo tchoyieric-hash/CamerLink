@@ -1,0 +1,34 @@
+/* CamerLink Immersion 360 — couche visuelle progressive, sans modifier les handlers métier. */
+:root{--cl360-cyan:#22d3ee;--cl360-violet:#8b5cf6;--cl360-glass:rgba(5,8,20,.72)}
+/* Flux Réels : une vidéo à la fois, bord-à-bord sur mobile. */
+@media(max-width:700px){
+  body[data-cl-mode="reels"]{padding-bottom:0!important;background:#000}
+  body[data-cl-mode="reels"] header,
+  body[data-cl-mode="reels"] .header-spacer,
+  body[data-cl-mode="reels"] .shell-tabs,
+  body[data-cl-mode="reels"] .reels-heading{display:none!important}
+  body[data-cl-mode="reels"] #reels-section,
+  body[data-cl-mode="reels"] .reels-section{display:block!important;width:100vw!important;max-width:none!important;margin:0!important;padding:0!important}
+  body[data-cl-mode="reels"] #reels-feed.reels-feed{height:100dvh!important;max-height:100dvh!important;width:100vw!important;max-width:none!important;overflow-y:auto!important;overflow-x:hidden!important;scroll-snap-type:y mandatory!important;gap:0!important;padding:0!important;margin:0!important}
+  body[data-cl-mode="reels"] #reels-feed > .cl-social-post,
+  body[data-cl-mode="reels"] #reels-feed > .reel-card{position:relative!important;flex:0 0 100dvh!important;width:100vw!important;max-width:none!important;height:100dvh!important;max-height:none!important;min-height:100dvh!important;margin:0!important;border:0!important;border-radius:0!important;scroll-snap-align:start!important;scroll-snap-stop:always!important;overflow:hidden!important}
+  body[data-cl-mode="reels"] .cl-post-media{height:100dvh!important;min-height:100dvh!important;max-height:none!important;border-radius:0!important}
+  body[data-cl-mode="reels"] .cl-post-media video,
+  body[data-cl-mode="reels"] .cl-post-media img,
+  body[data-cl-mode="reels"] .cl-post-media .cl-reel-photo,
+  body[data-cl-mode="reels"] #reels-feed > .reel-card video{width:100%!important;height:100%!important;max-height:none!important;object-fit:contain!important;background:#000!important}
+  body[data-cl-mode="reels"] .cl-post-location{position:absolute;top:max(8px,env(safe-area-inset-top));left:0;right:0;z-index:3;background:linear-gradient(#0008,transparent);padding:16px;color:#fff}
+  body[data-cl-mode="reels"] .cl-post-footer{position:absolute;left:0;right:0;bottom:calc(72px + env(safe-area-inset-bottom));z-index:3;background:linear-gradient(transparent,#0009);padding:24px 16px 14px}
+  body[data-cl-mode="reels"] .cl-post-caption{bottom:calc(92px + env(safe-area-inset-bottom))!important;left:16px!important;right:82px!important}
+  body[data-cl-mode="reels"] .cl-post-actions{bottom:calc(96px + env(safe-area-inset-bottom))!important;right:10px!important}
+  body[data-cl-mode="reels"] .shell-nav{background:rgba(3,7,18,.86);backdrop-filter:blur(18px);border-top-color:#ffffff1a}
+}
+/* Les photos d'annonces restent intégralement visibles dans les cartes et galeries. */
+.listing-card img,.listing-image,.ad-gallery img,.ad-detail-gallery img{object-fit:contain}
+.listing-card .listing-media,.listing-card .ad-image-wrap{background:#05060d}
+/* Découvrir : cartes professionnelles plus lisibles et plus premium. */
+.bz .card{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.bz .card:active{transform:scale(.985);border-color:var(--sh-c1);box-shadow:0 0 0 1px #22d3ee22}
+.bz .logo{border:1px solid #ffffff12;box-shadow:0 8px 24px #0002}
+.bz .tag{border:1px solid #22d3ee24}
+@media(prefers-reduced-motion:reduce){.bz .card{transition:none}}
