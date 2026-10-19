@@ -77,13 +77,40 @@
   function mountActions() {
     if (!document.body || document.getElementById('cl-growth-actions')) return;
     var bar = document.createElement('div'); bar.id = 'cl-growth-actions'; bar.className = 'cl-growth-actions';
-    bar.innerHTML = '<button type="button" data-action="quote">＋ Demander un devis</button><button type="button" data-action="share">↗ Partager CamerLink</button>';
+    bar.innerHTML = '<button type="button" data-action="quote">＋ Demander un devis</button><button type="button" data-action="myquotes">▤ Mes devis</button><button type="button" data-action="share">↗ Partager CamerLink</button>';
     document.body.appendChild(bar);
     bar.addEventListener('click', function(e) {
       var b = e.target.closest('button'); if (!b) return;
       if (b.dataset.action === 'quote') openModal();
+      if (b.dataset.action === 'myquotes') showMyQuotes();
       if (b.dataset.action === 'share') shareApp();
     });
+  }
+  async function showMyQuotes() {
+    if (!supabase) { toast('Service indisponible.'); return; }
+    try {
+      var auth = await supabase.auth.getUser();
+      if (!auth.data || !auth.data.user) { toast('Connectez-vous pour consulter vos devis.'); return; }
+      var result = await supabase.from('quote_requests').select('id,service,city,status,budget_fcfa,quote_fcfa,artisan_response,created_at').eq('requester_id', auth.data.user.id).order('created_at', {ascending:false}).limit(30);
+      if (result.error) throw result.error;
+      buildModal();
+      var m = document.getElementById('cl-quote-modal');
+      var dialog = m.querySelector('.cl-growth-dialog');
+      var old = dialog.querySelector('.cl-my-quotes'); if (old) old.remove();
+      var list = document.createElement('section'); list.className = 'cl-my-quotes';
+      list.innerHTML = '<h3>Mes demandes de devis</h3>';
+      if (!result.data.length) list.innerHTML += '<p class="cl-growth-muted">Vous n’avez pas encore envoyé de demande.</p>';
+      result.data.forEach(function(q) {
+        var item = document.createElement('article'); item.className = 'cl-my-quote';
+        var status = ({pending:'En attente',quoted:'Devis reçu',accepted:'Accepté',rejected:'Refusé',cancelled:'Annulé',completed:'Terminé'})[q.status] || q.status;
+        item.innerHTML = '<strong>'+esc(q.service)+'</strong><span class="cl-growth-status">'+esc(status)+'</span><p>'+esc(q.city)+' · '+(q.budget_fcfa ? esc(Number(q.budget_fcfa).toLocaleString('fr-FR'))+' FCFA' : 'Budget à définir')+'</p>'+
+          (q.quote_fcfa != null ? '<p><b>Proposition :</b> '+esc(Number(q.quote_fcfa).toLocaleString('fr-FR'))+' FCFA</p>' : '')+
+          (q.artisan_response ? '<p>'+esc(q.artisan_response)+'</p>' : '')+
+          '<small>'+esc(new Date(q.created_at).toLocaleDateString('fr-FR'))+'</small>';
+        list.appendChild(item);
+      });
+      dialog.appendChild(list); m.hidden = false;
+    } catch (err) { console.error('[CamerLink mes devis]',err); toast(/quote_requests|relation/i.test(String(err.message||err)) ? 'Le module de devis attend la migration Supabase.' : 'Impossible de charger vos devis.'); }
   }
   async function shareApp() {
     var data = { title: 'CamerLink — Le Cameroun connecté', text: 'Découvre des annonces, des artisans et des services près de toi sur CamerLink.', url: location.origin + '/' };
