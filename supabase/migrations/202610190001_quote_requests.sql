@@ -31,12 +31,16 @@ drop policy if exists "quote_requests_update_assigned_artisan" on public.quote_r
 create policy "quote_requests_update_assigned_artisan" on public.quote_requests
   for update to authenticated
   using (artisan_id = (select auth.uid()))
-  with check (artisan_id = (select auth.uid()));
+  with check (
+    artisan_id = (select auth.uid())
+    and status in ('quoted','accepted','rejected','completed')
+  );
 drop policy if exists "quote_requests_cancel_own" on public.quote_requests;
 create policy "quote_requests_cancel_own" on public.quote_requests
   for update to authenticated
   using (requester_id = (select auth.uid()) and status = 'pending')
   with check (requester_id = (select auth.uid()) and status in ('pending','cancelled') and quote_fcfa is null and artisan_response is null);
 revoke all on public.quote_requests from anon;
-grant select, insert, update on public.quote_requests to authenticated;
+grant select, insert on public.quote_requests to authenticated;
+grant update (status, quote_fcfa, artisan_response, updated_at) on public.quote_requests to authenticated;
 grant usage, select on sequence public.quote_requests_id_seq to authenticated;
