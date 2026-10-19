@@ -109,3 +109,41 @@ body{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
  #listings-grid.listings-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
  #listings-grid .ad-card{border-radius:15px;overflow:hidden}
 }
+
+/* CamerLink — accents orange/rouge pour les Réels, sans remplacer la mise en page existante. */
+:root{
+  --cl-cyan:#ff641f;
+  --cl-violet:#ff302e;
+}
+.reels-heading .eyebrow,
+.reels-heading h2 span,
+.cl-post-open,
+.cl-post-type{color:#ff7a32!important}
+.reels-heading h2 span{
+  background:linear-gradient(100deg,#ff7a18,#ff302e);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.reels-live i{background:#ff5a1f!important;box-shadow:0 0 12px #ff5a1f88!important}
+.reels-upload-btn{
+  background:linear-gradient(115deg,#ff7a18,#ff302e)!important;
+  color:#fff!important;
+  border-color:transparent!important;
+  box-shadow:0 8px 26px rgba(255,72,31,.22)!important;
+}
+.cl-post-type{
+  background:rgba(255,90,31,.14)!important;
+  border:1px solid rgba(255,90,31,.24)!important;
+}
+.cl-comments-float{border-color:rgba(255,106,32,.35)!important}
+.cl-comments-float b{color:#ff8a42!important}
+.cl-reel-fullscreen:focus-visible,.cl-reel-sound:focus-visible{
+  outline-color:#ff7a18!important;
+}
+@media(max-width:700px){
+  .cl-post-media video,.cl-post-media .cl-reel-photo{
+    object-position:center center!important;
+  }
+  .reels-upload-btn{touch-action:manipulation}
+}
