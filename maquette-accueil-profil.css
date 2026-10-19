@@ -109,3 +109,37 @@ body{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
  #listings-grid.listings-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
  #listings-grid .ad-card{border-radius:15px;overflow:hidden}
 }
+
+
+/* CamerLink — alignement sur la maquette officielle orange/rouge, sans toucher à Supabase. */
+:root{
+  --cl-bg:#07090e;--cl-surface:#10151e;--cl-surface-2:#19212d;
+  --cl-line:rgba(163,183,204,.18);--cl-muted:#aab4c2;
+  --cl-cyan:#ff5a1f;--cl-violet:#ff302e;
+}
+[data-theme="light"]{
+  --cl-bg:#f7f8fa;--cl-surface:#fff;--cl-surface-2:#f0f2f5;
+  --cl-line:rgba(34,49,78,.13);--cl-muted:#657184;
+}
+html,body{background:var(--cl-bg);color:#f7f8fb}
+body::before{background:radial-gradient(650px 360px at 95% 0%,rgba(255,72,31,.13),transparent 68%),radial-gradient(520px 340px at 0% 15%,rgba(255,48,46,.08),transparent 70%)}
+.brand-wordmark span,.logo-brand>span{background:linear-gradient(105deg,#ff7a18,#ff302e);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cl-nav button.on,.shell-tab.on{color:#ff6a20}
+.cl-nav .plus span.c,.btn-pub{background:linear-gradient(115deg,#ff7a18,#ff302e);color:#fff;box-shadow:0 6px 20px rgba(255,72,31,.24)}
+.shell-tab.on:after{background:linear-gradient(90deg,#ff7a18,#ff302e)}
+.story-ring{background:linear-gradient(140deg,#ff7a18,#ff302e,#ffbd2e)}
+.form-el:focus{border-color:#ff6a20;box-shadow:0 0 0 3px rgba(255,106,32,.13)}
+/* Les visuels d'annonces restent entiers : pas de recadrage forcé des photos. */
+.ad-card img,.listing-card img,.annonce-card img,.marketplace-card img,
+#annonces-grid img,.annonces-grid img,.shop-card img{
+  object-fit:contain;
+}
+@media(max-width:600px){
+  body{background:#07090e}
+  .cl-top{background:rgba(7,9,14,.97);border-bottom:1px solid rgba(163,183,204,.18)}
+  .cl-tabs{background:rgba(7,9,14,.97)}
+  .hero{background:transparent}
+  .hero h1 span{background:linear-gradient(100deg,#ff7a18,#ff302e);-webkit-background-clip:text;background-clip:text}
+  .cl-nav{background:rgba(7,9,14,.97);border-top:1px solid rgba(163,183,204,.18)}
+  #reels-feed > .reel-card{max-width:none!important}
+}
