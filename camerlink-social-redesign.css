@@ -1,0 +1,43 @@
+/* CamerLink social redesign v1 — progressive visual layer, existing app logic preserved */
+:root{color-scheme:dark;--cl-bg:#07090e;--cl-panel:#101722;--cl-panel2:#151e2b;--cl-border:#263344;--cl-text:#f7f8fc;--cl-muted:#aab5c5;--cl-orange:#ff641f;--cl-red:#ff3048;--cl-green:#20c997}
+html,body{background:var(--cl-bg)!important;color:var(--cl-text)!important}
+body{background:radial-gradient(ellipse at 50% -10%,#22283a 0%,#0b0e15 48%,#07090e 100%)!important}
+button,input,select,textarea{font:inherit}
+.cl-top{background:rgba(7,9,14,.94)!important;border-bottom:1px solid #ffffff12!important;backdrop-filter:blur(18px);z-index:100}
+.logo-brand,.brand-wordmark{color:#fff!important}
+.brand-wordmark span,.cl-logo span{color:var(--cl-orange)!important}
+.btn-pub,.reels-upload-btn,.btn-login:hover{background:linear-gradient(115deg,var(--cl-red),var(--cl-orange))!important;color:#fff!important;border:0!important;border-radius:14px!important;box-shadow:0 8px 22px #ff4a2028}
+.btn-icon,.cl-ib{background:#131a26!important;color:#f7f8fc!important;border:1px solid #ffffff12!important;border-radius:14px!important}
+.hero{background:linear-gradient(130deg,#111827ed,#0a0d14f5)!important;border:1px solid #ffffff12!important;border-radius:24px!important;overflow:hidden}
+.hero h1{letter-spacing:-.045em!important;line-height:1.04!important}
+.hero h1 span{background:linear-gradient(90deg,#ffb04a,#ff4a3d)!important;background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important}
+.hero p,.reels-heading p{color:var(--cl-muted)!important}
+.search-filter-bar input,.search-filter-bar select,.form-el{background:#0b111b!important;color:#f7f8fc!important;border:1px solid #2b3749!important;border-radius:14px!important}
+.shops-section h2,.reels-heading h2{color:#fff!important;letter-spacing:-.025em}
+.shops-container{gap:14px!important}
+.shops-container img{border:2px solid var(--cl-orange)!important;box-shadow:0 0 0 3px #ff641f20!important}
+.shops-container span,.shops-container p{color:#e8edf6!important}
+.categories-scroll,.category-list,.categories{scrollbar-width:none}
+.categories-scroll button,.categories-scroll .category-chip,.category-chip{border:1px solid #293648!important;background:#111925!important;color:#eef2f8!important;border-radius:14px!important}
+.categories-scroll button:focus,.categories-scroll button:hover,.category-chip:hover{background:#ff641f20!important;border-color:#ff641f!important}
+.listing-card,.annonce-card,.ad-card,.business-card,.shop-card{background:linear-gradient(145deg,#141e2d,#0c111a)!important;color:#f8f9fc!important;border:1px solid #273548!important;border-radius:20px!important;overflow:hidden;box-shadow:0 12px 30px #0003!important}
+.listing-card h2,.listing-card h3,.listing-card p,.annonce-card h2,.annonce-card h3,.annonce-card p,.ad-card h2,.ad-card h3,.ad-card p{color:#f8f9fc!important}
+.reels-section{background:transparent!important}
+.reels-feed{border-radius:22px!important;overflow:hidden}
+.shell-nav{background:rgba(7,9,14,.96)!important;border-top:1px solid #ffffff18!important;backdrop-filter:blur(20px)!important}
+.shell-nav button,.shell-nav a{color:#aab5c5!important}
+.shell-nav .active,.shell-nav [aria-current="page"]{color:#ff7a35!important}
+main{color:#f7f8fc!important}
+footer{background:#07090e!important;color:#aab5c5!important;border-top:1px solid #ffffff12}
+@media(max-width:640px){
+ .cl-top{padding-top:env(safe-area-inset-top)!important}
+ .hero{margin:12px!important;padding:20px 16px!important;border-radius:20px!important}
+ .hero h1{font-size:clamp(1.8rem,8vw,2.6rem)!important}
+ .shops-section,main,.reels-section{width:calc(100% - 20px)!important}
+ .shops-section{margin:18px auto 12px!important}
+ .shops-section h2{font-size:1.15rem!important}
+ .search-filter-bar{gap:8px!important}
+ .search-filter-bar input,.search-filter-bar select{min-height:46px!important}
+ .listing-card,.annonce-card,.ad-card{border-radius:18px!important}
+ .shell-nav{padding-bottom:env(safe-area-inset-bottom)!important}
+}
