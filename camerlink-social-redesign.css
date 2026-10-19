@@ -1,4 +1,4 @@
-/* CamerLink social redesign v1 — progressive visual layer, existing app logic preserved */
+/* CamerLink social redesign v2 — orange/red Cameroonian social identity */
 :root{color-scheme:dark;--cl-bg:#07090e;--cl-panel:#101722;--cl-panel2:#151e2b;--cl-border:#263344;--cl-text:#f7f8fc;--cl-muted:#aab5c5;--cl-orange:#ff641f;--cl-red:#ff3048;--cl-green:#20c997}
 html,body{background:var(--cl-bg)!important;color:var(--cl-text)!important}
 body{background:radial-gradient(ellipse at 50% -10%,#22283a 0%,#0b0e15 48%,#07090e 100%)!important}
@@ -40,4 +40,33 @@ footer{background:#07090e!important;color:#aab5c5!important;border-top:1px solid
  .search-filter-bar input,.search-filter-bar select{min-height:46px!important}
  .listing-card,.annonce-card,.ad-card{border-radius:18px!important}
  .shell-nav{padding-bottom:env(safe-area-inset-bottom)!important}
+}
+
+
+/* Maquette sociale CamerLink : identité orange/rouge, composants mobiles */
+:root{--cl-bg:#05070b;--cl-panel:#10151d;--cl-panel2:#171d26;--cl-border:#28313c;--cl-text:#f8fafc;--cl-muted:#aeb7c3;--cl-orange:#ff741f;--cl-red:#ff3048}
+body::before{background:radial-gradient(620px 380px at 95% 0%,#ff5b2418,transparent 70%),radial-gradient(520px 360px at 0% 35%,#ff30480b,transparent 72%)!important}
+.hero{box-shadow:0 18px 55px #0005}
+.hero h1 span{background:linear-gradient(90deg,#ffb347,#ff5b35,#ff3048)!important;background-clip:text!important;-webkit-background-clip:text!important}
+.btn-pub,.cl-page-space .cl-primary,.pf-btns button.main,.pf-login button.main{background:linear-gradient(110deg,#ff3048,#ff741f)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 8px 22px #ff4a202b!important}
+.shell-nav{display:flex!important;justify-content:space-around!important;gap:0!important;background:rgba(5,7,11,.97)!important;border-top:1px solid #ffffff18!important}
+.shell-nav button{flex:1!important;min-width:0!important;color:#aeb7c3!important}
+.shell-nav button.on{color:#ff741f!important}
+.shell-nav .plus{flex:0 0 58px!important}
+.shell-nav .plus span.c{width:46px!important;height:46px!important;margin-top:-20px!important;background:linear-gradient(135deg,#ff3048,#ff741f)!important;box-shadow:0 6px 20px #ff4a2040!important}
+#profile-section{width:100%;max-width:720px;margin-inline:auto}
+.pf-av{background:linear-gradient(135deg,#ff3048,#ff741f,#ffb347)!important}
+.pf-btns button.main{border-radius:12px!important}
+.pf-tabs button.on:after{background:linear-gradient(90deg,#ff3048,#ff741f)!important}
+.cl-page-space{background:radial-gradient(ellipse at 100% 0,#ff6b1826,transparent 48%),linear-gradient(135deg,#10151d,#080a0e)!important}
+.cl-eyebrow{color:#ff8a3d!important}
+@media(max-width:640px){
+ .hero{margin:10px!important;padding:20px 15px!important;border-radius:22px!important}
+ .shell-nav{padding-bottom:calc(7px + env(safe-area-inset-bottom,0px))!important}
+ .shell-nav button{font-size:10px!important}
+ .shell-nav button svg{width:23px!important;height:23px!important}
+ .pf-head{gap:12px!important;padding-inline:12px!important}
+ .pf-av{width:74px!important;height:74px!important;flex-basis:74px!important}
+ .pf-stats b{font-size:16px!important}
+ .pf-stats span{font-size:11px!important}
 }
