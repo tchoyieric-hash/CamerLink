@@ -2160,7 +2160,8 @@
     } catch (e) { box.innerHTML = ''; }
   }
 
-  $('claimBtn').addEventListener('click', () => {
+  const legacyClaimButton = $('claimBtn');
+  if (legacyClaimButton) legacyClaimButton.addEventListener('click', () => {
     if (!currentUser) { openModal('authModal'); return; }
     const login = String((currentUser.email || '').split('@')[0]).replace(/\D/g, '');
     if (!$('claimPhone').value && login) $('claimPhone').value = '+' + login;
@@ -2170,9 +2171,11 @@
     loadMyClaims();
     loadAdminClaims();
   });
-  $('claimPhone').addEventListener('input', updateClaimMatch);
+  const legacyClaimPhone = $('claimPhone');
+  if (legacyClaimPhone) legacyClaimPhone.addEventListener('input', updateClaimMatch);
 
-  $('claimForm').addEventListener('submit', async (e) => {
+  const legacyClaimForm = $('claimForm');
+  if (legacyClaimForm) legacyClaimForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const err = $('claimError'), btn = $('claimSubmit');
     err.textContent = '';
