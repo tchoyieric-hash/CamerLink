@@ -238,7 +238,7 @@
       grp.innerHTML = '<label for="adQuartier">Quartier (facultatif)</label>' +
         '<input class="form-sheet-el" id="adQuartier" type="text" maxlength="' + MAX_QUARTIER + '" list="quartiersList" placeholder="Ex : Bastos, Akwa…" autocomplete="off">' +
         '<datalist id="quartiersList"></datalist>' +
-        '<small class="form-hint">Aide les acheteurs à vous trouver. N’indiquez pas votre adresse exacte.</small>';
+        '<small class="form-hint">Aide les acheteurs à vous trouver. La position GPS est facultative et arrondie pour rester approximative.</small>';
       const holder = adCity.closest('.form-group');
       if (holder) holder.insertAdjacentElement('afterend', grp);
       const gpsBtn = document.createElement('button');
@@ -246,17 +246,17 @@
       gpsBtn.type = 'button';
       gpsBtn.className = 'form-sheet-el';
       gpsBtn.style.cssText = 'width:100%;min-height:42px;margin-top:8px;border:1px solid rgba(48,210,230,.45);border-radius:12px;background:rgba(48,210,230,.08);color:inherit;font-weight:700;cursor:pointer;';
-      gpsBtn.textContent = '📍 Ajouter ma position (facultatif)';
+      gpsBtn.textContent = '📍 Ajouter une position approximative (facultatif)';
       gpsBtn.setAttribute('aria-label', 'Enregistrer la position GPS de cette annonce');
       gpsBtn.addEventListener('click', () => {
         if (!navigator.geolocation) { toast('La localisation GPS n’est pas disponible sur cet appareil.'); return; }
         gpsBtn.disabled = true;
         gpsBtn.textContent = 'Localisation…';
         navigator.geolocation.getCurrentPosition(pos => {
-          adGpsPosition = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          adGpsPosition = { lat: Math.round(pos.coords.latitude * 1000) / 1000, lng: Math.round(pos.coords.longitude * 1000) / 1000 };
           gpsBtn.disabled = false;
           gpsBtn.textContent = '✓ Position ajoutée à cette annonce';
-          toast('Position enregistrée pour cette publication. Elle sera partagée avec l’annonce.');
+          toast('Position approximative enregistrée. Elle servira à classer les annonces proches.');
         }, () => {
           adGpsPosition = null;
           gpsBtn.disabled = false;
