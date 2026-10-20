@@ -39,6 +39,7 @@
   <link rel="stylesheet" href="/camerlink-mobile-dark-fix.css?v=1">
   <link rel="stylesheet" href="/camerlink-social-redesign.css?v=2">
   <link rel="stylesheet" href="/camerlink-growth-suite.css?v=1">
+  <link rel="stylesheet" href="/camerlink-social-discovery.css?v=20261020">
 </head>
 <body>
 <!--SEO_BODY-->
@@ -86,6 +87,29 @@
   </div>
   <div style="display:flex;justify-content:center;margin:16px auto 4px;padding:0 14px;">
     <a href="/monetisation.html" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#17120a;font-weight:900;text-decoration:none;box-shadow:0 8px 24px #f59e0b25;">🚀 Booster mon annonce · dès 500 FCFA</a>
+  </div>
+</section>
+
+<!-- CamerLink Social Discovery: Snapchat-inspired local discovery -->
+<section id="cl-social-discovery" class="cl-social-discovery" aria-labelledby="cl-social-title">
+  <div class="cl-social-head">
+    <div><span class="cl-social-kicker">DÉCOUVRIR PRÈS DE CHEZ VOUS</span><h2 id="cl-social-title">CamerLink <span>Découverte</span></h2><p>Des artisans, des vidéos et des services près de votre ville.</p></div>
+    <button type="button" id="cl-social-camera" class="cl-social-camera">＋ Créer un Snap</button>
+  </div>
+  <div class="cl-social-actions" aria-label="Raccourcis CamerLink">
+    <button type="button" data-cl-jump="#reels-section"><span>▶</span><b>Spotlight</b><small>Vidéos plein écran</small></button>
+    <button type="button" data-cl-jump="#shops-container"><span>◉</span><b>Stories</b><small>Statuts de 24 h</small></button>
+    <button type="button" data-cl-jump="#listings-grid"><span>⌕</span><b>Explorer</b><small>Annonces locales</small></button>
+  </div>
+  <div class="cl-social-map">
+    <div><b>Explorer par ville</b><p>Choisissez une ville pour filtrer les annonces et ouvrir sa carte.</p></div>
+    <div class="cl-social-city-row">
+      <button type="button" data-cl-city="Douala">📍 Douala</button>
+      <button type="button" data-cl-city="Yaoundé">📍 Yaoundé</button>
+      <button type="button" data-cl-city="Bafoussam">📍 Bafoussam</button>
+      <button type="button" data-cl-city="Garoua">📍 Garoua</button>
+    </div>
+    <p class="cl-social-note" id="cl-social-map-note" aria-live="polite">La carte s’ouvre sur la ville choisie. La localisation personnelle n’est pas activée automatiquement.</p>
   </div>
 </section>
 
@@ -241,7 +265,7 @@
 </nav>
 
 <div id="toast"></div>
-<script src="/script.js?v=messages-fix-20261019"></script>
+<script src="/script.js?v=reviews-comments-retry-20261020"></script>
 <script src="/statuts.js?v=swipe-20261017"></script>
 <script src="/shell.js?v=seven-pages-20261019"></script>
 <script src="/profil-page.js?v=artisan-profile-metrics-20261018"></script>
@@ -250,5 +274,6 @@
   <script src="/camerlink-seven-pages.js?v=1"></script>
   <script src="/espace-pro.js?v=espace-pro-media-avis-20261018"></script>
   <script src="/camerlink-growth-suite.js?v=1" defer></script>
+  <script src="/camerlink-social-discovery.js?v=20261020" defer></script>
 </body>
 </html>

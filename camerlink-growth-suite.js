@@ -217,7 +217,26 @@
   }
   function init() {
     addStyle(); mountActions(); addListingShortcuts();
-    var observer = new MutationObserver(function(){ mountActions(); addListingShortcuts(); });
+
+    // Évite de rescanner toutes les annonces à chaque mutation (y compris les boutons
+    // ajoutés par ce module). Les actions ne sont recalculées que si de nouvelles cartes arrivent.
+    var queued = false;
+    var cardSelector = '[data-annonce-id], .annonce-card[data-id], .ad-card[data-id]';
+    var observer = new MutationObserver(function(records) {
+      var hasNewCard = records.some(function(record) {
+        return Array.prototype.some.call(record.addedNodes, function(node) {
+          if (!node || node.nodeType !== 1) return false;
+          return (node.matches && node.matches(cardSelector)) ||
+            (node.querySelector && node.querySelector(cardSelector));
+        });
+      });
+      if (!hasNewCard || queued) return;
+      queued = true;
+      window.requestAnimationFrame(function() {
+        queued = false;
+        addListingShortcuts();
+      });
+    });
     observer.observe(document.body, {childList:true,subtree:true});
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

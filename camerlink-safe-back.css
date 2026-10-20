@@ -1,0 +1,31 @@
+/* CamerLink — bouton Retour isolé, sans styles globaux. */
+#cl-safe-back {
+  position: fixed;
+  z-index: 1450;
+  top: calc(env(safe-area-inset-top, 0px) + 72px);
+  left: max(10px, env(safe-area-inset-left, 0px) + 8px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 9px 13px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 999px;
+  background: rgba(13,19,29,.94);
+  color: #fff;
+  box-shadow: 0 5px 20px rgba(0,0,0,.25);
+  font: 700 13px/1.2 Inter, system-ui, sans-serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(10px);
+}
+#cl-safe-back span:first-child { font-size: 21px; line-height: .8; }
+#cl-safe-back[hidden] { display: none !important; }
+#cl-safe-back:focus-visible { outline: 3px solid #ffb36f; outline-offset: 3px; }
+@media (max-width: 600px) {
+  #cl-safe-back { top: calc(env(safe-area-inset-top, 0px) + 68px); min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #cl-safe-back { scroll-behavior: auto; }
+}
