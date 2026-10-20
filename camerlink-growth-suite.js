@@ -31,7 +31,7 @@
       '<label>Votre ville<select name="city" required><option value="">Choisir une ville</option><option>Yaoundé</option><option>Douala</option><option>Bafoussam</option><option>Bamenda</option><option>Buea</option><option>Garoua</option><option>Maroua</option><option>Ngaoundéré</option><option>Bertoua</option><option>Ebolowa</option><option>Kribi</option><option>Autre</option></select></label>' +
       '<label>Budget estimé (FCFA, facultatif)<input name="budget" type="number" min="0" max="1000000000" inputmode="numeric" placeholder="Ex. 25000"></label>' +
       '<label>Détails du travail<textarea name="details" required minlength="10" maxlength="2000" rows="4" placeholder="Expliquez ce qu’il faut réaliser…"></textarea></label>' +
-      '<label>Professionnel sélectionné<input name="artisan_id" required maxlength="80" placeholder="Choisissez un artisan depuis une annonce"></label>' +
+      '<p class="cl-growth-muted">Professionnel sélectionné : <strong data-artisan-name>Choisissez une annonce</strong></p><input name="artisan_id" type="hidden" required>' +
       '<button class="cl-growth-primary" type="submit">Envoyer ma demande</button><p class="cl-growth-feedback" role="status"></p></form></section>';
     document.body.appendChild(wrap);
     wrap.querySelector('.cl-growth-close').addEventListener('click', closeModal);
@@ -39,12 +39,14 @@
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
     wrap.querySelector('#cl-quote-form').addEventListener('submit', submitQuote);
   }
-  function openModal(artisanId, service, city) {
+  function openModal(artisanId, service, city, artisanName) {
     buildModal();
     var m = document.getElementById('cl-quote-modal');
     var form = m.querySelector('#cl-quote-form');
     if (artisanId) {
       form.elements.artisan_id.value = artisanId;
+      var selectedName = form.querySelector('[data-artisan-name]');
+      if (selectedName) selectedName.textContent = artisanName || 'Artisan CamerLink';
       if (service) form.elements.service.value = service;
       if (city) {
         var citySelect = form.elements.city;
@@ -53,7 +55,10 @@
       }
       form.querySelector('.cl-growth-feedback').textContent = 'Votre demande sera adressée à ce professionnel.';
     } else {
-      form.querySelector('.cl-growth-feedback').textContent = 'Pour qu’un artisan reçoive votre demande, ouvrez une annonce et choisissez « Demander un devis ». ';
+      form.elements.artisan_id.value = '';
+      var selectedName = form.querySelector('[data-artisan-name]');
+      if (selectedName) selectedName.textContent = 'Choisissez une annonce';
+      form.querySelector('.cl-growth-feedback').textContent = 'Ouvrez une annonce et utilisez « Demander un devis » pour transmettre votre demande à un professionnel précis.';
     }
     m.hidden = false;
     var first = m.querySelector('input'); if (first) first.focus();
@@ -100,7 +105,7 @@
     document.body.appendChild(bar);
     bar.addEventListener('click', function(e) {
       var b = e.target.closest('button'); if (!b) return;
-      if (b.dataset.action === 'quote') openModal();
+      if (b.dataset.action === 'quote') toast('Ouvrez une annonce puis appuyez sur « Demander un devis » pour choisir le bon professionnel.');
       if (b.dataset.action === 'myquotes') showMyQuotes();
       if (b.dataset.action === 'incoming') showIncomingQuotes();
       if (b.dataset.action === 'share') shareApp();
@@ -200,9 +205,10 @@
         quote.addEventListener('click', function(ev) {
           ev.preventDefault(); ev.stopPropagation();
           var title = card.querySelector('.ad-title');
+          var sellerNode = card.querySelector('.cl-feed-seller-name');
           var cityNode = card.querySelector('.ad-city');
           var city = cityNode ? cityNode.textContent.replace(/^\\s*📍\\s*/, '').split(',').pop().trim() : '';
-          openModal(artisanId, title ? title.textContent.trim() : '', city);
+          openModal(artisanId, title ? title.textContent.trim() : '', city, sellerNode ? sellerNode.textContent.trim() : 'Artisan CamerLink');
         });
         actions.appendChild(quote);
       }
