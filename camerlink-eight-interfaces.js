@@ -45,14 +45,7 @@
       '<button class="cl-eight-shortcut" data-screen="messages"><b>▤</b>Messages</button>'+
       '<button class="cl-eight-shortcut" data-screen="profile"><b>◉</b>Profil</button>'+
       '<button class="cl-eight-shortcut" data-screen="publish"><b>＋</b>Publier</button></div>';
-      '<button class="cl-eight-shortcut" data-screen="home"><b>⌂</b>Accueil</button>'+
-      '<button class="cl-eight-shortcut" data-screen="reels"><b>▶</b>Réels</button>'+
-      '<button class="cl-eight-shortcut" data-screen="profile"><b>◉</b>Profil</button>'+
-      '<button class="cl-eight-shortcut" data-screen="market"><b>▦</b>Marketplace</button>'+
-      '<button class="cl-eight-shortcut" data-screen="messages"><b>▤</b>Messages</button>'+
-      '<button class="cl-eight-shortcut" data-screen="publish"><b>＋</b>Publier</button>'+
-      '<button class="cl-eight-shortcut" data-screen="menu"><b>☷</b>Mon espace</button>'+
-      '<button class="cl-eight-shortcut" data-screen="community"><b>♡</b>Communauté</button></div>';
+
     const target=$('.hero') || $('.shops-section') || $('#categoryChips');
     if(target) target.insertAdjacentElement('beforebegin',hero);
     const community=document.createElement('section');
