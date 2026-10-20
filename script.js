@@ -1601,7 +1601,7 @@
     const prev = currentUser && currentUser.id;
     currentUser = session ? session.user : null;
     $('authBtn').textContent = currentUser ? 'Déconnexion' : 'Connexion';
-    $('claimBtn').style.display = currentUser ? '' : 'none';
+    const claimButton = $('claimBtn'); if (claimButton) claimButton.style.display = 'none'; // récupération des anciennes annonces retirée
     if (!authInit || prev !== (currentUser && currentUser.id)) {
       authInit = true;
       setTimeout(subscribeMessages, 0);
