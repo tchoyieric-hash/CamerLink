@@ -4,10 +4,12 @@
   const $ = (s, root=document) => root.querySelector(s);
   const $$ = (s, root=document) => [...root.querySelectorAll(s)];
   function openScreen(screen) {
-    document.body.classList.remove('cl-screen-home','cl-screen-reels','cl-screen-profile','cl-screen-market');
+    document.body.classList.remove('cl-screen-home','cl-screen-reels','cl-screen-profile','cl-screen-market','cl-screen-menu','cl-screen-messages');
     if (screen === 'reels') document.body.classList.add('cl-screen-reels');
     if (screen === 'profile') document.body.classList.add('cl-screen-profile');
     if (screen === 'market') document.body.classList.add('cl-screen-market');
+    if (screen === 'menu') document.body.classList.add('cl-screen-menu');
+    if (screen === 'messages') document.body.classList.add('cl-screen-messages');
     $$('.cl-eight-shortcut,.cl-nav [data-m]').forEach(el => {
       const key = el.dataset.screen || (el.dataset.m === 'home' ? 'home' : el.dataset.m === 'profil' ? 'profile' : el.dataset.m);
       el.classList.toggle('active', key === screen || (screen === 'market' && key === 'home'));
@@ -25,9 +27,9 @@
       const pub = $('#pubBtn') || $('#nav-add');
       pub?.click();
     } else if (screen === 'menu') {
-      const profile = $('#profile-section');
-      profile?.classList.remove('shell-off');
-      profile?.scrollIntoView({behavior:'smooth',block:'start'});
+      const space = $('#cl-artisan-space');
+      if (space) { space.classList.remove('shell-off'); space.scrollIntoView({behavior:'smooth',block:'start'}); }
+      else { const profile = $('#profile-section'); profile?.classList.remove('shell-off'); profile?.scrollIntoView({behavior:'smooth',block:'start'}); }
     } else if (screen === 'community') {
       $('#cl-community')?.scrollIntoView({behavior:'smooth',block:'center'});
     } else window.scrollTo({top:0,behavior:'smooth'});
@@ -45,7 +47,7 @@
       '<button class="cl-eight-shortcut" data-screen="publish"><b>＋</b>Publier</button>'+
       '<button class="cl-eight-shortcut" data-screen="menu"><b>☷</b>Mon espace</button>'+
       '<button class="cl-eight-shortcut" data-screen="community"><b>♡</b>Communauté</button></div>';
-    const heroTarget = $('.hero');
+    const heroTarget = $('.hero') || $('.shops-section') || $('#categoryChips');
     if (heroTarget) heroTarget.insertAdjacentElement('beforebegin', hero);
     const community = document.createElement('section');
     community.className = 'cl-eight-community';
