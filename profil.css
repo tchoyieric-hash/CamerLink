@@ -174,3 +174,229 @@
 .pf-insights b{display:block;font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
 .pf-insights span{display:block;margin-top:3px;font-size:11px;line-height:1.25;color:var(--sh-mut)}
 @media(min-width:560px){.pf-insights{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;padding:14px}.pf-insights span{font-size:12px}}
+
+
+/* CamerLink — harmonisation identité du profil (photo, nom, bio) */
+#profile-section .pf-top,
+#profile-section .pf-head,
+#profile-section .pf-info,
+#profile-section .pf-btns {
+  box-sizing: border-box;
+}
+#profile-section .pf-head {
+  align-items: center;
+}
+#profile-section .pf-av {
+  flex-shrink: 0;
+  overflow: visible;
+}
+#profile-section .pf-av .im {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+#profile-section .pf-info .nm {
+  color: var(--sh-txt, #f7f8fc);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+#profile-section .pf-info .bio {
+  color: var(--sh-txt, #f7f8fc);
+  opacity: .92;
+  overflow-wrap: anywhere;
+}
+#profile-section .pf-info .ct {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#profile-section .pf-info .ct:before {
+  content: "⌖";
+  opacity: .8;
+}
+#profile-section .pf-btns {
+  flex-wrap: wrap;
+}
+#profile-section .pf-btns button {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+#profile-section .pf-insights {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 clamp(16px, 4vw, 32px) 18px;
+}
+#profile-section .pf-insights > div {
+  min-width: 0;
+  padding: 12px 8px;
+  border: 1px solid var(--cl-line, rgba(164,184,216,.14));
+  border-radius: 14px;
+  background: var(--cl-surface-2, rgba(21,30,46,.72));
+  text-align: center;
+}
+#profile-section .pf-insights b,
+#profile-section .pf-insights span {
+  display: block;
+}
+#profile-section .pf-insights b {
+  font-size: clamp(15px, 2.5vw, 21px);
+  font-weight: 850;
+  line-height: 1.25;
+}
+#profile-section .pf-insights span {
+  margin-top: 5px;
+  color: var(--sh-mut, #9ba6bd);
+  font-size: 11px;
+  line-height: 1.3;
+}
+#profile-section .pf-discovery {
+  margin: 0 clamp(16px, 4vw, 32px) 18px;
+  padding: 16px;
+  border: 1px solid var(--cl-line, rgba(164,184,216,.14));
+  border-radius: 18px;
+  background: var(--cl-surface-2, rgba(21,30,46,.45));
+  overflow: hidden;
+}
+#profile-section .pf-discovery-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+#profile-section .pf-discovery-head h3 {
+  margin: 0;
+  font-size: 16px;
+}
+#profile-section .pf-discovery-head p {
+  margin: 4px 0 0;
+  color: var(--sh-mut, #9ba6bd);
+  font-size: 12px;
+}
+#profile-section .pf-discovery-head > button {
+  flex-shrink: 0;
+  border: 1px solid var(--cl-line, rgba(164,184,216,.14));
+  background: transparent;
+  color: var(--sh-txt, #f7f8fc);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+#profile-section .pf-creator-track {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scroll-snap-type: x proximity;
+}
+#profile-section .pf-creator-card {
+  flex: 0 0 150px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--cl-line, rgba(164,184,216,.14));
+  background: var(--cl-bg, #070a12);
+  text-align: center;
+  scroll-snap-align: start;
+}
+#profile-section .pf-creator-person {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--sh-txt, #f7f8fc);
+  font: inherit;
+  cursor: pointer;
+}
+#profile-section .pf-creator-avatar {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #35d9ee, #6785ff, #9871ff);
+  color: #fff;
+  font-weight: 800;
+}
+#profile-section .pf-creator-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#profile-section .pf-creator-person b {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+#profile-section .pf-creator-person small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--sh-mut, #9ba6bd);
+  font-size: 11px;
+}
+#profile-section .pf-creator-follow,
+#profile-section .pf-creator-message {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 6px;
+  border: 1px solid var(--cl-line, rgba(164,184,216,.14));
+  border-radius: 9px;
+  background: var(--cl-surface-2, #151e2e);
+  color: var(--sh-txt, #f7f8fc);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+#profile-section .pf-creator-follow[aria-pressed="true"] {
+  background: rgba(53,217,238,.12);
+  border-color: rgba(53,217,238,.45);
+}
+#profile-section .pf-creator-loading {
+  color: var(--sh-mut, #9ba6bd);
+  font-size: 13px;
+  padding: 12px 2px;
+}
+#profile-section .pf-cell .pr {
+  line-height: 1.35;
+}
+@media (max-width: 480px) {
+  #profile-section .pf-head {
+    gap: 12px !important;
+  }
+  #profile-section .pf-stats {
+    gap: 4px !important;
+  }
+  #profile-section .pf-stats b {
+    font-size: 16px !important;
+  }
+  #profile-section .pf-stats span {
+    font-size: 10px !important;
+    overflow-wrap: anywhere;
+  }
+  #profile-section .pf-insights {
+    gap: 6px;
+  }
+  #profile-section .pf-insights > div {
+    padding: 10px 4px;
+    border-radius: 11px;
+  }
+  #profile-section .pf-insights span {
+    font-size: 10px;
+  }
+  #profile-section .pf-btns button {
+    flex-basis: calc(50% - 8px);
+    font-size: 12px !important;
+  }
+  #profile-section .pf-btns #pf-create {
+    flex-basis: 100%;
+  }
+}
