@@ -16,17 +16,22 @@
     });
     if (screen === 'reels') $('#reels-section')?.scrollIntoView({behavior:'smooth',block:'start'});
     else if (screen === 'profile') {
+      if (window.CamerLinkShell && typeof window.CamerLinkShell.setMode === 'function') window.CamerLinkShell.setMode('profil');
       const profile = $('#profile-section');
       profile?.classList.remove('shell-off');
       profile?.scrollIntoView({behavior:'smooth',block:'start'});
-    } else if (screen === 'market') $('#listings-grid')?.scrollIntoView({behavior:'smooth',block:'start'});
+    } else if (screen === 'market') {
+      if (window.CamerLinkShell && typeof window.CamerLinkShell.setMode === 'function') window.CamerLinkShell.setMode('annonces');
+      $('#listings-grid')?.scrollIntoView({behavior:'smooth',block:'start'});
+    }
     else if (screen === 'messages') {
-      const msg = $('#nav-msg') || $('#msgInboxBtn');
+      const msg = $('#msgInboxBtn');
       msg?.click();
     } else if (screen === 'publish') {
       const pub = $('#pubBtn') || $('#nav-add');
       pub?.click();
     } else if (screen === 'menu') {
+      if (window.CamerLinkShell && typeof window.CamerLinkShell.setMode === 'function') window.CamerLinkShell.setMode('artisan');
       const space = $('#cl-artisan-space');
       if (space) { space.classList.remove('shell-off'); space.scrollIntoView({behavior:'smooth',block:'start'}); }
       else { const profile = $('#profile-section'); profile?.classList.remove('shell-off'); profile?.scrollIntoView({behavior:'smooth',block:'start'}); }
