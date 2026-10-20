@@ -1,8 +1,8 @@
 /* CamerLink PWA service worker — cache limité aux ressources statiques publiques. */
 'use strict';
-const CACHE_NAME = 'camerlink-v8';
-const APP_SHELL = ['/', '/index.html', '/style.css', '/profil.css', '/script.js', '/shell.js', '/profil-page.js', '/profil-public.js', '/reels.css', '/statuts.css', '/shell.css', '/statuts.js', '/register-sw.js', '/camerlink-premium.css', '/camerlink-logo.png', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/apple-touch-icon.png', '/favicon-32.png', '/manifest.webmanifest', '/confidentialite.html', '/conditions.html'];
-const STATIC_PREFIXES = ['/style.css','/profil.css','/script.js','/shell.js','/profil-page.js','/profil-public.js','/reels.css','/statuts.css','/shell.css','/statuts.js','/register-sw.js','/camerlink-premium.css','/camerlink-logo.png','/icon-','/apple-touch-icon.png','/favicon-'];
+const CACHE_NAME = 'camerlink-v9-growth-suite';
+const APP_SHELL = ['/', '/index.html', '/style.css', '/profil.css', '/script.js', '/shell.js', '/profil-page.js', '/profil-public.js', '/reels.css', '/statuts.css', '/shell.css', '/statuts.js', '/register-sw.js', '/camerlink-premium.css', '/camerlink-growth-suite.css', '/camerlink-growth-suite.js', '/camerlink-logo.png', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/apple-touch-icon.png', '/favicon-32.png', '/manifest.webmanifest', '/confidentialite.html', '/conditions.html'];
+const STATIC_PREFIXES = ['/style.css','/profil.css','/script.js','/shell.js','/profil-page.js','/profil-public.js','/reels.css','/statuts.css','/shell.css','/statuts.js','/register-sw.js','/camerlink-premium.css','/camerlink-growth-suite.css','/camerlink-growth-suite.js','/camerlink-logo.png','/icon-','/apple-touch-icon.png','/favicon-'];
 function isPublicStatic(url) { return url.origin === self.location.origin && STATIC_PREFIXES.some(prefix => url.pathname === prefix || url.pathname.startsWith(prefix)); }
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
