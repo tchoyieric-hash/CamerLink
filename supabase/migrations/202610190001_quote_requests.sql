@@ -41,10 +41,7 @@ drop policy if exists "quote_requests_update_assigned_artisan" on public.quote_r
 create policy "quote_requests_update_assigned_artisan" on public.quote_requests
   for update to authenticated
   using (artisan_id = (select auth.uid()) and status = 'pending')
-  with check (
-    artisan_id = (select auth.uid())
-    and status in ('quoted','rejected')
-  );
+  with check (artisan_id = (select auth.uid()) and status in ('quoted','rejected'));
 
 drop policy if exists "quote_requests_cancel_own" on public.quote_requests;
 create policy "quote_requests_cancel_own" on public.quote_requests
@@ -57,8 +54,10 @@ create policy "quote_requests_cancel_own" on public.quote_requests
     and artisan_response is null
   );
 
--- Remove broad table-level grants before granting only required operations.
 revoke all on table public.quote_requests from anon, authenticated;
-grant select, insert on table public.quote_requests to authenticated;
-grant update (status, quote_fcfa, artisan_response, updated_at) on table public.quote_requests to authenticated;
+grant select on table public.quote_requests to authenticated;
+grant insert (requester_id, artisan_id, service, city, budget_fcfa, details, status)
+  on table public.quote_requests to authenticated;
+grant update (status, quote_fcfa, artisan_response, updated_at)
+  on table public.quote_requests to authenticated;
 grant usage, select on sequence public.quote_requests_id_seq to authenticated;
