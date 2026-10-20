@@ -1,0 +1,31 @@
+/* CamerLink — bouton Retour accessible sur les vues secondaires et fenêtres. */
+#cl-global-back {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + var(--hdr, 64px) + 8px);
+  left: max(12px, env(safe-area-inset-left, 0px) + 8px);
+  z-index: 1500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 13px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+  background: rgba(12,18,29,.94);
+  color: #fff;
+  box-shadow: 0 6px 22px rgba(0,0,0,.3);
+  font: 700 13px/1.1 Inter, system-ui, sans-serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(12px);
+}
+#cl-global-back span:first-child { font-size: 22px; line-height: .8; }
+#cl-global-back[hidden] { display: none !important; }
+#cl-global-back:focus-visible { outline: 3px solid #ffb36f; outline-offset: 3px; }
+@media (max-width: 600px) {
+  #cl-global-back { min-height: 42px; padding: 9px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #cl-global-back { scroll-behavior: auto; }
+}
