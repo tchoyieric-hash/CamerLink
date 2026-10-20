@@ -109,7 +109,11 @@
     if (next && next !== knownMode) {
       modeStack.push(knownMode);
       if (modeStack.length > 30) modeStack.shift();
-      try { window.history.pushState({ clMode: next }, '', next === 'home' ? location.pathname + location.search : '#' + next); } catch (e) {}
+      // shell.js updates the URL with replaceState during the same click.
+      // Push only after its handler has finished, otherwise its replaceState erases our entry.
+      window.setTimeout(function () {
+        try { window.history.pushState({ clMode: next }, '', next === 'home' ? location.pathname + location.search : '#' + next); } catch (e) {}
+      }, 0);
     }
   }, true);
 
