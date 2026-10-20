@@ -31,7 +31,7 @@
       '<label>Votre ville<select name="city" required><option value="">Choisir une ville</option><option>Yaoundé</option><option>Douala</option><option>Bafoussam</option><option>Bamenda</option><option>Buea</option><option>Garoua</option><option>Maroua</option><option>Ngaoundéré</option><option>Bertoua</option><option>Ebolowa</option><option>Kribi</option><option>Autre</option></select></label>' +
       '<label>Budget estimé (FCFA, facultatif)<input name="budget" type="number" min="0" max="1000000000" inputmode="numeric" placeholder="Ex. 25000"></label>' +
       '<label>Détails du travail<textarea name="details" required minlength="10" maxlength="2000" rows="4" placeholder="Expliquez ce qu’il faut réaliser…"></textarea></label>' +
-      '<label>Identifiant du professionnel (facultatif)<input name="artisan_id" maxlength="80" placeholder="Laisser vide pour une demande générale"></label>' +
+      '<label>Professionnel sélectionné<input name="artisan_id" required maxlength="80" placeholder="Choisissez un artisan depuis une annonce"></label>' +
       '<button class="cl-growth-primary" type="submit">Envoyer ma demande</button><p class="cl-growth-feedback" role="status"></p></form></section>';
     document.body.appendChild(wrap);
     wrap.querySelector('.cl-growth-close').addEventListener('click', closeModal);
@@ -39,9 +39,23 @@
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
     wrap.querySelector('#cl-quote-form').addEventListener('submit', submitQuote);
   }
-  function openModal() {
+  function openModal(artisanId, service, city) {
     buildModal();
-    var m = document.getElementById('cl-quote-modal'); m.hidden = false;
+    var m = document.getElementById('cl-quote-modal');
+    var form = m.querySelector('#cl-quote-form');
+    if (artisanId) {
+      form.elements.artisan_id.value = artisanId;
+      if (service) form.elements.service.value = service;
+      if (city) {
+        var citySelect = form.elements.city;
+        var match = Array.from(citySelect.options).find(function(o){ return o.value.toLowerCase() === city.toLowerCase() || o.textContent.toLowerCase() === city.toLowerCase(); });
+        if (match) citySelect.value = match.value;
+      }
+      form.querySelector('.cl-growth-feedback').textContent = 'Votre demande sera adressée à ce professionnel.';
+    } else {
+      form.querySelector('.cl-growth-feedback').textContent = 'Pour qu’un artisan reçoive votre demande, ouvrez une annonce et choisissez « Demander un devis ». ';
+    }
+    m.hidden = false;
     var first = m.querySelector('input'); if (first) first.focus();
   }
   function closeModal() { var m = document.getElementById('cl-quote-modal'); if(m) m.hidden = true; }
@@ -54,9 +68,14 @@
       var auth = await supabase.auth.getUser();
       if (!auth.data || !auth.data.user) { feedback.textContent = 'Connectez-vous pour envoyer une demande de devis.'; button.disabled = false; return; }
       var d = new FormData(form), budget = d.get('budget');
+      var artisanId = String(d.get('artisan_id') || '').trim();
+      if (!artisanId) {
+        feedback.textContent = 'Choisissez un professionnel depuis une annonce pour que votre demande lui soit réellement transmise.';
+        return;
+      }
       var payload = {
         requester_id: auth.data.user.id,
-        artisan_id: String(d.get('artisan_id') || '').trim() || null,
+        artisan_id: artisanId,
         service: String(d.get('service') || '').trim(),
         city: String(d.get('city') || '').trim(),
         budget_fcfa: budget ? Number(budget) : null,
@@ -134,7 +153,7 @@
           form.innerHTML='<label>Votre prix proposé (FCFA)<input name="price" type="number" min="0" max="1000000000" required></label><label>Votre réponse<textarea name="reply" maxlength="2000" rows="3" required></textarea></label><button class="cl-growth-primary" type="submit">Envoyer le devis</button><p class="cl-growth-feedback" role="status"></p>';
           form.addEventListener('submit',async function(ev){
             ev.preventDefault();var b=form.querySelector('button'),fb=form.querySelector('.cl-growth-feedback');b.disabled=true;fb.textContent='Envoi…';
-            try{var fd=new FormData(form);var up=await supabase.from('quote_requests').update({quote_fcfa:Number(fd.get('price')),artisan_response:String(fd.get('reply')).trim(),status:'quoted',updated_at:new Date().toISOString()}).eq('id',q.id);if(up.error)throw up.error;fb.textContent='Devis envoyé.';b.textContent='Envoyé';}
+            try{var fd=new FormData(form);var up=await supabase.from('quote_requests').update({quote_fcfa:Number(fd.get('price')),artisan_response:String(fd.get('reply')).trim(),status:'quoted',updated_at:new Date().toISOString()}).eq('id',q.id).select('id').single();if(up.error)throw up.error;fb.textContent='Devis envoyé et confirmé.';b.textContent='Envoyé';}
             catch(err){console.error('[CamerLink réponse devis]',err);fb.textContent='Envoi impossible. Vérifiez les droits Supabase.';b.disabled=false;}
           });
           item.appendChild(form);
@@ -173,7 +192,21 @@
         else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function(){toast('Lien de l’annonce copié');});
         else window.prompt('Copiez le lien :', url);
       });
-      actions.appendChild(fav); actions.appendChild(btn); card.appendChild(actions);
+      actions.appendChild(fav); actions.appendChild(btn);
+      var artisanButton = card.querySelector('[data-msg]');
+      var artisanId = artisanButton && artisanButton.getAttribute('data-msg');
+      if (artisanId) {
+        var quote = document.createElement('button'); quote.type = 'button'; quote.className = 'cl-growth-card-share'; quote.textContent = '＋ Demander un devis';
+        quote.addEventListener('click', function(ev) {
+          ev.preventDefault(); ev.stopPropagation();
+          var title = card.querySelector('.ad-title');
+          var cityNode = card.querySelector('.ad-city');
+          var city = cityNode ? cityNode.textContent.replace(/^\\s*📍\\s*/, '').split(',').pop().trim() : '';
+          openModal(artisanId, title ? title.textContent.trim() : '', city);
+        });
+        actions.appendChild(quote);
+      }
+      card.appendChild(actions);
     });
   }
   function init() {
