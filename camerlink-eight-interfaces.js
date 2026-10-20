@@ -14,6 +14,8 @@
       const key = el.dataset.screen || (el.dataset.m === 'home' ? 'home' : el.dataset.m === 'profil' ? 'profile' : el.dataset.m);
       el.classList.toggle('active', key === screen || (screen === 'market' && key === 'home'));
     });
+    if (screen === 'home' && window.CamerLinkShell && typeof window.CamerLinkShell.setMode === 'function') window.CamerLinkShell.setMode('home');
+    if (screen === 'reels' && window.CamerLinkShell && typeof window.CamerLinkShell.setMode === 'function') window.CamerLinkShell.setMode('reels');
     if (screen === 'reels') $('#reels-section')?.scrollIntoView({behavior:'smooth',block:'start'});
     else if (screen === 'profile') {
       if (window.CamerLinkShell && typeof window.CamerLinkShell.setMode === 'function') window.CamerLinkShell.setMode('profil');
