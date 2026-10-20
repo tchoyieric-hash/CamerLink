@@ -1,0 +1,40 @@
+/* CamerLink — identité nationale premium : vert, rouge, jaune, étoile au centre du rouge */
+:root{--cm-green:#007a3d;--cm-red:#ce1126;--cm-yellow:#ffdf00;--cm-black:#050a08;--cm-panel:#0b1510;--cm-line:#28533e;--cm-text:#f7fff9;--cm-muted:#b8c9bf}
+html,body{accent-color:var(--cm-yellow)}
+body{--cl2050-orange:var(--cm-yellow);--cl2050-blue:var(--cm-green)}
+/* Le logo existant reste intact; anneau tricolore cohérent autour des marques et avatars */
+.cl-welcome-logo,.brand-logo-img{filter:drop-shadow(0 0 8px #ffdf0040)}
+.cl-welcome-card{background:linear-gradient(155deg,#06170e 0%,#050807 56%,#24060b 100%)!important;border:1px solid #1b7045!important;box-shadow:0 0 0 1px #ce112622,0 18px 60px #0008!important}
+.cl-welcome-kicker{color:var(--cm-yellow)!important;letter-spacing:.16em!important}
+.cl-welcome-title,.cl-welcome-card h1{color:#fff!important}
+.cl-welcome-card h1 span{background:linear-gradient(90deg,#00a651 0 32%,#fff 32% 35%,#ce1126 35% 68%,#ffdf00 68% 100%);-webkit-background-clip:text;background-clip:text;color:transparent!important}
+.cl-welcome-primary{background:linear-gradient(100deg,#007a3d,#ce1126)!important;border:1px solid #ffdf00!important;color:#fff!important;box-shadow:0 8px 25px #007a3d45!important}
+.cl-welcome-card button:not(.cl-welcome-primary){border-color:#ffdf00!important;color:#fff!important}
+body.cl-screen-home,body.cl-screen-reels,body.cl-screen-profile,body.cl-screen-messages,body.cl-screen-market,body.cl-screen-menu{background:#050a08!important;color:#f7fff9!important}
+body.cl-screen-home .cl-top,body.cl-screen-reels .cl-top,body.cl-screen-profile .cl-top,body.cl-screen-messages .cl-top{background:#050a08f5!important;border-bottom:1px solid #20533a!important}
+body.cl-screen-home .brand-wordmark span,body .brand-wordmark span{color:var(--cm-yellow)!important}
+body.cl-screen-home .cl-top .btn-pub,body.cl-screen-home .cl-nav button.plus,body.cl-screen-home .cl-nav #nav-add,body .cl-welcome-primary{background:linear-gradient(120deg,#007a3d,#ce1126)!important;color:#fff!important;border:1px solid #ffdf00!important}
+body.cl-screen-home .cl-eight-hero{background:radial-gradient(ellipse at 0 0,#007a3d42,transparent 45%),radial-gradient(ellipse at 100% 0,#ce112632,transparent 42%),linear-gradient(140deg,#0b1710,#070b08)!important;border-color:#285b3e!important}
+body.cl-screen-home .cl-eight-hero h1 span{color:var(--cm-yellow)!important}
+body.cl-screen-home .cl-eight-shortcut b{background:#0c3823!important;color:var(--cm-yellow)!important}
+body.cl-screen-home .cl-eight-shortcut[data-screen=publish]{background:linear-gradient(120deg,#007a3d,#ce1126)!important;border-color:var(--cm-yellow)!important}
+body.cl-screen-home .search-input,body.cl-screen-home .city-select,body.cl-screen-home .price-select{background:#0a1710!important;border-color:#28533e!important;color:#fff!important}
+body.cl-screen-home .categories-scroll button.active,body.cl-screen-home .category-chip.active{background:var(--cm-red)!important;border-color:var(--cm-yellow)!important;color:#fff!important}
+body.cl-screen-home .listings-grid .ad-card,body.cl-screen-home .listings-grid .listing-card,body.cl-screen-home .listings-grid article{background:#0b1510!important;border-color:#244a35!important;color:#f7fff9!important}
+body.cl-screen-home .ad-price{color:var(--cm-yellow)!important}
+body.cl-screen-home .cl-nav{background:#050a08f7!important;border-top:1px solid #28533e!important}
+body.cl-screen-home .cl-nav button.active,body.cl-screen-home .cl-nav button.on{color:var(--cm-yellow)!important}
+body.cl-screen-home .cl-nav button.plus,body.cl-screen-home .cl-nav #nav-add{background:linear-gradient(145deg,#007a3d,#ce1126)!important;border:1px solid var(--cm-yellow)!important}
+#profile-section{background:#fff!important;color:#172033!important}
+#profile-section .pf-av{background:conic-gradient(from 0deg,#007a3d 0 33%,#ce1126 33% 66%,#ffdf00 66% 100%)!important}
+#profile-section .pf-btns button.main,#profile-section #pf-create{background:linear-gradient(100deg,#007a3d,#ce1126)!important;border:1px solid #ffdf00!important;color:#fff!important}
+#profile-section .pf-tabs button.on:after{background:var(--cm-red)!important}
+#profile-section .pf-insights>div{border-top:3px solid #007a3d!important}
+#profile-section .pf-insights>div:nth-child(2){border-top-color:#ce1126!important}
+#profile-section .pf-insights>div:nth-child(3){border-top-color:#ffdf00!important}
+#profile-section .pf-insights>div:nth-child(4){border-top-color:#007a3d!important}
+body.cl-screen-profile .cl-nav,body[data-cl-mode="profil"] .cl-nav{background:#fff!important;border-top-color:#e3e9e4!important}
+body.cl-screen-profile .cl-nav button.active,body.cl-screen-profile .cl-nav button.on,body[data-cl-mode="profil"] .cl-nav button.on{color:#007a3d!important}
+body.cl-screen-reels .cl-nav button.on,body.cl-screen-messages .cl-nav button.on{color:var(--cm-yellow)!important}
+body.cl-screen-messages .cl-nav,body.cl-screen-reels .cl-nav{background:#050a08f7!important;border-top:1px solid #28533e!important}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cm-yellow)!important;outline-offset:2px}
