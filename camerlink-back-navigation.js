@@ -46,7 +46,9 @@
     var overlay = activeOverlay();
     var mode = currentMode();
     button.hidden = !overlay && mode === 'home';
-    button.setAttribute('aria-label', overlay ? 'Fermer et revenir en arrière' : 'Retour à la section précédente');
+    var label = overlay ? 'Fermer et revenir en arrière' : 'Retour à la section précédente';
+    // Ne pas réécrire l'attribut s'il n'a pas changé : l'observateur DOM surveille aussi les attributs.
+    if (button.getAttribute('aria-label') !== label) button.setAttribute('aria-label', label);
   }
 
   function addButton() {
