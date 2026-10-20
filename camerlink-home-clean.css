@@ -1,0 +1,30 @@
+/* CamerLink — accueil épuré, moins de surcharge visuelle */
+body.cl-screen-home .cl-eight-community,
+body.cl-screen-home .cl-eight-benefits{display:none!important}
+body.cl-screen-home .cl-eight-hero{max-width:1120px;margin:8px auto 14px;padding:22px 16px 6px}
+body.cl-screen-home .cl-eight-hero:before{opacity:.45}
+body.cl-screen-home .cl-eight-hero h1{font-size:clamp(1.65rem,4.5vw,2.55rem);letter-spacing:-.04em;max-width:680px}
+body.cl-screen-home .cl-eight-hero p{font-size:.94rem;line-height:1.55;color:#aeb8c6;margin:9px 0 16px;max-width:520px}
+body.cl-screen-home .cl-eight-shortcuts{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+body.cl-screen-home .cl-eight-shortcut{min-height:70px;padding:10px 6px;border-radius:13px;background:#0c1420;border:1px solid #202c3b;box-shadow:none;font-size:.72rem}
+body.cl-screen-home .cl-eight-shortcut b{font-size:1.2rem}
+body.cl-screen-home .cl-eight-shortcut[data-screen="publish"]{background:#ff4b19;border-color:#ff4b19}
+body.cl-screen-home .categories-scroll{margin-top:12px}
+body.cl-screen-home main{padding-top:8px}
+body.cl-screen-home .listings-grid{gap:10px}
+body.cl-screen-home .card-img-container{height:clamp(118px,28vw,190px)}
+body.cl-screen-home .card-body{padding:10px}
+body.cl-screen-home .ad-title{font-size:.86rem;line-height:1.35}
+body.cl-screen-home .ad-price{font-size:.95rem}
+@media(min-width:760px){
+ body.cl-screen-home .cl-eight-shortcuts{grid-template-columns:repeat(4,minmax(0,150px));justify-content:start}
+ body.cl-screen-home .cl-eight-shortcut{min-height:78px}
+}
+@media(max-width:520px){
+ body.cl-screen-home .cl-eight-hero{padding:15px 13px 4px;margin-top:4px}
+ body.cl-screen-home .cl-eight-hero h1{font-size:1.65rem}
+ body.cl-screen-home .cl-eight-hero p{font-size:.82rem;margin:8px 0 13px}
+ body.cl-screen-home .cl-eight-shortcuts{gap:7px}
+ body.cl-screen-home .cl-eight-shortcut{min-height:65px;font-size:.68rem}
+ body.cl-screen-home .listings-grid{gap:8px}
+}
