@@ -1871,3 +1871,86 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
 .cl-premium-empty p{max-width:250px;color:var(--color-text-muted);font-size:.78rem;line-height:1.5}
 @media(min-width:600px){.cl-premium-profile{gap:18px}.cl-premium-profile-hero{padding:26px}.cl-premium-contact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cl-premium-actions{grid-template-columns:repeat(4,minmax(0,1fr))}.cl-premium-whatsapp{grid-column:auto}.cl-premium-follow-area{grid-template-columns:minmax(0,1fr) auto;align-items:center}.cl-premium-follow-stats{min-width:220px}}
 @media(prefers-reduced-motion:reduce){.cl-premium-profile *{transition:none!important;scroll-behavior:auto!important}}
+
+
+/* CamerLink Premium White — high contrast profile theme */
+.cl-premium-profile{
+  --cl-pink:#e64b35;
+  --cl-gold:#f59e0b;
+  color:#172033;
+  color-scheme:light;
+}
+.cl-premium-profile-hero{
+  color:#172033;
+  border:1px solid #e5e7eb;
+  background:
+    radial-gradient(ellipse at 100% 0%,rgba(230,75,53,.09),transparent 40%),
+    radial-gradient(ellipse at 0% 100%,rgba(245,158,11,.08),transparent 42%),
+    linear-gradient(145deg,#fff 0%,#fff 58%,#fff7f3 100%);
+  box-shadow:0 12px 34px rgba(15,23,42,.07);
+}
+.cl-premium-orb-one{border-color:rgba(230,75,53,.13);box-shadow:0 0 0 20px rgba(230,75,53,.025),0 0 0 42px rgba(230,75,53,.018)}
+.cl-premium-orb-two{background:rgba(245,158,11,.14)}
+.cl-premium-eyebrow{color:#475569}
+.cl-premium-live-dot{background:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.12)}
+.cl-premium-avatar-wrap{background:linear-gradient(135deg,#f59e0b,#e64b35 65%,#b91c1c);box-shadow:0 7px 20px rgba(230,75,53,.16)}
+.cl-premium-verified{border-color:#fff;background:#15803d;color:#fff}
+.cl-premium-identity-copy h3{color:#111827!important}
+.cl-premium-identity-copy>p{color:#475569}
+.cl-premium-member-pill{border-color:#fed7aa;background:#fff7ed;color:#9a3412}
+.cl-premium-stats>div{border-color:#e5e7eb;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.025)}
+.cl-premium-stats strong{color:#111827}
+.cl-premium-stats span{color:#475569}
+.cl-premium-tagline{color:#374151}
+.cl-premium-section,.cl-premium-follow-panel{
+  color:#172033;
+  border-color:#e5e7eb;
+  background:#fff;
+  box-shadow:0 6px 22px rgba(15,23,42,.045);
+}
+.cl-premium-section-label{color:#c2410c}
+.cl-premium-description{color:#273449}
+.cl-premium-contact-grid>div{border-color:#e5e7eb;background:#fff}
+.cl-premium-contact-grid small{color:#64748b}
+.cl-premium-contact-grid strong{color:#172033}
+.cl-premium-primary{
+  background:linear-gradient(110deg,#f05a36,#d93824);
+  color:#fff!important;
+  box-shadow:0 6px 16px rgba(217,56,36,.19);
+}
+.cl-premium-primary:hover{filter:brightness(.96)}
+.cl-premium-follow-heading>span{color:#111827}
+.cl-premium-follow-heading small{color:#64748b}
+.cl-premium-own-label{color:#15803d}
+.cl-premium-follow-stats button{
+  border-color:#e5e7eb!important;
+  background:#f8fafc!important;
+  color:#172033!important;
+}
+.cl-premium-follow-list{background:#f8fafc;color:#172033}
+.cl-premium-action{
+  border-color:#d1d5db;
+  background:#fff;
+  color:#172033!important;
+}
+.cl-premium-action:hover{border-color:#e64b35;background:#fff7f3}
+.cl-premium-whatsapp{background:#15803d;border-color:#15803d;color:#fff!important}
+.cl-premium-catalogue{background:#fff}
+.cl-premium-catalogue-heading h4{color:#111827}
+.cl-premium-catalogue-heading h4 span{background:#fff1e8;color:#9a3412}
+.cl-premium-catalogue-heading p{color:#64748b}
+.cl-premium-listings{background:#e5e7eb}
+.cl-premium-listing{background:#fff;color:#172033}
+.cl-premium-listing:hover{background:#fff7f3}
+.cl-premium-listing-placeholder{background:linear-gradient(135deg,#fff1e8,#ffedd5);color:#c2410c}
+.cl-premium-listing-info strong{color:#111827}
+.cl-premium-listing-info b{color:#b93820}
+.cl-premium-listing-info small,.cl-premium-listing-arrow{color:#64748b}
+.cl-premium-empty{background:#fff;color:#172033}
+.cl-premium-empty>span{background:#fff1e8;color:#c2410c}
+.cl-premium-empty strong{color:#111827}
+.cl-premium-empty p{color:#64748b}
+.cl-premium-profile button:focus-visible,.cl-premium-profile a:focus-visible{
+  outline:3px solid #f59e0b;outline-offset:3px;
+}
+@media(prefers-reduced-motion:reduce){.cl-premium-profile *{transition:none!important}}
