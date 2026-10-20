@@ -30,12 +30,24 @@
     { value: 'Bafoussam', label: 'Bafoussam (Ouest)' },
     { value: 'Bamenda', label: 'Bamenda (Nord-Ouest)' },
     { value: 'Buea', label: 'Buea (Sud-Ouest)' },
+    { value: 'Limbe', label: 'Limbe (Sud-Ouest)' },
+    { value: 'Kumba', label: 'Kumba (Sud-Ouest)' },
+    { value: 'Tiko', label: 'Tiko (Sud-Ouest)' },
     { value: 'Garoua', label: 'Garoua (Nord)' },
     { value: 'Maroua', label: 'Maroua (Extrême-Nord)' },
     { value: 'Ngaoundéré', label: 'Ngaoundéré (Adamaoua)' },
+    { value: 'Meiganga', label: 'Meiganga (Adamaoua)' },
     { value: 'Bertoua', label: 'Bertoua (Est)' },
+    { value: 'Abong-Mbang', label: 'Abong-Mbang (Est)' },
     { value: 'Ebolowa', label: 'Ebolowa (Sud)' },
-    { value: 'Kribi', label: 'Kribi (Sud)' }
+    { value: 'Sangmélima', label: 'Sangmélima (Sud)' },
+    { value: 'Kribi', label: 'Kribi (Sud)' },
+    { value: 'Edéa', label: 'Edéa (Littoral)' },
+    { value: 'Nkongsamba', label: 'Nkongsamba (Littoral)' },
+    { value: 'Foumban', label: 'Foumban (Ouest)' },
+    { value: 'Dschang', label: 'Dschang (Ouest)' },
+    { value: 'Mbouda', label: 'Mbouda (Ouest)' },
+    { value: 'Garoua-Boulaï', label: 'Garoua-Boulaï (Est)' }
   ];
 
   // Suggestions de quartiers (le vendeur peut aussi écrire librement un autre quartier)
@@ -44,7 +56,25 @@
     'Douala': ['Akwa', 'Bali', 'Bassa', 'Bepanda', 'Bonabéri', 'Bonamoussadi', 'Bonanjo', 'Bonapriso', 'Cité des Palmiers', 'Deido', 'Japoma', 'Kotto', 'Logbessou', 'Logpom', 'Makepe', 'Ndokoti', 'New Bell', 'Nyalla', 'PK8', 'PK14', 'Yassa'],
     'Bafoussam': ['Banengo', 'Djeleng', 'Famla', 'Kamkop', 'Tamdja'],
     'Bamenda': ['Commercial Avenue', 'Mankon', 'Nkwen', 'Ntarikon', 'Up Station'],
-    'Buea': ['Bonduma', 'Great Soppo', 'Molyko', 'Muea']
+    'Buea': ['Bonduma', 'Great Soppo', 'Molyko', 'Muea'],
+    'Limbe': ['Bota', 'Down Beach', 'Mile 1', 'Mile 2', 'Mile 4', 'New Town', 'Sapa Road'],
+    'Kumba': ['Fiango', 'Kosala', 'Mabanda', 'Mbonge Road', 'Three Corners'],
+    'Tiko': ['Likomba', 'Mutengene', 'Tiko Town'],
+    'Garoua': ['Camp Chinois', 'Laindé', 'Poumpoumré', 'Roumdé Adjia'],
+    'Maroua': ['Domayo', 'Doualaré', 'Founangué', 'Palar'],
+    'Ngaoundéré': ['Baladji', 'Dang', 'Joli Soir', 'Sabongari'],
+    'Bertoua': ['Enia', 'Kano', 'Mokolo', 'Yadia'],
+    'Ebolowa': ['Angalé', 'Biwong', 'New-Bell'],
+    'Kribi': ['Centre-ville', 'Dombe', 'Londji', 'Mboa Manga', 'Talla'],
+    'Edéa': ['Centre-ville', 'Delangue', 'Pongo'],
+    'Nkongsamba': ['Ekangté', 'Ekel-Kouma', 'Quartier 1', 'Quartier 2'],
+    'Foumban': ['Njinka', 'Nkoung-Khi', 'Quartier administratif'],
+    'Dschang': ['Centre-ville', 'Foto', 'Foreke', 'Tchouale'],
+    'Mbouda': ['Bamessingue', 'Centre-ville', 'Koptchou'],
+    'Sangmélima': ['Centre-ville', 'Meyomessala Road'],
+    'Meiganga': ['Centre-ville', 'Sabongari'],
+    'Abong-Mbang': ['Centre-ville'],
+    'Garoua-Boulaï': ['Centre-ville']
   };
   const MAX_QUARTIER = 80;
   // clé de comparaison : sans accents, sans majuscules (Bonabéri = bonaberi)
@@ -178,7 +208,11 @@
         if (k && !m.has(k)) m.set(k, a.quartier);
       }
     });
-    if (m.size === 0) { sel.style.display = 'none'; sel.innerHTML = ''; currentQuartier = ''; return; }
+    // Les quartiers prédéfinis sont proposés dès qu'une ville est choisie,
+    // même si aucune annonce de cette ville n'a encore été publiée.
+    [...(QUARTIERS[city] || []), ...allListings.filter(a => a.quartier && (!city || a.city === city)).map(a => a.quartier)]
+      .forEach(q => { const k = qKey(q); if (k && !m.has(k)) m.set(k, q); });
+    if (m.size === 0 && !city) { sel.style.display = 'none'; sel.innerHTML = ''; currentQuartier = ''; return; }
     if (currentQuartier && !m.has(currentQuartier)) currentQuartier = '';
     const list = [...m.entries()].sort((x, y) => x[1].localeCompare(y[1], 'fr'));
     sel.innerHTML = '<option value="">Tous les quartiers</option>' +
