@@ -1962,37 +1962,58 @@
     const nStories = gi >= 0 ? storyGroups[gi].items.length : 0;
 
     body.innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-        ${avatarHTML(shop, 64)}
-        <div style="min-width:0;">
-          <h3 style="font-size:1.2rem;">${esc((shop && shop.name) || 'Artisan')}${shop && shop.verified ? ' ✔️' : ''}</h3>
-          <small style="color:var(--color-text-muted);">${esc(shop ? [shop.type, shop.city].filter(Boolean).join(' · ') : '')}</small>
-        </div>
-      </div>
-      ${shop && shop.description ? `<p style="white-space:pre-wrap;line-height:1.5;margin-bottom:10px;">${esc(shop.description)}</p>` : ''}
-      <div style="font-size:0.88rem;color:var(--color-text-muted);margin-bottom:12px;display:grid;gap:4px;">
-        ${shop && shop.address ? `<span>📍 ${esc(shop.address)}</span>` : ''}
-        ${shop && shop.hours ? `<span>🕒 ${esc(shop.hours)}</span>` : ''}
-        ${shop && shop.contact ? `<span>📞 ${esc(shop.contact)}</span>` : ''}
-      </div>
-      ${reel ? `<video src="${esc(reel)}" controls playsinline preload="metadata" style="width:100%;max-height:260px;border-radius:12px;margin-bottom:6px;background:#000;"></video>
-        ${shop.reel_desc ? `<p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;">${esc(shop.reel_desc)}</p>` : '<div style="margin-bottom:12px;"></div>'}` : ''}
-      ${nStories ? `<button type="button" data-act="stories" data-gi="${gi}" style="${btnStyle}width:100%;margin-bottom:8px;background:linear-gradient(90deg,var(--a1),var(--a2));color:#fff;">▶ Voir ses statuts (${nStories})</button>` : ''}
-      <div id="artisanFollowArea" style="display:flex;align-items:center;gap:10px;margin:4px 0 12px;">${mine ? '<span style="font-size:.85rem;color:var(--color-text-muted)">Votre profil</span>' : '<button type="button" data-act="follow" style="flex:1;padding:11px;border-radius:10px;background:linear-gradient(90deg,var(--a1),var(--a2));color:#fff;font-weight:800;">＋ S’abonner</button>'}<div id="artisanFollowStats" style="display:flex;gap:8px;flex-wrap:wrap;font-size:.8rem;color:var(--color-text-muted)"><button type="button" data-follow-list="followers" style="border:0;background:transparent;color:inherit;cursor:pointer;padding:4px">Abonnés…</button><button type="button" data-follow-list="following" style="border:0;background:transparent;color:inherit;cursor:pointer;padding:4px">Abonnements…</button></div></div><div id="artisanFollowList" style="display:none;margin:8px 0 14px;padding:10px;border-radius:12px;background:rgba(127,127,127,.10)"></div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-        ${wa ? `<a href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" style="${btnStyle}background:#22C55E;color:#fff;">WhatsApp</a>
-        <a href="tel:+${esc(wa)}" style="${btnStyle}background:#10B981;color:#fff;">Appel</a>` : ''}
-        ${!mine ? `<button type="button" data-act="msg" style="${softStyle}">💬 Message</button>` : ''}
-        <button type="button" data-act="share" style="${softStyle}">📤 Partager</button>
-        <button type="button" data-act="copy" style="${softStyle}">🔗 Copier le lien</button>
-      </div>
-      <h4 style="margin-bottom:8px;">Annonces (${ads.length})</h4>
-      ${ads.length ? ads.map(a => `
-        <button type="button" data-ad="${esc(a.id)}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px;margin-bottom:6px;border-radius:10px;background:rgba(127,127,127,0.12);cursor:pointer;">
-          ${a.image_url ? `<img src="${esc(a.image_url)}" alt="" style="width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;">` : ''}
-          <span style="flex:1;min-width:0;"><strong style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(a.title)}</strong>
-          <small style="color:#10b981;font-weight:700;">${Number(a.price || 0).toLocaleString('fr-FR')} FCFA</small></span>
-        </button>`).join('') : '<div class="state-msg" style="padding:16px;">Aucune annonce pour le moment.</div>'}`;
+      <article class="cl-premium-profile">
+        <header class="cl-premium-profile-hero">
+          <div class="cl-premium-orb cl-premium-orb-one"></div><div class="cl-premium-orb cl-premium-orb-two"></div>
+          <div class="cl-premium-eyebrow"><span class="cl-premium-live-dot"></span> CAMERLINK · PROFIL PROFESSIONNEL</div>
+          <div class="cl-premium-identity">
+            <div class="cl-premium-avatar-wrap">${avatarHTML(shop, 88)}${shop && shop.verified ? '<span class="cl-premium-verified" title="Profil vérifié">✓</span>' : ''}</div>
+            <div class="cl-premium-identity-copy">
+              <h3>${esc((shop && shop.name) || 'Artisan CamerLink')}</h3>
+              <p>${esc(shop ? [shop.type, shop.city].filter(Boolean).join(' · ') : 'Professionnel au Cameroun')}</p>
+              <span class="cl-premium-member-pill">${shop && shop.verified ? '✓ Professionnel vérifié' : '✦ Vitrine professionnelle'}</span>
+            </div>
+          </div>
+          <div class="cl-premium-stats">
+            <div><strong>${ads.length}</strong><span>Publications</span></div>
+            <div><strong>${nStories}</strong><span>Statuts</span></div>
+            <div><strong>${reel ? '1' : '0'}</strong><span>Vidéo</span></div>
+          </div>
+          <p class="cl-premium-tagline">${shop && shop.verified ? 'Un profil vérifié pour découvrir ses services en confiance.' : 'Découvrez ses réalisations, ses offres et contactez-le directement.'}</p>
+        </header>
+        ${shop && shop.description ? `<section class="cl-premium-section"><div class="cl-premium-section-label">À PROPOS</div><p class="cl-premium-description">${esc(shop.description)}</p></section>` : ''}
+        <section class="cl-premium-contact-grid">
+          ${shop && shop.city ? `<div><span>📍</span><small>Ville</small><strong>${esc(shop.city)}</strong></div>` : ''}
+          ${shop && shop.address ? `<div><span>🧭</span><small>Adresse</small><strong>${esc(shop.address)}</strong></div>` : ''}
+          ${shop && shop.hours ? `<div><span>🕒</span><small>Horaires</small><strong>${esc(shop.hours)}</strong></div>` : ''}
+          ${shop && shop.contact ? `<div><span>☎</span><small>Contact</small><strong>${esc(shop.contact)}</strong></div>` : ''}
+        </section>
+        ${reel ? `<section class="cl-premium-section"><div class="cl-premium-section-label">À LA UNE</div><video class="cl-premium-reel" src="${esc(reel)}" controls playsinline preload="metadata"></video>${shop && shop.reel_desc ? `<p class="cl-premium-description">${esc(shop.reel_desc)}</p>` : ''}</section>` : ''}
+        ${nStories ? `<button type="button" data-act="stories" data-gi="${gi}" class="cl-premium-primary cl-premium-story-btn">▶ Voir ses statuts <span>${nStories}</span></button>` : ''}
+        <section class="cl-premium-follow-panel">
+          <div class="cl-premium-follow-heading"><span>Restez connecté</span><small>Suivez ses nouveautés sur CamerLink</small></div>
+          <div id="artisanFollowArea" class="cl-premium-follow-area">${mine ? '<span class="cl-premium-own-label">✓ Votre profil</span>' : '<button type="button" data-act="follow" class="cl-premium-primary cl-premium-follow-btn">＋ S’abonner</button>'}
+            <div id="artisanFollowStats" class="cl-premium-follow-stats"><button type="button" data-follow-list="followers">Abonnés…</button><button type="button" data-follow-list="following">Abonnements…</button></div>
+          </div>
+          <div id="artisanFollowList" class="cl-premium-follow-list" style="display:none"></div>
+        </section>
+        <section class="cl-premium-actions">
+          ${wa ? `<a class="cl-premium-action cl-premium-whatsapp" href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener">◉ WhatsApp</a><a class="cl-premium-action" href="tel:+${esc(wa)}">☎ Appeler</a>` : ''}
+          ${!mine ? '<button type="button" data-act="msg" class="cl-premium-action">✉ Message</button>' : ''}
+          <button type="button" data-act="share" class="cl-premium-action">↗ Partager</button>
+          <button type="button" data-act="copy" class="cl-premium-action">⧉ Copier le lien</button>
+        </section>
+        <section class="cl-premium-section cl-premium-catalogue">
+          <div class="cl-premium-catalogue-heading"><div class="cl-premium-section-label">CATALOGUE</div><h4>Ses publications <span>${ads.length}</span></h4><p>Découvrez les offres et réalisations de ce professionnel.</p></div>
+          <div class="cl-premium-listings">
+            ${ads.length ? ads.map(a => `<button type="button" data-ad="${esc(a.id)}" class="cl-premium-listing">
+              ${a.image_url ? `<img src="${esc(a.image_url)}" alt="${esc(a.title || 'Photo de publication')}" loading="lazy">` : '<div class="cl-premium-listing-placeholder">CL</div>'}
+              <span class="cl-premium-listing-info"><strong>${esc(a.title || 'Publication')}</strong><b>${Number(a.price || 0).toLocaleString('fr-FR')} FCFA</b><small>${esc(a.category || 'Service')}</small></span><span class="cl-premium-listing-arrow">↗</span>
+            </button>`).join('') : '<div class="cl-premium-empty"><span>✦</span><strong>Le catalogue se prépare</strong><p>Les prochaines offres de ce professionnel apparaîtront ici.</p></div>'}
+          </div>
+        </section>
+      </article>`;
+
 
     body.dataset.uid = uid;
     const followBtn = body.querySelector('[data-act="follow"]');
