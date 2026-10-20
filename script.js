@@ -241,6 +241,30 @@
         '<small class="form-hint">Aide les acheteurs à vous trouver. N’indiquez pas votre adresse exacte.</small>';
       const holder = adCity.closest('.form-group');
       if (holder) holder.insertAdjacentElement('afterend', grp);
+      const gpsBtn = document.createElement('button');
+      gpsBtn.id = 'adGpsLocationBtn';
+      gpsBtn.type = 'button';
+      gpsBtn.className = 'form-sheet-el';
+      gpsBtn.style.cssText = 'width:100%;min-height:42px;margin-top:8px;border:1px solid rgba(48,210,230,.45);border-radius:12px;background:rgba(48,210,230,.08);color:inherit;font-weight:700;cursor:pointer;';
+      gpsBtn.textContent = '📍 Ajouter ma position (facultatif)';
+      gpsBtn.setAttribute('aria-label', 'Enregistrer la position GPS de cette annonce');
+      gpsBtn.addEventListener('click', () => {
+        if (!navigator.geolocation) { toast('La localisation GPS n’est pas disponible sur cet appareil.'); return; }
+        gpsBtn.disabled = true;
+        gpsBtn.textContent = 'Localisation…';
+        navigator.geolocation.getCurrentPosition(pos => {
+          adGpsPosition = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          gpsBtn.disabled = false;
+          gpsBtn.textContent = '✓ Position ajoutée à cette annonce';
+          toast('Position enregistrée pour cette publication. Elle sera partagée avec l’annonce.');
+        }, () => {
+          adGpsPosition = null;
+          gpsBtn.disabled = false;
+          gpsBtn.textContent = '📍 Réessayer d’ajouter ma position';
+          toast('Autorise la localisation ou publie sans GPS : la ville et le quartier restent disponibles.');
+        }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+      });
+      grp.appendChild(gpsBtn);
       adCity.addEventListener('change', fillQuartierSuggestions);
     }
     fillQuartierSuggestions();
@@ -1071,6 +1095,9 @@
     });
   }
 
+  // Position GPS facultative du vendeur, conservée uniquement pour cette publication.
+  let adGpsPosition = null;
+
   const adForm = $('adForm');
   if (adForm) {
     adForm.addEventListener('submit', async (e) => {
@@ -1148,6 +1175,10 @@
         if (imageUrls.length) row.images_urls = imageUrls;
         if (videoUrl) row.video_url = videoUrl;
         if (quartier) row.quartier = quartier;
+        if (adGpsPosition && Number.isFinite(adGpsPosition.lat) && Number.isFinite(adGpsPosition.lng)) {
+          row.lat = adGpsPosition.lat;
+          row.lng = adGpsPosition.lng;
+        }
 
         const { error } = await sb.from('annonces').insert(row);
         if (error) throw error;
@@ -1155,6 +1186,9 @@
 
         closeModal('publishModal');
         adForm.reset();
+        adGpsPosition = null;
+        const gpsPublishBtn = $('adGpsLocationBtn');
+        if (gpsPublishBtn) gpsPublishBtn.textContent = '📍 Ajouter ma position (facultatif)';
         resetVideoPreview();
         resetAdImagePreview();
         const quickDetails = document.querySelector('.quick-publish-details');
@@ -1242,7 +1276,8 @@
       (!term || String(ad.title || '').toLowerCase().includes(term) || qKey(ad.quartier).includes(qKey(term)) || qKey(ad.description).includes(qKey(term)))
     );
     if (nearbyMode && nearbyPosition) {
-      filtered = filtered.slice().sort((a,b) => distanceKm(a,nearbyPosition) - distanceKm(b,nearbyPosition));
+      const located = filtered.filter(a => a.lat != null && a.lng != null && Number.isFinite(Number(a.lat)) && Number.isFinite(Number(a.lng)));
+      filtered = located.slice().sort((a,b) => distanceKm(a,nearbyPosition) - distanceKm(b,nearbyPosition));
     } else {
       filtered = filtered.slice().sort((a, b) => {
         if (sortMode === 'price-asc') return Number(a.price || 0) - Number(b.price || 0);
@@ -1255,7 +1290,7 @@
     $('resultsCount').textContent = `${filtered.length} annonce(s)`;
     if (filtered.length === 0) {
       grid.innerHTML = '<div class="state-msg">' +
-        (favOnly ? 'Aucun favori pour le moment.' : 'Aucune annonce disponible pour le moment.') + '</div>';
+        (nearbyMode ? 'Aucune annonce avec position GPS enregistrée à proximité pour le moment. Les vendeurs peuvent ajouter leur position lors de la publication.' : (favOnly ? 'Aucun favori pour le moment.' : 'Aucune annonce disponible pour le moment.')) + '</div>';
       return;
     }
 
