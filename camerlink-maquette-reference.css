@@ -1,0 +1,40 @@
+/* CamerLink reference maquette — clean white social-commerce surfaces */
+:root{--cl-maquette-orange:#ff4a16;--cl-maquette-ink:#121826;--cl-maquette-muted:#687386;--cl-maquette-border:#e4e8ef;--cl-maquette-bg:#f5f7fb}
+body.cl-screen-home{background:var(--cl-maquette-bg)!important;color:var(--cl-maquette-ink)!important}
+body.cl-screen-home .cl-top{background:#fff!important;border-bottom:1px solid var(--cl-maquette-border)!important;box-shadow:0 3px 18px #16213a08!important}
+body.cl-screen-home .brand-wordmark{color:#111827!important}
+body.cl-screen-home .cl-top .btn-icon,body.cl-screen-home .cl-top .btn-login{color:#202938!important;background:#f4f6fa!important;border-color:#e2e7ef!important}
+body.cl-screen-home .cl-top .btn-pub{background:var(--cl-maquette-orange)!important;color:#fff!important;border-color:var(--cl-maquette-orange)!important}
+body.cl-screen-home .cl-eight-hero{background:#fff!important;border:1px solid #edf0f5!important;border-radius:0 0 22px 22px!important;box-shadow:0 8px 28px #17243b08!important}
+body.cl-screen-home .cl-eight-hero:before{display:none!important}
+body.cl-screen-home .cl-eight-hero h1{color:#111827!important}
+body.cl-screen-home .cl-eight-hero h1 span{color:var(--cl-maquette-orange)!important}
+body.cl-screen-home .cl-eight-hero>p{color:#687386!important}
+body.cl-screen-home .cl-eight-shortcut{background:#f8f9fc!important;color:#252e3d!important;border:1px solid #e6eaf1!important;box-shadow:none!important}
+body.cl-screen-home .cl-eight-shortcut b{background:#fff!important;color:var(--cl-maquette-orange)!important;border:1px solid #f0d9d1!important}
+body.cl-screen-home .hero{background:#fff!important}
+body.cl-screen-home .search-input,body.cl-screen-home .city-select,body.cl-screen-home .price-select{background:#f8f9fc!important;color:#202938!important;border:1px solid #e0e5ee!important}
+body.cl-screen-home .search-input::placeholder{color:#7b8494!important}
+body.cl-screen-home .shops-section{background:#fff!important;color:#141b29!important;margin-top:8px;border-radius:18px;padding-top:14px!important}
+body.cl-screen-home .shops-section h2{color:#151c29!important}
+body.cl-screen-home .categories-scroll{background:#fff!important}
+body.cl-screen-home .categories-scroll button,body.cl-screen-home .category-chip{background:#f1f3f7!important;color:#343d4c!important;border-color:#e6eaf0!important}
+body.cl-screen-home .categories-scroll button.active,body.cl-screen-home .category-chip.active{background:var(--cl-maquette-orange)!important;color:#fff!important;border-color:var(--cl-maquette-orange)!important}
+body.cl-screen-home .filter-tabs-row{color:#171e2b!important}
+body.cl-screen-home .results-count{color:#171e2b!important}
+body.cl-screen-home .fav-toggle-btn{background:#fff!important;color:#343d4c!important;border-color:#e1e6ee!important}
+body.cl-screen-home .listings-grid .ad-card,body.cl-screen-home .listings-grid .listing-card,body.cl-screen-home .listings-grid article{background:#fff!important;color:#202938!important;border:1px solid #e9edf3!important;border-radius:16px!important;box-shadow:0 5px 18px #18243a0a!important;overflow:hidden}
+body.cl-screen-home .ad-title,body.cl-screen-home .card-title{color:#151c29!important}
+body.cl-screen-home .ad-price{color:var(--cl-maquette-orange)!important}
+body.cl-screen-home .card-body{color:#5d687a!important}
+body.cl-screen-home .cl-nav{background:#fff!important;border-top:1px solid #e3e7ee!important;box-shadow:0 -6px 22px #17243b0a!important}
+body.cl-screen-home .cl-nav [data-m]{color:#667084!important}
+body.cl-screen-home .cl-nav [data-m].active{color:var(--cl-maquette-orange)!important}
+body.cl-screen-home .cl-nav [data-m="publish"],body.cl-screen-home .cl-nav #nav-add{background:var(--cl-maquette-orange)!important;color:#fff!important}
+body.cl-screen-profile{background:#f5f7fb!important;color:#171e2b!important}
+body.cl-screen-profile #profile-section{background:#fff!important;color:#171e2b!important}
+body.cl-screen-profile .cl-nav{background:#fff!important}
+body.cl-screen-messages{background:#f5f7fb!important}
+body.cl-screen-market{background:#f5f7fb!important;color:#171e2b!important}
+body.cl-screen-market .cl-nav{background:#fff!important}
+@media(min-width:760px){body.cl-screen-home .cl-eight-hero{border-radius:0 0 24px 24px!important}body.cl-screen-home .shops-section{border-radius:20px;margin-top:12px}}
