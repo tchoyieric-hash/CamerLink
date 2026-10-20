@@ -7,6 +7,8 @@
   var modeStack = [];
   var knownMode = document.body.getAttribute('data-cl-mode') || 'home';
   var button;
+  var replayingPop = false;
+  var overlayWasActive = false;
 
   function visible(el) {
     if (!el || el.hidden) return false;
@@ -102,11 +104,12 @@
 
   document.addEventListener('click', function (event) {
     var target = event.target.closest('.shell-tab[data-m], .shell-nav [data-m]');
-    if (!target || target.id === 'cl-global-back') return;
+    if (!target || target.id === 'cl-global-back' || replayingPop) return;
     var next = target.dataset.m;
     if (next && next !== knownMode) {
       modeStack.push(knownMode);
       if (modeStack.length > 30) modeStack.shift();
+      try { window.history.pushState({ clMode: next }, '', next === 'home' ? location.pathname + location.search : '#' + next); } catch (e) {}
     }
   }, true);
 
@@ -117,13 +120,38 @@
   });
   modeObserver.observe(document.body, { attributes: true, attributeFilter: ['data-cl-mode'] });
 
-  var overlayObserver = new MutationObserver(update);
+  var overlayObserver = new MutationObserver(function () {
+    var isActive = !!activeOverlay();
+    if (isActive && !overlayWasActive) {
+      try { window.history.pushState({ clOverlay: true }, '', window.location.href); } catch (e) {}
+    }
+    overlayWasActive = isActive;
+    update();
+  });
   overlayObserver.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'style', 'hidden', 'aria-hidden'] });
 
   document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') window.setTimeout(update, 30);
   });
   window.addEventListener('popstate', function () {
+    var overlay = activeOverlay();
+    if (overlay) {
+      closeOverlay(overlay);
+      overlayWasActive = false;
+      window.setTimeout(update, 30);
+      return;
+    }
+    var next = (window.location.hash || '').replace(/^#/, '') || 'home';
+    if (next !== currentMode()) {
+      var target = document.querySelector('.shell-tab[data-m="' + next + '"]') ||
+                   document.querySelector('.shell-nav [data-m="' + next + '"]');
+      if (target) {
+        replayingPop = true;
+        if (modeStack.length) modeStack.pop();
+        target.click();
+        replayingPop = false;
+      }
+    }
     window.setTimeout(update, 30);
   });
 
