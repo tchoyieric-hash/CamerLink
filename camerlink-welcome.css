@@ -1,16 +1,21 @@
-/* CamerLink — écran d'accueil avant authentification */
-.cl-welcome-gate{position:fixed;inset:0;z-index:1800;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:28px 18px;background:radial-gradient(ellipse at 50% 0%,rgba(255,91,48,.13),transparent 55%),#fff;color:#151515}
+/* CamerLink — écran d'accueil Mboa, identité nationale */
+.cl-welcome-gate{position:fixed;inset:0;z-index:1800;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:22px 16px;background:radial-gradient(ellipse at 10% 5%,rgba(0,133,63,.18),transparent 42%),radial-gradient(ellipse at 95% 90%,rgba(255,211,0,.14),transparent 42%),#f7f8f5;color:#101b15}
 .cl-welcome-gate[hidden]{display:none!important}
-.cl-welcome-card{width:min(100%,460px);margin:auto;text-align:center;padding:clamp(22px,5vw,42px);border:1px solid #eee;border-radius:30px;background:rgba(255,255,255,.97);box-shadow:0 24px 80px rgba(25,20,15,.1)}
-.cl-welcome-logo{width:76px;height:76px;object-fit:contain;margin:0 auto 12px}
-.cl-welcome-kicker{font-size:.72rem;letter-spacing:.19em;font-weight:900;color:#e44b2e;margin-bottom:12px}
-.cl-welcome-card h1{font-size:clamp(2rem,8vw,3.2rem);line-height:1.05;letter-spacing:-.055em;font-weight:900;color:#151515;margin-bottom:16px}
-.cl-welcome-card h1 span{display:block;margin-top:8px;color:#e64b2f}
-.cl-welcome-copy{font-size:1rem;line-height:1.65;color:#555;max-width:340px;margin:0 auto 22px}
-.cl-welcome-highlights{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 auto 24px}
-.cl-welcome-highlights span{padding:8px 11px;border-radius:999px;background:#fff4f0;color:#343434;font-size:.82rem;font-weight:750}
-.cl-welcome-primary,.cl-welcome-secondary{width:100%;min-height:52px;border-radius:15px;padding:13px 16px;font:inherit;font-weight:850;cursor:pointer}
-.cl-welcome-primary{background:linear-gradient(100deg,#f15b36,#d92f3e);color:#fff;box-shadow:0 9px 22px rgba(226,65,52,.22)}
-.cl-welcome-secondary{margin-top:10px;background:#fff;color:#222;border:1px solid #dedede}
-.cl-welcome-foot{margin-top:22px;color:#888;font-size:.8rem}
+.cl-welcome-card{position:relative;isolation:isolate;overflow:hidden;width:min(100%,460px);margin:auto;text-align:center;padding:clamp(24px,6vw,42px);border:1px solid rgba(18,57,35,.10);border-radius:30px;background:rgba(255,255,255,.96);box-shadow:0 28px 90px rgba(16,42,25,.13)}
+.cl-welcome-card:before{content:"";position:absolute;z-index:-1;inset:0 0 auto;height:7px;background:linear-gradient(90deg,#00853f 0 33.333%,#ce1126 33.333% 66.666%,#ffd300 66.666%)}
+.cl-welcome-logo{width:82px;height:82px;object-fit:contain;margin:0 auto 12px}
+.cl-welcome-kicker{display:flex;align-items:center;justify-content:center;gap:9px;font-size:.72rem;letter-spacing:.19em;font-weight:900;color:#176b3c;margin:0 0 13px}
+.cl-welcome-kicker:before{content:"";width:26px;height:4px;border-radius:5px;background:#00853f}
+.cl-welcome-kicker:after{content:"";width:26px;height:4px;border-radius:5px;background:#ffd300}
+.cl-welcome-card h1{font-family:"Plus Jakarta Sans",Inter,sans-serif;font-size:clamp(2.1rem,8vw,3.15rem);line-height:1.04;letter-spacing:-.06em;font-weight:900;color:#142019;margin:0 0 17px}
+.cl-welcome-card h1 span{display:block;margin-top:9px;color:#ce1126}
+.cl-welcome-copy{font-size:1rem;line-height:1.65;color:#536057;max-width:340px;margin:0 auto 22px}
+.cl-welcome-highlights{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 auto 25px}
+.cl-welcome-highlights span{padding:9px 12px;border-radius:999px;background:#f0f6f0;border:1px solid #e0ebe1;color:#233d2c;font-size:.82rem;font-weight:750}
+.cl-welcome-primary,.cl-welcome-secondary{width:100%;min-height:54px;border-radius:15px;padding:14px 16px;font:inherit;font-weight:850;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+.cl-welcome-primary{background:linear-gradient(105deg,#00853f 0%,#087c43 43%,#ce1126 100%);color:#fff;border:0;box-shadow:0 10px 25px rgba(0,105,49,.2)}
+.cl-welcome-secondary{margin-top:10px;background:#fff;color:#1c2a20;border:1px solid #d9e2da}
+.cl-welcome-primary:active,.cl-welcome-secondary:active{transform:scale(.985)}
+.cl-welcome-foot{margin:22px 0 0;color:#657267;font-size:.8rem}
+@media(max-height:650px){.cl-welcome-gate{align-items:flex-start;padding-top:14px;padding-bottom:14px}.cl-welcome-card{padding:22px}.cl-welcome-logo{width:60px;height:60px;margin-bottom:7px}.cl-welcome-copy{margin-bottom:14px}.cl-welcome-highlights{margin-bottom:16px}.cl-welcome-foot{margin-top:14px}}
 @media(prefers-reduced-motion:no-preference){.cl-welcome-card{animation:clWelcomeIn .35s ease-out}@keyframes clWelcomeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}}
