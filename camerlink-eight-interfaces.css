@@ -1,0 +1,75 @@
+/* CamerLink — huit interfaces inspirées de la référence */
+:root{--cl-orange:#ff4b19;--cl-gold:#ffb21c;--cl-night:#05080f;--cl-panel:#0c1420;--cl-stroke:#243443;--cl-cyan:#53d9ee}
+body{background:#05080f!important;color:#f7f8fc}
+.cl-top{background:rgba(4,8,15,.94)!important;border-bottom:1px solid #1d2a39!important}
+.logo-brand .brand-wordmark,.cl-logo{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-.04em}
+.logo-brand .brand-wordmark span,.cl-logo span{background:linear-gradient(100deg,#ffb21c,#ff4b19)!important;-webkit-background-clip:text!important;background-clip:text!important}
+.cl-eight-hero{max-width:1200px;margin:10px auto 22px;padding:24px 18px 8px;position:relative;overflow:hidden}
+.cl-eight-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 88% 0%,#ff4b192b,transparent 45%),radial-gradient(ellipse at 4% 30%,#ffb21c13,transparent 40%);pointer-events:none}
+.cl-eight-hero h1{font-size:clamp(1.8rem,5vw,3.1rem);line-height:1.04;font-weight:900;letter-spacing:-.05em;text-align:left;position:relative}
+.cl-eight-hero h1 span{background:linear-gradient(90deg,#ffb21c,#ff4b19);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cl-eight-hero p{text-align:left;margin:12px 0 18px;color:#aeb9c9;max-width:540px;position:relative}
+.cl-eight-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;position:relative}
+.cl-eight-shortcut{min-height:82px;border:1px solid #263544;border-radius:16px;background:linear-gradient(145deg,#111d2a,#080d15);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-weight:750;font-size:.78rem;cursor:pointer}
+.cl-eight-shortcut b{font-size:1.4rem;line-height:1}
+.cl-eight-shortcut:active{transform:scale(.98)}
+.cl-eight-shortcut[data-screen="publish"]{border-color:#ff5b2c;background:linear-gradient(135deg,#ffb21c,#ff3f1e);color:#fff}
+.cl-eight-community{max-width:1150px;margin:24px auto;padding:22px 18px;border:1px solid #382b25;border-radius:22px;background:radial-gradient(ellipse at 0 100%,#ff4b1929,transparent 45%),linear-gradient(130deg,#11131b,#080b11);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.cl-eight-community h2{font-size:1.25rem;font-weight:900}.cl-eight-community p{font-size:.88rem;color:#aeb9c9;margin-top:5px}
+.cl-eight-community button{background:linear-gradient(90deg,#ffb21c,#ff411d);padding:12px 16px;border-radius:999px;font-weight:850;white-space:nowrap}
+.cl-eight-benefits{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:1150px;margin:20px auto;padding:0 16px}
+.cl-eight-benefits div{border-top:1px solid #253240;padding:13px 4px;color:#b9c2d0;font-size:.78rem;display:flex;gap:8px;align-items:center}
+.cl-eight-benefits b{font-size:1.2rem;color:#ff8a20}
+body.cl-screen-reels .hero,body.cl-screen-reels .shops-section,body.cl-screen-reels .categories-scroll,body.cl-screen-reels main,body.cl-screen-reels #discover-section,body.cl-screen-reels #profile-section,body.cl-screen-reels .cl-eight-hero,body.cl-screen-reels .cl-eight-community,body.cl-screen-reels .cl-eight-benefits,body.cl-screen-profile .hero,body.cl-screen-profile .shops-section,body.cl-screen-profile .categories-scroll,body.cl-screen-profile main,body.cl-screen-profile #discover-section,body.cl-screen-profile .cl-eight-hero,body.cl-screen-profile .cl-eight-community,body.cl-screen-profile .cl-eight-benefits{display:none!important}
+body.cl-screen-reels #reels-section{display:block!important;margin:0 auto;border-radius:0;width:100%;min-height:calc(100dvh - 125px)}
+body.cl-screen-profile #profile-section{display:block!important}
+body.cl-screen-market .hero,body.cl-screen-market .shops-section,body.cl-screen-market .cl-eight-hero,body.cl-screen-market .cl-eight-community,body.cl-screen-market .cl-eight-benefits,body.cl-screen-market #reels-section,body.cl-screen-market #discover-section,body.cl-screen-market #profile-section{display:none!important}
+body.cl-screen-market .categories-scroll,body.cl-screen-market main{display:block!important}
+body.cl-screen-market main{padding-top:12px}
+body.cl-screen-market .listings-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+body.cl-screen-market .card-img-container{height:160px}
+body.cl-screen-market .card-body{padding:12px}
+body.cl-screen-market .ad-title{font-size:.9rem}
+body.cl-screen-market .ad-price{font-size:1rem}
+body.cl-screen-home .cl-eight-community,body.cl-screen-home .cl-eight-benefits{display:grid}
+.shell-nav.cl-nav{background:rgba(5,8,15,.96)!important;border-top:1px solid #263544!important;backdrop-filter:blur(18px)}
+.shell-nav.cl-nav button.active{color:#ff7028!important}
+.shell-nav.cl-nav .plus,.shell-nav.cl-nav button.plus{background:linear-gradient(135deg,#ffb21c,#ff3b1d)!important}
+@media(min-width:760px){.cl-eight-hero{padding-top:34px}.cl-eight-shortcuts{grid-template-columns:repeat(8,minmax(0,1fr))}.cl-eight-shortcut{min-height:100px}.cl-eight-hero p{font-size:1.05rem}.cl-eight-community{padding:28px 30px}}
+@media(max-width:520px){.cl-eight-hero{padding:16px 14px 4px}.cl-eight-shortcuts{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.cl-eight-shortcut{min-height:72px;font-size:.7rem;border-radius:13px}.cl-eight-community{margin:18px 12px;padding:17px;align-items:flex-start;flex-direction:column}.cl-eight-community button{width:100%}.cl-eight-benefits{grid-template-columns:repeat(2,1fr);margin-bottom:80px}.cl-eight-community h2{font-size:1.1rem}}
+
+body.cl-screen-menu .hero,body.cl-screen-menu .shops-section,body.cl-screen-menu .categories-scroll,body.cl-screen-menu main,body.cl-screen-menu #discover-section,body.cl-screen-menu #profile-section,body.cl-screen-menu #reels-section,body.cl-screen-menu .cl-eight-hero,body.cl-screen-menu .cl-eight-community,body.cl-screen-menu .cl-eight-benefits{display:none!important}
+body.cl-screen-menu #cl-artisan-space{display:block!important}
+body.cl-screen-messages .hero,body.cl-screen-messages .shops-section,body.cl-screen-messages .categories-scroll,body.cl-screen-messages main,body.cl-screen-messages #discover-section,body.cl-screen-messages #profile-section,body.cl-screen-messages #reels-section,body.cl-screen-messages .cl-eight-hero,body.cl-screen-messages .cl-eight-community,body.cl-screen-messages .cl-eight-benefits{display:none!important}
+
+
+/* Reference fidelity pass: CamerLink black-and-orange premium shell */
+:root{--cl-orange:#ff451f;--cl-gold:#ffad1f;--cl-night:#03060c;--cl-panel:#0a111c;--cl-stroke:#263744;--cl-muted:#a8b3c2}
+body{background:radial-gradient(ellipse at 50% -12%,#172536 0,transparent 38%),#03060c!important;color:#f8f9fc}
+.cl-eight-hero{max-width:1240px;padding:22px 18px 12px;margin:0 auto 18px}
+.cl-eight-hero:before{background:radial-gradient(ellipse at 88% 0%,#ff451f2b,transparent 42%),radial-gradient(ellipse at 8% 18%,#ffad1f12,transparent 38%)}
+.cl-eight-hero h1{font-size:clamp(2rem,5vw,3.8rem);text-align:center;letter-spacing:-.055em;margin:0 auto;max-width:850px}
+.cl-eight-hero h1 span{background:linear-gradient(95deg,#ffb31c 0%,#ff5727 58%,#ff3b2d 100%);-webkit-background-clip:text;background-clip:text}
+.cl-eight-hero>p{text-align:center;margin:12px auto 24px;max-width:650px;font-size:.94rem;letter-spacing:.01em}
+.cl-eight-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:900px;margin:0 auto}
+.cl-eight-shortcut{min-height:94px;position:relative;overflow:hidden;border-radius:18px;border:1px solid #2b3a49;background:linear-gradient(145deg,#101c2a 0%,#080d15 72%);box-shadow:inset 0 1px #ffffff0a,0 8px 24px #0003;font-size:.85rem;letter-spacing:.01em;transition:transform .18s,border-color .18s,box-shadow .18s}
+.cl-eight-shortcut:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,#ff6a251c,transparent 65%);pointer-events:none}
+.cl-eight-shortcut b{display:grid;place-items:center;width:42px;height:42px;border:1px solid #ffffff17;border-radius:14px;background:#ffffff08;color:#ff9b32;font-size:1.45rem}
+.cl-eight-shortcut[data-screen="publish"]{background:linear-gradient(115deg,#ffb21c,#ff3f22);border-color:#ff7c2a;box-shadow:0 8px 28px #ff4b192c}
+.cl-eight-shortcut[data-screen="publish"] b{color:#fff;background:#ffffff1a}
+.cl-eight-shortcut[data-screen="home"]:hover,.cl-eight-shortcut:hover{border-color:#ff713c;box-shadow:0 10px 28px #ff54151c;transform:translateY(-2px)}
+.cl-eight-shortcut.active{border-color:#ff743c;box-shadow:0 0 0 1px #ff743c25}
+.cl-eight-community{max-width:1200px;margin:24px auto;padding:20px 22px;border:1px solid #3b302b;border-radius:22px;background:radial-gradient(ellipse at 0 100%,#ff4b1929,transparent 48%),linear-gradient(130deg,#111923,#080b11);box-shadow:0 16px 40px #0003}
+.cl-eight-community h2{font-size:clamp(1.05rem,3vw,1.45rem);line-height:1.25}
+.cl-eight-community button{background:linear-gradient(100deg,#ffad1f,#ff3f20);box-shadow:0 7px 22px #ff451f2e;color:#fff}
+.cl-eight-benefits{max-width:1200px;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:20px auto 90px}
+.cl-eight-benefits div{border-top:1px solid #27313c;padding:14px 8px;color:#d6dbe3}
+.cl-eight-benefits b{color:#ff8a26}
+body.cl-screen-reels .cl-eight-shortcuts,body.cl-screen-profile .cl-eight-shortcuts{display:none}
+body.cl-screen-home .cl-eight-shortcuts{display:grid}
+body.cl-screen-home .cl-eight-community,body.cl-screen-home .cl-eight-benefits{display:grid}
+body.cl-screen-market .cl-eight-hero,body.cl-screen-menu .cl-eight-hero,body.cl-screen-messages .cl-eight-hero{display:none!important}
+body.cl-screen-menu #cl-artisan-space{padding:18px 12px!important}
+body.cl-screen-messages #msgInboxBtn{outline:2px solid #ff6b36;outline-offset:2px}
+@media(min-width:620px){.cl-eight-shortcuts{grid-template-columns:repeat(4,minmax(0,1fr))}.cl-eight-shortcut{min-height:112px}.cl-eight-benefits{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:520px){.cl-eight-hero{padding:16px 13px 8px}.cl-eight-hero h1{font-size:2rem}.cl-eight-hero>p{font-size:.83rem;margin:10px auto 19px}.cl-eight-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cl-eight-shortcut{min-height:88px;border-radius:15px}.cl-eight-community{margin:18px 12px;padding:17px}.cl-eight-benefits{margin:18px 12px 88px}.shell-nav.cl-nav{z-index:1000}}
