@@ -1,0 +1,68 @@
+/* CamerLink premium home v2 — mobile-first, clean navigation and photo marketplace */
+:root{--home-bg:#070a10;--home-panel:#101722;--home-line:#253241;--home-text:#f5f7fb;--home-muted:#9eacbd;--home-orange:#ff572d;--home-gold:#ffb52e}
+body{background:radial-gradient(ellipse at 85% -10%,rgba(255,91,45,.13),transparent 36%),var(--home-bg)!important;color:var(--home-text)}
+.cl-top{min-height:68px;display:flex;align-items:center;gap:14px;padding:10px clamp(12px,3vw,30px)!important;background:rgba(7,10,16,.96)!important;border-bottom:1px solid var(--home-line)!important;backdrop-filter:blur(18px)}
+.cl-top .header-actions{display:flex;align-items:center;gap:8px}
+.cl-top .btn-login{display:inline-flex!important;align-items:center;justify-content:center;border:1px solid #344153!important;background:#121b28!important;color:#fff!important;border-radius:999px;padding:10px 15px!important;font-size:.82rem;font-weight:800;white-space:nowrap}
+.cl-top .btn-pub{border-radius:999px;background:linear-gradient(105deg,var(--home-gold),var(--home-orange))!important;color:#fff!important;font-weight:850;white-space:nowrap}
+.cl-eight-hero{max-width:1240px;margin:0 auto;padding:25px clamp(15px,4vw,44px) 18px;background:transparent;overflow:hidden}
+.cl-eight-hero:before{inset:0;background:radial-gradient(ellipse at 90% 8%,rgba(255,87,45,.18),transparent 36%),radial-gradient(ellipse at 5% 65%,rgba(255,181,46,.07),transparent 38%)}
+.cl-home-eyebrow{display:flex;align-items:center;gap:9px;color:#ffad66;font-size:.68rem;font-weight:900;letter-spacing:.13em;margin-bottom:13px}
+.cl-home-eyebrow span{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff663b;box-shadow:0 0 14px #ff663b}
+.cl-eight-hero h1{position:relative;text-align:left;max-width:780px;font-size:clamp(2rem,6vw,3.8rem);line-height:1.02;letter-spacing:-.06em;font-weight:900;margin:0}
+.cl-eight-hero h1 span{background:linear-gradient(100deg,#ffd06a,#ff7447 70%,#ff4e32);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cl-eight-hero>p{text-align:left;margin:12px 0 21px;max-width:560px;color:var(--home-muted);font-size:.96rem;line-height:1.65}
+.cl-eight-shortcuts{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-width:850px}
+.cl-eight-shortcut{min-width:0;min-height:86px;gap:9px;border:1px solid #293746;border-radius:17px;background:linear-gradient(145deg,#141e2b,#0b1119);color:#eef3fa;font-size:.76rem;font-weight:800;box-shadow:inset 0 1px rgba(255,255,255,.035);transition:transform .18s,border-color .18s}
+.cl-eight-shortcut b{width:35px;height:35px;border-radius:12px;display:grid;place-items:center;background:#ffffff09;border:1px solid #ffffff12;color:#ff9b53;font-size:1.35rem}
+.cl-eight-shortcut[data-screen="publish"]{background:linear-gradient(125deg,#ffb52e,#ff542f);border-color:#ff7845;color:#fff}
+.cl-eight-shortcut[data-screen="publish"] b{color:white;background:#ffffff20}
+.cl-eight-shortcut.active,.cl-eight-shortcut:focus-visible{border-color:#ff754c;outline:2px solid #ff754c30}
+.cl-eight-shortcut:active{transform:scale(.98)}
+/* The original search panel becomes a compact, practical discovery bar. */
+body.cl-screen-home .hero h1,body.cl-screen-home .hero>p{display:none}
+body.cl-screen-home .hero{max-width:1240px;padding:0 clamp(15px,4vw,44px) 18px;margin:0 auto;background:transparent}
+body.cl-screen-home .hero:before{display:none}
+body.cl-screen-home .search-filter-bar{max-width:none;display:grid;grid-template-columns:minmax(0,1.8fr) minmax(100px,.7fr);gap:9px}
+body.cl-screen-home .search-input{grid-column:1/-1}
+body.cl-screen-home .form-el{min-width:0;width:100%;border-radius:13px;background:#101722;border-color:#2a3746;color:#f5f7fb;min-height:47px}
+body.cl-screen-home .hero>div[style*="justify-content:center"]{margin:10px 0 0!important;padding:0!important;justify-content:flex-start!important}
+body.cl-screen-home .hero>div[style*="justify-content:center"] a{border-radius:999px!important;box-shadow:none!important;font-size:.78rem;padding:10px 15px!important}
+.shops-section h2{font-size:1.08rem;font-weight:850;letter-spacing:-.02em}
+.shops-section{padding-top:13px!important}
+.categories-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.categories-scroll::-webkit-scrollbar{display:none}
+.filter-tabs-row{padding:15px 0 12px}
+.listings-grid{gap:12px}
+.listing-card,.ad-card,.listing-item{background:#101722;border:1px solid #253342;border-radius:17px;overflow:hidden;box-shadow:0 8px 24px #0002}
+.listing-card img,.ad-card img,.listing-item img{display:block;width:100%;object-fit:cover}
+.reels-section{border-radius:22px}
+.shell-nav.cl-nav{display:flex;align-items:center;justify-content:space-around;gap:1px;padding:7px 3px calc(7px + env(safe-area-inset-bottom,0px))!important;background:rgba(7,10,16,.97)!important;border-top:1px solid #263342!important;backdrop-filter:blur(20px)}
+.shell-nav.cl-nav button{flex:1 1 0;min-width:0;font-size:10px;gap:4px;padding:4px 0;color:#96a4b6}
+.shell-nav.cl-nav button svg{width:22px;height:22px}
+.shell-nav.cl-nav button.on,.shell-nav.cl-nav button.active{color:#ff8c52!important}
+.shell-nav.cl-nav .plus{flex:0 0 43px}
+.shell-nav.cl-nav .plus span.c{width:39px;height:39px;margin-top:-13px;font-size:26px;background:linear-gradient(135deg,#ffbf3f,#ff4c2e)!important;color:white;box-shadow:0 5px 18px #ff592d35}
+.shell-nav.cl-nav .badge{top:-2px}
+body.cl-screen-market .cl-eight-hero{display:none!important}
+body.cl-screen-market .hero{display:block!important;padding-top:14px!important}
+body.cl-screen-market .hero h1,body.cl-screen-market .hero>p{display:none!important}
+body.cl-screen-market .shops-section,body.cl-screen-market #reels-section{display:none!important}
+body.cl-screen-market .listings-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+body.cl-screen-market .card-img-container{height:auto;aspect-ratio:4/5}
+body.cl-screen-market .categories-scroll{padding-top:10px}
+body.cl-screen-reels .cl-eight-hero,body.cl-screen-profile .cl-eight-hero{display:none!important}
+body.cl-screen-home .cl-eight-community{margin:15px clamp(12px,4vw,44px);padding:18px;border-radius:18px}
+body.cl-screen-home .cl-eight-benefits{margin:15px 12px 95px}
+@media(min-width:700px){
+ .cl-eight-shortcuts{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+ .cl-eight-shortcut{min-height:100px;font-size:.82rem}
+ body.cl-screen-home .search-filter-bar{grid-template-columns:minmax(180px,1.8fr) minmax(120px,.7fr) minmax(130px,.8fr) minmax(130px,.8fr)}
+ body.cl-screen-home .search-input{grid-column:auto}
+ .listings-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:380px){
+ .cl-top{gap:6px}.brand-wordmark{font-size:1rem!important}.brand-logo-img{width:25px!important;height:25px!important}
+ .cl-top .header-actions{gap:4px}.cl-top .btn-icon{width:32px;height:32px}.cl-top .btn-login{padding:8px 10px!important;font-size:.72rem}.cl-top .btn-pub{padding:9px 10px!important;font-size:.72rem}
+ .shell-nav.cl-nav button{font-size:9px}.shell-nav.cl-nav .plus{flex-basis:36px}.shell-nav.cl-nav .plus span.c{width:34px;height:34px}
+}

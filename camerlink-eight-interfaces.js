@@ -38,15 +38,14 @@
     if ($('#cl-eight-home')) return;
     const hero = document.createElement('section');
     hero.className='cl-eight-hero'; hero.id='cl-eight-home';
-    hero.innerHTML='<h1>Le Cameroun<br><span>plus proche que jamais&nbsp;!</span></h1><p>Connecte · Partage · Achète · Fais grandir ton business — partout au Cameroun.</p><div class="cl-eight-shortcuts" aria-label="Parcourir les huit interfaces CamerLink">'+
+    hero.innerHTML='<div class="cl-home-eyebrow"><span></span> LE RÉSEAU QUI RAPPROCHE LE CAMEROUN</div><h1>Tout le Cameroun.<br><span>À portée de main.</span></h1><p>Découvre, partage, échange et trouve ce qu’il te faut près de toi.</p><div class="cl-eight-shortcuts" aria-label="Navigation CamerLink">'+
       '<button class="cl-eight-shortcut" data-screen="home"><b>⌂</b>Accueil</button>'+
+      '<button class="cl-eight-shortcut" data-screen="market"><b>▧</b>Annonces & photos</button>'+
       '<button class="cl-eight-shortcut" data-screen="reels"><b>▶</b>Réels</button>'+
-      '<button class="cl-eight-shortcut" data-screen="profile"><b>◉</b>Profil</button>'+
-      '<button class="cl-eight-shortcut" data-screen="market"><b>▦</b>Marketplace</button>'+
       '<button class="cl-eight-shortcut" data-screen="messages"><b>▤</b>Messages</button>'+
-      '<button class="cl-eight-shortcut" data-screen="publish"><b>＋</b>Publier</button>'+
-      '<button class="cl-eight-shortcut" data-screen="menu"><b>☷</b>Mon espace</button>'+
-      '<button class="cl-eight-shortcut" data-screen="community"><b>♡</b>Communauté</button></div>';
+      '<button class="cl-eight-shortcut" data-screen="profile"><b>◉</b>Profil</button>'+
+      '<button class="cl-eight-shortcut" data-screen="publish"><b>＋</b>Publier</button></div>';
+
     const target=$('.hero') || $('.shops-section') || $('#categoryChips');
     if(target) target.insertAdjacentElement('beforebegin',hero);
     const community=document.createElement('section');
