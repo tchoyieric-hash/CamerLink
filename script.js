@@ -30,12 +30,24 @@
     { value: 'Bafoussam', label: 'Bafoussam (Ouest)' },
     { value: 'Bamenda', label: 'Bamenda (Nord-Ouest)' },
     { value: 'Buea', label: 'Buea (Sud-Ouest)' },
+    { value: 'Limbe', label: 'Limbe (Sud-Ouest)' },
+    { value: 'Kumba', label: 'Kumba (Sud-Ouest)' },
+    { value: 'Tiko', label: 'Tiko (Sud-Ouest)' },
     { value: 'Garoua', label: 'Garoua (Nord)' },
     { value: 'Maroua', label: 'Maroua (Extrême-Nord)' },
     { value: 'Ngaoundéré', label: 'Ngaoundéré (Adamaoua)' },
+    { value: 'Meiganga', label: 'Meiganga (Adamaoua)' },
     { value: 'Bertoua', label: 'Bertoua (Est)' },
+    { value: 'Abong-Mbang', label: 'Abong-Mbang (Est)' },
     { value: 'Ebolowa', label: 'Ebolowa (Sud)' },
-    { value: 'Kribi', label: 'Kribi (Sud)' }
+    { value: 'Sangmélima', label: 'Sangmélima (Sud)' },
+    { value: 'Kribi', label: 'Kribi (Sud)' },
+    { value: 'Edéa', label: 'Edéa (Littoral)' },
+    { value: 'Nkongsamba', label: 'Nkongsamba (Littoral)' },
+    { value: 'Foumban', label: 'Foumban (Ouest)' },
+    { value: 'Dschang', label: 'Dschang (Ouest)' },
+    { value: 'Mbouda', label: 'Mbouda (Ouest)' },
+    { value: 'Garoua-Boulaï', label: 'Garoua-Boulaï (Est)' }
   ];
 
   // Suggestions de quartiers (le vendeur peut aussi écrire librement un autre quartier)
@@ -44,7 +56,25 @@
     'Douala': ['Akwa', 'Bali', 'Bassa', 'Bepanda', 'Bonabéri', 'Bonamoussadi', 'Bonanjo', 'Bonapriso', 'Cité des Palmiers', 'Deido', 'Japoma', 'Kotto', 'Logbessou', 'Logpom', 'Makepe', 'Ndokoti', 'New Bell', 'Nyalla', 'PK8', 'PK14', 'Yassa'],
     'Bafoussam': ['Banengo', 'Djeleng', 'Famla', 'Kamkop', 'Tamdja'],
     'Bamenda': ['Commercial Avenue', 'Mankon', 'Nkwen', 'Ntarikon', 'Up Station'],
-    'Buea': ['Bonduma', 'Great Soppo', 'Molyko', 'Muea']
+    'Buea': ['Bonduma', 'Great Soppo', 'Molyko', 'Muea'],
+    'Limbe': ['Bota', 'Down Beach', 'Mile 1', 'Mile 2', 'Mile 4', 'New Town', 'Sapa Road'],
+    'Kumba': ['Fiango', 'Kosala', 'Mabanda', 'Mbonge Road', 'Three Corners'],
+    'Tiko': ['Likomba', 'Mutengene', 'Tiko Town'],
+    'Garoua': ['Camp Chinois', 'Laindé', 'Poumpoumré', 'Roumdé Adjia'],
+    'Maroua': ['Domayo', 'Doualaré', 'Founangué', 'Palar'],
+    'Ngaoundéré': ['Baladji', 'Dang', 'Joli Soir', 'Sabongari'],
+    'Bertoua': ['Enia', 'Kano', 'Mokolo', 'Yadia'],
+    'Ebolowa': ['Angalé', 'Biwong', 'New-Bell'],
+    'Kribi': ['Centre-ville', 'Dombe', 'Londji', 'Mboa Manga', 'Talla'],
+    'Edéa': ['Centre-ville', 'Delangue', 'Pongo'],
+    'Nkongsamba': ['Ekangté', 'Ekel-Kouma', 'Quartier 1', 'Quartier 2'],
+    'Foumban': ['Njinka', 'Nkoung-Khi', 'Quartier administratif'],
+    'Dschang': ['Centre-ville', 'Foto', 'Foreke', 'Tchouale'],
+    'Mbouda': ['Bamessingue', 'Centre-ville', 'Koptchou'],
+    'Sangmélima': ['Centre-ville', 'Meyomessala Road'],
+    'Meiganga': ['Centre-ville', 'Sabongari'],
+    'Abong-Mbang': ['Centre-ville'],
+    'Garoua-Boulaï': ['Centre-ville']
   };
   const MAX_QUARTIER = 80;
   // clé de comparaison : sans accents, sans majuscules (Bonabéri = bonaberi)
@@ -178,7 +208,11 @@
         if (k && !m.has(k)) m.set(k, a.quartier);
       }
     });
-    if (m.size === 0) { sel.style.display = 'none'; sel.innerHTML = ''; currentQuartier = ''; return; }
+    // Les quartiers prédéfinis sont proposés dès qu'une ville est choisie,
+    // même si aucune annonce de cette ville n'a encore été publiée.
+    [...(QUARTIERS[city] || []), ...allListings.filter(a => a.quartier && (!city || a.city === city)).map(a => a.quartier)]
+      .forEach(q => { const k = qKey(q); if (k && !m.has(k)) m.set(k, q); });
+    if (m.size === 0 && !city) { sel.style.display = 'none'; sel.innerHTML = ''; currentQuartier = ''; return; }
     if (currentQuartier && !m.has(currentQuartier)) currentQuartier = '';
     const list = [...m.entries()].sort((x, y) => x[1].localeCompare(y[1], 'fr'));
     sel.innerHTML = '<option value="">Tous les quartiers</option>' +
@@ -204,9 +238,33 @@
       grp.innerHTML = '<label for="adQuartier">Quartier (facultatif)</label>' +
         '<input class="form-sheet-el" id="adQuartier" type="text" maxlength="' + MAX_QUARTIER + '" list="quartiersList" placeholder="Ex : Bastos, Akwa…" autocomplete="off">' +
         '<datalist id="quartiersList"></datalist>' +
-        '<small class="form-hint">Aide les acheteurs à vous trouver. N’indiquez pas votre adresse exacte.</small>';
+        '<small class="form-hint">Aide les acheteurs à vous trouver. La position GPS est facultative et arrondie pour rester approximative.</small>';
       const holder = adCity.closest('.form-group');
       if (holder) holder.insertAdjacentElement('afterend', grp);
+      const gpsBtn = document.createElement('button');
+      gpsBtn.id = 'adGpsLocationBtn';
+      gpsBtn.type = 'button';
+      gpsBtn.className = 'form-sheet-el';
+      gpsBtn.style.cssText = 'width:100%;min-height:42px;margin-top:8px;border:1px solid rgba(48,210,230,.45);border-radius:12px;background:rgba(48,210,230,.08);color:inherit;font-weight:700;cursor:pointer;';
+      gpsBtn.textContent = '📍 Ajouter une position approximative (facultatif)';
+      gpsBtn.setAttribute('aria-label', 'Enregistrer la position GPS de cette annonce');
+      gpsBtn.addEventListener('click', () => {
+        if (!navigator.geolocation) { toast('La localisation GPS n’est pas disponible sur cet appareil.'); return; }
+        gpsBtn.disabled = true;
+        gpsBtn.textContent = 'Localisation…';
+        navigator.geolocation.getCurrentPosition(pos => {
+          adGpsPosition = { lat: Math.round(pos.coords.latitude * 1000) / 1000, lng: Math.round(pos.coords.longitude * 1000) / 1000 };
+          gpsBtn.disabled = false;
+          gpsBtn.textContent = '✓ Position ajoutée à cette annonce';
+          toast('Position approximative enregistrée. Elle servira à classer les annonces proches.');
+        }, () => {
+          adGpsPosition = null;
+          gpsBtn.disabled = false;
+          gpsBtn.textContent = '📍 Réessayer d’ajouter ma position';
+          toast('Autorise la localisation ou publie sans GPS : la ville et le quartier restent disponibles.');
+        }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+      });
+      grp.appendChild(gpsBtn);
       adCity.addEventListener('change', fillQuartierSuggestions);
     }
     fillQuartierSuggestions();
@@ -1037,6 +1095,9 @@
     });
   }
 
+  // Position GPS facultative du vendeur, conservée uniquement pour cette publication.
+  let adGpsPosition = null;
+
   const adForm = $('adForm');
   if (adForm) {
     adForm.addEventListener('submit', async (e) => {
@@ -1114,6 +1175,10 @@
         if (imageUrls.length) row.images_urls = imageUrls;
         if (videoUrl) row.video_url = videoUrl;
         if (quartier) row.quartier = quartier;
+        if (adGpsPosition && Number.isFinite(adGpsPosition.lat) && Number.isFinite(adGpsPosition.lng)) {
+          row.lat = adGpsPosition.lat;
+          row.lng = adGpsPosition.lng;
+        }
 
         const { error } = await sb.from('annonces').insert(row);
         if (error) throw error;
@@ -1121,6 +1186,9 @@
 
         closeModal('publishModal');
         adForm.reset();
+        adGpsPosition = null;
+        const gpsPublishBtn = $('adGpsLocationBtn');
+        if (gpsPublishBtn) gpsPublishBtn.textContent = '📍 Ajouter ma position (facultatif)';
         resetVideoPreview();
         resetAdImagePreview();
         const quickDetails = document.querySelector('.quick-publish-details');
@@ -1208,7 +1276,8 @@
       (!term || String(ad.title || '').toLowerCase().includes(term) || qKey(ad.quartier).includes(qKey(term)) || qKey(ad.description).includes(qKey(term)))
     );
     if (nearbyMode && nearbyPosition) {
-      filtered = filtered.slice().sort((a,b) => distanceKm(a,nearbyPosition) - distanceKm(b,nearbyPosition));
+      const located = filtered.filter(a => a.lat != null && a.lng != null && Number.isFinite(Number(a.lat)) && Number.isFinite(Number(a.lng)));
+      filtered = located.slice().sort((a,b) => distanceKm(a,nearbyPosition) - distanceKm(b,nearbyPosition));
     } else {
       filtered = filtered.slice().sort((a, b) => {
         if (sortMode === 'price-asc') return Number(a.price || 0) - Number(b.price || 0);
@@ -1221,7 +1290,7 @@
     $('resultsCount').textContent = `${filtered.length} annonce(s)`;
     if (filtered.length === 0) {
       grid.innerHTML = '<div class="state-msg">' +
-        (favOnly ? 'Aucun favori pour le moment.' : 'Aucune annonce disponible pour le moment.') + '</div>';
+        (nearbyMode ? 'Aucune annonce avec position GPS enregistrée à proximité pour le moment. Les vendeurs peuvent ajouter leur position lors de la publication.' : (favOnly ? 'Aucun favori pour le moment.' : 'Aucune annonce disponible pour le moment.')) + '</div>';
       return;
     }
 
