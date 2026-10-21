@@ -71,3 +71,49 @@ body.cl-screen-profile #profile-section{background:#fff!important;color:#111827!
  .cl-top #cl-app-back{background:#f4f6fa!important;color:#1f2937!important;border-color:#e5e7eb!important}
  body.cl-screen-home .listings-grid,body.cl-screen-market .listings-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
+
+/* Correctif prioritaire : restaurer la zone d'annonces et ses cartes */
+body.cl-screen-home main,
+body.cl-screen-market main,
+main:has(#listings-grid){
+  display:block!important;visibility:visible!important;opacity:1!important;
+}
+body.cl-screen-home main.shell-off,
+body.cl-screen-market main.shell-off,
+main.shell-off:has(#listings-grid){
+  display:block!important;visibility:visible!important;opacity:1!important;
+}
+#listings-grid,
+.listings-grid#listings-grid{
+  display:grid!important;visibility:visible!important;opacity:1!important;
+  width:100%!important;min-height:24px!important;height:auto!important;
+  overflow:visible!important;position:relative!important;
+}
+#listings-grid:empty{min-height:0!important}
+#listings-grid>*{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  min-width:0!important;max-width:100%!important;
+}
+#listings-grid img{display:block;max-width:100%;height:auto}
+body.cl-screen-home main .ad-card,
+body.cl-screen-home main .listing-card,
+body.cl-screen-home main .annonce-card,
+body.cl-screen-home main .listing-item,
+body.cl-screen-home main .ad-item,
+body.cl-screen-market main .ad-card,
+body.cl-screen-market main .listing-card,
+body.cl-screen-market main .annonce-card,
+body.cl-screen-market main .listing-item,
+body.cl-screen-market main .ad-item{
+  display:block!important;visibility:visible!important;opacity:1!important;
+}
+body.cl-screen-home main .listings-grid,
+body.cl-screen-market main .listings-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+body.cl-screen-home .filter-tabs-row,
+body.cl-screen-market .filter-tabs-row{display:flex!important;visibility:visible!important}
+@media(max-width:360px){
+ body.cl-screen-home main .listings-grid,
+ body.cl-screen-market main .listings-grid{grid-template-columns:minmax(0,1fr)!important}
+}
