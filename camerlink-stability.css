@@ -1,0 +1,105 @@
+/* CamerLink — stabilité visuelle mobile, couche de correction finale.
+   Ne remplace pas les styles fonctionnels existants; normalise seulement la mise en page. */
+:root{
+  --cl-stable-green:#007a3d;
+  --cl-stable-red:#ce1126;
+  --cl-stable-yellow:#ffdf00;
+}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--header-height,68px) + 12px)}
+body{min-width:320px;overflow-x:clip}
+img,video{max-width:100%}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--cl-stable-yellow);outline-offset:3px
+}
+/* En-tête : contrôles compacts sans pousser le logo hors écran. */
+.cl-top{gap:10px;min-width:0}
+.cl-top .logo-brand{display:flex;align-items:center;gap:7px;min-width:0;flex-shrink:1}
+.brand-logo-img{width:32px;height:32px;object-fit:contain;flex:0 0 auto}
+.brand-wordmark{white-space:nowrap}
+.header-actions{min-width:0;flex-shrink:0;gap:6px}
+.header-actions button{min-height:40px}
+@media(max-width:430px){
+  .cl-top{padding-inline:10px!important}
+  .brand-logo-img{width:27px;height:27px}
+  .cl-top .logo-brand{font-size:1.05rem}
+  .header-actions{gap:4px}
+  .header-actions .btn-icon{width:36px;height:36px}
+  .header-actions .btn-login{padding-inline:5px;font-size:.72rem}
+  .header-actions .btn-pub{padding:8px 9px;font-size:.72rem}
+}
+/* Accueil : hiérarchie simple, contrôles lisibles, contenu jamais comprimé. */
+body[data-cl-mode="home"] .hero{
+  width:min(1120px,calc(100% - 24px));margin:14px auto 10px;
+  padding:clamp(18px,4vw,30px);border-radius:22px
+}
+body[data-cl-mode="home"] .hero h1{font-size:clamp(1.7rem,5.8vw,2.6rem);line-height:1.12}
+body[data-cl-mode="home"] .hero p{max-width:560px;line-height:1.55}
+body[data-cl-mode="home"] .search-filter-bar{width:100%;gap:8px}
+body[data-cl-mode="home"] .search-input{min-width:0;flex:1 1 100%;width:100%}
+body[data-cl-mode="home"] .city-select,
+body[data-cl-mode="home"] .price-select{min-width:0;flex:1 1 140px}
+body[data-cl-mode="home"] .shops-section,
+body[data-cl-mode="home"] main,
+body[data-cl-mode="home"] #categoryChips{
+  width:min(1120px,100%);margin-inline:auto
+}
+body[data-cl-mode="home"] .shops-section{padding:14px 14px 4px}
+body[data-cl-mode="home"] .shops-section h2{font-size:1rem;line-height:1.35}
+body[data-cl-mode="home"] #categoryChips{padding-inline:14px;max-width:1120px}
+body[data-cl-mode="home"] main{padding:10px 14px 108px}
+body[data-cl-mode="home"] .listings-grid{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;padding:4px 0!important
+}
+body[data-cl-mode="home"] .listings-grid>*{min-width:0;max-width:100%}
+body[data-cl-mode="home"] .listings-grid .ad-card,
+body[data-cl-mode="home"] .listings-grid .listing-card,
+body[data-cl-mode="home"] .listings-grid .annonce-card{
+  min-width:0;max-width:100%;height:100%;overflow:hidden;border-radius:15px
+}
+body[data-cl-mode="home"] .listings-grid .card-img-container{
+  height:clamp(115px,34vw,205px);min-height:0
+}
+body[data-cl-mode="home"] .listings-grid .card-img-container img{
+  width:100%;height:100%;object-fit:cover
+}
+body[data-cl-mode="home"] .listings-grid .card-body{padding:10px;min-width:0}
+body[data-cl-mode="home"] .listings-grid .ad-title,
+body[data-cl-mode="home"] .listings-grid .card-title{
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  overflow-wrap:anywhere;font-size:.9rem;line-height:1.35
+}
+body[data-cl-mode="home"] .listings-grid .ad-price{font-size:1rem;overflow-wrap:anywhere}
+body[data-cl-mode="home"] .listings-grid .ad-desc{font-size:.8rem}
+@media(min-width:760px){
+  body[data-cl-mode="home"] .listings-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important}
+}
+@media(min-width:1080px){
+  body[data-cl-mode="home"] .listings-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+@media(max-width:360px){
+  body[data-cl-mode="home"] .listings-grid{gap:8px!important}
+  body[data-cl-mode="home"] .listings-grid .card-body{padding:8px}
+  body[data-cl-mode="home"] .listings-grid .ad-title{font-size:.82rem}
+}
+/* Navigation : zones tactiles sûres au-dessus de la barre système Android. */
+.cl-nav,.shell-nav{
+  padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;
+}
+.cl-nav button,.shell-nav button{touch-action:manipulation}
+body{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+.shell-off{display:none!important}
+/* Reels : le flux conserve sa largeur et ne peut pas élargir toute la page. */
+#reels-section{min-width:0;max-width:100%;overflow-x:clip}
+#reels-feed{min-width:0;width:100%;max-width:760px;margin-inline:auto}
+#reels-feed>*{min-width:0;max-width:100%}
+#reels-feed video,#reels-feed img{max-width:100%}
+@media(max-width:700px){
+  body[data-cl-mode="reels"] #reels-section{width:100%;margin:0;padding-bottom:90px}
+  body[data-cl-mode="reels"] #reels-feed{width:100%;max-width:100%}
+}
+/* Les vues plein écran et les formulaires ne débordent pas sur les petits téléphones. */
+.modal-overlay{padding: max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+.modal-sheet{width:min(100%,450px);max-height:calc(100dvh - 24px);overflow-y:auto}
+#profile-section{min-width:0;max-width:100%;overflow-wrap:anywhere}
