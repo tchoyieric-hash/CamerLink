@@ -1,0 +1,147 @@
+/* CamerLink — finition fidèle à la référence mobile du 21/10/2026.
+   Couche visuelle uniquement : aucune logique JS, API ou donnée n'est modifiée. */
+:root{
+  --cl-ref-orange:#ff4b16;
+  --cl-ref-orange-deep:#e9360a;
+  --cl-ref-ink:#111827;
+  --cl-ref-muted:#667085;
+  --cl-ref-border:#e1e6ee;
+  --cl-ref-paper:#ffffff;
+  --cl-ref-canvas:#f4f6fa;
+}
+html{background:var(--cl-ref-canvas)}
+body{
+  --cl2050-orange:var(--cl-ref-orange);
+  --color-cta:var(--cl-ref-orange);
+  background:var(--cl-ref-canvas);
+  color:var(--cl-ref-ink);
+  -webkit-font-smoothing:antialiased;
+}
+.cl-top{
+  background:rgba(255,255,255,.96)!important;
+  color:var(--cl-ref-ink)!important;
+  border-bottom:1px solid var(--cl-ref-border)!important;
+  box-shadow:0 5px 24px rgba(16,24,40,.055)!important;
+  backdrop-filter:blur(18px);
+}
+.cl-top .brand-wordmark,.cl-top .logo-brand{color:var(--cl-ref-ink)!important}
+.cl-top .brand-wordmark span,.cl-logo span{color:var(--cl-ref-orange)!important}
+.cl-top .btn-login,.cl-top .btn-pub,.cl-welcome-primary,
+.btn-submit-modal,.reels-upload-btn,.fav-toggle-btn{
+  border-radius:999px!important;
+  font-weight:800!important;
+}
+.cl-top .btn-pub,.cl-welcome-primary,.btn-submit-modal,.reels-upload-btn{
+  background:linear-gradient(135deg,var(--cl-ref-orange),var(--cl-ref-orange-deep))!important;
+  color:#fff!important;
+  box-shadow:0 7px 18px rgba(255,75,22,.19)!important;
+}
+.cl-tabs{
+  border-bottom:1px solid var(--cl-ref-border)!important;
+  background:var(--cl-ref-paper)!important;
+}
+.cl-tabs .shell-tab{font-weight:750}
+.hero{
+  background:var(--cl-ref-canvas)!important;
+  color:var(--cl-ref-ink)!important;
+  border:0!important;
+  text-align:left!important;
+  padding:24px clamp(16px,4vw,36px) 18px!important;
+}
+.hero h1{font-size:clamp(1.65rem,5vw,2.5rem)!important;line-height:1.12!important}
+.hero h1 span{
+  background:linear-gradient(90deg,var(--cl-ref-orange),#ff8a00)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;
+}
+.hero p{color:var(--cl-ref-muted)!important;margin-left:0!important}
+.search-filter-bar{
+  display:grid!important;grid-template-columns:minmax(0,2fr) repeat(3,minmax(0,1fr));
+  gap:9px!important;
+}
+.search-filter-bar .form-el,.search-filter-bar input,.search-filter-bar select{
+  min-width:0;min-height:46px!important;border:1px solid var(--cl-ref-border)!important;
+  border-radius:14px!important;background:#fff!important;color:var(--cl-ref-ink)!important;
+  box-shadow:0 2px 8px rgba(16,24,40,.035)!important;
+}
+.shops-section,.reels-section,main,#discover-section{
+  color:var(--cl-ref-ink);
+}
+.shops-section h2,main h2{letter-spacing:-.025em}
+.categories-scroll{gap:8px!important}
+.categories-scroll button,.category-chip,.filter-chip{
+  border-radius:999px!important;font-weight:750!important;
+}
+.listings-grid{
+  gap:14px!important;
+}
+.listing-card,.ad-card,.business-card,.shop-card{
+  overflow:hidden;border:1px solid var(--cl-ref-border)!important;
+  border-radius:18px!important;background:#fff!important;
+  box-shadow:0 5px 18px rgba(16,24,40,.055)!important;
+}
+.listing-card img,.ad-card img{object-fit:cover}
+.listing-card button,.ad-card button,.business-card button{
+  border-radius:999px;
+}
+.modal-overlay .modal-sheet{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px 24px 18px 18px!important;
+  box-shadow:0 24px 80px rgba(0,0,0,.25)!important;
+}
+.modal-sheet .form-sheet-el{
+  min-height:48px;border-radius:13px!important;
+}
+.cl-nav{
+  background:rgba(255,255,255,.97)!important;
+  border-top:1px solid var(--cl-ref-border)!important;
+  box-shadow:0 -8px 28px rgba(16,24,40,.07)!important;
+  backdrop-filter:blur(20px);
+}
+.cl-nav button{color:#697386!important;font-weight:700}
+.cl-nav button svg{stroke:currentColor}
+.cl-nav button.active,.cl-nav button[aria-current="page"]{color:var(--cl-ref-orange)!important}
+.cl-nav button.plus,.cl-nav .plus{
+  background:linear-gradient(135deg,var(--cl-ref-orange),var(--cl-ref-orange-deep))!important;
+  color:#fff!important;box-shadow:0 6px 16px rgba(255,75,22,.25)!important;
+}
+#profile-section{
+  background:#fff!important;color:#172033!important;
+  border:1px solid #e9edf3;border-radius:24px 24px 0 0!important;
+  box-shadow:0 8px 28px rgba(16,24,40,.055);
+}
+#profile-section button{max-width:100%}
+#profile-section .pf-edit,#profile-section [class*="edit"]{
+  border-radius:999px;
+}
+#profile-section img{object-fit:cover}
+#profile-section .pf-stats,#profile-section [class*="stats"]{
+  font-variant-numeric:tabular-nums;
+}
+/* Les Reels conservent le plein écran sombre, les vidéos et leurs commandes. */
+.reels-section{background:#05080e!important;color:#f7f9fc!important}
+.reels-section .reels-heading{color:#f7f9fc!important}
+.reels-section .reels-heading p{color:#aab5c5!important}
+.reels-section .reels-heading h2 span{color:var(--cl-ref-orange)!important}
+#reels-feed > .reel-card{background:#05080e!important}
+#toast{background:var(--cl-ref-ink)!important;color:#fff!important;border-radius:14px!important}
+@media(max-width:760px){
+  body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
+  .cl-top{min-height:58px!important;padding-left:12px!important;padding-right:12px!important}
+  .cl-top .brand-wordmark{font-size:1.18rem}
+  .cl-top .header-actions{gap:6px}
+  .cl-top .btn-login,.cl-top .btn-pub{min-height:38px;padding:8px 12px!important;font-size:.78rem}
+  .cl-tabs{overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+  .hero{padding:20px 14px 14px!important}
+  .hero h1{font-size:clamp(1.55rem,7vw,2rem)!important}
+  .search-filter-bar{grid-template-columns:1fr 1fr!important}
+  .search-filter-bar .search-input{grid-column:1/-1}
+  .listings-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;padding:0 10px}
+  .listing-card,.ad-card,.business-card{border-radius:15px!important}
+  .cl-nav{padding-bottom:env(safe-area-inset-bottom,0px)!important}
+  #profile-section{width:100%!important;margin:0!important;border-radius:22px 22px 0 0!important}
+}
+@media(max-width:380px){
+  .cl-top .brand-wordmark{font-size:1rem}
+  .cl-top .btn-login{padding:7px 9px!important}
+  .listings-grid{gap:8px!important}
+}
