@@ -630,8 +630,8 @@
         </div>
         <div class="cl-post-footer">
           <button type="button" class="cl-post-creator" ${ad.user_id ? `data-profile-user="${esc(ad.user_id)}"` : 'data-reel-open'}>
-            <span class="cl-post-avatar">${esc((ad.title || 'C').trim().slice(0,1).toUpperCase())}</span>
-            <span><b>${esc(ad.owner_name || ad.artisan_name || 'Utilisateur')}</b><small>Voir le profil</small></span>
+            <span class="cl-post-avatar" data-creator-avatar>${esc((ad.owner_name || ad.artisan_name || 'C').trim().slice(0,1).toUpperCase())}</span>
+            <span><b data-creator-name>${esc(ad.owner_name || ad.artisan_name || 'Créateur CamerLink')}</b><small>Voir le profil</small></span>
           </button>
           ${ad.user_id && currentUser && ad.user_id === currentUser.id ? '<span class="cl-post-own">Votre publication</span>' : ad.user_id ? `<button type="button" class="cl-follow-btn" data-profile-user="${esc(ad.user_id)}">＋ S’abonner</button>` : ''}
           ${wa ? `<a class="cl-post-whatsapp" href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" aria-label="Contacter sur WhatsApp">☎</a>` : ''}
@@ -639,6 +639,41 @@
         <div class="cl-comments-preview" data-comments-preview><span class="cl-comment-loading">Chargement des commentaires…</span></div><button type="button" class="cl-post-open" data-reel-open>Voir l’annonce complète →</button>
       </article>`;
     }).join('');
+
+    // Hydrater l'identité du créateur après le rendu, sans bloquer la lecture des Réels.
+    (async () => {
+      const ids = [...new Set(list.map(ad => ad.user_id).filter(Boolean))];
+      if (!ids.length) return;
+      let info = {};
+      try { info = await shopInfo(ids); } catch (_) {}
+      let profiles = {};
+      try {
+        const result = await withTimeout(sb.from('profils')
+          .select('id, full_name, username, avatar_url')
+          .in('id', ids), FETCH_TIMEOUT);
+        if (!result.error) (result.data || []).forEach(p => { profiles[p.id] = p; });
+      } catch (_) {}
+      list.forEach(ad => {
+        const card = feed.querySelector(`.cl-social-post[data-reel="${CSS.escape(String(ad.id))}"]`);
+        if (!card) return;
+        const profile = profiles[ad.user_id] || {};
+        const shop = info[ad.user_id] || {};
+        const name = String(profile.full_name || profile.username || shop.name || ad.owner_name || ad.artisan_name || 'Créateur CamerLink').trim();
+        const avatar = profile.avatar_url || shop.logo_url || null;
+        const nameNode = card.querySelector('[data-creator-name]');
+        const avatarNode = card.querySelector('[data-creator-avatar]');
+        if (nameNode) nameNode.textContent = name;
+        if (avatarNode) {
+          if (avatar) {
+            const img = document.createElement('img');
+            img.src = avatar; img.alt = ''; img.loading = 'lazy'; img.referrerPolicy = 'no-referrer';
+            avatarNode.replaceChildren(img);
+          } else {
+            avatarNode.textContent = name.charAt(0).toUpperCase() || 'C';
+          }
+        }
+      });
+    })();
 
     hydrateReelComments();
 
