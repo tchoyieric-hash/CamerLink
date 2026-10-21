@@ -38,3 +38,44 @@ body.cl-screen-profile .cl-nav button.active,body.cl-screen-profile .cl-nav butt
 body.cl-screen-reels .cl-nav button.on,body.cl-screen-messages .cl-nav button.on{color:var(--cm-yellow)!important}
 body.cl-screen-messages .cl-nav,body.cl-screen-reels .cl-nav{background:#050a08f7!important;border-top:1px solid #28533e!important}
 button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cm-yellow)!important;outline-offset:2px}
+
+
+/* CamerLink — finition professionnelle basée sur l'interface existante */
+.cl-feed-seller {
+  display:flex; align-items:center; gap:11px; min-height:64px; padding:10px 14px;
+  border-bottom:1px solid rgba(148,163,184,.14); background:rgba(255,255,255,.025);
+}
+.cl-feed-avatar {
+  width:42px !important; height:42px !important; min-width:42px; border-radius:50% !important;
+  object-fit:cover; display:grid; place-items:center; overflow:hidden; font-size:16px;
+  font-weight:800; color:#fff;
+  background:linear-gradient(135deg,#087f45 0 33%,#d92635 33% 66%,#f5c542 66% 100%);
+  border:2px solid rgba(255,255,255,.82); box-shadow:0 0 0 2px rgba(8,127,69,.2);
+}
+.cl-feed-seller-name {
+  min-width:0; flex:1; color:var(--color-text-main,#f5f7ff); font-size:14px;
+  font-weight:750; line-height:1.3; overflow-wrap:anywhere;
+}
+.cl-feed-verified { flex:0 0 auto; }
+.cl-post-creator { min-width:0; gap:10px; }
+.cl-post-avatar {
+  flex:0 0 42px; width:42px; height:42px; display:grid; place-items:center; overflow:hidden;
+  border-radius:50%; border:2px solid rgba(255,255,255,.9);
+  background:linear-gradient(135deg,#087f45 0 33%,#d92635 33% 66%,#f5c542 66% 100%);
+  color:#fff; font-size:16px; font-weight:800;
+}
+.cl-post-avatar img { display:block; width:100%; height:100%; object-fit:cover; border-radius:inherit; }
+.cl-post-creator [data-creator-name] {
+  display:block; max-width:min(52vw,260px); color:#fff; font-size:14px; font-weight:800;
+  line-height:1.25; overflow-wrap:anywhere;
+}
+.cl-post-creator small { display:block; margin-top:3px; color:rgba(255,255,255,.72); font-size:11px; }
+.cl-follow-btn {
+  min-height:36px; padding:8px 12px; border:1px solid rgba(255,255,255,.65);
+  border-radius:999px; background:#fff; color:#151515; font-size:12px; font-weight:800; white-space:nowrap;
+}
+@media (max-width:480px) {
+  .cl-feed-seller { padding:9px 11px; }
+  .cl-post-footer { gap:8px; }
+  .cl-follow-btn { padding:7px 9px; font-size:11px; }
+}
