@@ -1,4 +1,4 @@
-/* CamerLink — navigation retour navigateur et bouton Retour */
+/* CamerLink — navigation retour intégrée à l'en-tête */
 (() => {
   'use strict';
   const tabs = () => [...document.querySelectorAll('[data-m]')];
@@ -12,14 +12,14 @@
     const target = candidates.find(el => el.offsetParent !== null) || candidates[0];
     if (target) target.click();
   }
-  function isHome(key) {
-    return !key || ['home', 'accueil'].includes(key);
-  }
+  function isHome(key) { return !key || ['home', 'accueil'].includes(key); }
   function updateButton() {
-    let button = document.getElementById('cl-app-back');
+    const button = document.getElementById('cl-app-back');
     if (!button) return;
-    button.hidden = appHistory.length === 0;
-    button.setAttribute('aria-hidden', button.hidden ? 'true' : 'false');
+    const visible = appHistory.length > 0 || !isHome(current);
+    button.hidden = !visible;
+    button.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    document.querySelector('.cl-top')?.classList.toggle('cl-has-back', visible);
   }
   function goBack() {
     if (appHistory.length) {
@@ -43,21 +43,50 @@
     if (document.getElementById('cl-app-back')) return;
     const style = document.createElement('style');
     style.textContent = `
-      #cl-app-back{position:fixed;z-index:9998;left:14px;bottom:calc(82px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:11px 15px;background:#101a25;color:#fff;font:600 14px/1.1 system-ui,sans-serif;box-shadow:0 8px 24px #0005;cursor:pointer;touch-action:manipulation}
-      #cl-app-back[hidden]{display:none!important}
-      #cl-app-back svg{width:18px;height:18px;flex:none}
-      @media(min-width:700px){#cl-app-back{bottom:24px;left:24px}}
-      @media(prefers-reduced-motion:no-preference){#cl-app-back{transition:transform .15s ease,background .15s ease}#cl-app-back:active{transform:scale(.96)}}
+      .cl-top #cl-app-back{
+        position:relative; inset:auto; z-index:2; flex:0 0 auto;
+        display:inline-flex; align-items:center; justify-content:center; gap:7px;
+        min-width:40px; height:40px; padding:0 12px;
+        border:1px solid rgba(255,255,255,.14); border-radius:14px;
+        color:var(--color-text-main,#fff);
+        background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 5px 16px rgba(0,0,0,.12);
+        font:650 13px/1 system-ui,sans-serif; letter-spacing:.01em;
+        cursor:pointer; touch-action:manipulation; white-space:nowrap;
+        transition:background .18s ease,border-color .18s ease,transform .18s ease;
+      }
+      .cl-top #cl-app-back[hidden]{display:none!important}
+      .cl-top #cl-app-back svg{width:18px;height:18px;flex:none}
+      .cl-top #cl-app-back:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.28)}
+      .cl-top #cl-app-back:active{transform:scale(.96)}
+      .cl-top #cl-app-back:focus-visible{outline:3px solid #facc15;outline-offset:3px}
+      .cl-top.cl-has-back{gap:10px}
+      .cl-top.cl-has-back .logo-brand{min-width:0}
+      @media(max-width:480px){
+        .cl-top #cl-app-back{width:38px;min-width:38px;height:38px;padding:0;border-radius:13px}
+        .cl-top #cl-app-back .cl-back-label{display:none}
+        .cl-top.cl-has-back{padding-left:10px;padding-right:10px;gap:8px}
+        .cl-top.cl-has-back .logo-brand{font-size:1.08rem}
+        .cl-top.cl-has-back .brand-logo-img{width:26px;height:26px;object-fit:contain}
+        .cl-top.cl-has-back .header-actions{gap:3px}
+      }
+      @media(prefers-reduced-motion:reduce){.cl-top #cl-app-back{transition:none}}
     `;
     document.head.appendChild(style);
+
     const button = document.createElement('button');
     button.id = 'cl-app-back';
     button.type = 'button';
     button.hidden = true;
-    button.setAttribute('aria-label', 'Retour à la page précédente');
-    button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Retour</span>';
+    button.setAttribute('aria-label', 'Retour à l’écran précédent');
+    button.title = 'Retour';
+    button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span class="cl-back-label">Retour</span>';
     button.addEventListener('click', goBack);
-    document.body.appendChild(button);
+
+    const header = document.querySelector('.cl-top');
+    const logo = header?.querySelector('.logo-brand');
+    if (header && logo) header.insertBefore(button, logo);
+    else document.body.appendChild(button);
 
     document.addEventListener('click', event => {
       const el = event.target.closest('[data-m],#nav-msg,#nav-me');
