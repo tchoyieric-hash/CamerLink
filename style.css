@@ -1954,3 +1954,42 @@ nav.cl-nav .plus,nav.cl-nav .fab{width:52px;height:52px;min-width:52px;border-ra
   outline:3px solid #f59e0b;outline-offset:3px;
 }
 @media(prefers-reduced-motion:reduce){.cl-premium-profile *{transition:none!important}}
+
+
+/* CamerLink — finition drapeau camerounais pour le profil existant (sans remplacer la base) */
+.cl-premium-profile-hero{
+  position:relative;
+  overflow:hidden;
+  border-top:4px solid transparent;
+  border-image:linear-gradient(90deg,#168447 0 33.333%,#ce1126 33.333% 66.666%,#fcd116 66.666% 100%) 1;
+}
+.cl-premium-profile-hero::after{
+  content:"★";
+  position:absolute;
+  top:12px;
+  right:16px;
+  z-index:2;
+  display:grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  color:#fcd116;
+  background:#ce1126;
+  font-size:17px;
+  line-height:1;
+  box-shadow:0 2px 8px rgba(0,0,0,.16);
+  pointer-events:none;
+}
+.cl-premium-identity{position:relative;z-index:1;min-width:0}
+.cl-premium-avatar-wrap{
+  border:3px solid #fcd116;
+  border-radius:50%;
+  box-shadow:0 0 0 3px #ce1126;
+  flex-shrink:0;
+}
+.cl-premium-identity-copy{min-width:0;overflow-wrap:anywhere}
+@media(max-width:480px){
+  .cl-premium-profile-hero::after{top:10px;right:10px;width:26px;height:26px;font-size:15px}
+  .cl-premium-identity{gap:12px}
+}
