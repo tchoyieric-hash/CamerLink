@@ -777,3 +777,49 @@ line-height: 1.5;
     scroll-snap-align: start !important;
   }
 }
+
+
+/* CamerLink — profil premium progressif, sans toucher aux flux ni aux données */
+.cl-profile-premium {
+  --cl-cam-green:#168447; --cl-cam-red:#c92d3b; --cl-cam-yellow:#f4c542;
+  color:var(--color-text-main); display:block; min-width:0;
+}
+.cl-profile-premium .cl-profile-identity {
+  position:relative; display:flex; align-items:center; gap:14px;
+  padding:18px 16px; margin:-2px -2px 16px;
+  border:1px solid var(--card-border); border-radius:20px;
+  background:linear-gradient(100deg,rgba(22,132,71,.14) 0 31%,rgba(201,45,59,.13) 31% 66%,rgba(244,197,66,.14) 66% 100%),var(--color-surface);
+  box-shadow:0 12px 28px rgba(0,0,0,.12); overflow:hidden;
+}
+.cl-profile-premium .cl-profile-identity::after {
+  content:"★"; position:absolute; right:18px; top:12px; color:var(--cl-cam-yellow);
+  font-size:17px; text-shadow:0 1px 4px rgba(0,0,0,.35); pointer-events:none;
+}
+.cl-profile-premium .cl-profile-identity > :first-child {
+  flex:0 0 auto; border:3px solid var(--cl-cam-yellow); border-radius:50%;
+  box-shadow:0 0 0 3px var(--cl-cam-red);
+}
+.cl-profile-premium .cl-profile-identity h3 {
+  margin:0 28px 5px 0; font-size:clamp(1.08rem,4vw,1.3rem)!important;
+  line-height:1.25; font-weight:800; letter-spacing:-.02em; overflow-wrap:anywhere;
+}
+.cl-profile-premium .cl-profile-identity small { display:block; line-height:1.45; font-size:.82rem; }
+.cl-profile-premium > p { padding:0 2px; font-size:.95rem; line-height:1.65!important; overflow-wrap:anywhere; }
+.cl-profile-premium > div[style*="font-size:0.88rem"] {
+  padding:12px 14px; border:1px solid var(--card-border); border-radius:14px;
+  background:var(--card-bg); line-height:1.55; overflow-wrap:anywhere;
+}
+.cl-profile-premium video { display:block; width:100%; max-height:320px!important; border-radius:16px!important; object-fit:cover; background:#05060d; }
+.cl-profile-premium h4 { margin:18px 0 10px!important; font-size:1rem; font-weight:800; }
+.cl-profile-premium button[data-ad] {
+  min-height:76px; padding:10px!important; border:1px solid var(--card-border);
+  background:var(--card-bg)!important; border-radius:14px!important;
+  transition:transform .18s ease,border-color .18s ease;
+}
+.cl-profile-premium button[data-ad]:active { transform:scale(.985); }
+.cl-profile-premium button[data-ad] img { width:58px!important; height:58px!important; border-radius:10px!important; }
+.cl-profile-premium button[data-ad] strong { color:var(--color-text-main); line-height:1.35; }
+@media(max-width:480px) {
+  .cl-profile-premium .cl-profile-identity { padding:15px 12px; gap:12px; }
+  .cl-profile-premium .cl-profile-identity::after { right:12px; top:8px; }
+}
