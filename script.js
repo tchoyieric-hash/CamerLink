@@ -1362,7 +1362,8 @@
     const nStories = gi >= 0 ? storyGroups[gi].items.length : 0;
 
     body.innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      <section class="cl-profile-premium">
+      <div class="cl-profile-identity">
         ${avatarHTML(shop, 64)}
         <div style="min-width:0;">
           <h3 style="font-size:1.2rem;">${esc((shop && shop.name) || 'Artisan')}${shop && shop.verified ? ' ✔️' : ''}</h3>
@@ -1391,7 +1392,8 @@
           ${a.image_url ? `<img src="${esc(a.image_url)}" alt="" style="width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;">` : ''}
           <span style="flex:1;min-width:0;"><strong style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(a.title)}</strong>
           <small style="color:#10b981;font-weight:700;">${Number(a.price || 0).toLocaleString('fr-FR')} FCFA</small></span>
-        </button>`).join('') : '<div class="state-msg" style="padding:16px;">Aucune annonce pour le moment.</div>'}`;
+        </button>`).join('') : '<div class="state-msg" style="padding:16px;">Aucune annonce pour le moment.</div>'}
+      </section>`;
 
     body.dataset.uid = uid;
     } catch (err) {
