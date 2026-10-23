@@ -536,69 +536,86 @@
     const feed = $('reels-feed');
     if (!feed) return;
     if (reelObserver) { reelObserver.disconnect(); reelObserver = null; }
-
-    // Les Réels sont réservés aux vidéos ; les publications photo restent dans le fil des annonces.
-    const list = allListings.filter(ad => Boolean(videos[ad.id])).slice(0, 40);
-    if (list.length === 0) {
+    const list = allListings.filter(ad => {
+      const src = videos[ad.id] || ad.video_url;
+      return typeof src === 'string' && /^https?:\/\//i.test(src);
+    }).slice(0, 60);
+    if (!list.length) {
       feed.innerHTML = reelsMessage(failed
-        ? 'Publications indisponibles pour le moment. Réessayez plus tard.'
-        : 'Aucune vidéo pour le moment. Soyez le premier à publier un Réel !');
+        ? 'Les vidéos ne sont pas disponibles pour le moment. Réessayez.'
+        : 'Aucun Réel disponible pour le moment.');
       return;
     }
-
-    feed.innerHTML = list.map(ad => {
-      const wa = waNumber(ad.contact);
-      const price = Number(ad.price || 0) > 0 ? Number(ad.price).toLocaleString('fr-FR') + ' FCFA' : '';
-      const media = videos[ad.id]
-        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="metadata"></video><div class="cl-reel-sound-feedback" data-reel-sound-feedback aria-hidden="true">🔊 Son activé</div><div class="cl-reel-tap-hint" aria-hidden="true">Toucher la vidéo pour activer le son</div>`
-        : `<img class="cl-reel-photo" src="${esc(ad.image_url)}" alt="${esc(ad.title)}" loading="lazy">`;
+    feed.innerHTML = list.map((ad, index) => {
+      const src = videos[ad.id] || ad.video_url;
       const location = [ad.quartier, ad.city].filter(Boolean).join(' · ');
+      const price = Number(ad.price || 0) > 0 ? Number(ad.price).toLocaleString('fr-FR') + ' FCFA' : '';
       const liked = window.getFavorites().includes(String(ad.id));
-      return `
-      <article class="reel-card cl-social-post" data-reel="${esc(ad.id)}">
-        <div class="cl-post-location">${location ? `<span>📍 ${esc(location)}</span>` : '<span>Publication CamerLink</span>'}<span class="cl-post-type">${videos[ad.id] ? '▶ Vidéo' : '▧ Photo'}</span></div>
-        <div class="cl-post-media">${media}<button type="button" class="cl-reel-exit" data-reel-exit aria-label="Quitter les Réels">‹</button><button type="button" class="cl-reel-fullscreen" data-reel-fullscreen aria-label="Afficher la vidéo en plein écran">⛶</button><div class="cl-post-shade"></div>
-          <div class="cl-post-actions">
-            <button type="button" data-reel-like aria-label="${liked ? 'Retirer le j’aime' : 'J’aime cette publication'}" aria-pressed="${liked ? 'true' : 'false'}"><span>${liked ? '♥' : '♡'}</span><small>${likeCounts[ad.id] || 0}</small></button>
-            <button type="button" data-reel-comments aria-label="Voir les commentaires"><span>▢</span><small>…</small></button>
-            <button type="button" data-reel-share aria-label="Partager la publication"><span>↗</span><small>Partager</small></button>
+      const poster = ad.image_url ? ' poster="' + esc(ad.image_url) + '"' : '';
+      const wa = waNumber(ad.contact);
+      return \`
+      <article class="cl-reel-screen reel-card" data-reel="\${esc(ad.id)}" data-reel-index="\${index}">
+        <video class="cl-reel-video" src="\${esc(src)}"\${poster}
+          playsinline webkit-playsinline preload="\${index < 2 ? 'auto' : 'metadata'}"
+          muted loop disablepictureinpicture aria-label="\${esc(ad.title || 'Vidéo CamerLink')}"></video>
+        <div class="cl-reel-gradient" aria-hidden="true"></div>
+        <button type="button" class="cl-reel-back" data-reel-exit aria-label="Quitter les Réels">‹</button>
+        <button type="button" class="cl-reel-screen-toggle" data-reel-fullscreen aria-label="Plein écran">⛶</button>
+        <button type="button" class="cl-reel-audio" data-reel-sound aria-label="Activer ou couper le son">🔇</button>
+        <div class="cl-reel-sound-feedback" data-reel-sound-feedback aria-live="polite">🔊 Son activé</div>
+        <div class="cl-reel-meta">
+          <div class="cl-reel-author">
+            <span class="cl-reel-avatar">\${esc((ad.owner_name || ad.artisan_name || ad.title || 'C').trim().slice(0,1).toUpperCase())}</span>
+            <span><b>\${esc(ad.owner_name || ad.artisan_name || 'Créateur CamerLink')}</b>\${location ? \`<small>📍 \${esc(location)}</small>\` : ''}</span>
           </div>
-          <div class="cl-post-caption">
-            <strong>${esc(ad.title)}</strong>
-            ${ad.description ? `<p>${esc(ad.description)}</p>` : ''}
-            ${price ? `<b class="cl-post-price">${price}</b>` : ''}
+          <h3>\${esc(ad.title || 'Réel CamerLink')}</h3>
+          \${ad.description ? \`<p>\${esc(ad.description)}</p>\` : ''}
+          \${price ? \`<strong class="cl-reel-price">\${price}</strong>\` : ''}
+          <div class="cl-reel-actions">
+            <button type="button" data-reel-like aria-label="J’aime" aria-pressed="\${liked ? 'true' : 'false'}"><span>\${liked ? '♥' : '♡'}</span><small>\${likeCounts[ad.id] || 0}</small></button>
+            <button type="button" data-reel-comments aria-label="Commentaires"><span>💬</span><small>Commentaires</small></button>
+            <button type="button" data-reel-share aria-label="Partager"><span>↗</span><small>Partager</small></button>
           </div>
-          <button type="button" class="cl-comments-float" data-reel-comments><span>💬</span><span data-comments-float-text>Lire les commentaires…</span><b>›</b></button>
+          <div class="cl-reel-bottom-actions">
+            <button type="button" data-reel-open>Voir l’annonce →</button>
+            \${wa ? \`<a href="https://api.whatsapp.com/send?phone=\${esc(wa)}" target="_blank" rel="noopener">Contacter ☎</a>\` : ''}
+            \${ad.user_id ? \`<button type="button" class="cl-follow-btn" data-profile-user="\${esc(ad.user_id)}">＋ S’abonner</button>\` : ''}
+          </div>
+          <div class="cl-comments-preview" data-comments-preview><span class="cl-comment-loading">Commentaires</span></div>
         </div>
-        <div class="cl-post-footer">
-          <button type="button" class="cl-post-creator" ${ad.user_id ? `data-profile-user="${esc(ad.user_id)}"` : 'data-reel-open'}>
-            <span class="cl-post-avatar">${esc((ad.title || 'C').trim().slice(0,1).toUpperCase())}</span>
-            <span><b>${esc(ad.owner_name || ad.artisan_name || 'Utilisateur')}</b><small>Voir le profil</small></span>
-          </button>
-          ${ad.user_id && currentUser && ad.user_id === currentUser.id ? '<span class="cl-post-own">Votre publication</span>' : ad.user_id ? `<button type="button" class="cl-follow-btn" data-profile-user="${esc(ad.user_id)}">＋ S’abonner</button>` : ''}
-          ${wa ? `<a class="cl-post-whatsapp" href="https://api.whatsapp.com/send?phone=${esc(wa)}" target="_blank" rel="noopener" aria-label="Contacter sur WhatsApp">☎</a>` : ''}
-        </div>
-        <div class="cl-comments-preview" data-comments-preview><span class="cl-comment-loading">Chargement des commentaires…</span></div><button type="button" class="cl-post-open" data-reel-open>Voir l’annonce complète →</button>
-      </article>`;
+        <button type="button" class="cl-reel-play-state" data-reel-play aria-label="Lire ou mettre en pause">Ⅱ</button>
+      </article>\`;
     }).join('');
-
     hydrateReelComments();
-
+    const cards = [...feed.querySelectorAll('.cl-reel-screen')];
+    const pauseAllExcept = active => cards.forEach(card => {
+      const video = card.querySelector('video');
+      if (!video) return;
+      if (card === active) {
+        const promise = video.play();
+        if (promise && promise.catch) promise.catch(() => card.classList.add('cl-reel-needs-tap'));
+      } else {
+        video.pause();
+        video.muted = true;
+        const sound = card.querySelector('[data-reel-sound]');
+        if (sound) sound.textContent = '🔇';
+      }
+    });
     if ('IntersectionObserver' in window) {
-      reelObserver = new IntersectionObserver((entries) => {
-        entries.forEach(en => {
-          const v = en.target.querySelector('video');
-          if (!v) return;
-          if (en.isIntersecting && en.intersectionRatio >= 0.55) {
-            const p = v.play();
-            if (p && p.catch) p.catch(() => {});
-          } else v.pause();
+      reelObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.65) {
+            pauseAllExcept(entry.target);
+            entry.target.classList.remove('cl-reel-needs-tap');
+          }
         });
-      }, { threshold: [0, 0.55, 1] });
-      feed.querySelectorAll('.cl-social-post').forEach(card => reelObserver.observe(card));
+      }, { root: feed, threshold: [0.2, 0.65, 0.9] });
+      cards.forEach(card => reelObserver.observe(card));
+    } else if (cards[0]) {
+      const firstVideo = cards[0].querySelector('video');
+      if (firstVideo) firstVideo.play().catch(() => {});
     }
   }
-
   function toggleReelSound(card, video) {
     video.muted = !video.muted;
     if (!video.muted) video.volume = 1;
