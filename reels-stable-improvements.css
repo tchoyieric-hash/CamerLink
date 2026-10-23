@@ -138,3 +138,137 @@
     height:calc(100dvh - 64px) !important;
   }
 }
+
+
+/* Final mobile Reels mode: true edge-to-edge TikTok-like screen. */
+@media (max-width:700px) {
+  html:has(body[data-cl-mode="reels"]),
+  body[data-cl-mode="reels"] {
+    width:100%;
+    height:100%;
+    min-height:100%;
+    margin:0!important;
+    padding:0 0 0!important;
+    overflow:hidden!important;
+    background:#000!important;
+  }
+  body[data-cl-mode="reels"] .cl-top,
+  body[data-cl-mode="reels"] header,
+  body[data-cl-mode="reels"] .header-spacer,
+  body[data-cl-mode="reels"] .shell-tabs,
+  body[data-cl-mode="reels"] .shell-nav,
+  body[data-cl-mode="reels"] .reels-heading,
+  body[data-cl-mode="reels"] .shops-section,
+  body[data-cl-mode="reels"] .hero,
+  body[data-cl-mode="reels"] footer {
+    display:none!important;
+  }
+  body[data-cl-mode="reels"] #reels-section,
+  body[data-cl-mode="reels"] .reels-section {
+    display:block!important;
+    position:fixed!important;
+    inset:0!important;
+    z-index:1000!important;
+    width:100vw!important;
+    height:100dvh!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    background:#000!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed,
+  body[data-cl-mode="reels"] #reels-feed.reels-feed {
+    display:flex!important;
+    flex-direction:column!important;
+    flex-wrap:nowrap!important;
+    gap:0!important;
+    position:absolute!important;
+    inset:0!important;
+    width:100vw!important;
+    height:100dvh!important;
+    max-width:none!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:0!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    scroll-snap-type:y mandatory!important;
+    overscroll-behavior-y:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed > .reel-card,
+  body[data-cl-mode="reels"] #reels-feed > .cl-social-post {
+    position:relative!important;
+    flex:0 0 100dvh!important;
+    width:100vw!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    max-height:none!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    overflow:hidden!important;
+    scroll-snap-align:start!important;
+    scroll-snap-stop:always!important;
+    background:#000!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-media {
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:100%!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:0!important;
+    border-radius:0!important;
+    background:#000!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-media video,
+  body[data-cl-mode="reels"] #reels-feed .cl-post-media img,
+  body[data-cl-mode="reels"] #reels-feed .cl-reel-photo {
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    object-fit:cover!important;
+    object-position:center!important;
+    background:#000!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-location {
+    position:absolute!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    z-index:5!important;
+    padding:calc(env(safe-area-inset-top) + 12px) 16px 20px!important;
+    background:linear-gradient(#0009,transparent)!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-footer {
+    position:absolute!important;
+    left:12px!important;
+    right:70px!important;
+    bottom:calc(env(safe-area-inset-bottom) + 8px)!important;
+    z-index:6!important;
+    min-height:0!important;
+    padding:8px 0!important;
+    background:transparent!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-caption {
+    position:absolute!important;
+    left:16px!important;
+    right:78px!important;
+    bottom:calc(env(safe-area-inset-bottom) + 78px)!important;
+    z-index:5!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-actions {
+    position:absolute!important;
+    right:10px!important;
+    bottom:calc(env(safe-area-inset-bottom) + 100px)!important;
+    z-index:7!important;
+  }
+}
