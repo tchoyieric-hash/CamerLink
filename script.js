@@ -516,24 +516,64 @@
     const st = document.createElement('style');
     st.id = 'reels-vertical-fix';
     st.textContent = `
-@media screen and (max-width: 700px) {
-  .reels-section { width: 100%; min-width: 0; overflow: hidden; }
-  #reels-feed, #reels-feed.reels-feed {
-    display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
-    align-items: stretch !important; justify-content: flex-start !important;
-    width: 100% !important; max-width: 100% !important; max-height: 78vh !important;
-    overflow-x: hidden !important; overflow-y: auto !important; scroll-snap-type: y mandatory !important;
-  }
-  #reels-feed > .reel-card {
-    display: block !important; position: relative !important; flex: 0 0 72vh !important;
-    width: 100% !important; max-width: 420px !important; min-width: 0 !important;
-    height: 72vh !important; max-height: 640px !important; margin: 0 auto 12px !important;
-    scroll-snap-align: start !important;
-  }
-  #reels-feed > .reel-card video {
-    display: block !important; width: 100% !important; height: 100% !important; object-fit: contain !important; background: #03040a !important;
-  }
-}`;
+/* Reels rebuilt from the Oct 20 baseline: full-screen vertical feed */
+#reels-section:not(.shell-off) {
+  position: fixed !important; inset: var(--camerlink-topbar-height, 0px) 0 0 !important;
+  z-index: 20 !important; width: 100% !important; max-width: none !important; min-width: 0 !important;
+  height: auto !important; margin: 0 !important; padding: 0 !important; border: 0 !important;
+  border-radius: 0 !important; overflow: hidden !important; box-shadow: none !important; background: #050505 !important;
+}
+#reels-section:not(.shell-off) .reels-heading { display: none !important; }
+#reels-section:not(.shell-off) #reels-feed {
+  display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
+  align-items: stretch !important; justify-content: flex-start !important; gap: 0 !important;
+  position: absolute !important; inset: 0 !important; width: 100% !important; max-width: none !important;
+  min-width: 0 !important; height: 100% !important; max-height: none !important;
+  padding: 0 !important; margin: 0 !important; overflow-x: hidden !important; overflow-y: auto !important;
+  scroll-snap-type: y mandatory !important; overscroll-behavior-y: contain !important;
+  scrollbar-width: none !important; background: #050505 !important;
+}
+#reels-section:not(.shell-off) #reels-feed > .reel-card {
+  position: relative !important; display: block !important; flex: 0 0 100% !important;
+  width: 100% !important; max-width: none !important; min-width: 0 !important;
+  height: 100% !important; min-height: 100% !important; max-height: none !important;
+  margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important;
+  scroll-snap-align: start !important; scroll-snap-stop: always !important;
+  overflow: hidden !important; background: #050505 !important; transform: none !important;
+}
+#reels-section:not(.shell-off) #reels-feed .cl-post-media {
+  position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important;
+  max-height: none !important; border-radius: 0 !important; overflow: hidden !important; background: #050505 !important;
+}
+#reels-section:not(.shell-off) #reels-feed .cl-post-media > video,
+#reels-section:not(.shell-off) #reels-feed .cl-post-media > img {
+  position: absolute !important; inset: 0 !important; display: block !important;
+  width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important;
+  object-fit: cover !important; background: #050505 !important;
+}
+#reels-section:not(.shell-off) #reels-feed .cl-post-location { position: absolute !important; top: 12px !important; left: 12px !important; right: 64px !important; z-index: 6 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-post-actions { position: absolute !important; right: 10px !important; bottom: 118px !important; z-index: 7 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-post-caption { position: absolute !important; left: 14px !important; right: 68px !important; bottom: 64px !important; z-index: 6 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-comments-float { position: absolute !important; left: 12px !important; right: 68px !important; bottom: 12px !important; z-index: 8 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-reel-exit { position: absolute !important; top: 10px !important; left: 10px !important; z-index: 10 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-reel-fullscreen { position: absolute !important; top: 10px !important; right: 10px !important; z-index: 10 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-post-footer,
+#reels-section:not(.shell-off) #reels-feed .cl-comments-preview,
+#reels-section:not(.shell-off) #reels-feed .cl-post-open { display: none !important; }
+#reels-section:not(.shell-off) #reels-feed .reels-placeholder,
+#reels-section:not(.shell-off) #reels-feed .reels-empty {
+  box-sizing: border-box !important; width: 100% !important; min-width: 0 !important;
+  min-height: 100% !important; display: flex !important; align-items: center !important;
+  justify-content: center !important; padding: 24px !important; background: #080808 !important;
+}
+@media (min-width: 701px) {
+  #reels-section:not(.shell-off) { left: max(0px, calc((100vw - 560px) / 2)) !important; right: auto !important; width: min(100vw, 560px) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #reels-section:not(.shell-off) #reels-feed { scroll-behavior: auto !important; }
+}
+`;
+
     document.head.appendChild(st);
   })();
 
