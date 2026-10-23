@@ -458,24 +458,59 @@
     const st = document.createElement('style');
     st.id = 'reels-vertical-fix';
     st.textContent = `
-@media screen and (max-width: 700px) {
-  .reels-section { width: 100%; min-width: 0; overflow: hidden; }
-  #reels-feed, #reels-feed.reels-feed {
-    display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
-    align-items: stretch !important; justify-content: flex-start !important;
-    width: 100% !important; max-width: 100% !important; max-height: 78vh !important;
-    overflow-x: hidden !important; overflow-y: auto !important; scroll-snap-type: y mandatory !important;
-  }
-  #reels-feed > .reel-card {
-    display: block !important; position: relative !important; flex: 0 0 72vh !important;
-    width: 100% !important; max-width: 420px !important; min-width: 0 !important;
-    height: 72vh !important; max-height: 640px !important; margin: 0 auto 12px !important;
-    scroll-snap-align: start !important;
-  }
-  #reels-feed > .reel-card video {
-    display: block !important; width: 100% !important; height: 100% !important; object-fit: contain !important; background: #03040a !important;
-  }
-}`;
+/* Reels rebuilt cleanly: one vertical video per viewport on mobile */
+#reels-section:not(.shell-off) {
+  width: 100% !important; max-width: none !important; min-width: 0 !important;
+  margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important;
+  overflow: hidden !important; box-shadow: none !important;
+}
+#reels-section:not(.shell-off) .reels-heading { display: none !important; }
+#reels-section:not(.shell-off) #reels-feed {
+  display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
+  align-items: stretch !important; justify-content: flex-start !important; gap: 0 !important;
+  width: 100% !important; max-width: none !important; min-width: 0 !important;
+  height: calc(100dvh - var(--camerlink-topbar-height, 0px)) !important;
+  max-height: none !important; padding: 0 !important; margin: 0 !important;
+  overflow-x: hidden !important; overflow-y: auto !important;
+  scroll-snap-type: y mandatory !important; overscroll-behavior-y: contain !important;
+  scrollbar-width: none !important; background: #050505 !important;
+}
+#reels-section:not(.shell-off) #reels-feed > .reel-card {
+  position: relative !important; display: block !important; flex: 0 0 100% !important;
+  width: 100% !important; max-width: none !important; min-width: 0 !important;
+  height: 100% !important; min-height: 100% !important; max-height: none !important;
+  margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important;
+  scroll-snap-align: start !important; scroll-snap-stop: always !important;
+  overflow: hidden !important; background: #050505 !important; transform: none !important;
+}
+#reels-section:not(.shell-off) #reels-feed .reel-media {
+  position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important;
+  aspect-ratio: auto !important; background: #050505 !important; overflow: hidden !important;
+}
+#reels-section:not(.shell-off) #reels-feed video.reel-video,
+#reels-section:not(.shell-off) #reels-feed .reel-media > video {
+  position: absolute !important; inset: 0 !important; display: block !important;
+  width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important;
+  object-fit: cover !important; background: #050505 !important;
+}
+#reels-section:not(.shell-off) #reels-feed .reel-caption,
+#reels-section:not(.shell-off) #reels-feed .reel-actions {
+  z-index: 5 !important;
+}
+#reels-section:not(.shell-off) #reels-feed .reels-placeholder,
+#reels-section:not(.shell-off) #reels-feed .reels-empty {
+  box-sizing: border-box !important; width: 100% !important; min-width: 0 !important;
+  min-height: 100% !important; display: flex !important; align-items: center !important;
+  justify-content: center !important; padding: 24px !important; background: #080808 !important;
+}
+@media (min-width: 701px) {
+  #reels-section:not(.shell-off) #reels-feed { height: min(100dvh, 900px) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #reels-section:not(.shell-off) #reels-feed { scroll-behavior: auto !important; }
+}
+`;
+
     document.head.appendChild(st);
   })();
 
