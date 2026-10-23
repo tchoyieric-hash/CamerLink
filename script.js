@@ -645,6 +645,14 @@
         else document.body.setAttribute('data-cl-mode', 'home');
         return;
       }
+      const playToggle = e.target.closest('[data-reel-play]');
+      if (playToggle) {
+        if (v) {
+          if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); playToggle.textContent = 'Ⅱ'; }
+          else { v.pause(); playToggle.textContent = '▶'; }
+        }
+        return;
+      }
       const full = e.target.closest('[data-reel-fullscreen]');
       if (full) {
         const media = full.closest('.cl-post-media');
