@@ -1,341 +1,132 @@
-/* CamerLink — Réels immersifs, isolés sur la branche de test.
-   Cible les deux types de cartes réellement rendus par script.js. */
-#reels-section { width:100%; max-width:100%; }
+/* CamerLink Reels Premium — one coherent override, isolated to the test branch. */
+#reels-section { width:100%; max-width:none; }
 #reels-feed {
-  display:flex !important;
-  flex-direction:column !important;
-  flex-wrap:nowrap !important;
-  align-items:stretch !important;
-  gap:0 !important;
-  width:100% !important;
-  max-width:100% !important;
-  height:calc(100dvh - 64px) !important;
-  max-height:none !important;
-  margin:0 !important;
-  padding:0 !important;
-  overflow-x:hidden !important;
-  overflow-y:auto !important;
-  overscroll-behavior-y:contain;
-  -webkit-overflow-scrolling:touch;
-  scroll-snap-type:y mandatory !important;
-  scrollbar-width:none;
+  display:flex!important; flex-direction:column!important; flex-wrap:nowrap!important;
+  align-items:stretch!important; gap:0!important; width:100%!important; max-width:none!important;
+  height:100dvh!important; max-height:none!important; margin:0!important; padding:0!important;
+  overflow-x:hidden!important; overflow-y:auto!important; overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch; scroll-snap-type:y mandatory!important; scrollbar-width:none;
 }
 #reels-feed::-webkit-scrollbar { display:none; }
-#reels-feed > .reel-card,
-#reels-feed > .cl-social-post {
-  position:relative !important;
-  flex:0 0 100% !important;
-  width:100% !important;
-  max-width:100% !important;
-  height:calc(100dvh - 64px) !important;
-  min-height:0 !important;
-  max-height:none !important;
-  margin:0 !important;
-  padding:0 !important;
-  border:0 !important;
-  border-radius:0 !important;
-  overflow:hidden !important;
-  scroll-snap-align:start !important;
-  scroll-snap-stop:always;
-  background:#000 !important;
-  box-shadow:none !important;
+#reels-feed > .reel-card, #reels-feed > .cl-social-post {
+  position:relative!important; flex:0 0 100dvh!important; width:100vw!important; max-width:none!important;
+  height:100dvh!important; min-height:100dvh!important; max-height:none!important;
+  margin:0!important; padding:0!important; border:0!important; border-radius:0!important;
+  overflow:hidden!important; background:#050609!important; scroll-snap-align:start!important; scroll-snap-stop:always!important;
 }
-#reels-feed > .cl-social-post .cl-post-media,
-#reels-feed > .reel-card .cl-post-media {
-  position:absolute !important;
-  inset:0 !important;
-  width:100% !important;
-  height:100% !important;
-  min-height:0 !important;
-  max-height:none !important;
-  margin:0 !important;
-  border-radius:0 !important;
-  background:#000 !important;
+#reels-feed .cl-post-media {
+  position:absolute!important; inset:0!important; width:100%!important; height:100%!important;
+  min-height:0!important; max-height:none!important; margin:0!important; padding:0!important;
+  border-radius:0!important; background:#050609!important; overflow:hidden!important;
 }
-#reels-feed > .cl-social-post .cl-post-media video,
-#reels-feed > .cl-social-post .cl-post-media img,
-#reels-feed > .cl-social-post video,
-#reels-feed > .cl-social-post .cl-reel-photo,
-#reels-feed > .reel-card video,
-#reels-feed > .reel-card .cl-reel-photo {
-  display:block !important;
-  width:100% !important;
-  height:100% !important;
-  max-width:none !important;
-  object-fit:cover !important;
-  object-position:center !important;
-  background:#000 !important;
+#reels-feed .cl-post-media video, #reels-feed .cl-post-media img, #reels-feed .cl-reel-photo {
+  display:block!important; width:100%!important; height:100%!important; max-width:none!important; max-height:none!important;
+  object-fit:cover!important; object-position:center!important; background:#050609!important;
 }
-#reels-feed > .cl-social-post .cl-post-location,
-#reels-feed > .reel-card .cl-post-location {
-  position:absolute !important;
-  z-index:6 !important;
-  top:0 !important;
-  left:0 !important;
-  right:0 !important;
-  padding:calc(env(safe-area-inset-top) + 12px) 16px 14px !important;
-  background:linear-gradient(#0009,transparent) !important;
+#reels-feed .cl-post-shade {
+  position:absolute!important; inset:25% 0 0!important; z-index:2!important; pointer-events:none!important;
+  background:linear-gradient(180deg,transparent 42%,rgba(0,0,0,.12) 58%,rgba(0,0,0,.76) 100%)!important;
 }
-#reels-feed > .cl-social-post .cl-post-caption,
-#reels-feed > .reel-card .cl-post-caption {
-  position:absolute !important;
-  z-index:5 !important;
-  left:16px !important;
-  right:78px !important;
-  bottom:calc(env(safe-area-inset-bottom) + 22px) !important;
+/* Top layer: small location pill, no oversized banner over the video. */
+#reels-feed .cl-post-location {
+  position:absolute!important; top:calc(env(safe-area-inset-top,0px) + 14px)!important;
+  left:66px!important; right:14px!important; z-index:8!important;
+  display:flex!important; align-items:center!important; justify-content:flex-start!important; gap:8px!important;
+  width:auto!important; max-width:calc(100% - 90px)!important; padding:8px 12px!important;
+  border:1px solid rgba(255,255,255,.16)!important; border-radius:999px!important;
+  color:#fff!important; font-size:12px!important; line-height:1.2!important;
+  background:rgba(8,11,18,.56)!important; box-shadow:0 6px 24px #0002!important;
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
 }
-#reels-feed > .cl-social-post .cl-post-actions,
-#reels-feed > .reel-card .cl-post-actions {
-  position:absolute !important;
-  z-index:7 !important;
-  right:10px !important;
-  bottom:calc(env(safe-area-inset-bottom) + 24px) !important;
+#reels-feed .cl-post-location > span:first-child { overflow:hidden!important; text-overflow:ellipsis!important; white-space:nowrap!important; }
+#reels-feed .cl-post-type {
+  flex:0 0 auto!important; margin-left:auto!important; padding:5px 8px!important;
+  border-radius:999px!important; color:#fff!important; background:rgba(255,255,255,.13)!important;
+  font-size:10px!important; font-weight:700!important;
 }
-#reels-feed > .cl-social-post .cl-post-footer,
-#reels-feed > .reel-card .cl-post-footer {
-  position:absolute !important;
-  z-index:6 !important;
-  left:12px !important;
-  right:70px !important;
-  bottom:calc(env(safe-area-inset-bottom) + 8px) !important;
-  min-height:0 !important;
-  padding:8px 0 !important;
-  background:transparent !important;
+/* Clear action rail, separated from text and creator controls. */
+#reels-feed .cl-post-actions {
+  position:absolute!important; right:12px!important; bottom:calc(env(safe-area-inset-bottom,0px) + 190px)!important;
+  z-index:10!important; display:flex!important; flex-direction:column!important; align-items:center!important;
+  gap:17px!important; width:54px!important; max-height:58dvh!important; padding:0!important;
 }
-#reels-feed > .cl-social-post .cl-post-open,
-#reels-feed > .reel-card .cl-post-open { display:none !important; }
-#reels-feed > .cl-social-post .cl-post-shade,
-#reels-feed > .reel-card .cl-post-shade {
-  position:absolute !important;
-  z-index:2 !important;
-  inset:35% 0 0 !important;
-  pointer-events:none !important;
-  background:linear-gradient(transparent,rgba(0,0,0,.78)) !important;
+#reels-feed .cl-post-actions button {
+  display:flex!important; flex-direction:column!important; align-items:center!important; justify-content:center!important;
+  gap:4px!important; min-width:44px!important; min-height:42px!important; padding:2px!important;
+  border:0!important; color:#fff!important; background:transparent!important; text-shadow:0 2px 8px #000!important;
 }
-#reels-feed video:fullscreen {
-  width:100vw !important;
-  height:100dvh !important;
-  object-fit:contain !important;
-  background:#000 !important;
+#reels-feed .cl-post-actions button span { font-size:30px!important; line-height:1!important; font-weight:500!important; }
+#reels-feed .cl-post-actions button small { color:#fff!important; font-size:10px!important; font-weight:700!important; line-height:1.2!important; }
+/* Title and caption get their own readable area above the creator row. */
+#reels-feed .cl-post-caption {
+  position:absolute!important; left:16px!important; right:78px!important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 150px)!important; z-index:7!important;
+  max-width:calc(100% - 100px)!important; padding:0!important; color:#fff!important;
+  text-shadow:0 2px 10px rgba(0,0,0,.65)!important; background:transparent!important;
 }
-#reels-feed .reels-placeholder { margin:16px auto; }
-@media (min-width:701px) {
-  #reels-feed { height:calc(100dvh - 120px) !important; }
-  #reels-feed > .reel-card,
-  #reels-feed > .cl-social-post {
-    flex-basis:calc(100dvh - 120px) !important;
-    height:calc(100dvh - 120px) !important;
-    max-width:480px !important;
-    margin-inline:auto !important;
-    border-radius:18px !important;
-  }
+#reels-feed .cl-post-caption strong {
+  display:block!important; margin:0 0 7px!important; color:#fff!important;
+  font-size:19px!important; font-weight:800!important; line-height:1.2!important;
 }
+#reels-feed .cl-post-caption p {
+  display:-webkit-box!important; -webkit-line-clamp:3!important; -webkit-box-orient:vertical!important;
+  overflow:hidden!important; margin:0 0 8px!important; color:rgba(255,255,255,.94)!important;
+  font-size:14px!important; line-height:1.4!important;
+}
+#reels-feed .cl-post-price { display:inline-flex!important; margin-top:5px!important; padding:6px 10px!important;
+  border:1px solid rgba(255,255,255,.18)!important; border-radius:999px!important;
+  color:#fff!important; background:rgba(255,255,255,.12)!important; font-size:12px!important; }
+/* Creator row at the bottom: compact, never overlaps caption or action rail. */
+#reels-feed .cl-post-footer {
+  position:absolute!important; left:14px!important; right:74px!important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 20px)!important; z-index:9!important;
+  display:flex!important; align-items:center!important; gap:9px!important;
+  min-height:50px!important; max-width:calc(100% - 90px)!important;
+  margin:0!important; padding:8px 0!important; background:transparent!important;
+}
+#reels-feed .cl-post-creator { display:flex!important; align-items:center!important; gap:9px!important; min-width:0!important;
+  padding:0!important; border:0!important; color:#fff!important; background:transparent!important; text-align:left!important; }
+#reels-feed .cl-post-avatar { display:grid!important; place-items:center!important; flex:0 0 38px!important;
+  width:38px!important; height:38px!important; border:2px solid #fff!important; border-radius:50%!important;
+  color:#fff!important; background:linear-gradient(135deg,#7c3aed,#ec4899)!important; font-weight:800!important; }
+#reels-feed .cl-post-creator b { display:block!important; max-width:130px!important; overflow:hidden!important;
+  color:#fff!important; font-size:13px!important; font-weight:800!important; text-overflow:ellipsis!important; white-space:nowrap!important; }
+#reels-feed .cl-post-creator small { display:block!important; margin-top:2px!important; color:rgba(255,255,255,.68)!important; font-size:10px!important; }
+#reels-feed .cl-follow-btn { flex:0 0 auto!important; padding:8px 11px!important; border:1px solid #ff3d81!important;
+  border-radius:999px!important; color:#fff!important; background:rgba(12,12,18,.6)!important;
+  font-size:11px!important; font-weight:800!important; }
+#reels-feed .cl-post-whatsapp { display:grid!important; place-items:center!important; flex:0 0 36px!important;
+  width:36px!important; height:36px!important; border:1px solid #ffffff30!important; border-radius:50%!important;
+  color:#fff!important; background:#10a36a!important; }
+/* Comments remain accessible through the comment action; remove duplicate floating bars. */
+#reels-feed .cl-comments-float, #reels-feed .cl-comments-preview, #reels-feed .cl-post-open { display:none!important; }
+#reels-feed .cl-reel-exit {
+  position:absolute!important; top:calc(env(safe-area-inset-top,0px) + 12px)!important; left:12px!important; z-index:12!important;
+  display:grid!important; place-items:center!important; width:42px!important; height:42px!important;
+  border:1px solid #ffffff2e!important; border-radius:50%!important; color:#fff!important;
+  background:rgba(8,11,18,.62)!important; font-size:26px!important; backdrop-filter:blur(12px)!important;
+}
+#reels-feed .cl-reel-fullscreen {
+  position:absolute!important; top:calc(env(safe-area-inset-top,0px) + 62px)!important; left:12px!important; z-index:12!important;
+  width:38px!important; height:38px!important; border:1px solid #ffffff2e!important; border-radius:50%!important;
+  color:#fff!important; background:rgba(8,11,18,.62)!important; backdrop-filter:blur(12px)!important;
+}
+#reels-feed .cl-reel-tap-hint { z-index:11!important; max-width:78%!important; }
+#reels-feed .cl-reel-sound-feedback { z-index:13!important; }
 @media (max-width:700px) {
-  #reels-feed { height:calc(100dvh - 64px) !important; }
-  #reels-feed > .reel-card,
-  #reels-feed > .cl-social-post {
-    flex-basis:calc(100dvh - 64px) !important;
-    height:calc(100dvh - 64px) !important;
+  body[data-cl-mode="reels"] { overflow:hidden!important; background:#000!important; }
+  body[data-cl-mode="reels"] .cl-top, body[data-cl-mode="reels"] .header-spacer,
+  body[data-cl-mode="reels"] .cl-tabs, body[data-cl-mode="reels"] .cl-nav,
+  body[data-cl-mode="reels"] .hero, body[data-cl-mode="reels"] .shops-section { display:none!important; }
+  body[data-cl-mode="reels"] #reels-section {
+    position:fixed!important; inset:0!important; z-index:5000!important; display:block!important;
+    width:100vw!important; height:100dvh!important; height:100svh!important; max-height:none!important;
+    margin:0!important; padding:0!important; overflow:hidden!important; background:#000!important;
   }
-}
-
-
-/* Final mobile Reels mode: true edge-to-edge TikTok-like screen. */
-@media (max-width:700px) {
-  html:has(body[data-cl-mode="reels"]),
-  body[data-cl-mode="reels"] {
-    width:100%;
-    height:100%;
-    min-height:100%;
-    margin:0!important;
-    padding:0 0 0!important;
-    overflow:hidden!important;
-    background:#000!important;
-  }
-  body[data-cl-mode="reels"] .cl-top,
-  body[data-cl-mode="reels"] header,
-  body[data-cl-mode="reels"] .header-spacer,
-  body[data-cl-mode="reels"] .shell-tabs,
-  body[data-cl-mode="reels"] .shell-nav,
-  body[data-cl-mode="reels"] .reels-heading,
-  body[data-cl-mode="reels"] .shops-section,
-  body[data-cl-mode="reels"] .hero,
-  body[data-cl-mode="reels"] footer {
-    display:none!important;
-  }
-  body[data-cl-mode="reels"] #reels-section,
-  body[data-cl-mode="reels"] .reels-section {
-    display:block!important;
-    position:fixed!important;
-    inset:0!important;
-    z-index:1000!important;
-    width:100vw!important;
-    height:100dvh!important;
-    max-width:none!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:hidden!important;
-    background:#000!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed,
-  body[data-cl-mode="reels"] #reels-feed.reels-feed {
-    display:flex!important;
-    flex-direction:column!important;
-    flex-wrap:nowrap!important;
-    gap:0!important;
-    position:absolute!important;
-    inset:0!important;
-    width:100vw!important;
-    height:100dvh!important;
-    max-width:none!important;
-    max-height:none!important;
-    margin:0!important;
-    padding:0!important;
-    overflow-x:hidden!important;
-    overflow-y:auto!important;
-    scroll-snap-type:y mandatory!important;
-    overscroll-behavior-y:contain!important;
-    -webkit-overflow-scrolling:touch!important;
-  }
+  body[data-cl-mode="reels"] #reels-feed { position:absolute!important; inset:0!important;
+    width:100vw!important; height:100dvh!important; height:100svh!important; }
   body[data-cl-mode="reels"] #reels-feed > .reel-card,
-  body[data-cl-mode="reels"] #reels-feed > .cl-social-post {
-    position:relative!important;
-    flex:0 0 100dvh!important;
-    width:100vw!important;
-    height:100dvh!important;
-    min-height:100dvh!important;
-    max-height:none!important;
-    max-width:none!important;
-    margin:0!important;
-    padding:0!important;
-    border:0!important;
-    border-radius:0!important;
-    overflow:hidden!important;
-    scroll-snap-align:start!important;
-    scroll-snap-stop:always!important;
-    background:#000!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-media {
-    position:absolute!important;
-    inset:0!important;
-    width:100%!important;
-    height:100%!important;
-    min-height:100%!important;
-    max-height:none!important;
-    margin:0!important;
-    padding:0!important;
-    border-radius:0!important;
-    background:#000!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-media video,
-  body[data-cl-mode="reels"] #reels-feed .cl-post-media img,
-  body[data-cl-mode="reels"] #reels-feed .cl-reel-photo {
-    display:block!important;
-    width:100%!important;
-    height:100%!important;
-    max-width:none!important;
-    max-height:none!important;
-    object-fit:cover!important;
-    object-position:center!important;
-    background:#000!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-location {
-    position:absolute!important;
-    top:0!important;
-    left:0!important;
-    right:0!important;
-    z-index:5!important;
-    padding:calc(env(safe-area-inset-top) + 12px) 16px 20px!important;
-    background:linear-gradient(#0009,transparent)!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-footer {
-    position:absolute!important;
-    left:12px!important;
-    right:70px!important;
-    bottom:calc(env(safe-area-inset-bottom) + 8px)!important;
-    z-index:6!important;
-    min-height:0!important;
-    padding:8px 0!important;
-    background:transparent!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-caption {
-    position:absolute!important;
-    left:16px!important;
-    right:78px!important;
-    bottom:calc(env(safe-area-inset-bottom) + 78px)!important;
-    z-index:5!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-actions {
-    position:absolute!important;
-    right:10px!important;
-    bottom:calc(env(safe-area-inset-bottom) + 100px)!important;
-    z-index:7!important;
-  }
+  body[data-cl-mode="reels"] #reels-feed > .cl-social-post { height:100dvh!important; height:100svh!important;
+    min-height:100dvh!important; min-height:100svh!important; }
 }
-
-
-/* Screenshot-driven refinement: prevent location/header and bottom controls from colliding. */
-@media (max-width:700px) {
-  body[data-cl-mode="reels"] #reels-section,
-  body[data-cl-mode="reels"] .reels-section {
-    height:100dvh!important;
-    height:100svh!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed,
-  body[data-cl-mode="reels"] #reels-feed.reels-feed {
-    height:100dvh!important;
-    height:100svh!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed > .reel-card,
-  body[data-cl-mode="reels"] #reels-feed > .cl-social-post {
-    height:100dvh!important;
-    height:100svh!important;
-    min-height:100dvh!important;
-    min-height:100svh!important;
-  }
-  /* Keep the location as a small overlay, not a large bar over the video. */
-  body[data-cl-mode="reels"] #reels-feed .cl-post-location {
-    top:10px!important;
-    left:12px!important;
-    right:auto!important;
-    width:auto!important;
-    max-width:calc(100% - 100px)!important;
-    padding:8px 12px!important;
-    border:1px solid rgba(255,255,255,.16)!important;
-    border-radius:18px!important;
-    background:rgba(8,10,16,.68)!important;
-    box-shadow:0 6px 24px rgba(0,0,0,.2)!important;
-    backdrop-filter:blur(12px);
-    -webkit-backdrop-filter:blur(12px);
-  }
-  /* Give the creator/caption/comment area a clear, separate bottom zone. */
-  body[data-cl-mode="reels"] #reels-feed .cl-post-footer {
-    left:16px!important;
-    right:82px!important;
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 14px)!important;
-    z-index:8!important;
-    max-width:calc(100% - 104px)!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-caption {
-    left:16px!important;
-    right:86px!important;
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 174px)!important;
-    max-width:calc(100% - 102px)!important;
-    z-index:8!important;
-    text-shadow:0 1px 8px #000;
-  }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-actions {
-    right:12px!important;
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 180px)!important;
-    z-index:9!important;
-    max-height:55dvh!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-shade {
-    pointer-events:none!important;
-  }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-footer,
-  body[data-cl-mode="reels"] #reels-feed .cl-post-caption,
-  body[data-cl-mode="reels"] #reels-feed .cl-post-actions {
-    box-sizing:border-box!important;
-  }
-}
+@media (prefers-reduced-motion:reduce) { #reels-feed { scroll-behavior:auto!important; } }
