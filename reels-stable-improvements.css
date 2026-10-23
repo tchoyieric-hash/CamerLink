@@ -272,3 +272,70 @@
     z-index:7!important;
   }
 }
+
+
+/* Screenshot-driven refinement: prevent location/header and bottom controls from colliding. */
+@media (max-width:700px) {
+  body[data-cl-mode="reels"] #reels-section,
+  body[data-cl-mode="reels"] .reels-section {
+    height:100dvh!important;
+    height:100svh!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed,
+  body[data-cl-mode="reels"] #reels-feed.reels-feed {
+    height:100dvh!important;
+    height:100svh!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed > .reel-card,
+  body[data-cl-mode="reels"] #reels-feed > .cl-social-post {
+    height:100dvh!important;
+    height:100svh!important;
+    min-height:100dvh!important;
+    min-height:100svh!important;
+  }
+  /* Keep the location as a small overlay, not a large bar over the video. */
+  body[data-cl-mode="reels"] #reels-feed .cl-post-location {
+    top:10px!important;
+    left:12px!important;
+    right:auto!important;
+    width:auto!important;
+    max-width:calc(100% - 100px)!important;
+    padding:8px 12px!important;
+    border:1px solid rgba(255,255,255,.16)!important;
+    border-radius:18px!important;
+    background:rgba(8,10,16,.68)!important;
+    box-shadow:0 6px 24px rgba(0,0,0,.2)!important;
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+  }
+  /* Give the creator/caption/comment area a clear, separate bottom zone. */
+  body[data-cl-mode="reels"] #reels-feed .cl-post-footer {
+    left:16px!important;
+    right:82px!important;
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 14px)!important;
+    z-index:8!important;
+    max-width:calc(100% - 104px)!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-caption {
+    left:16px!important;
+    right:86px!important;
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 174px)!important;
+    max-width:calc(100% - 102px)!important;
+    z-index:8!important;
+    text-shadow:0 1px 8px #000;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-actions {
+    right:12px!important;
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 180px)!important;
+    z-index:9!important;
+    max-height:55dvh!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-shade {
+    pointer-events:none!important;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-footer,
+  body[data-cl-mode="reels"] #reels-feed .cl-post-caption,
+  body[data-cl-mode="reels"] #reels-feed .cl-post-actions {
+    box-sizing:border-box!important;
+  }
+}
