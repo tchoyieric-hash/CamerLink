@@ -82,3 +82,29 @@ body.cl-screen-home #listings-grid,.listings-grid{display:flex!important;flex-di
  #listings-grid .cl-immersive-actions{flex-direction:column!important}
  #listings-grid .cl-immersive-actions span,#listings-grid .cl-immersive-share{height:36px!important}
 }
+
+
+/* Correctifs de sécurité visuelle: ne jamais masquer les commandes ou le flux réel */
+.header-actions #msgInboxBtn,
+.header-actions #themeBtn,
+.header-actions #authBtn,
+.header-actions #pubBtn { display: inline-flex !important; }
+.header-actions:after { content: none !important; }
+.header-actions .btn-login,
+.header-actions .btn-pub { font-size: 14px !important; }
+body.cl-screen-home main,
+body[data-cl-mode="home"] main,
+body[data-cl-mode="annonces"] main { display: block !important; visibility: visible !important; opacity: 1 !important; }
+#listings-grid { display: flex !important; visibility: visible !important; opacity: 1 !important; min-height: 120px; }
+#listings-grid > .ad-card,
+#listings-grid > .state-msg { visibility: visible !important; opacity: 1 !important; }
+#listings-grid .card-img-container { min-height: 240px; }
+@media (max-width: 600px) {
+ .cl-top { padding-left: 12px !important; padding-right: 12px !important; }
+ .logo-brand { font-size: 1.2rem !important; }
+ .brand-logo-img { width: 34px; height: 34px; }
+ .header-actions { gap: 4px !important; }
+ .header-actions .btn-icon { width: 32px !important; height: 36px !important; font-size: 16px !important; }
+ .header-actions .btn-login { padding: 7px 9px !important; }
+ .header-actions .btn-pub { padding: 8px 10px !important; }
+}
