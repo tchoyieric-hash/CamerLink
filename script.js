@@ -516,24 +516,35 @@
     const st = document.createElement('style');
     st.id = 'reels-vertical-fix';
     st.textContent = `
-@media screen and (max-width: 700px) {
-  .reels-section { width: 100%; min-width: 0; overflow: hidden; }
-  #reels-feed, #reels-feed.reels-feed {
-    display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
-    align-items: stretch !important; justify-content: flex-start !important;
-    width: 100% !important; max-width: 100% !important; max-height: 78vh !important;
-    overflow-x: hidden !important; overflow-y: auto !important; scroll-snap-type: y mandatory !important;
-  }
-  #reels-feed > .reel-card {
-    display: block !important; position: relative !important; flex: 0 0 72vh !important;
-    width: 100% !important; max-width: 420px !important; min-width: 0 !important;
-    height: 72vh !important; max-height: 640px !important; margin: 0 auto 12px !important;
-    scroll-snap-align: start !important;
-  }
-  #reels-feed > .reel-card video {
-    display: block !important; width: 100% !important; height: 100% !important; object-fit: contain !important; background: #03040a !important;
-  }
-}`;
+/* Réels immersifs : une carte = un écran, défilement vertical natif */
+#reels-section { width: 100%; min-width: 0; }
+#reels-feed, #reels-feed.reels-feed {
+  display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
+  align-items: stretch !important; justify-content: flex-start !important;
+  width: 100% !important; max-width: 100% !important; height: min(100dvh, 900px) !important;
+  max-height: none !important; overflow-x: hidden !important; overflow-y: auto !important;
+  overscroll-behavior-y: contain !important; scroll-snap-type: y mandatory !important;
+  -webkit-overflow-scrolling: touch !important; gap: 0 !important;
+}
+#reels-feed > .reel-card {
+  display: block !important; position: relative !important; flex: 0 0 100% !important;
+  width: 100% !important; max-width: 100% !important; min-width: 0 !important;
+  height: min(100dvh, 900px) !important; max-height: none !important; margin: 0 !important;
+  scroll-snap-align: start !important; scroll-snap-stop: always !important; overflow: hidden !important;
+}
+#reels-feed > .reel-card .cl-post-media { position: absolute !important; inset: 0 !important; height: 100% !important; }
+#reels-feed > .reel-card video, #reels-feed > .reel-card .cl-reel-photo {
+  display: block !important; width: 100% !important; height: 100% !important;
+  object-fit: cover !important; object-position: center !important; background: #03040a !important;
+}
+#reels-feed > .reel-card .cl-post-footer { position: absolute !important; z-index: 5 !important; bottom: 12px !important; left: 12px !important; right: 12px !important; }
+#reels-feed > .reel-card .cl-post-open { display: none !important; }
+#reels-feed > .reel-card video:fullscreen { width: 100vw !important; height: 100dvh !important; object-fit: contain !important; background: #03040a !important; }
+@media (max-width: 700px) {
+  #reels-feed, #reels-feed.reels-feed { height: calc(100dvh - 68px) !important; }
+  #reels-feed > .reel-card { height: calc(100dvh - 68px) !important; }
+}
+@media (prefers-reduced-motion: reduce) { #reels-feed { scroll-behavior: auto !important; } }`;
     document.head.appendChild(st);
   })();
 
@@ -608,7 +619,7 @@
       const wa = waNumber(ad.contact);
       const price = Number(ad.price || 0) > 0 ? Number(ad.price).toLocaleString('fr-FR') + ' FCFA' : '';
       const media = videos[ad.id]
-        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="metadata"></video><div class="cl-reel-sound-feedback" data-reel-sound-feedback aria-hidden="true">🔊 Son activé</div><div class="cl-reel-tap-hint" aria-hidden="true">Toucher la vidéo pour activer le son</div>`
+        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="auto" controlslist="nodownload" disablepictureinpicture></video><div class="cl-reel-sound-feedback" data-reel-sound-feedback aria-hidden="true">🔊 Son activé</div><div class="cl-reel-tap-hint" aria-hidden="true">Toucher la vidéo pour activer le son</div>`
         : `<img class="cl-reel-photo" src="${esc(ad.image_url)}" alt="${esc(ad.title)}" loading="lazy">`;
       const location = [ad.quartier, ad.city].filter(Boolean).join(' · ');
       const liked = window.getFavorites().includes(String(ad.id));
@@ -708,6 +719,22 @@
 
   const reelsFeed = $('reels-feed');
   if (reelsFeed) {
+    // Afficher une erreur explicite plutôt qu'une vidéo noire silencieuse.
+    reelsFeed.addEventListener('error', (e) => {
+      const video = e.target;
+      if (!video || video.tagName !== 'VIDEO') return;
+      const card = video.closest('.reel-card');
+      if (!card || card.querySelector('[data-reel-load-error]')) return;
+      const notice = document.createElement('div');
+      notice.dataset.reelLoadError = '1';
+      notice.textContent = 'Vidéo indisponible. Vérifiez la connexion ou réessayez plus tard.';
+      notice.style.cssText = 'position:absolute;z-index:8;inset:auto 12px 72px;padding:12px;border-radius:12px;background:#10121de8;color:white;font-size:14px;text-align:center;';
+      card.querySelector('.cl-post-media')?.appendChild(notice);
+    }, true);
+    reelsFeed.addEventListener('loadeddata', (e) => {
+      const video = e.target;
+      if (video && video.tagName === 'VIDEO') video.closest('.reel-card')?.querySelector('[data-reel-load-error]')?.remove();
+    }, true);
     reelsFeed.addEventListener('click', (e) => {
       const card = e.target.closest('.reel-card');
       if (!card) return;
