@@ -1,59 +1,140 @@
-/* CamerLink — Réels restaurés depuis la base stable du 20 octobre */
+/* CamerLink — Réels immersifs, isolés sur la branche de test.
+   Cible les deux types de cartes réellement rendus par script.js. */
+#reels-section { width:100%; max-width:100%; }
 #reels-feed {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  height: calc(100dvh - 72px) !important;
-  max-height: none !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  overscroll-behavior-y: contain;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: y mandatory;
-  gap: 0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  flex-wrap:nowrap !important;
+  align-items:stretch !important;
+  gap:0 !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:calc(100dvh - 64px) !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:y mandatory !important;
+  scrollbar-width:none;
 }
-#reels-feed > .reel-card {
-  position: relative !important;
-  flex: 0 0 calc(100dvh - 72px) !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  height: calc(100dvh - 72px) !important;
-  max-height: none !important;
-  margin: 0 !important;
-  overflow: hidden !important;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+#reels-feed::-webkit-scrollbar { display:none; }
+#reels-feed > .reel-card,
+#reels-feed > .cl-social-post {
+  position:relative !important;
+  flex:0 0 100% !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:calc(100dvh - 64px) !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+  scroll-snap-align:start !important;
+  scroll-snap-stop:always;
+  background:#000 !important;
+  box-shadow:none !important;
 }
+#reels-feed > .cl-social-post .cl-post-media,
 #reels-feed > .reel-card .cl-post-media {
-  position: absolute !important;
-  inset: 0 !important;
-  height: 100% !important;
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  border-radius:0 !important;
+  background:#000 !important;
 }
+#reels-feed > .cl-social-post .cl-post-media video,
+#reels-feed > .cl-social-post .cl-post-media img,
+#reels-feed > .cl-social-post video,
+#reels-feed > .cl-social-post .cl-reel-photo,
 #reels-feed > .reel-card video,
 #reels-feed > .reel-card .cl-reel-photo {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center !important;
-  background: #050505;
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  background:#000 !important;
 }
+#reels-feed > .cl-social-post .cl-post-location,
+#reels-feed > .reel-card .cl-post-location {
+  position:absolute !important;
+  z-index:6 !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 14px !important;
+  background:linear-gradient(#0009,transparent) !important;
+}
+#reels-feed > .cl-social-post .cl-post-caption,
+#reels-feed > .reel-card .cl-post-caption {
+  position:absolute !important;
+  z-index:5 !important;
+  left:16px !important;
+  right:78px !important;
+  bottom:calc(env(safe-area-inset-bottom) + 22px) !important;
+}
+#reels-feed > .cl-social-post .cl-post-actions,
+#reels-feed > .reel-card .cl-post-actions {
+  position:absolute !important;
+  z-index:7 !important;
+  right:10px !important;
+  bottom:calc(env(safe-area-inset-bottom) + 24px) !important;
+}
+#reels-feed > .cl-social-post .cl-post-footer,
 #reels-feed > .reel-card .cl-post-footer {
-  position: absolute !important;
-  z-index: 5 !important;
-  left: 12px !important;
-  right: 12px !important;
-  bottom: 10px !important;
+  position:absolute !important;
+  z-index:6 !important;
+  left:12px !important;
+  right:70px !important;
+  bottom:calc(env(safe-area-inset-bottom) + 8px) !important;
+  min-height:0 !important;
+  padding:8px 0 !important;
+  background:transparent !important;
 }
-#reels-feed > .reel-card .cl-post-open { display: none !important; }
-#reels-feed > .reel-card video:fullscreen {
-  width: 100vw !important;
-  height: 100dvh !important;
-  object-fit: contain !important;
-  background: #000;
+#reels-feed > .cl-social-post .cl-post-open,
+#reels-feed > .reel-card .cl-post-open { display:none !important; }
+#reels-feed > .cl-social-post .cl-post-shade,
+#reels-feed > .reel-card .cl-post-shade {
+  position:absolute !important;
+  z-index:2 !important;
+  inset:35% 0 0 !important;
+  pointer-events:none !important;
+  background:linear-gradient(transparent,rgba(0,0,0,.78)) !important;
 }
-@media (max-width: 700px) {
-  #reels-feed { height: calc(100dvh - 64px) !important; }
-  #reels-feed > .reel-card { height: calc(100dvh - 64px) !important; flex-basis: calc(100dvh - 64px) !important; }
+#reels-feed video:fullscreen {
+  width:100vw !important;
+  height:100dvh !important;
+  object-fit:contain !important;
+  background:#000 !important;
+}
+#reels-feed .reels-placeholder { margin:16px auto; }
+@media (min-width:701px) {
+  #reels-feed { height:calc(100dvh - 120px) !important; }
+  #reels-feed > .reel-card,
+  #reels-feed > .cl-social-post {
+    flex-basis:calc(100dvh - 120px) !important;
+    height:calc(100dvh - 120px) !important;
+    max-width:480px !important;
+    margin-inline:auto !important;
+    border-radius:18px !important;
+  }
+}
+@media (max-width:700px) {
+  #reels-feed { height:calc(100dvh - 64px) !important; }
+  #reels-feed > .reel-card,
+  #reels-feed > .cl-social-post {
+    flex-basis:calc(100dvh - 64px) !important;
+    height:calc(100dvh - 64px) !important;
+  }
 }
