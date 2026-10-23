@@ -118,18 +118,16 @@
 #reels-feed .cl-reel-sound-feedback { z-index:13!important; }
 @media (max-width:700px) {
   body[data-cl-mode="reels"] { overflow:hidden!important; background:#000!important; }
-  body[data-cl-mode="reels"] .cl-top, body[data-cl-mode="reels"] .header-spacer,
-  body[data-cl-mode="reels"] .cl-tabs, body[data-cl-mode="reels"] .cl-nav,
-  body[data-cl-mode="reels"] .hero, body[data-cl-mode="reels"] .shops-section { display:none!important; }
-  body[data-cl-mode="reels"] #reels-section {
+  
+  #reels-section:not(.shell-off) {
     position:fixed!important; inset:0!important; z-index:5000!important; display:block!important;
     width:100vw!important; height:100dvh!important; height:100svh!important; max-height:none!important;
     margin:0!important; padding:0!important; overflow:hidden!important; background:#000!important;
   }
   body[data-cl-mode="reels"] #reels-feed { position:absolute!important; inset:0!important;
     width:100vw!important; height:100dvh!important; height:100svh!important; }
-  body[data-cl-mode="reels"] #reels-feed > .reel-card,
-  body[data-cl-mode="reels"] #reels-feed > .cl-social-post { height:100dvh!important; height:100svh!important;
+  #reels-section:not(.shell-off) #reels-feed > .reel-card,
+  #reels-section:not(.shell-off) #reels-feed > .cl-social-post { height:100dvh!important; height:100svh!important;
     min-height:100dvh!important; min-height:100svh!important; }
 }
 @media (prefers-reduced-motion:reduce) { #reels-feed { scroll-behavior:auto!important; } }
@@ -154,10 +152,19 @@
 #reels-feed .cl-post-footer { bottom:calc(env(safe-area-inset-bottom,0px) + 18px)!important; }
 #reels-feed .cl-post-caption strong { overflow-wrap:anywhere!important; }
 @media (max-width:700px) {
-  body[data-cl-mode="reels"] #reels-section,
-  body[data-cl-mode="reels"] #reels-feed,
-  body[data-cl-mode="reels"] #reels-feed > .reel-card,
-  body[data-cl-mode="reels"] #reels-feed > .cl-social-post {
+  
+  #reels-section:not(.shell-off) #reels-feed,
+  #reels-section:not(.shell-off) #reels-feed > .reel-card,
+  #reels-section:not(.shell-off) #reels-feed > .cl-social-post {
     height:100dvh!important; height:100svh!important;
   }
 }
+
+/* Real DOM fix: shell.js toggles .shell-off on #reels-section; it never sets body[data-cl-mode]. */
+#reels-section:not(.shell-off) .reels-heading { display:none!important; }
+#reels-section:not(.shell-off) #reels-feed { padding:0!important; margin:0!important; }
+#reels-section:not(.shell-off) #reels-feed .cl-comments-float { display:none!important; }
+#reels-section:not(.shell-off) #reels-feed .cl-post-actions { z-index:20!important; }
+#reels-section:not(.shell-off) #reels-feed .cl-post-caption { z-index:8!important; }
+#reels-section:not(.shell-off) #reels-feed .cl-post-footer { z-index:9!important; }
+#reels-section:not(.shell-off) #reels-feed .cl-post-location { z-index:15!important; }
