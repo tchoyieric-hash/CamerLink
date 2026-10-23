@@ -117,14 +117,13 @@
 #reels-feed .cl-reel-tap-hint { z-index:11!important; max-width:78%!important; }
 #reels-feed .cl-reel-sound-feedback { z-index:13!important; }
 @media (max-width:700px) {
-  body[data-cl-mode="reels"] { overflow:hidden!important; background:#000!important; }
   
   #reels-section:not(.shell-off) {
     position:fixed!important; inset:0!important; z-index:5000!important; display:block!important;
     width:100vw!important; height:100dvh!important; height:100svh!important; max-height:none!important;
     margin:0!important; padding:0!important; overflow:hidden!important; background:#000!important;
   }
-  body[data-cl-mode="reels"] #reels-feed { position:absolute!important; inset:0!important;
+   #reels-section:not(.shell-off) #reels-feed { position:absolute!important; inset:0!important;
     width:100vw!important; height:100dvh!important; height:100svh!important; }
   #reels-section:not(.shell-off) #reels-feed > .reel-card,
   #reels-section:not(.shell-off) #reels-feed > .cl-social-post { height:100dvh!important; height:100svh!important;
