@@ -550,7 +550,7 @@
       const wa = waNumber(ad.contact);
       const price = Number(ad.price || 0) > 0 ? Number(ad.price).toLocaleString('fr-FR') + ' FCFA' : '';
       const media = videos[ad.id]
-        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="metadata"></video><div class="cl-reel-sound-feedback" data-reel-sound-feedback aria-hidden="true">🔊 Son activé</div><div class="cl-reel-tap-hint" aria-hidden="true">Toucher la vidéo pour activer le son</div>`
+        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="auto" controlslist="nodownload"></video><div class="cl-reel-sound-feedback" data-reel-sound-feedback aria-hidden="true">🔊 Son activé</div><div class="cl-reel-tap-hint" aria-hidden="true">Toucher la vidéo pour activer le son</div>`
         : `<img class="cl-reel-photo" src="${esc(ad.image_url)}" alt="${esc(ad.title)}" loading="lazy">`;
       const location = [ad.quartier, ad.city].filter(Boolean).join(' · ');
       const liked = window.getFavorites().includes(String(ad.id));
@@ -583,6 +583,23 @@
     }).join('');
 
     hydrateReelComments();
+
+    // Signaler les échecs de lecture au lieu de laisser une vidéo noire sans explication.
+    feed.addEventListener('error', (event) => {
+      const video = event.target;
+      if (!video || video.tagName !== 'VIDEO') return;
+      const card = video.closest('.reel-card');
+      if (!card || card.querySelector('[data-reel-load-error]')) return;
+      const notice = document.createElement('div');
+      notice.dataset.reelLoadError = '1';
+      notice.textContent = 'Cette vidéo ne peut pas être chargée. Vérifiez votre connexion et réessayez.';
+      notice.style.cssText = 'position:absolute;z-index:8;left:12px;right:12px;bottom:90px;padding:12px;border-radius:12px;background:#111d;color:#fff;text-align:center;font-size:14px;';
+      card.querySelector('.cl-post-media')?.appendChild(notice);
+    }, true);
+    feed.addEventListener('loadeddata', (event) => {
+      const video = event.target;
+      if (video && video.tagName === 'VIDEO') video.closest('.reel-card')?.querySelector('[data-reel-load-error]')?.remove();
+    }, true);
 
     if ('IntersectionObserver' in window) {
       reelObserver = new IntersectionObserver((entries) => {
