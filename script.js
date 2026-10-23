@@ -655,7 +655,7 @@
       }
       const full = e.target.closest('[data-reel-fullscreen]');
       if (full) {
-        const media = full.closest('.cl-post-media');
+        const media = full.closest('.cl-reel-screen');
         if (media) {
           const exit = document.fullscreenElement === media;
           const action = exit ? document.exitFullscreen?.() : media.requestFullscreen?.();
@@ -721,10 +721,10 @@
       }
       if (e.target.closest('[data-reel-open]')) { openAdDetail(id); return; }
       if (e.target.closest('a')) return;
-      if (v && e.target.closest('.cl-post-media') && !e.target.closest('.cl-post-actions, .cl-post-caption, .cl-comments-float, .cl-reel-fullscreen')) {
+      if (v && e.target.closest('.cl-reel-screen') && !e.target.closest('.cl-reel-actions, .cl-reel-meta, .cl-reel-back, .cl-reel-screen-toggle, .cl-reel-audio, [data-reel-play]')) {
         toggleReelSound(card, v);
         if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
-      } else if (v && e.target.closest('.cl-post-media')) {
+      } else if (v && e.target.closest('.cl-reel-screen')) {
         if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause();
       }
     });
