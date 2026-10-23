@@ -514,12 +514,6 @@
 @media (prefers-reduced-motion: reduce) {
   #reels-section:not(.shell-off) #reels-feed { scroll-behavior: auto !important; }
 }
-/* Reels: vidéo verticale et défilement par écran */
-#reels-section:not(.shell-off) #reels-feed { height:100%; min-height:0; overflow-y:auto; overscroll-behavior-y:contain; scroll-snap-type:y mandatory; }
-#reels-section:not(.shell-off) #reels-feed .reel-card { position:relative; flex:0 0 100%; min-height:100%; height:100%; scroll-snap-align:start; scroll-snap-stop:always; overflow:hidden; }
-#reels-section:not(.shell-off) #reels-feed .cl-post-media { position:relative; width:100%; height:100%; min-height:100%; overflow:hidden; background:#050505; }
-#reels-section:not(.shell-off) #reels-feed .cl-post-media video { display:block; position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; background:#050505; }
-@media (max-width:600px) { #reels-section:not(.shell-off) #reels-feed .reel-card { border-radius:0; } #reels-section:not(.shell-off) #reels-feed .cl-post-media video { object-fit:contain; } }
 `;
 
     document.head.appendChild(st);
@@ -596,7 +590,7 @@
       const wa = waNumber(ad.contact);
       const price = Number(ad.price || 0) > 0 ? Number(ad.price).toLocaleString('fr-FR') + ' FCFA' : '';
       const media = videos[ad.id]
-        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline webkit-playsinline preload="auto" data-reel-video></video><div class="cl-reel-sound-feedback" data-reel-sound-feedback aria-hidden="true">🔊 Son activé</div><div class="cl-reel-tap-hint" aria-hidden="true">Toucher la vidéo pour activer le son</div>`
+        ? `<video src="${esc(videos[ad.id])}"${ad.image_url ? ` poster="${esc(ad.image_url)}"` : ''} muted loop playsinline preload="metadata"></video><div class="cl-reel-sound-feedback" data-reel-sound-feedback aria-hidden="true">🔊 Son activé</div><div class="cl-reel-tap-hint" aria-hidden="true">Toucher la vidéo pour activer le son</div>`
         : `<img class="cl-reel-photo" src="${esc(ad.image_url)}" alt="${esc(ad.title)}" loading="lazy">`;
       const location = [ad.quartier, ad.city].filter(Boolean).join(' · ');
       const liked = window.getFavorites().includes(String(ad.id));
@@ -635,12 +629,12 @@
         entries.forEach(en => {
           const v = en.target.querySelector('video');
           if (!v) return;
-          if (en.isIntersecting && en.intersectionRatio >= 0.65) {
+          if (en.isIntersecting && en.intersectionRatio >= 0.55) {
             const p = v.play();
             if (p && p.catch) p.catch(() => {});
           } else v.pause();
         });
-      }, { threshold: [0, 0.25, 0.65, 0.85, 1] });
+      }, { threshold: [0, 0.55, 1] });
       feed.querySelectorAll('.cl-social-post').forEach(card => reelObserver.observe(card));
     }
   }
