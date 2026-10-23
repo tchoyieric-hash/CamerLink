@@ -1,0 +1,94 @@
+/* CamerLink — maquette de référence du 23/10/2026
+   Couche visuelle additive : ne modifie ni la logique JS ni les données. */
+:root {
+  --cl-ref-bg:#050b1b;
+  --cl-ref-panel:#08142b;
+  --cl-ref-line:rgba(45,220,255,.62);
+  --cl-ref-cyan:#22d9ef;
+  --cl-ref-purple:#665cff;
+}
+html, body { background:var(--cl-ref-bg); }
+body { color:#f6f8ff; }
+.cl-top {
+  background:linear-gradient(180deg,#050a18 0%,rgba(5,10,24,.97) 100%);
+  border-bottom:1px solid rgba(74,105,170,.18);
+}
+.logo-brand { gap:10px; }
+.brand-wordmark, .cl-logo { font-family:'Plus Jakarta Sans','Inter',sans-serif; font-weight:850; letter-spacing:-.045em; }
+.brand-wordmark span, .cl-logo span { color:var(--cl-ref-cyan); }
+.shell-tabs.cl-tabs {
+  display:flex; gap:10px; overflow-x:auto; scrollbar-width:none;
+  padding:12px 16px 16px; background:#050b1b;
+}
+.shell-tabs.cl-tabs::-webkit-scrollbar { display:none; }
+.shell-tabs.cl-tabs .shell-tab {
+  flex:0 0 auto; min-height:44px; border:1px solid rgba(126,151,205,.22);
+  border-radius:999px; padding:0 18px; background:#080f23; color:#b8c4e6;
+  font-weight:750; white-space:nowrap;
+}
+.shell-tabs.cl-tabs .shell-tab.active,
+.shell-tabs.cl-tabs .shell-tab[aria-selected="true"] {
+  color:white; border-color:transparent;
+  background:linear-gradient(110deg,#13d9ed,#615cff);
+  box-shadow:0 5px 22px rgba(23,210,242,.22);
+}
+.hero { padding:24px 16px 12px; }
+.hero h1 { letter-spacing:-.04em; }
+.search-filter-bar { border-radius:18px; }
+.categories-scroll { scrollbar-width:none; }
+.listings-grid {
+  display:flex !important; flex-direction:column; gap:20px;
+  width:100%; max-width:760px; margin:0 auto; padding:10px 12px 120px;
+}
+.listings-grid > * {
+  min-width:0; overflow:hidden; border-radius:26px;
+  border:1px solid rgba(43,218,250,.42);
+  background:linear-gradient(155deg,rgba(12,25,51,.98),rgba(5,12,29,.99));
+  box-shadow:0 0 0 1px rgba(88,110,255,.08),0 10px 28px rgba(0,0,0,.22);
+}
+.listings-grid img {
+  max-width:100%;
+}
+.listings-grid .listing-image,
+.listings-grid .ad-image,
+.listings-grid .listing-photo,
+.listings-grid .product-image,
+.listings-grid .card-image {
+  width:100%; overflow:hidden; background:#111a2d;
+}
+.listings-grid .listing-image img,
+.listings-grid .ad-image img,
+.listings-grid .listing-photo img,
+.listings-grid .product-image img,
+.listings-grid .card-image img {
+  display:block; width:100%; height:100%; object-fit:cover;
+}
+.shell-nav.cl-nav {
+  z-index:1000; padding-bottom:max(8px,env(safe-area-inset-bottom));
+  background:rgba(4,10,25,.96); backdrop-filter:blur(22px);
+  border-top:1px solid rgba(36,210,245,.28);
+  box-shadow:0 -8px 28px rgba(0,0,0,.22);
+}
+.shell-nav.cl-nav button { color:#a8b3d4; }
+.shell-nav.cl-nav button.active,
+.shell-nav.cl-nav button[aria-current="page"] { color:var(--cl-ref-cyan); }
+.shell-nav.cl-nav .plus {
+  background:linear-gradient(135deg,#10d8ef,#6855ff);
+  box-shadow:0 0 28px rgba(36,207,255,.3);
+}
+.reels-section { background:#030817; }
+.reels-feed { background:#030817; }
+@media (max-width:640px) {
+  .cl-top { padding-top:env(safe-area-inset-top); }
+  .hero { display:none; }
+  .header-spacer { height:4px; }
+  .shell-tabs.cl-tabs { padding:10px 14px 14px; }
+  .listings-grid { padding:8px 12px 112px; gap:18px; }
+  .listings-grid > * { border-radius:24px; }
+  .shell-nav.cl-nav { position:fixed; left:0; right:0; bottom:0; }
+  .reels-section { padding:0; }
+  .reels-feed { min-height:calc(100dvh - 80px); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .listings-grid *, .shell-nav.cl-nav * { scroll-behavior:auto !important; transition:none !important; }
+}
