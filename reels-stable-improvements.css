@@ -1,0 +1,59 @@
+/* CamerLink — Réels restaurés depuis la base stable du 20 octobre */
+#reels-feed {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: calc(100dvh - 72px) !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: y mandatory;
+  gap: 0 !important;
+}
+#reels-feed > .reel-card {
+  position: relative !important;
+  flex: 0 0 calc(100dvh - 72px) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: calc(100dvh - 72px) !important;
+  max-height: none !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+#reels-feed > .reel-card .cl-post-media {
+  position: absolute !important;
+  inset: 0 !important;
+  height: 100% !important;
+}
+#reels-feed > .reel-card video,
+#reels-feed > .reel-card .cl-reel-photo {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  background: #050505;
+}
+#reels-feed > .reel-card .cl-post-footer {
+  position: absolute !important;
+  z-index: 5 !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: 10px !important;
+}
+#reels-feed > .reel-card .cl-post-open { display: none !important; }
+#reels-feed > .reel-card video:fullscreen {
+  width: 100vw !important;
+  height: 100dvh !important;
+  object-fit: contain !important;
+  background: #000;
+}
+@media (max-width: 700px) {
+  #reels-feed { height: calc(100dvh - 64px) !important; }
+  #reels-feed > .reel-card { height: calc(100dvh - 64px) !important; flex-basis: calc(100dvh - 64px) !important; }
+}
