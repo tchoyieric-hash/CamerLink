@@ -458,20 +458,20 @@
     const st = document.createElement('style');
     st.id = 'reels-vertical-fix';
     st.textContent = `
-/* Reels rebuilt cleanly: one vertical video per viewport on mobile */
+/* Reels rebuilt from the Oct 20 baseline: full-screen vertical feed */
 #reels-section:not(.shell-off) {
-  width: 100% !important; max-width: none !important; min-width: 0 !important;
-  margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important;
-  overflow: hidden !important; box-shadow: none !important;
+  position: fixed !important; inset: var(--camerlink-topbar-height, 0px) 0 0 !important;
+  z-index: 20 !important; width: 100% !important; max-width: none !important; min-width: 0 !important;
+  height: auto !important; margin: 0 !important; padding: 0 !important; border: 0 !important;
+  border-radius: 0 !important; overflow: hidden !important; box-shadow: none !important; background: #050505 !important;
 }
 #reels-section:not(.shell-off) .reels-heading { display: none !important; }
 #reels-section:not(.shell-off) #reels-feed {
   display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
   align-items: stretch !important; justify-content: flex-start !important; gap: 0 !important;
-  width: 100% !important; max-width: none !important; min-width: 0 !important;
-  height: calc(100dvh - var(--camerlink-topbar-height, 0px)) !important;
-  max-height: none !important; padding: 0 !important; margin: 0 !important;
-  overflow-x: hidden !important; overflow-y: auto !important;
+  position: absolute !important; inset: 0 !important; width: 100% !important; max-width: none !important;
+  min-width: 0 !important; height: 100% !important; max-height: none !important;
+  padding: 0 !important; margin: 0 !important; overflow-x: hidden !important; overflow-y: auto !important;
   scroll-snap-type: y mandatory !important; overscroll-behavior-y: contain !important;
   scrollbar-width: none !important; background: #050505 !important;
 }
@@ -483,20 +483,25 @@
   scroll-snap-align: start !important; scroll-snap-stop: always !important;
   overflow: hidden !important; background: #050505 !important; transform: none !important;
 }
-#reels-section:not(.shell-off) #reels-feed .reel-media {
+#reels-section:not(.shell-off) #reels-feed .cl-post-media {
   position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important;
-  aspect-ratio: auto !important; background: #050505 !important; overflow: hidden !important;
+  max-height: none !important; border-radius: 0 !important; overflow: hidden !important; background: #050505 !important;
 }
-#reels-section:not(.shell-off) #reels-feed video.reel-video,
-#reels-section:not(.shell-off) #reels-feed .reel-media > video {
+#reels-section:not(.shell-off) #reels-feed .cl-post-media > video,
+#reels-section:not(.shell-off) #reels-feed .cl-post-media > img {
   position: absolute !important; inset: 0 !important; display: block !important;
   width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important;
   object-fit: cover !important; background: #050505 !important;
 }
-#reels-section:not(.shell-off) #reels-feed .reel-caption,
-#reels-section:not(.shell-off) #reels-feed .reel-actions {
-  z-index: 5 !important;
-}
+#reels-section:not(.shell-off) #reels-feed .cl-post-location { position: absolute !important; top: 12px !important; left: 12px !important; right: 64px !important; z-index: 6 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-post-actions { position: absolute !important; right: 10px !important; bottom: 118px !important; z-index: 7 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-post-caption { position: absolute !important; left: 14px !important; right: 68px !important; bottom: 64px !important; z-index: 6 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-comments-float { position: absolute !important; left: 12px !important; right: 68px !important; bottom: 12px !important; z-index: 8 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-reel-exit { position: absolute !important; top: 10px !important; left: 10px !important; z-index: 10 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-reel-fullscreen { position: absolute !important; top: 10px !important; right: 10px !important; z-index: 10 !important; }
+#reels-section:not(.shell-off) #reels-feed .cl-post-footer,
+#reels-section:not(.shell-off) #reels-feed .cl-comments-preview,
+#reels-section:not(.shell-off) #reels-feed .cl-post-open { display: none !important; }
 #reels-section:not(.shell-off) #reels-feed .reels-placeholder,
 #reels-section:not(.shell-off) #reels-feed .reels-empty {
   box-sizing: border-box !important; width: 100% !important; min-width: 0 !important;
@@ -504,7 +509,7 @@
   justify-content: center !important; padding: 24px !important; background: #080808 !important;
 }
 @media (min-width: 701px) {
-  #reels-section:not(.shell-off) #reels-feed { height: min(100dvh, 900px) !important; }
+  #reels-section:not(.shell-off) { left: max(0px, calc((100vw - 560px) / 2)) !important; right: auto !important; width: min(100vw, 560px) !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   #reels-section:not(.shell-off) #reels-feed { scroll-behavior: auto !important; }
