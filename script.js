@@ -459,15 +459,15 @@
     st.id = 'reels-vertical-fix';
     st.textContent = `
 @media screen and (max-width: 700px) {
-  body[data-cl-mode="reels"] .reels-section,
-  body[data-cl-mode="reels"] #reels-section {
+  
+  #reels-section:not(.shell-off) {
     position: fixed !important; inset: 0 !important; z-index: 5000 !important;
     width: 100vw !important; height: 100dvh !important; height: 100svh !important;
     max-height: none !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important;
     background: #000 !important;
   }
-  body[data-cl-mode="reels"] #reels-feed,
-  body[data-cl-mode="reels"] #reels-feed.reels-feed {
+  #reels-section:not(.shell-off) #reels-feed,
+  #reels-section:not(.shell-off) #reels-feed.reels-feed {
     display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
     align-items: stretch !important; justify-content: flex-start !important; gap: 0 !important;
     position: absolute !important; inset: 0 !important; width: 100vw !important;
@@ -476,21 +476,21 @@
     overflow-x: hidden !important; overflow-y: auto !important; scroll-snap-type: y mandatory !important;
     overscroll-behavior-y: contain !important; -webkit-overflow-scrolling: touch !important;
   }
-  body[data-cl-mode="reels"] #reels-feed > .reel-card,
-  body[data-cl-mode="reels"] #reels-feed > .cl-social-post {
+  #reels-section:not(.shell-off) #reels-feed > .reel-card,
+  #reels-section:not(.shell-off) #reels-feed > .cl-social-post {
     display: block !important; position: relative !important; flex: 0 0 100dvh !important; flex-basis: 100svh !important;
     width: 100vw !important; max-width: none !important; min-width: 0 !important;
     height: 100dvh !important; height: 100svh !important; min-height: 100dvh !important; min-height: 100svh !important;
     max-height: none !important; margin: 0 !important; padding: 0 !important; border-radius: 0 !important;
     overflow: hidden !important; scroll-snap-align: start !important; scroll-snap-stop: always !important;
   }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-media {
+  #reels-section:not(.shell-off) #reels-feed .cl-post-media {
     position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important;
     min-height: 0 !important; max-height: none !important; overflow: hidden !important; background: #000 !important;
   }
-  body[data-cl-mode="reels"] #reels-feed .cl-post-media video,
-  body[data-cl-mode="reels"] #reels-feed .cl-post-media img,
-  body[data-cl-mode="reels"] #reels-feed .cl-reel-photo {
+  #reels-section:not(.shell-off) #reels-feed .cl-post-media video,
+  #reels-section:not(.shell-off) #reels-feed .cl-post-media img,
+  #reels-section:not(.shell-off) #reels-feed .cl-reel-photo {
     display: block !important; width: 100% !important; height: 100% !important;
     max-width: none !important; max-height: none !important; object-fit: contain !important;
     object-position: center center !important; background: #000 !important;
