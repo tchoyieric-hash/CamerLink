@@ -452,28 +452,48 @@
     loadStoriesSafely(); // en arrière-plan, ne bloque jamais la page
   }
 
-  /* ===== CSS REELS VERTICAUX (mobile) : injecté ici pour ne déployer qu'un seul fichier ===== */
+  /* ===== Reels mobile: règles cohérentes, la carte occupe toute la hauteur ===== */
   (function injectReelsCss() {
     if (document.getElementById('reels-vertical-fix')) return;
     const st = document.createElement('style');
     st.id = 'reels-vertical-fix';
     st.textContent = `
 @media screen and (max-width: 700px) {
-  .reels-section { width: 100%; min-width: 0; overflow: hidden; }
-  #reels-feed, #reels-feed.reels-feed {
+  body[data-cl-mode="reels"] .reels-section,
+  body[data-cl-mode="reels"] #reels-section {
+    position: fixed !important; inset: 0 !important; z-index: 5000 !important;
+    width: 100vw !important; height: 100dvh !important; height: 100svh !important;
+    max-height: none !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important;
+    background: #000 !important;
+  }
+  body[data-cl-mode="reels"] #reels-feed,
+  body[data-cl-mode="reels"] #reels-feed.reels-feed {
     display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important;
-    align-items: stretch !important; justify-content: flex-start !important;
-    width: 100% !important; max-width: 100% !important; max-height: 78vh !important;
+    align-items: stretch !important; justify-content: flex-start !important; gap: 0 !important;
+    position: absolute !important; inset: 0 !important; width: 100vw !important;
+    max-width: none !important; height: 100dvh !important; height: 100svh !important;
+    max-height: none !important; margin: 0 !important; padding: 0 !important;
     overflow-x: hidden !important; overflow-y: auto !important; scroll-snap-type: y mandatory !important;
+    overscroll-behavior-y: contain !important; -webkit-overflow-scrolling: touch !important;
   }
-  #reels-feed > .reel-card {
-    display: block !important; position: relative !important; flex: 0 0 72vh !important;
-    width: 100% !important; max-width: 420px !important; min-width: 0 !important;
-    height: 72vh !important; max-height: 640px !important; margin: 0 auto 12px !important;
-    scroll-snap-align: start !important;
+  body[data-cl-mode="reels"] #reels-feed > .reel-card,
+  body[data-cl-mode="reels"] #reels-feed > .cl-social-post {
+    display: block !important; position: relative !important; flex: 0 0 100dvh !important; flex-basis: 100svh !important;
+    width: 100vw !important; max-width: none !important; min-width: 0 !important;
+    height: 100dvh !important; height: 100svh !important; min-height: 100dvh !important; min-height: 100svh !important;
+    max-height: none !important; margin: 0 !important; padding: 0 !important; border-radius: 0 !important;
+    overflow: hidden !important; scroll-snap-align: start !important; scroll-snap-stop: always !important;
   }
-  #reels-feed > .reel-card video {
-    display: block !important; width: 100% !important; height: 100% !important; object-fit: contain !important; background: #03040a !important;
+  body[data-cl-mode="reels"] #reels-feed .cl-post-media {
+    position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important;
+    min-height: 0 !important; max-height: none !important; overflow: hidden !important; background: #000 !important;
+  }
+  body[data-cl-mode="reels"] #reels-feed .cl-post-media video,
+  body[data-cl-mode="reels"] #reels-feed .cl-post-media img,
+  body[data-cl-mode="reels"] #reels-feed .cl-reel-photo {
+    display: block !important; width: 100% !important; height: 100% !important;
+    max-width: none !important; max-height: none !important; object-fit: contain !important;
+    object-position: center center !important; background: #000 !important;
   }
 }`;
     document.head.appendChild(st);
